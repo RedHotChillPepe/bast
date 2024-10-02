@@ -6,11 +6,23 @@ import ProfilePage from './pages/ProfilePage';
 import SearchPage from './pages/SearchPage';
 import FavouritesPage from './pages/FavouritesPage';
 import ChatsPage from './pages/ChatsPage';
+import RegisterPage from './pages/RegisterPage';
+import OnboardingPage from './pages/OnboardingPage';
+import AuthProvider from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
+import LoginPage from './pages/LoginPage';
+
+
+
 
 const Stack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator()
+const OnboardingStack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
-// Объявление доступных страниц
+
+
+/// Объявление доступных страниц, навигация (возможно стоит в отдельный компонент)
 const AppStack = () => {
   return(
       <Stack.Navigator initialRouteName='Main'>
@@ -20,9 +32,10 @@ const AppStack = () => {
       </Stack.Navigator>
   );
 }
+
 const AppTabs = () => {
   return(
-    <Tab.Navigator>
+    <Tab.Navigator initialRouteName='Home'>
       <Tab.Screen name='Search' component={SearchPage}/>
       <Tab.Screen name='Favourites' component={FavouritesPage}/>
       <Tab.Screen name='Home' component={AppStack} options={{headerShown:false}}/>
@@ -33,13 +46,51 @@ const AppTabs = () => {
   
 }
 
+const AppAuthStack = () => {
+  return (
+    <AuthStack.Navigator initialRouteName='Login'>
+      <AuthStack.Screen name='Login' component={LoginPage}/>
+      <AuthStack.Screen name='Register' component={RegisterPage}/>
+    </AuthStack.Navigator>
+  )
+}
+
+// Условный рендер в зависимости от того авторизирован ли пользователь или нет
+const AppInit = () => {
+  const {isAuth, isOnboarded} = useAuth()
+
+  // Проверка зарегистрирован ли пользователь
+  if (!isAuth) {
+    return (
+      <AppAuthStack/>
+    )
+  }
+  // Проверка проведён ли пользователь через "онбординг"
+  if (!isOnboarded) {
+    return (
+      <OnboardingStack.Navigator initialRouteName='Onboarding'>
+        <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
+      </OnboardingStack.Navigator>
+    )
+  }
+  if (isOnboarded && isAuth) {
+    return (
+      <AppTabs/>
+    )
+  }
+}
+///
+
+
+
 // Корневой (Root) компонент
 export default function App() {
   return (
-    <NavigationContainer>
-      <AppTabs/>      
-    </NavigationContainer>
-    
+    <AuthProvider>
+      <NavigationContainer>
+        <AppInit/>      
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
 

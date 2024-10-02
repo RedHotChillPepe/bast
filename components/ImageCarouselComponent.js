@@ -6,7 +6,7 @@ export default function ImageCarouselComponent(props) {
 
 
     const handlePageSelection = (carposition) => {
-        console.log(carposition);
+        
         
         
     }
