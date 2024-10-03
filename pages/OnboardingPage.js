@@ -3,7 +3,7 @@ import React from 'react'
 import { useAuth } from '../context/AuthContext'
 
 const OnboardingPage = () => {
-    const {setIsOnboarded} = useAuth()
+    const { setIsOnboarded } = useAuth()
   return (
     <View>
       <Text>OnboardingPage</Text>

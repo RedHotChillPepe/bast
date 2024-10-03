@@ -23,9 +23,9 @@ const MainPage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <ScrollView style={styles.scrollView}>
-            <View>
+      
+        <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
+            <View style={styles.content}>
 
                 <View style={styles.banner}>
                     <Text style={styles.bannerText}>
@@ -85,7 +85,7 @@ const MainPage = () => {
                 </View>
             </View>
         </ScrollView>
-      </View>
+      
     </View>
   )
 }
@@ -98,17 +98,18 @@ const styles = StyleSheet.create({
     },
     content: {
         width:'90%',
-        marginTop:20
+        
     },
     scrollView:{
         width:"100%",
-        height:'100%'
+        height:'100%',
     },
     banner:{
         width:"100%",
         height:90,
         backgroundColor:'#0077FF',
-        borderRadius:4
+        borderRadius:4,
+        marginTop:20
     },
     bannerText:{
         color:"#FFF",

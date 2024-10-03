@@ -5,12 +5,12 @@ import { useAuth } from '../context/AuthContext'
 
 const LoginPage = () => {
     const navigation = useNavigation()
-    const { setIsAuth } = useAuth()
+    const { setIsAuth, setIsOnboarded } = useAuth()
   return (
     <View>
       <Text>LoginPage</Text>
       <View style={{width:100}}>
-        <Button title='Login' onPress={() => setIsAuth(true)}/>
+        <Button title='Login' onPress={() => {setIsAuth(true), setIsOnboarded(true)}}/>
       </View>
       
       <View style={{width:100, paddingVertical:15}}>
