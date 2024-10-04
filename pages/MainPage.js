@@ -1,8 +1,10 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image } from 'react-native'
 import React from 'react'
 import ImageCarouselComponent from '../components/ImageCarouselComponent.js'
+import { useNavigation } from '@react-navigation/native'
 
 const MainPage = () => {
+    const navigation = useNavigation()
 
     const ImageCarouselContent = [
         {
@@ -65,7 +67,7 @@ const MainPage = () => {
                 </View>
 
                 <View style={styles.newsCards}>
-                <Pressable style={styles.newsCard}>
+                    <Pressable onPress={() => navigation.navigate("Houses")} style={styles.newsCard}>
                         <Text>
                             Дома
                         </Text>

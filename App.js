@@ -11,6 +11,8 @@ import OnboardingPage from './pages/OnboardingPage';
 import AuthProvider from './context/AuthContext';
 import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
+import DynamicHousesPage from './pages/DynamicHousesPage';
+import DynamicHousePostPage from './pages/DynamicHousePostPage';
 
 
 
@@ -29,6 +31,8 @@ const AppStack = () => {
         <Stack.Screen name='Main' component={MainPage} options={{
           title:'БАСТ'
         }}/>
+        <Stack.Screen name='Houses' component={DynamicHousesPage}/>
+        <Stack.Screen name='House' component={DynamicHousePostPage}/>
       </Stack.Navigator>
   );
 }

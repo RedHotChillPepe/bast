@@ -1,0 +1,20 @@
+[
+{
+    "name":"housename1",
+    "type": "apartment",
+    "size":"small",
+    "imageSource":"https://cdn.decoist.com/wp-content/uploads/2018/06/Ultra-small-student-apartment-living-with-loft-bed-above-and-steps-with-storage.jpg"
+},
+{
+    "name":"housename2",
+    "type": "apartment",
+    "size":"big",
+    "imageSource":"https://www.luxurychicagoapartments.com/wp-content/uploads/2023/03/Aurelien-35.jpg"
+},
+{
+    "name":"housename3",
+    "type": "house",
+    "size":"medium",
+    "imageSource":"https://st.hzcdn.com/simgs/pictures/exteriors/nest-in-the-trees-anchor-builders-img~ceb16ac4082f6de2_14-1803-1-e823a50.jpg"
+}
+]
