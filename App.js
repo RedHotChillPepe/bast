@@ -13,6 +13,7 @@ import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import DynamicHousesPage from './pages/DynamicHousesPage';
 import DynamicHousePostPage from './pages/DynamicHousePostPage';
+import ApiProvider from './context/ApiContext';
 
 
 
@@ -90,11 +91,14 @@ const AppInit = () => {
 // Корневой (Root) компонент
 export default function App() {
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <AppInit/>      
-      </NavigationContainer>
-    </AuthProvider>
+    <ApiProvider>
+      <AuthProvider>
+        <NavigationContainer>
+          <AppInit/>      
+        </NavigationContainer>
+      </AuthProvider>
+    </ApiProvider>
+      
   );
 }
 

@@ -1,30 +1,50 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import houses from '../assets/testassets/houses.json'
 import { useNavigation } from '@react-navigation/native'
+import { useApi } from '../context/ApiContext.js'
 
 const DynamicHousesPage = () => {
 
     const navigation = useNavigation()
-    const constHouses = houses
-    //console.log(constHouses);
+    const [houses, setHouses] = useState([])
+    const { getAllPosts } = useApi()
+    
+    useEffect(() => {
+      const loadFromAPI = async () => {
+        setHouses(await getAllPosts())
+        console.log(await getAllPosts());
+        
+      }
+      
+      loadFromAPI()
+      return () => {
+        
+      }
+    }, [])
+        
     
   return (
     <View style={styles.container}>
-        <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
-            <View style={styles.content}>
-                {
-                    constHouses.map((item, index) => (
-                        <View style={styles.cradsWrapper} key={index}>
-                            <Pressable onPress={() => {navigation.navigate('House', {"house":item})}} style={styles.houseCard}>
-                                <Text>{item.name}</Text> 
-                            </Pressable>
-                        </View>
-                    ))
-                }  
-            </View>
-            
-        </ScrollView>
+        {
+            Object.keys(houses).length != 0
+            &&
+            <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
+                <View style={styles.content}>
+                    {
+                        houses.map((item, index) => (
+                            <View style={styles.cradsWrapper} key={index}>
+                                <Pressable onPress={() => {navigation.navigate('House', {"house":item})}} style={styles.houseCard}>
+                                    <Text>{item.name}</Text> 
+                                </Pressable>
+                            </View>
+                        ))
+                    }  
+                </View>
+                
+            </ScrollView>
+        }
+        
       
     </View>
   )
