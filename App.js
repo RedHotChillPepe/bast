@@ -14,6 +14,7 @@ import LoginPage from './pages/LoginPage';
 import DynamicHousesPage from './pages/DynamicHousesPage';
 import DynamicHousePostPage from './pages/DynamicHousePostPage';
 import ApiProvider from './context/ApiContext';
+import HeaderComponent from './components/HeaderComponent';
 
 
 
@@ -30,7 +31,7 @@ const AppStack = () => {
   return(
       <Stack.Navigator initialRouteName='Main'>
         <Stack.Screen name='Main' component={MainPage} options={{
-          title:'БАСТ'
+          header:(props) => <HeaderComponent{...props}/>
         }}/>
         <Stack.Screen name='Houses' component={DynamicHousesPage}/>
         <Stack.Screen name='House' component={DynamicHousePostPage}/>

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList } from 'react-native'
 import React from 'react'
 import ImageCarouselComponent from '../components/ImageCarouselComponent.js'
 import { useNavigation } from '@react-navigation/native'
@@ -7,6 +7,18 @@ const MainPage = () => {
     const navigation = useNavigation()
 
     const ImageCarouselContent = [
+        {
+            imageSource:"https://www.houseplans.net/uploads/plans/25535/elevations/57911-768.jpg",
+            text:"House1 самый лучший"
+        },
+        {
+            imageSource:"https://www.houseplans.net/uploads/styles/54-original.jpg",
+            text:"House2 супер элегантный"
+        },
+        {
+            imageSource:"https://www.houseplans.net/news/wp-content/uploads/2023/07/57260-768.jpeg",
+            text:"House3 покажет ваш характер"
+        },
         {
             imageSource:"https://www.houseplans.net/uploads/plans/25535/elevations/57911-768.jpg",
             text:"House1 самый лучший"
@@ -29,11 +41,21 @@ const MainPage = () => {
         <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
             <View style={styles.content}>
 
-                <View style={styles.banner}>
+                {/* <View style={styles.banner}>
                     <Text style={styles.bannerText}>
                         "Что-то Типа Баннера" - Илья Hotchillipepe
                     </Text>
-                </View>
+                </View> */}
+
+                <FlatList
+                    data={ImageCarouselContent}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({item}) => 
+                    <View style={styles.storyItem}>
+                        <Text style={styles.storyItemText}>{item.text}</Text>
+                    </View>}
+                />
 
                 {/* Вероятно в будущем нужно будет вынести в отдельный компонент */}
                 <View style={styles.searchBar}>
@@ -99,12 +121,29 @@ const styles = StyleSheet.create({
         backgroundColor:"#FFF"
     },
     content: {
-        width:'90%',
+        width:'100%',
+        paddingHorizontal:9
         
     },
     scrollView:{
         width:"100%",
         height:'100%',
+        marginTop:16
+    },
+    storyItem:{
+        height:84,
+        width:84,
+        borderRadius:12,
+        backgroundColor:"rgba(50, 50, 44, 0.8)",
+        marginRight:8,
+        alignItems:"center"
+    },
+    storyItemText:{
+        color:"#FFF",
+        fontWeight:"700",
+        fontFamily:"Montserrat",
+        fontSize:18,
+        paddingTop:8
     },
     banner:{
         width:"100%",
