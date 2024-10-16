@@ -15,6 +15,7 @@ import DynamicHousesPage from './pages/DynamicHousesPage';
 import DynamicHousePostPage from './pages/DynamicHousePostPage';
 import ApiProvider from './context/ApiContext';
 import HeaderComponent from './components/HeaderComponent';
+import { useFonts } from 'expo-font';
 
 
 
@@ -64,6 +65,14 @@ const AppAuthStack = () => {
 // Условный рендер в зависимости от того авторизирован ли пользователь или нет
 const AppInit = () => {
   const {isAuth, isOnboarded} = useAuth()
+
+  const [loaded, error] = useFonts({
+    'Montserrat400': require('./assets/fonts/Inter_18pt-Regular.ttf') ,
+    'Montserrat500': require('./assets/fonts/Inter_18pt-Medium.ttf') ,
+    'Montserrat700': require('./assets/fonts/Montserrat-Bold.ttf') ,
+    'Inter400': require('./assets/fonts/Inter_18pt-Regular.ttf'),
+    'Inter500': require('./assets/fonts/Inter_18pt-Medium.ttf'),
+  })
 
   // Проверка зарегистрирован ли пользователь
   if (!isAuth) {

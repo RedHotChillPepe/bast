@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import houses from '../assets/testassets/houses.json'
 import { useNavigation } from '@react-navigation/native'
 import { useApi } from '../context/ApiContext.js'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const DynamicHousesPage = () => {
 
@@ -25,7 +26,7 @@ const DynamicHousesPage = () => {
         
     
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
         {
             Object.keys(houses).length != 0
             &&
@@ -46,7 +47,7 @@ const DynamicHousesPage = () => {
         }
         
       
-    </View>
+    </SafeAreaView>
   )
 }
 

@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   headerStyle:{
     height:80,
     paddingVertical:20,
-    backgroundColor:"#FFF"
+    backgroundColor:"#F5F5F5"
   },
   headerText:{
     fontSize:40,
@@ -43,8 +43,8 @@ const styles = StyleSheet.create({
   },
   headerButtonText:{
     color:"#FFF",
-    fontFamily:"Montserrat",
+    fontFamily:"Montserrat400",
     fontSize:16,
-    fontWeight:"500"
+    //fontWeight:"400"
   }
 })

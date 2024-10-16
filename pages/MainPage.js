@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList } from 'react-native'
 import React from 'react'
-import ImageCarouselComponent from '../components/ImageCarouselComponent.js'
 import { useNavigation } from '@react-navigation/native'
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MainPage = () => {
     const navigation = useNavigation()
@@ -32,20 +33,46 @@ const MainPage = () => {
             text:"House3 покажет ваш характер"
         }
     ]
+
+    const ServicesContent = [
+        {
+            text:"Сопровождение сделки",
+            subtext:"Наши юристы позаботятся о вашей безопасности"
+        },
+        {
+            text:"Оценка недвижимости",
+            subtext:"Бесплатно узнайте рыночную стоимость "
+        },
+        {
+            text:"Страхование",
+            subtext:"Подберите удобный ежемесячный платеж"
+        },
+        {
+            text:"Страхование",
+            subtext:"Подберите удобный ежемесячный платеж",
+            marginTop:8
+        }
+    ]
+
+    const SearchButtonsContent = [
+        {
+            text:"Новый поиск"
+        },
+        {
+            text:"Мои поиски"
+        },
+        {
+            text:"Выбрать риэлтора"
+        }
+    ]
         
     
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       
         <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
             <View style={styles.content}>
-
-                {/* <View style={styles.banner}>
-                    <Text style={styles.bannerText}>
-                        "Что-то Типа Баннера" - Илья Hotchillipepe
-                    </Text>
-                </View> */}
 
                 <FlatList
                     data={ImageCarouselContent}
@@ -57,60 +84,52 @@ const MainPage = () => {
                     </View>}
                 />
 
-                {/* Вероятно в будущем нужно будет вынести в отдельный компонент */}
-                <View style={styles.searchBar}>
-                    <TextInput placeholderTextColor={"#bfbfbf"}  
-                    placeholder='Поиск' 
-                    style={styles.searchTextInput}/>
-                </View>
+                <Text style={styles.functionTitleText}>
+                    Сервисы
+                </Text>
 
                 <View style={styles.functionCards}>
-                    <Pressable style={styles.functionCard}>
-                        <Text>
-                            Поиск Дома
-                        </Text>
-                    </Pressable>
+                    {
+                        ServicesContent.map((item, index) => (
+                            <Pressable style={[styles.functionCard, item.marginTop && {marginTop:item.marginTop}]} key={index}>
+                                <View style={[styles.functionCardView]}>
+                                    <Text style={styles.functionCardText}>
+                                        {item.text}
+                                    </Text>
+                                    <Text style={styles.functionCardSubText}>
+                                        {item.subtext}
+                                    </Text>
+                                </View>
+                            </Pressable>
 
-                    <Pressable style={styles.functionCard}>
-                        <Text>
-                            Работа с Риелтором
-                        </Text>
-                    </Pressable>
-
-                    <Pressable style={styles.functionCard}>
-                        <Text>
-                            Создать Объявление
-                        </Text>
-                    </Pressable>
-                </View>
-
-                <View style={styles.imageCarousel}>
-                    <ImageCarouselComponent content={ImageCarouselContent}/> 
-                </View>
-
-                <View style={styles.newsCards}>
-                    <Pressable onPress={() => navigation.navigate("Houses")} style={styles.newsCard}>
-                        <Text>
-                            Дома
-                        </Text>
-                    </Pressable>
-
-                    <Pressable style={styles.functionCard}>
-                        <Text>
-                            Новые Дома
-                        </Text>
-                    </Pressable>
-
-                    <Pressable style={styles.functionCard}>
-                        <Text>
-                            Коттеджные посёлки
-                        </Text>
+                        ))
+                    }
+                    <Pressable style={[styles.functionCard, {marginRight:140, marginTop:8,}]}>
+                        <View style={styles.functionCardView}>
+                            <Text style={styles.functionCardText}>
+                                Все сервисы
+                            </Text>
+                            <Ionicons style={{alignSelf:'flex-end'}} name="arrow-forward" size={24} color="#32322C" />
+                        </View>
                     </Pressable>
                 </View>
+
+                <View style={styles.searchButtonsView}>
+                    {
+                        SearchButtonsContent.map((item, index) => (
+                            <Pressable style={styles.searchButtonsContent} key={index}>
+                                <Text style={styles.searchButtonsText}>
+                                    {item.text}
+                                </Text>
+                            </Pressable>
+                        ))
+                    }
+                </View>
+
             </View>
         </ScrollView>
       
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -118,12 +137,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems:'center',
-        backgroundColor:"#FFF"
+        backgroundColor:"#F5F5F5"
     },
     content: {
         width:'100%',
-        paddingHorizontal:9
-        
+        paddingHorizontal:9,
+        paddingTop:16
     },
     scrollView:{
         width:"100%",
@@ -140,57 +159,63 @@ const styles = StyleSheet.create({
     },
     storyItemText:{
         color:"#FFF",
-        fontWeight:"700",
-        fontFamily:"Montserrat",
+        //fontWeight:"700",
+        fontFamily:"Montserrat700",
         fontSize:18,
         paddingTop:8
     },
-    banner:{
-        width:"100%",
-        height:90,
-        backgroundColor:'#0077FF',
-        borderRadius:4,
-        marginTop:20
-    },
-    bannerText:{
-        color:"#FFF",
-        marginLeft:8,
-        marginTop:65
-    },
-    searchBar:{
-        marginTop:15
-    },
-    searchTextInput:{
-        backgroundColor:"#F5F5F5",
-        borderRadius:4,
-        height:50,
-        paddingLeft:8
+    functionTitleText:{
+      fontFamily:'Montserrat700',
+      fontSize:20,
+      color:"#32322C",
+      marginTop:24  
     },
     functionCards:{
-        marginTop:15,
+        marginTop:16,
         flexDirection:"row",
-        justifyContent:"space-between"
+        justifyContent:"space-between",
+        //justifyContent:"space-between",
+        flexWrap:'wrap'
     },
     functionCard:{
-        borderRadius:4,
-        backgroundColor:"#F5F5F5",
-        height:100,
-        width:100
+        borderRadius:12,
+        backgroundColor:"#FFF",
+        height:120,
+        width:120
     },
-    imageCarousel:{
-        height:200,
-        marginTop:15
+    functionCardView:{
+        paddingHorizontal:8,
+        paddingVertical:8,
+        flex:1,
+        justifyContent:'space-between',
     },
-    newsCards:{
-        marginTop:15,
-        flexDirection:"row",
-        justifyContent:"space-between"
+    functionCardText:{
+        fontFamily:'Montserrat700',
+        fontSize:12,
+        letterSpacing:-0.5
     },
-    newsCard:{
-        borderRadius:4,
-        backgroundColor:"#F5F5F5",
-        height:100,
-        width:100
+    functionCardSubText:{
+        fontFamily:'Montserrat400',
+        fontSize:10,
+        color:"#717171"
+    },
+    searchButtonsView:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        marginTop:12
+    },
+    searchButtonsContent:{
+        paddingHorizontal:8,
+        paddingVertical:10,
+        backgroundColor:"rgba(50, 50, 44, 0.8)",
+        borderRadius:12,
+        height:64,
+        width:120
+    },
+    searchButtonsText:{
+        color:"#FFF",
+        fontFamily:"Montserrat700",
+        fontSize:18
     }
   });
 
