@@ -25,8 +25,8 @@ const styles = StyleSheet.create({
   },
   headerText:{
     fontSize:40,
-    fontFamily:"Inter",
-    fontWeight:"700",
+    fontFamily:"Inter700",
+    //fontWeight:"700",
     color:"rgba(50, 50, 44, 0.8)"
   },
   headerContent:{

@@ -72,6 +72,7 @@ const AppInit = () => {
     'Montserrat700': require('./assets/fonts/Montserrat-Bold.ttf') ,
     'Inter400': require('./assets/fonts/Inter_18pt-Regular.ttf'),
     'Inter500': require('./assets/fonts/Inter_18pt-Medium.ttf'),
+    'Inter700': require('./assets/fonts/Inter_18pt-Bold.ttf'),
   })
 
   // Проверка зарегистрирован ли пользователь

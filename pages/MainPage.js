@@ -1,11 +1,25 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useApi } from '../context/ApiContext';
 
 const MainPage = () => {
     const navigation = useNavigation()
+    const {getAllPosts} = useApi()
+    const [houses, setHouses] = useState([])
+
+    useEffect(() => {
+      const housesFetch = async () => {
+        setHouses(await getAllPosts())
+      }
+      housesFetch()
+      return () => {
+        
+      }
+    }, [])
+    
 
     const ImageCarouselContent = [
         {
@@ -44,12 +58,12 @@ const MainPage = () => {
             subtext:"Бесплатно узнайте рыночную стоимость "
         },
         {
-            text:"Страхование",
+            text:"Ипотечный калькулятор",
             subtext:"Подберите удобный ежемесячный платеж"
         },
         {
             text:"Страхование",
-            subtext:"Подберите удобный ежемесячный платеж",
+            subtext:"Защитите имущество",
             marginTop:8
         }
     ]
@@ -71,7 +85,7 @@ const MainPage = () => {
   return (
     <SafeAreaView style={styles.container}>
       
-        <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
             <View style={styles.content}>
 
                 <FlatList
@@ -126,6 +140,59 @@ const MainPage = () => {
                     }
                 </View>
 
+                <Text style={styles.housesTitleText}>
+                    Дома
+                </Text>
+
+                <View style={styles.housesView}>
+                    {
+                        Object.keys(houses).length != 0 &&
+                        <FlatList
+                        data={houses}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        renderItem={({item}) => 
+                        <View style={styles.houseItem}>
+                            <View style={styles.houseImageView}>
+
+                            </View>
+                            <View>
+                                <Text style={styles.houseItemText}>
+                                    {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                                </Text>
+                            </View>
+                        </View>}/>
+
+                        
+                    }
+                </View>
+
+                <Text style={styles.housesTitleText}>
+                    Новостройки
+                </Text>
+
+                <View style={styles.housesView}>
+                    {
+                        Object.keys(houses).length != 0 &&
+                        <FlatList
+                        data={houses}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        renderItem={({item}) => 
+                        <View style={styles.houseItem}>
+                            <View style={styles.houseImageView}>
+
+                            </View>
+                            <View>
+                                <Text style={styles.houseItemText}>
+                                    {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                                </Text>
+                            </View>
+                        </View>}/>
+
+                        
+                    }
+                </View>
             </View>
         </ScrollView>
       
@@ -216,6 +283,31 @@ const styles = StyleSheet.create({
         color:"#FFF",
         fontFamily:"Montserrat700",
         fontSize:18
+    },
+    housesTitleText:{
+        fontFamily:'Montserrat700',
+        fontSize:20,
+        color:"#32322C",
+        marginTop:32  
+    },
+    housesView:{
+        marginTop:16,
+    },
+    houseItem:{
+        width:248,
+        height:200,
+        borderRadius:20,
+        backgroundColor:"#FFF",
+        marginRight:8
+    },
+    houseItemText:{
+        color:"#32322C",
+        fontFamily:"Inter700",
+        fontSize:14
+    },
+    houseImageView:{
+        width:"100%",
+        height:130
     }
   });
 
