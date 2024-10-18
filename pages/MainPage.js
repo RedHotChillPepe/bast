@@ -157,11 +157,26 @@ const MainPage = () => {
 
                             </View>
                             <View>
-                                <Text style={styles.houseItemText}>
-                                    {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
-                                </Text>
+                                <View>
+                                    <Text style={styles.houseItemText}>
+                                        {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                                    </Text>
+                                </View>
+                                <View style={{flexDirection:"row"}}>
+                                    <Text>
+                                        {item.bedrooms}-комн.
+                                    </Text>
+                                    <Text>
+                                        {item.house_area} м²
+                                    </Text>
+                                    <Text>
+                                        этажей: {item.num_floors}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>}/>
+                            
+                        </View>
+                        }/>
 
                         
                     }
@@ -188,7 +203,11 @@ const MainPage = () => {
                                     {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
                                 </Text>
                             </View>
-                        </View>}/>
+                            <View>
+
+                            </View>
+                        </View>}
+                        />
 
                         
                     }
