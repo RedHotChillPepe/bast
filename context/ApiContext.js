@@ -9,7 +9,7 @@ export default function ApiProvider ({ children }){
     const getAllPosts = async () =>{
         const url = host + "api/allposts"
         console.log(url);
-        
+
         return fetch(url)
         .then(response => response.json()
         )

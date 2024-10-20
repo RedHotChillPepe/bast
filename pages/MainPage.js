@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -20,6 +20,7 @@ const MainPage = () => {
       }
     }, [])
     
+
 
     const ImageCarouselContent = [
         {
@@ -146,15 +147,15 @@ const MainPage = () => {
 
                 <View style={styles.housesView}>
                     {
-                        Object.keys(houses).length != 0 &&
+                        Object.keys(houses).length != 0 ?
                         <FlatList
                         data={houses}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
-                        renderItem={({item}) => 
+                        renderItem={({item}, index) => 
                         <View style={styles.houseItem}>
                             <View style={styles.houseImageView}>
-
+                               <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
                             </View>
                             <View>
                                 <View>
@@ -177,7 +178,10 @@ const MainPage = () => {
                             
                         </View>
                         }/>
-
+                        :
+                        <ActivityIndicator
+                        size={"large"}
+                        color={"#32322C"}/>
                         
                     }
                 </View>
@@ -188,7 +192,7 @@ const MainPage = () => {
 
                 <View style={styles.housesView}>
                     {
-                        Object.keys(houses).length != 0 &&
+                        Object.keys(houses).length != 0 ?
                         <FlatList
                         data={houses}
                         horizontal={true}
@@ -208,8 +212,10 @@ const MainPage = () => {
                             </View>
                         </View>}
                         />
-
-                        
+                        :
+                        <ActivityIndicator
+                        size={"large"}
+                        color={"#32322C"}/>
                     }
                 </View>
             </View>
@@ -325,8 +331,14 @@ const styles = StyleSheet.create({
         fontSize:14
     },
     houseImageView:{
-        width:"100%",
         height:130
+    },
+    houseImage:{
+        flex:1,
+        height:"100%",
+        width:"100%",
+        borderTopLeftRadius:20,
+        borderTopRightRadius:20
     }
   });
 
