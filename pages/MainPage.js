@@ -12,7 +12,10 @@ const MainPage = () => {
 
     useEffect(() => {
       const housesFetch = async () => {
-        setHouses(await getAllPosts())
+        if (await getAllPosts() != undefined) {
+            setHouses(await getAllPosts())
+        }
+        
       }
       housesFetch()
       return () => {
@@ -147,7 +150,7 @@ const MainPage = () => {
 
                 <View style={styles.housesView}>
                     {
-                        Object.keys(houses).length != 0 ?
+                        Object.keys(houses).length != 0 && houses != undefined ?
                         <FlatList
                         data={houses}
                         horizontal={true}
@@ -192,7 +195,7 @@ const MainPage = () => {
 
                 <View style={styles.housesView}>
                     {
-                        Object.keys(houses).length != 0 ?
+                        Object.keys(houses).length != 0 && houses != undefined ?
                         <FlatList
                         data={houses}
                         horizontal={true}
