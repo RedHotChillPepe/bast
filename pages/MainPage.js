@@ -1,9 +1,13 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList, ActivityIndicator, Dimensions, StatusBar } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
+import HeaderComponent from '../components/HeaderComponent';
+
+
+const { width } = Dimensions.get('window');
 
 const MainPage = () => {
     const navigation = useNavigation()
@@ -63,12 +67,13 @@ const MainPage = () => {
         },
         {
             text:"Ипотечный калькулятор",
-            subtext:"Подберите удобный ежемесячный платеж"
+            subtext:"Подберите удобный ежемесячный платеж",
+          //  marginTop:8
         },
         {
             text:"Страхование",
             subtext:"Защитите имущество",
-            marginTop:8
+           // marginTop:8
         }
     ]
 
@@ -88,10 +93,10 @@ const MainPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
-            <View style={styles.content}>
-
+    {/* <StatusBar barStyle='dark-content' /> */}
+       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
+            <View style={styles.content}> 
+            <HeaderComponent />
                 <FlatList
                     data={ImageCarouselContent}
                     horizontal={true}
@@ -101,15 +106,17 @@ const MainPage = () => {
                         <Text style={styles.storyItemText}>{item.text}</Text>
                     </View>}
                 />
-
-                <Text style={styles.functionTitleText}>
-                    Сервисы
-                </Text>
+            <View style={{marginHorizontal: 8}}>
+              <Text style={styles.functionTitleText}>
+                  Сервисы
+              </Text>
+            </View>
 
                 <View style={styles.functionCards}>
                     {
                         ServicesContent.map((item, index) => (
-                            <Pressable style={[styles.functionCard, item.marginTop && {marginTop:item.marginTop}]} key={index}>
+                            //<Pressable style={[styles.functionCard, item.marginTop && {marginTop:item.marginTop}]} key={index}>
+                            <Pressable style={styles.functionCard} key={index}>
                                 <View style={[styles.functionCardView]}>
                                     <Text style={styles.functionCardText}>
                                         {item.text}
@@ -122,7 +129,7 @@ const MainPage = () => {
 
                         ))
                     }
-                    <Pressable style={[styles.functionCard, {marginRight:140, marginTop:8,}]}>
+                    <Pressable style={{width:width-16, backgroundColor: "#FFF", borderRadius: 16, marginTop: 4 }}>
                         <View style={styles.functionCardView}>
                             <Text style={styles.functionCardText}>
                                 Все сервисы
@@ -131,6 +138,12 @@ const MainPage = () => {
                         </View>
                     </Pressable>
                 </View>
+
+                <View style={{marginHorizontal: 8, marginTop: 12}}>
+              <Text style={styles.functionTitleText}>
+                  Найти
+              </Text>
+            </View>
 
                 <View style={styles.searchButtonsView}>
                     {
@@ -236,47 +249,46 @@ const styles = StyleSheet.create({
     },
     content: {
         width:'100%',
-        paddingHorizontal:9,
-        paddingTop:16
+        paddingHorizontal:0
     },
     scrollView:{
-        width:"100%",
+    
         height:'100%',
         marginTop:16
     },
     storyItem:{
-        height:84,
-        width:84,
+        height:96,
+        width:96,
         borderRadius:12,
         backgroundColor:"rgba(50, 50, 44, 0.8)",
-        marginRight:8,
+        marginLeft: 8,
         alignItems:"center"
     },
     storyItemText:{
         color:"#FFF",
-        //fontWeight:"700",
-        fontFamily:"Montserrat700",
         fontSize:18,
         paddingTop:8
     },
     functionTitleText:{
       fontFamily:'Montserrat700',
-      fontSize:20,
+      fontSize:28,
       color:"#32322C",
-      marginTop:24  
+      marginTop:16,
+      marginBottom: 8
+
     },
     functionCards:{
-        marginTop:16,
+        marginHorizontal: 8,
         flexDirection:"row",
         justifyContent:"space-between",
-        //justifyContent:"space-between",
         flexWrap:'wrap'
     },
     functionCard:{
-        borderRadius:12,
+        borderRadius:16,
         backgroundColor:"#FFF",
-        height:120,
-        width:120
+        height: (width)/3,
+        width: (width-24)/2,
+        marginVertical: 4
     },
     functionCardView:{
         paddingHorizontal:8,
@@ -285,31 +297,34 @@ const styles = StyleSheet.create({
         justifyContent:'space-between',
     },
     functionCardText:{
-        fontFamily:'Montserrat700',
-        fontSize:12,
-        letterSpacing:-0.5
+        //fontFamily:'Montserrat700',
+        fontSize:20,
+        fontWeight: '700'
+        //letterSpacing: -0.5
     },
     functionCardSubText:{
         fontFamily:'Montserrat400',
-        fontSize:10,
+        fontSize:14,
         color:"#717171"
     },
     searchButtonsView:{
+        marginHorizontal: 8,
         flexDirection:'row',
         justifyContent:'space-between',
-        marginTop:12
+        marginTop: 4
     },
     searchButtonsContent:{
+        justifyContent:'flex-start',
+        paddingVertical:8,
         paddingHorizontal:8,
-        paddingVertical:10,
         backgroundColor:"rgba(50, 50, 44, 0.8)",
         borderRadius:12,
-        height:64,
-        width:120
+        width: (width-32)/3
     },
     searchButtonsText:{
         color:"#FFF",
-        fontFamily:"Montserrat700",
+       // fontFamily:"Montserrat700",
+       fontWeight:'600',
         fontSize:18
     },
     housesTitleText:{

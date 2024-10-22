@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+
 
 export default function HeaderComponent() {
   return (
-    <SafeAreaView style={styles.headerStyle}>
+    <View style={styles.headerStyle}>
       <View style={styles.headerContent}>
         <Text style={styles.headerText}>БАСТ</Text>
         <Pressable style={styles.headerButton}>
@@ -13,37 +13,38 @@ export default function HeaderComponent() {
           </Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   headerStyle:{
-    height:80,
-    paddingVertical:20,
-    backgroundColor:"#F5F5F5"
+    backgroundColor:"#F5F5F5",
+    marginBottom: 16,
+    marginHorizontal: 8
   },
   headerText:{
-    fontSize:40,
+    fontSize:48,
     fontFamily:"Inter700",
     //fontWeight:"700",
-    color:"rgba(50, 50, 44, 0.8)"
+    color:"black"
   },
   headerContent:{
-    marginHorizontal:9,
     flexDirection:"row",
-    justifyContent:"space-between"
+    justifyContent:"space-between",
+    alignItems:'center'
   },
   headerButton:{
     backgroundColor:"rgba(50, 50, 44, 0.8)",
-    borderRadius:12,
+    borderRadius:16,
     width:120,
     height:48,
-    alignItems:'center'
+    alignItems:'center',
+    justifyContent:'center'
   },
   headerButtonText:{
     color:"#FFF",
-    fontFamily:"Montserrat400",
+
     fontSize:16,
     //fontWeight:"400"
   }

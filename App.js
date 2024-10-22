@@ -31,9 +31,11 @@ const Tab = createBottomTabNavigator()
 const AppStack = () => {
   return(
       <Stack.Navigator initialRouteName='Main'>
-        <Stack.Screen name='Main' component={MainPage} options={{
-          header:(props) => <HeaderComponent{...props}/>
-        }}/>
+        <Stack.Screen name='Main' component={MainPage} 
+        options={{//header:(props) => <HeaderComponent{...props}/>
+        headerShown: false  
+        }}
+        />
         <Stack.Screen name='Houses' component={DynamicHousesPage}/>
         <Stack.Screen name='House' component={DynamicHousePostPage}/>
       </Stack.Navigator>
