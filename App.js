@@ -58,7 +58,10 @@ const AppTabs = () => {
 const AppAuthStack = () => {
   return (
     <AuthStack.Navigator initialRouteName='Login'>
-      <AuthStack.Screen name='Login' component={LoginPage}/>
+      <AuthStack.Screen name='Login' component={LoginPage}
+      options={{
+        headerShown: false  
+        }}/>
       <AuthStack.Screen name='Register' component={RegisterPage}/>
     </AuthStack.Navigator>
   )
