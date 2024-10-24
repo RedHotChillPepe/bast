@@ -62,7 +62,10 @@ const AppAuthStack = () => {
       options={{
         headerShown: false  
         }}/>
-      <AuthStack.Screen name='Register' component={RegisterPage}/>
+      <AuthStack.Screen name='Register' component={RegisterPage}
+      options={{
+        headerShown: false  
+        }}/>
     </AuthStack.Navigator>
   )
 }

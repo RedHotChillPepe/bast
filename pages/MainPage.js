@@ -174,22 +174,28 @@ const MainPage = () => {
                                <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
                             </View>
                             <View>
-                                <View>
+                                <View style={{flexDirection:'row', alignItems:'flex-end'}}>
                                     <Text style={styles.houseItemText}>
                                         {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
                                     </Text>
+                                    <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
+                                        80 700 ₽/м2
+                                    </Text>
                                 </View>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text>
+                                <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
+                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
                                         {item.bedrooms}-комн.
                                     </Text>
-                                    <Text>
+                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
                                         {item.house_area} м²
                                     </Text>
-                                    <Text>
-                                        этажей: {item.num_floors}
+                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                    {item.num_floors} этаж
                                     </Text>
                                 </View>
+                                <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
+                                г. Ижевск, Октябрьский район, ул. Карла Маркса
+                                </Text>
                             </View>
                             
                         </View>
@@ -328,25 +334,29 @@ const styles = StyleSheet.create({
         fontSize:18
     },
     housesTitleText:{
-        fontFamily:'Montserrat700',
-        fontSize:20,
+        // fontFamily:'Montserrat700',
+        fontSize:24,
+        fontWeight: '700',
         color:"#32322C",
-        marginTop:32  
+        marginLeft: 8,
+        marginTop: 32
     },
     housesView:{
-        marginTop:16,
+        marginTop:8,
     },
     houseItem:{
-        width:248,
-        height:200,
-        borderRadius:20,
+        width: width*0.66,
+        borderRadius:24,
         backgroundColor:"#FFF",
-        marginRight:8
+        marginLeft: 8
     },
     houseItemText:{
         color:"#32322C",
-        fontFamily:"Inter700",
-        fontSize:14
+        // fontFamily:"Inter700",
+        fontSize:16,
+        fontWeight:'700',
+        marginLeft: 8,
+        marginTop: 16
     },
     houseImageView:{
         height:130
