@@ -21,8 +21,23 @@ export default function ApiProvider ({ children }){
         })
     }
 
+    const getAllVillages = async () =>{
+        const url = host + "api/allvillages"
+        console.log(url);
+
+        return fetch(url)
+        .then(response => response.json()
+        )
+        .then(json =>
+            {return json.rows}
+        )
+        .catch(error => {
+            console.error("Error fetching files: ", error);            
+        })
+    }
+
     return (
-        <ApiContext.Provider value={{getAllPosts}}>
+        <ApiContext.Provider value={{getAllPosts, getAllVillages}}>
             {children}
         </ApiContext.Provider>
     )

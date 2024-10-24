@@ -11,17 +11,23 @@ const { width } = Dimensions.get('window');
 
 const MainPage = () => {
     const navigation = useNavigation()
-    const {getAllPosts} = useApi()
+    const {getAllPosts, getAllVillages} = useApi()
     const [houses, setHouses] = useState([])
+    const [villages, setVillages] = useState([])
 
     useEffect(() => {
       const housesFetch = async () => {
         if (await getAllPosts() != undefined) {
             setHouses(await getAllPosts())
         }
-        
+      }
+      const villagesFetch = async () => {
+        if (await getAllVillages() != undefined) {
+            setVillages(await getAllVillages())
+        }
       }
       housesFetch()
+      villagesFetch()
       return () => {
         
       }
@@ -216,7 +222,7 @@ const MainPage = () => {
                         renderItem={({item}) => 
                         <View style={styles.houseItem}>
                             <View style={styles.houseImageView}>
-
+                                <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
                             </View>
                             <View>
                                 <Text style={styles.houseItemText}>
@@ -232,6 +238,43 @@ const MainPage = () => {
                         <ActivityIndicator
                         size={"large"}
                         color={"#32322C"}/>
+                    }
+                </View>
+
+                <Text style={styles.housesTitleText}>
+                    Коттеджные посёлки
+                </Text>
+
+                <View style={styles.housesView}>
+                    {
+                        Object.keys(villages).length != 0 && villages != undefined ?
+                        <FlatList
+                        data={villages}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        renderItem={({item}, index) => 
+                        <View style={styles.houseItem}>
+                            <View style={styles.houseImageView}>
+                               <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
+                            </View>
+                            <View>
+                                <View>
+                                    <Text style={styles.houseItemText}>
+                                        {item.name}
+                                    </Text>
+                                </View>
+                                <View style={{flexDirection:"row"}}>
+                                    
+                                </View>
+                            </View>
+                            
+                        </View>
+                        }/>
+                        :
+                        <ActivityIndicator
+                        size={"large"}
+                        color={"#32322C"}/>
+                        
                     }
                 </View>
             </View>
