@@ -200,7 +200,7 @@ const MainPage = () => {
                                     </Text>
                                 </View>
                                 <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
-                                г. Ижевск, Октябрьский район, ул. Карла Маркса
+                                г. {item.city}, {item.full_address}
                                 </Text>
                             </View>
                             
