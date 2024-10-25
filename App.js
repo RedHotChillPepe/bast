@@ -16,7 +16,7 @@ import DynamicHousePostPage from './pages/DynamicHousePostPage';
 import ApiProvider from './context/ApiContext';
 import HeaderComponent from './components/HeaderComponent';
 import { useFonts } from 'expo-font';
-import PersonalData from './pages/PersonalData.js'
+import PersonalData from './pages/PersonalDataPage.js'
 
 
 
@@ -35,8 +35,8 @@ const AppStack = () => {
         <Stack.Screen name='Main' component={MainPage} 
         options={{//header:(props) => <HeaderComponent{...props}/>
         headerShown: false  
-        }}
-        />
+        }}/>
+
         <Stack.Screen name='Houses' component={DynamicHousesPage}/>
         <Stack.Screen name='House' component={DynamicHousePostPage}/>
       </Stack.Navigator>
@@ -62,15 +62,17 @@ const AppAuthStack = () => {
       <AuthStack.Screen name='Login' component={LoginPage}
       options={{
         headerShown: false  
-        }}/>
+      }}/>
+
       <AuthStack.Screen name='Register' component={RegisterPage}
       options={{
         headerShown: false  
-        }}/>
-              <AuthStack.Screen name='PersonalData' component={PersonalData}
+      }}/>
+
+      <AuthStack.Screen name='PersonalData' component={PersonalData}
       options={{
         headerShown: false  
-        }}/>
+      }}/>
     </AuthStack.Navigator>
   )
 }
