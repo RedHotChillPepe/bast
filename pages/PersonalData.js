@@ -19,52 +19,69 @@ const RegisterPage = () => {
 
   <View style={{marginBottom: 48}}>
     <Text style={styles.h1}>
-      Регистрация
+      Персональные данные
     </Text>
   </View>
 
 <View style={styles.block}>
 <View style={styles.title}>
-  <Text style={styles.titleText} >Телефон:</Text>
+  <Text style={styles.titleText} >Фамилия</Text>
   </View>
   <TextInput
     style={styles.input}
-    placeholder="+7 (912) 444-22-11"
-    keyboardType='numeric'
+    placeholder="Фамилия"
   />
 </View>
 
 <View style={styles.block}>
   <View style={styles.title}>
-  <Text style={styles.titleText} >Пароль:</Text>
+  <Text style={styles.titleText} >Имя</Text>
   </View>
   <TextInput
     style={styles.input}
-    placeholder="Пароль"
+    placeholder="Имя"
+  />
+</View>
+
+<View style={styles.block}>
+  <View style={styles.title}>
+  <Text style={styles.titleText} >Отчество</Text>
+  </View>
+  <TextInput
+    style={styles.input}
+    placeholder="Отчество"
   />
 </View>
 
 <View style={styles.block}>
 <View style={styles.title}>
-  <Text style={styles.titleText}>Введите пароль еще раз:</Text>
+  <Text style={styles.titleText}>Дата рождения:</Text>
   </View>
   <TextInput
     style={styles.input}
-    placeholder="Пароль"
+    placeholder="26.04.1986"
   />
 </View>
 
+<View style={{flexDirection:'row', justifyContent:'space-between'}}>
+<Pressable style={{paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 44}} 
+                   onPress={() => setIsAuth(true)}
+   
+           >
+  <Text style={{fontSize: 20, color:'black'}}>
+    Пропустить
+  </Text>
+</Pressable>
 
 <Pressable style={{backgroundColor: 'black', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 44}} 
-          //  onPress={() => setIsAuth(true)}
-          onPress={() => navigation.navigate("PersonalData")}
+                   onPress={() => setIsAuth(true)}
+   
            >
   <Text style={{fontSize: 20, color:'white'}}>
     Подтвердить
   </Text>
 </Pressable>
-
-
+</View>
 
 </SafeAreaView>
 
