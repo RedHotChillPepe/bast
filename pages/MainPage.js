@@ -196,7 +196,7 @@ const MainPage = () => {
                                         {item.house_area} м²
                                     </Text>
                                     <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                    {item.num_floors} этаж
+                                        {item.num_floors} этаж
                                     </Text>
                                 </View>
                                 <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>

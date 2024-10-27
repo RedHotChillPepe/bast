@@ -7,7 +7,7 @@ const host = process.env.EXPO_PUBLIC_API_HOST
 export default function ApiProvider ({ children }){
 
     const getAllPosts = async () =>{
-        const url = host + "api/allposts"
+        const url = host + "api/posts/all"
         console.log(url);
 
         return fetch(url)
@@ -22,7 +22,7 @@ export default function ApiProvider ({ children }){
     }
 
     const getAllVillages = async () =>{
-        const url = host + "api/allvillages"
+        const url = host + "api/villages/all"
         console.log(url);
 
         return fetch(url)
@@ -34,6 +34,10 @@ export default function ApiProvider ({ children }){
         .catch(error => {
             console.error("Error fetching files: ", error);            
         })
+    }
+
+    const postRegister = async (data) => {
+        
     }
 
     return (

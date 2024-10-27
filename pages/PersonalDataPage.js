@@ -1,14 +1,26 @@
 import { Button, StyleSheet, Text, TextInput, View, Dimensions, Pressable  } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 
 const {width} = Dimensions.get('window');
 
-const PersonalDataPage = () => {
+const PersonalDataPage = ({route}) => {
     const { setIsAuth } = useAuth()
     const navigation = useNavigation()
+
+    const {regData} = route.params
+
+    useEffect(() => {
+      console.log(regData);
+      
+    
+      return () => {
+        
+      }
+    }, [])
+    
 
   return (
     <SafeAreaView style={{
