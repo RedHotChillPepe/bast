@@ -13,12 +13,28 @@ const MainPage = () => {
     const navigation = useNavigation()
     const {getAllPosts, getAllVillages} = useApi()
     const [houses, setHouses] = useState([])
+    const [newHouses, setNewHouses] = useState([])
     const [villages, setVillages] = useState([])
 
     useEffect(() => {
       const housesFetch = async () => {
         if (await getAllPosts() != undefined) {
-            setHouses(await getAllPosts())
+            const tempHouses = await getAllPosts()
+            var tempSetHoues = []
+            var tempSetNewHouses = []
+            //setHouses(await getAllPosts())
+            for (let index = 0; index < tempHouses.length; index++) {
+                console.log(tempHouses[index].newbuild);
+                
+                if (tempHouses[index].newbuild) {
+                    tempSetNewHouses.push(tempHouses[index])
+                    setNewHouses(tempSetNewHouses)
+                } else {
+                    tempSetHoues.push(tempHouses[index])
+                    setHouses(tempSetHoues)
+                }
+                
+            }
         }
       }
       const villagesFetch = async () => {
@@ -185,7 +201,7 @@ const MainPage = () => {
                                         {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
                                     </Text>
                                     <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
-                                        80 700 ₽/м2
+                                        {Math.floor(item.price / item.house_area)}₽/м2
                                     </Text>
                                 </View>
                                 <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
@@ -200,7 +216,7 @@ const MainPage = () => {
                                     </Text>
                                 </View>
                                 <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
-                                г. {item.city}, {item.full_address}
+                                {item.city}, {item.full_address}
                                 </Text>
                             </View>
                             
@@ -220,9 +236,9 @@ const MainPage = () => {
 
                 <View style={styles.housesView}>
                     {
-                        Object.keys(houses).length != 0 && houses != undefined ?
+                        Object.keys(newHouses).length != 0 && newHouses != undefined ?
                         <FlatList
-                        data={houses}
+                        data={newHouses}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({item}) => 
@@ -231,12 +247,28 @@ const MainPage = () => {
                                 <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
                             </View>
                             <View>
-                                <Text style={styles.houseItemText}>
-                                    {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                            <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+                                    <Text style={styles.houseItemText}>
+                                        {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                                    </Text>
+                                    <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
+                                        {Math.floor(item.price / item.house_area)}₽/м2
+                                    </Text>
+                                </View>
+                                <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
+                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                        {item.bedrooms}-комн.
+                                    </Text>
+                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                        {item.house_area} м²
+                                    </Text>
+                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                        {item.num_floors} этаж
+                                    </Text>
+                                </View>
+                                <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
+                                {item.city}, {item.full_address}
                                 </Text>
-                            </View>
-                            <View>
-
                             </View>
                         </View>}
                         />
