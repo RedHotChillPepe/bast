@@ -22,9 +22,9 @@ const MainPage = () => {
             const tempHouses = await getAllPosts()
             var tempSetHoues = []
             var tempSetNewHouses = []
-            //setHouses(await getAllPosts())
+            
             for (let index = 0; index < tempHouses.length; index++) {
-                console.log(tempHouses[index].newbuild);
+                
                 
                 if (tempHouses[index].newbuild) {
                     tempSetNewHouses.push(tempHouses[index])

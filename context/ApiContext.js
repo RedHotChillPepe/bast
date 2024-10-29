@@ -37,11 +37,31 @@ export default function ApiProvider ({ children }){
     }
 
     const postRegister = async (data) => {
+        const url = host + "api/users/newuser"
+        try {
+
+        return fetch(url,{
+            method:'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify([data])
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error posting files: ", error);            
+            })
+
+        } catch(error){
+            console.log(error);
+            
+        }
         
     }
 
     return (
-        <ApiContext.Provider value={{getAllPosts, getAllVillages}}>
+        <ApiContext.Provider value={{getAllPosts, getAllVillages, postRegister}}>
             {children}
         </ApiContext.Provider>
     )
