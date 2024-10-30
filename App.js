@@ -18,6 +18,7 @@ import HeaderComponent from './components/HeaderComponent';
 import { useFonts } from 'expo-font';
 import PersonalData from './pages/PersonalDataPage.js'
 import UserLoginPage from './pages/UserLoginPage.js';
+import ConfirmationPage from './pages/ConfirmationPage.js';
 
 
 
@@ -71,6 +72,10 @@ const AppAuthStack = () => {
       }}/>
 
       <AuthStack.Screen name='LoginEntry' component={UserLoginPage}
+      options={{
+        headerShown: false  
+      }}/>
+      <AuthStack.Screen name='ConfirmationPage' component={ConfirmationPage}
       options={{
         headerShown: false  
       }}/>
