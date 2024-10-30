@@ -107,9 +107,17 @@ const RegisterPage = () => {
       </View>
 
 
+
+
+
+
+
+
       <Pressable style={{backgroundColor: 'black', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 44}} 
                 //  onPress={() => setIsAuth(true)}
-                onPress={() => handleSubmit()}>
+                //onPress={() => handleSubmit()}
+                onPress={() => navigation.navigate("ConfirmationPage")}
+                >
         <Text style={{fontSize: 20, color:'white'}}>
           Подтвердить
         </Text>

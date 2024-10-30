@@ -17,6 +17,7 @@ import ApiProvider from './context/ApiContext';
 import HeaderComponent from './components/HeaderComponent';
 import { useFonts } from 'expo-font';
 import PersonalData from './pages/PersonalDataPage.js'
+import ConfirmationPage from './pages/ConfirmationPage.js';
 
 
 
@@ -65,6 +66,11 @@ const AppAuthStack = () => {
       }}/>
 
       <AuthStack.Screen name='Register' component={RegisterPage}
+      options={{
+        headerShown: false  
+      }}/>
+
+      <AuthStack.Screen name='ConfirmationPage' component={ConfirmationPage}
       options={{
         headerShown: false  
       }}/>
