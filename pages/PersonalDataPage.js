@@ -9,7 +9,7 @@ import DateTimePicker from "@react-native-community/datetimepicker"
 const {width} = Dimensions.get('window');
 
 const PersonalDataPage = ({route}) => {
-    const { setIsAuth } = useAuth()
+    const { getAuth, setAuth , setCheckAuthB } = useAuth()
     const {postRegister} = useApi()
     const navigation = useNavigation()
 
@@ -45,7 +45,14 @@ const PersonalDataPage = ({route}) => {
           } 
           const response = await postRegister(tempData)
           if (response.status == "200") {
-            setIsAuth(true)
+            await setAuth([{
+              status:true,
+              onboarded:false,
+              phone:regData.phoneNumber,
+              password:await response.text()
+            }])
+            setCheckAuthB(true)
+            
           }
         } catch (error) {
           console.error("Error sending register info:", error);

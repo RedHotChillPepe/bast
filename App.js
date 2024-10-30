@@ -17,6 +17,7 @@ import ApiProvider from './context/ApiContext';
 import HeaderComponent from './components/HeaderComponent';
 import { useFonts } from 'expo-font';
 import PersonalData from './pages/PersonalDataPage.js'
+import UserLoginPage from './pages/UserLoginPage.js';
 
 
 
@@ -69,6 +70,11 @@ const AppAuthStack = () => {
         headerShown: false  
       }}/>
 
+      <AuthStack.Screen name='LoginEntry' component={UserLoginPage}
+      options={{
+        headerShown: false  
+      }}/>
+
       <AuthStack.Screen name='PersonalData' component={PersonalData}
       options={{
         headerShown: false  
@@ -89,26 +95,29 @@ const AppInit = () => {
     'Inter500': require('./assets/fonts/Inter_18pt-Medium.ttf'),
     'Inter700': require('./assets/fonts/Inter_18pt-Bold.ttf'),
   })
+  if (loaded) {
+    if (!isAuth) {
+      return (
+        <AppAuthStack/>
+      )
+    }
+    // Проверка проведён ли пользователь через "онбординг"
+    if (!isOnboarded) {
+      return (
+        <OnboardingStack.Navigator initialRouteName='Onboarding'>
+          <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
+        </OnboardingStack.Navigator>
+      )
+    }
+    if (isOnboarded && isAuth) {
+      return (
+        <AppTabs/>
+      )
+    }
+  }
 
   // Проверка зарегистрирован ли пользователь
-  if (!isAuth) {
-    return (
-      <AppAuthStack/>
-    )
-  }
-  // Проверка проведён ли пользователь через "онбординг"
-  if (!isOnboarded) {
-    return (
-      <OnboardingStack.Navigator initialRouteName='Onboarding'>
-        <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
-      </OnboardingStack.Navigator>
-    )
-  }
-  if (isOnboarded && isAuth) {
-    return (
-      <AppTabs/>
-    )
-  }
+  
 }
 ///
 

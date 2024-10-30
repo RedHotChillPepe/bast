@@ -3,12 +3,17 @@ import React from 'react'
 import { useAuth } from '../context/AuthContext'
 
 const OnboardingPage = () => {
-    const { setIsOnboarded } = useAuth()
+    const { setOnboard, logout } = useAuth()
+    async function localSetOboard (params) {
+      await setOnboard(params)
+    }
+    
   return (
     <View>
       <Text>OnboardingPage</Text>
       <View style={{width:100}}>
-        <Button title='Onboard' onPress={() => setIsOnboarded(true)}/>
+        <Button title='Onboard' onPress={() => localSetOboard(true)}/>
+        <Button title='Logout' onPress={() => logout()}/>
       </View>
     </View>
   )

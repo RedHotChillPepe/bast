@@ -1,13 +1,13 @@
 import { Button, StyleSheet, Text, TextInput, View, Dimensions, Pressable  } from 'react-native'
 import React, { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
+import { useApi } from '../context/ApiContext';
 
 const {width} = Dimensions.get('window');
 
 const RegisterPage = () => {
-    const { setIsAuth } = useAuth()
+    const {getUser} = useApi()
     const navigation = useNavigation()
     const [phoneNumber, setPhoneNumber] = useState('')
     const [password, setPassword] = useState('')
@@ -15,8 +15,9 @@ const RegisterPage = () => {
 
     const [isPasswordLabelShown, setIsPasswordLabelShown] = useState(false)
     const [isPhoneLabelShown, setIsPhoneLabelShown] = useState(false)
+    const [isUserExistsLabelShown, setIsUserExistsLabelShown] = useState(false)
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const phonePattern = /(?:\+|\d)[\d\-\(\) ]{9,}\d/g
 
       if (password != doublePass) {
@@ -28,13 +29,21 @@ const RegisterPage = () => {
           
           setIsPhoneLabelShown(true)
         } else {
-
-          navigation.navigate("PersonalData", {
-            regData:{
-              phoneNumber: phoneNumber,
-              password: password
+          const result = await getUser(phoneNumber)
+          const resultJson = JSON.parse([await result.text()])
+            if (await result.status == 200) {
+              if (resultJson.result) {
+                setIsUserExistsLabelShown(true)
+              } else {
+                navigation.navigate("PersonalData", {
+                    regData:{
+                    phoneNumber: phoneNumber,
+                    password: password
+                  }
+                })
+              }
             }
-          })
+          
         }
       }
     }
@@ -115,7 +124,11 @@ const RegisterPage = () => {
         </Text>
       </Pressable>
 
-
+        {
+          isUserExistsLabelShown
+          &&
+          <Text style={styles.inputLabel}>Этот телефон уже зарегистрирован</Text>
+        }
 
     </SafeAreaView>
 
