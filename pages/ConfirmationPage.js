@@ -1,11 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useApi } from '../context/ApiContext';
 
-export default function ConfirmationPage({ navigation }) {
+export default function ConfirmationPage({ navigation, route }) {
   const [code, setCode] = useState(['', '', '', '']);
   const inputRefs = useRef([]);
+
+  const [isShowSend, setIsShowSend] = useState(true)
+  const [isCodeLabelShow, setIsCodeLabelShow] = useState(false)
+
+  const {sendSms, verifySms}=useApi()
+
+  const {regData} = route.params
 
 
   const handleInputChange = (text, index) => {
@@ -22,11 +30,36 @@ export default function ConfirmationPage({ navigation }) {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const confirmationCode = code.join('');
     console.log("Confirmation code:", confirmationCode);
-    // Добавьте здесь логику для проверки кода
+    
+    const result = await verifySms(regData.phoneNumber, confirmationCode)
+    const resultJson = JSON.parse([await result.text()])
+    console.log(result);
+
+    console.log(await resultJson);
+    
+    
+    if (await result.status == 200) {
+      console.log(await resultJson);
+      
+      if (await resultJson.result) {
+        navigation.navigate("PersonalData", {regData})
+      } else {
+        setIsCodeLabelShow(true)
+      }
+    }
   };
+
+  const handleSendSms = async ()=>{
+    const result = await sendSms(regData.phoneNumber)
+    if (await result.status == 200) {
+      setIsShowSend(false)
+    }
+
+    console.log(result);
+  }
 
   return (
     <KeyboardAvoidingView 
@@ -49,19 +82,43 @@ export default function ConfirmationPage({ navigation }) {
           />
         ))}
       </View>
+      {
+        isCodeLabelShow
+        &&
+        <Text style={styles.inputLabel}>
+          Набран неверный код
+        </Text>
+      }
 
-      <Pressable style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]} 
-     onPress={handleConfirm} 
-     disabled={code.includes('')}>
-        <Text style={styles.buttonText}>Подтвердить</Text>
-      </Pressable>
+      {
+        isShowSend
+        ?
+        <View>
+          <Pressable style={styles.button} onPress={handleSendSms}>
+            <Text style={styles.buttonText}>
+              Отправить Код
+            </Text>
+          </Pressable>
+        </View>
+        :
+        <View>
+          <Pressable style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]} 
+          onPress={handleConfirm} 
+          disabled={code.includes('')}>
+            <Text style={styles.buttonText}>Подтвердить Код</Text>
+          </Pressable>
+          
+        </View>
+      }
+
+      
 
 
       {/* временная кнопка для перехода на главную страницу */}
       <Pressable>
-<Text>
-    
-</Text>
+        <Text>
+            
+        </Text>
       </Pressable>
     </KeyboardAvoidingView>
   );
@@ -106,4 +163,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 8,
   },
+  inputLabel:{
+    color:"red"
+  }
 });

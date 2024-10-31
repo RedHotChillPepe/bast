@@ -107,10 +107,60 @@ export default function ApiProvider ({ children }){
             console.error(error);
         }
     }
+
+    const sendSms = async (phone) => {
+        const url = host + "api/sms/sendsms"
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify([{
+                    phone:phone,
+                }])
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting user: ", error);            
+            })
+        } catch (error) {
+            console.error("Error sending Sms: ", error);
+            
+        }
+    }
+
+    const verifySms = async (phone, code) => {
+        const url = host + "api/sms/verifysms"
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify([{
+                    phone:phone,
+                    code:code
+                }])
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting user: ", error);            
+            })
+        } catch (error) {
+            console.error("Error sending Sms: ", error);
+            
+        }
+    }
     
 
     return (
-        <ApiContext.Provider value={{getAllPosts, getAllVillages, getLogin, getUser, postRegister}}>
+        <ApiContext.Provider value={{getAllPosts, getAllVillages, 
+        getLogin, getUser, postRegister, sendSms, verifySms}}>
             {children}
         </ApiContext.Provider>
     )

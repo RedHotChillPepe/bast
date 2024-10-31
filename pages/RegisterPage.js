@@ -35,7 +35,7 @@ const RegisterPage = () => {
               if (resultJson.result) {
                 setIsUserExistsLabelShown(true)
               } else {
-                navigation.navigate("PersonalData", {
+                navigation.navigate("ConfirmationPage", {
                     regData:{
                     phoneNumber: phoneNumber,
                     password: password
@@ -124,8 +124,7 @@ const RegisterPage = () => {
 
       <Pressable style={{backgroundColor: 'black', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 44}} 
                 //  onPress={() => setIsAuth(true)}
-                //onPress={() => handleSubmit()}
-                onPress={() => navigation.navigate("ConfirmationPage")}
+                onPress={() => handleSubmit()}
                 >
         <Text style={{fontSize: 20, color:'white'}}>
           Подтвердить
