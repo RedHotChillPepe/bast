@@ -19,6 +19,7 @@ import { useFonts } from 'expo-font';
 import PersonalData from './pages/PersonalDataPage.js'
 import UserLoginPage from './pages/UserLoginPage.js';
 import ConfirmationPage from './pages/ConfirmationPage.js';
+import ObjectPage from './pages/ObjectPage.js';
 
 
 
@@ -38,7 +39,7 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
         headerShown: false  
         }}/>
-
+        <Stack.Screen name='ObjectPage' component={ObjectPage} options={{headerShown: false}} />
         <Stack.Screen name='Houses' component={DynamicHousesPage}/>
         <Stack.Screen name='House' component={DynamicHousePostPage}/>
       </Stack.Navigator>

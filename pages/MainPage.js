@@ -5,6 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import HeaderComponent from '../components/HeaderComponent';
+import ObjectPage from './ObjectPage';
 
 
 const { width } = Dimensions.get('window');
@@ -191,6 +192,7 @@ const MainPage = () => {
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({item}, index) => 
+                        <Pressable onPress={() => navigation.navigate("ObjectPage")}>   
                         <View style={styles.houseItem}>
                             <View style={styles.houseImageView}>
                                <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
@@ -221,6 +223,7 @@ const MainPage = () => {
                             </View>
                             
                         </View>
+                        </Pressable> 
                         }/>
                         :
                         <ActivityIndicator
@@ -242,9 +245,10 @@ const MainPage = () => {
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({item}) => 
+                        <Pressable onPress={() => navigation.navigate("ObjectPage")}>
                         <View style={styles.houseItem}>
                             <View style={styles.houseImageView}>
-                                <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
+                            <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
                             </View>
                             <View>
                             <View style={{flexDirection:'row', alignItems:'flex-end'}}>
@@ -270,7 +274,7 @@ const MainPage = () => {
                                 {item.city}, {item.full_address}
                                 </Text>
                             </View>
-                        </View>}
+                        </View></Pressable>}
                         />
                         :
                         <ActivityIndicator
