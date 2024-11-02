@@ -243,13 +243,13 @@ const MainPage = () => {
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({item}) => 
-                        <Pressable onPress={() => navigation.navigate("ObjectPage")}>
-                        <View style={styles.houseItem}>
-                            <View style={styles.houseImageView}>
-                                <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
-                            </View>
-                            <View>
-                                <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+                        <Pressable onPress={() => navigation.navigate("House", {houseId:item.id})}>
+                            <View style={styles.houseItem}>
+                                <View style={styles.houseImageView}>
+                                    <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
+                                </View>
+                                <View>
+                                    <View style={{flexDirection:'row', alignItems:'flex-end'}}>
                                         <Text style={styles.houseItemText}>
                                             {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
                                         </Text>
