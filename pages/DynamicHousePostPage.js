@@ -1,12 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useApi } from '../context/ApiContext';
 
 const {width} = Dimensions.get('window');
 
 export default function DynamicHousePostPage ({ navigation, route }) {
 
   const {houseId} = route.params
+  const {getPost} = useApi()
+
+  const [postData, setPostData]=useState([])
+  
+  useEffect(() => {
+    const fetchPost = async() => {
+      if (houseId) {
+        const result = await getPost(houseId)
+        const resultJson = JSON.parse(await result.text())
+        console.log(resultJson.rows);
+        
+        setPostData(resultJson.rows[0])
+        
+      }
+    }
+    fetchPost()
+    return () => {
+      
+    }
+  }, [])
+  
 
 return (
   <SafeAreaView style={styles.container}>
@@ -20,44 +42,70 @@ return (
       
 
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scrollView}>
+        {
+          Object.keys(postData).length == 0
+          ?
+          <ActivityIndicator size={"large"}
+          color={"#32322C"}/>
+          :
+          postData.photos.map((item, index) =>
+          <Image source={{uri:item}} style={styles.image} key={index}/>)
+        }
+
+        {/* <Image source={require('../assets/house.png')} style={styles.image} />
         <Image source={require('../assets/house.png')} style={styles.image} />
         <Image source={require('../assets/house.png')} style={styles.image} />
-        <Image source={require('../assets/house.png')} style={styles.image} />
-        <Image source={require('../assets/house.png')} style={styles.image} />
+        <Image source={require('../assets/house.png')} style={styles.image} /> */}
       </ScrollView>
       
       {/* priceBlock - блок с ценой и кнопкой Избранное */}
       <View style={styles.priceBlock}>
-        <View>
-          <Text style={styles.priceText}>
-            4 250 000
-          </Text>
-          <Text style={styles.priceMeter}>
-            77 981 Р/м²
-          </Text>
-        </View>
+        {
+          Object.keys(postData).length == 0
+          ?
+          <ActivityIndicator size={"large"}
+          color={"#32322C"}/>
+          :
+          <View>
+            <Text style={styles.priceText}>
+              {postData.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
+            </Text>
+            <Text style={styles.priceMeter}>
+              {Math.floor(postData.price / postData.house_area).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Р/м²
+            </Text>
+          </View>
+        }
+        
         <Text>Изб</Text>
       </View>
       
       {/* specView - основные характеристики */}
-      <View style={styles.specView}>
-        <View style={styles.specElement}>
-          <Text style={styles.specText}>3-комн.</Text>
-          <Text>дом</Text>
+      {
+        Object.keys(postData).length == 0
+        ?
+        <ActivityIndicator size={"large"}
+        color={"#32322C"}/>
+        :
+        <View style={styles.specView}>
+          <View style={styles.specElement}>
+            <Text style={styles.specText}>{postData.bedrooms}-комн.</Text>
+            <Text>дом</Text>
+          </View>
+          <View style={styles.specElement}>
+            <Text style={styles.specText}>{postData.house_area} м²</Text>
+            <Text>общая пл.</Text>
+          </View>
+          <View style={styles.specElement}>
+            <Text style={styles.specText}>{postData.plot_area} сот</Text>
+            <Text>участок</Text>
+          </View>
+          <View style={styles.specElement}>
+            <Text style={styles.specText}>{postData.plot_area} сот</Text>
+            <Text>участок</Text>
+          </View>
         </View>
-        <View style={styles.specElement}>
-          <Text style={styles.specText}>113 м²</Text>
-          <Text>общая пл.</Text>
-        </View>
-        <View style={styles.specElement}>
-          <Text style={styles.specText}>10 сот</Text>
-          <Text>участок</Text>
-        </View>
-        <View style={styles.specElement}>
-          <Text style={styles.specText}>10 сот</Text>
-          <Text>участок</Text>
-        </View>
-      </View>
+      }
+      
 
       {/* adressView - блок с адресом и картой */}
       <View style={styles.adressView}>

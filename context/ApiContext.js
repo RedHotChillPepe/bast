@@ -22,6 +22,26 @@ export default function ApiProvider ({ children }){
         })
     }
 
+    const getPost = async (id) =>{
+        const url = host + `api/posts/${id}`
+
+        try {
+            return fetch(url,{
+                method:'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting user: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getAllVillages = async () =>{
         const url = host + "api/villages/all"
         console.log(url);
@@ -160,7 +180,8 @@ export default function ApiProvider ({ children }){
 
     return (
         <ApiContext.Provider value={{getAllPosts, getAllVillages, 
-        getLogin, getUser, postRegister, sendSms, verifySms}}>
+        getLogin, getUser, postRegister, sendSms, verifySms,
+        getPost}}>
             {children}
         </ApiContext.Provider>
     )

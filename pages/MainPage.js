@@ -190,7 +190,7 @@ const MainPage = () => {
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({item}, index) => 
-                        <Pressable onPress={() => navigation.navigate("ObjectPage")}>   
+                        <Pressable onPress={() => navigation.navigate("House", {houseId:item.id})}>   
                             <View style={styles.houseItem}>
                                 <View style={styles.houseImageView}>
                                     <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
