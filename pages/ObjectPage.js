@@ -10,106 +10,106 @@ return (
   <SafeAreaView style={styles.container}>
     <ScrollView contentContainerStyle={styles.mainView}>
 
-    <View style={{width:width-32}}>
-      <Pressable onPress={() => navigation.goBack()}>
-        <Text>Назад</Text>
-      </Pressable>
-    </View>   
-    
+      <View style={{width:width-32}}>
+        <Pressable onPress={() => navigation.goBack()}>
+          <Text>Назад</Text>
+        </Pressable>
+      </View>   
+      
 
-    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scrollView}>
-      <Image source={require('../assets/house.png')} style={styles.image} />
-      <Image source={require('../assets/house.png')} style={styles.image} />
-      <Image source={require('../assets/house.png')} style={styles.image} />
-      <Image source={require('../assets/house.png')} style={styles.image} />
-    </ScrollView>
-    
-    {/* priceBlock - блок с ценой и кнопкой Избранное */}
-    <View style={styles.priceBlock}>
-      <View>
-        <Text style={styles.priceText}>
-          4 250 000
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scrollView}>
+        <Image source={require('../assets/house.png')} style={styles.image} />
+        <Image source={require('../assets/house.png')} style={styles.image} />
+        <Image source={require('../assets/house.png')} style={styles.image} />
+        <Image source={require('../assets/house.png')} style={styles.image} />
+      </ScrollView>
+      
+      {/* priceBlock - блок с ценой и кнопкой Избранное */}
+      <View style={styles.priceBlock}>
+        <View>
+          <Text style={styles.priceText}>
+            4 250 000
+          </Text>
+          <Text style={styles.priceMeter}>
+            77 981 Р/м²
+          </Text>
+        </View>
+        <Text>Изб</Text>
+      </View>
+      
+      {/* specView - основные характеристики */}
+      <View style={styles.specView}>
+        <View style={styles.specElement}>
+          <Text style={styles.specText}>3-комн.</Text>
+          <Text>дом</Text>
+        </View>
+        <View style={styles.specElement}>
+          <Text style={styles.specText}>113 м²</Text>
+          <Text>общая пл.</Text>
+        </View>
+        <View style={styles.specElement}>
+          <Text style={styles.specText}>10 сот</Text>
+          <Text>участок</Text>
+        </View>
+        <View style={styles.specElement}>
+          <Text style={styles.specText}>10 сот</Text>
+          <Text>участок</Text>
+        </View>
+      </View>
+
+      {/* adressView - блок с адресом и картой */}
+      <View style={styles.adressView}>
+        <View >   
+          <Text style={styles.adressTitle}>
+            Новый город
+          </Text>
+          <Text style={styles.adressText}>
+            Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
+          </Text>
+        </View> 
+
+        <View style={{alignItems: 'center', marginTop: 8}}> 
+          <Image source={require('../assets/adress.png')} style={styles.imageMap} />
+        </View>
+      </View>
+
+      {/* infoBlock - блок с подробной информацией об объекте */}
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoTitle}>
+          Об объекте
         </Text>
-        <Text style={styles.priceMeter}>
-          77 981 Р/м²
-        </Text>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Тип недвижимости</Text>
+          <Text style={styles.infoValue}>ИЖС</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Тип недвижимости</Text>
+          <Text style={styles.infoValue}>ИЖС</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Тип недвижимости</Text>
+          <Text style={styles.infoValue}>ИЖС</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Тип недвижимости</Text>
+          <Text style={styles.infoValue}>ИЖС</Text>
+        </View>
       </View>
-      <Text>Изб</Text>
-    </View>
-    
-    {/* specView - основные характеристики */}
-    <View style={styles.specView}>
-    <View style={styles.specElement}>
-      <Text style={styles.specText}>3-комн.</Text>
-      <Text>дом</Text>
-    </View>
-    <View style={styles.specElement}>
-      <Text style={styles.specText}>113 м²</Text>
-      <Text>общая пл.</Text>
-    </View>
-    <View style={styles.specElement}>
-      <Text style={styles.specText}>10 сот</Text>
-      <Text>участок</Text>
-    </View>
-    <View style={styles.specElement}>
-      <Text style={styles.specText}>10 сот</Text>
-      <Text>участок</Text>
-    </View>
-    </View>
 
-    {/* adressView - блок с адресом и картой */}
-    <View style={styles.adressView}>
-      <View >   
-        <Text style={styles.adressTitle}>
-          Новый город
-        </Text>
-        <Text style={styles.adressText}>
-          Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
-        </Text>
-      </View> 
-
-      <View style={{alignItems: 'center', marginTop: 8}}> 
-        <Image source={require('../assets/adress.png')} style={styles.imageMap} />
+      {/* actionButtons - кнопки действия НАПИСАТЬ ПОЗВОНИТЬ (надо сделать оверлеем) */}
+      <View style={styles.actionBlock}>
+        <Pressable style={styles.actionButton}>
+          <Text style={styles.actionText}>Написать</Text>
+        </Pressable>
+        <Pressable style={styles.actionButton}>
+          <Text style={styles.actionText}>Позвонить</Text>
+        </Pressable>
       </View>
-    </View>
-
-    {/* infoBlock - блок с подробной информацией об объекте */}
-    <View style={styles.infoBlock}>
-      <Text style={styles.infoTitle}>
-        Об объекте
-      </Text>
-      <View style={styles.infoSpecRow}>
-        <Text style={styles.infoSpec}>Тип недвижимости</Text>
-        <Text style={styles.infoValue}>ИЖС</Text>
-      </View>
-      <View style={styles.infoSpecRow}>
-        <Text style={styles.infoSpec}>Тип недвижимости</Text>
-        <Text style={styles.infoValue}>ИЖС</Text>
-      </View>
-      <View style={styles.infoSpecRow}>
-        <Text style={styles.infoSpec}>Тип недвижимости</Text>
-        <Text style={styles.infoValue}>ИЖС</Text>
-      </View>
-      <View style={styles.infoSpecRow}>
-        <Text style={styles.infoSpec}>Тип недвижимости</Text>
-        <Text style={styles.infoValue}>ИЖС</Text>
-      </View>
-    </View>
-
-    {/* actionButtons - кнопки действия НАПИСАТЬ ПОЗВОНИТЬ (надо сделать оверлеем) */}
-    <View style={styles.actionBlock}>
-      <Pressable style={styles.actionButton}>
-        <Text style={styles.actionText}>Написать</Text>
-      </Pressable>
-      <Pressable style={styles.actionButton}>
-      <Text style={styles.actionText}>Позвонить</Text>
-      </Pressable>
-    </View>
 
 
-{/* потом появятся две карусели с домами от этого застройщика и похожими домами */}
+  {/* потом появятся две карусели с домами от этого застройщика и похожими домами */}
 
-    </ScrollView>
+      </ScrollView>
   </SafeAreaView>
 )
 

@@ -5,7 +5,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import HeaderComponent from '../components/HeaderComponent';
-import ObjectPage from './ObjectPage';
 
 
 const { width } = Dimensions.get('window');
@@ -138,7 +137,6 @@ const MainPage = () => {
                 <View style={styles.functionCards}>
                     {
                         ServicesContent.map((item, index) => (
-                            //<Pressable style={[styles.functionCard, item.marginTop && {marginTop:item.marginTop}]} key={index}>
                             <Pressable style={styles.functionCard} key={index}>
                                 <View style={[styles.functionCardView]}>
                                     <Text style={styles.functionCardText}>
@@ -193,36 +191,36 @@ const MainPage = () => {
                         showsHorizontalScrollIndicator={false}
                         renderItem={({item}, index) => 
                         <Pressable onPress={() => navigation.navigate("ObjectPage")}>   
-                        <View style={styles.houseItem}>
-                            <View style={styles.houseImageView}>
-                               <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
-                            </View>
-                            <View>
-                                <View style={{flexDirection:'row', alignItems:'flex-end'}}>
-                                    <Text style={styles.houseItemText}>
-                                        {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
-                                    </Text>
-                                    <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
-                                        {Math.floor(item.price / item.house_area)}₽/м2
+                            <View style={styles.houseItem}>
+                                <View style={styles.houseImageView}>
+                                    <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
+                                </View>
+                                <View>
+                                    <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+                                        <Text style={styles.houseItemText}>
+                                            {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                                        </Text>
+                                        <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
+                                            {Math.floor(item.price / item.house_area)}₽/м2
+                                        </Text>
+                                    </View>
+                                    <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
+                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                            {item.bedrooms}-комн.
+                                        </Text>
+                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                            {item.house_area} м²
+                                        </Text>
+                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                            {item.num_floors} этаж
+                                        </Text>
+                                    </View>
+                                    <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
+                                        {item.city}, {item.full_address}
                                     </Text>
                                 </View>
-                                <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
-                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                        {item.bedrooms}-комн.
-                                    </Text>
-                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                        {item.house_area} м²
-                                    </Text>
-                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                        {item.num_floors} этаж
-                                    </Text>
-                                </View>
-                                <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
-                                {item.city}, {item.full_address}
-                                </Text>
+                                
                             </View>
-                            
-                        </View>
                         </Pressable> 
                         }/>
                         :
@@ -248,33 +246,34 @@ const MainPage = () => {
                         <Pressable onPress={() => navigation.navigate("ObjectPage")}>
                         <View style={styles.houseItem}>
                             <View style={styles.houseImageView}>
-                            <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
+                                <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
                             </View>
                             <View>
-                            <View style={{flexDirection:'row', alignItems:'flex-end'}}>
-                                    <Text style={styles.houseItemText}>
-                                        {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
-                                    </Text>
-                                    <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
-                                        {Math.floor(item.price / item.house_area)}₽/м2
+                                <View style={{flexDirection:'row', alignItems:'flex-end'}}>
+                                        <Text style={styles.houseItemText}>
+                                            {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                                        </Text>
+                                        <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
+                                            {Math.floor(item.price / item.house_area)}₽/м2
+                                        </Text>
+                                    </View>
+                                    <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
+                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                            {item.bedrooms}-комн.
+                                        </Text>
+                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                            {item.house_area} м²
+                                        </Text>
+                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
+                                            {item.num_floors} этаж
+                                        </Text>
+                                    </View>
+                                    <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
+                                        {item.city}, {item.full_address}
                                     </Text>
                                 </View>
-                                <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
-                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                        {item.bedrooms}-комн.
-                                    </Text>
-                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                        {item.house_area} м²
-                                    </Text>
-                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                        {item.num_floors} этаж
-                                    </Text>
-                                </View>
-                                <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
-                                {item.city}, {item.full_address}
-                                </Text>
                             </View>
-                        </View></Pressable>}
+                        </Pressable>}
                         />
                         :
                         <ActivityIndicator
