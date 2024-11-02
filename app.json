@@ -12,13 +12,15 @@
       "backgroundColor": "#0077FF"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bastithouses.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.bastithouses.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -26,6 +28,11 @@
     "plugins": [
       "expo-font",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4a708a15-6b0d-4efb-9264-acd92d195d02"
+      }
+    }
   }
 }
