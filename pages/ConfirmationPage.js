@@ -52,7 +52,7 @@ export default function ConfirmationPage({ navigation, route }) {
     }
   };
 
-  const handleSendSms = async ()=>{
+  const handleSendCall = async ()=>{
     const result = await sendSms(regData.phoneNumber)
     if (await result.status == 200) {
       setIsShowSend(false)
