@@ -94,7 +94,7 @@ export default function ConfirmationPage({ navigation, route }) {
         isShowSend
         ?
         <View>
-          <Pressable style={styles.button} onPress={handleSendSms}>
+          <Pressable style={styles.button} onPress={handleSendCall}>
             <Text style={styles.buttonText}>
               Отправить Код
             </Text>
