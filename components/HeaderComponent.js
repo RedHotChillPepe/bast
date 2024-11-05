@@ -1,13 +1,17 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
 
 
 export default function HeaderComponent() {
+
+  const navigation = useNavigation()
+
   return (
     <View style={styles.headerStyle}>
       <View style={styles.headerContent}>
         <Text style={styles.headerText}>БАСТ</Text>
-        <Pressable style={styles.headerButton}>
+        <Pressable style={styles.headerButton} onPress={() => navigation.navigate("CreateHousePostPage")}>
           <Text style={styles.headerButtonText}>
             Создать объявление
           </Text>
