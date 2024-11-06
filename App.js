@@ -39,7 +39,10 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
         headerShown: false  
         }}/>
-        <Stack.Screen name='Houses' component={DynamicHousesPage}/>
+        <Stack.Screen name='Houses' component={DynamicHousesPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
         <Stack.Screen name='House' component={DynamicHousePostPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  

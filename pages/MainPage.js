@@ -101,10 +101,12 @@ const MainPage = () => {
 
     const SearchButtonsContent = [
         {
-            text:"Новый поиск"
+            text:"Новый поиск",
+            onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:null}})
         },
         {
-            text:"Мои поиски"
+            text:"Мои поиски",
+            onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:true}})
         },
         {
             text:"Выбрать риэлтора"
@@ -169,7 +171,7 @@ const MainPage = () => {
                 <View style={styles.searchButtonsView}>
                     {
                         SearchButtonsContent.map((item, index) => (
-                            <Pressable style={styles.searchButtonsContent} key={index}>
+                            <Pressable onPress={item.onPress} style={styles.searchButtonsContent} key={index}>
                                 <Text style={styles.searchButtonsText}>
                                     {item.text}
                                 </Text>
