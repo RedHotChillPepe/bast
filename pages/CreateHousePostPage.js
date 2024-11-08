@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, StyleSheet, ScrollView, Pressable, Modal, TouchableOpacity, ToastAndroid } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { Text, View, StyleSheet, ScrollView, Pressable, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextInputComponent from '../components/TextInputComponent';
 import ModalPickerComponent from '../components/ModalPickerComponent';
+import * as ImagePicker from 'expo-image-picker';
+import { useApi } from '../context/ApiContext';
 
 export default function CreateHousePostPage() {
   const [formData, setFormData] = useState({
@@ -30,7 +31,7 @@ export default function CreateHousePostPage() {
     sewerege: '',
     electricity: '',
     heating: '',
-
+    photos:[]
   });
 
   const [houseTypeModalVisible, setHouseTypeModalVisible] = useState(false);
@@ -43,6 +44,8 @@ export default function CreateHousePostPage() {
   const [electricityModalVisible, setElectricityModalVisible] = useState(false);
   const [heatingModalVisible, setHeatingModalVisible] = useState(false);
 
+  const {sendPost} = useApi()
+
   const handleInputChange = (field, value) => {
     setFormData((prevData)=> ({ ...prevData, [field]: value }));
   };
@@ -53,12 +56,34 @@ export default function CreateHousePostPage() {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
+  const handleImagePicker = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes:ImagePicker.MediaTypeOptions.Images,
+      quality:0,
+      base64:true
+    })
+    console.log(result);
 
-  const handleSubmit = () => {
+    var tempPhotos = formData.photos
+    tempPhotos.push({filename:result.assets[0].fileName, 
+      base64:result.assets[0].base64})
+
+    console.log(tempPhotos);
+    
+    setFormData((prevData) => ({...prevData, photos:tempPhotos}))
+  }
+
+
+  const handleSubmit = async () => {
     /* if (!formData.title || !formData.houseType || !formData.price || !formData.area || !formData.rooms || !formData.location) {
       Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
       return;
     } */
+    let result = await sendPost(formData)
+
+    console.log(result);
+    
+
     console.log('Данные объявления:', formData);
   };
 
@@ -328,6 +353,30 @@ export default function CreateHousePostPage() {
         text={"Описание"} inputStyle={[styles.input, { height: 100 }]} placeholder={"Описание дома"}
         value={formData.description} handleInputChange={handleInputChange} valueName={"description"}
         />
+
+        <Pressable onPress={() => handleImagePicker()}>
+          <TextInputComponent viewStyle={styles.row} textStyle={styles.label}
+          text={"Картинки"} inputStyle={[styles.input, { height: 100 }]} placeholder={"Картинки"}
+          />
+        </Pressable>
+        
+          {
+            Object.keys(formData.photos).length != 0
+            
+            &&
+            
+            formData.photos.map((item, index) => {
+              return (
+                <Text key={index}>
+                  {item.filename}
+                </Text>
+              )
+            })
+              
+            
+          }
+        
+        
         
         {/* Все модальные окна */}
         {

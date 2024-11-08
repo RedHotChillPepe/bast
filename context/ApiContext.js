@@ -42,6 +42,52 @@ export default function ApiProvider ({ children }){
         }
     }
 
+    const sendPost = async (data) => {
+        const url = host + 'api/posts/newpost'
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify([{
+                    name: data.title,
+                    house_type: data.houseType,
+                    wall_lb: data.wallMaterial,
+                    wall_part: data.partitionMaterial,
+                    price: data.price,
+                    house_area: data.area,
+                    num_floors: data.floors,
+                    bedrooms: data.rooms,
+                    full_address: data.location,
+                    city: data.settlement,
+                    plot_size: data.plotSize,
+                    text: data.description,
+                    roof: data.roof,
+                    basement: data.basement,
+                    /* landArea: '', */
+                    kad_number: data.kadastr,
+                    house_status: data.houseCondition,
+                    year_built: data.constructionYear,
+                    gas: data.gas,
+                    water: data.water,
+                    sewage: data.sewerage,
+                    electricity_bill: data.electricity,
+                    heating: data.heating,
+                    photos:data.photos
+                }])
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting user: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getAllVillages = async () =>{
         const url = host + "api/villages/all"
         console.log(url);
@@ -181,7 +227,7 @@ export default function ApiProvider ({ children }){
     return (
         <ApiContext.Provider value={{getAllPosts, getAllVillages, 
         getLogin, getUser, postRegister, sendSms, verifySms,
-        getPost}}>
+        getPost, sendPost}}>
             {children}
         </ApiContext.Provider>
     )
