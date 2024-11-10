@@ -20,6 +20,7 @@ import PersonalData from './pages/PersonalDataPage.js'
 import UserLoginPage from './pages/UserLoginPage.js';
 import ConfirmationPage from './pages/ConfirmationPage.js';
 import CreateHousePostPage from './pages/CreateHousePostPage.js';
+import NotExistPage from './pages/NotExistPage.js';
 
 
 
@@ -48,6 +49,10 @@ const AppStack = () => {
           headerShown: false  
           }}/>
         <Stack.Screen name='CreateHousePostPage' component={CreateHousePostPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
+        <Stack.Screen name='NotExistPage' component={NotExistPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/>

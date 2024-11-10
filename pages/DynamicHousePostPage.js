@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const {width} = Dimensions.get('window');
 
@@ -28,15 +29,55 @@ export default function DynamicHousePostPage ({ navigation, route }) {
       
     }
   }, [])
+
+// оверлей кнопки
+const [showButtons, setShowButtons] = useState(false);
+const scrollY = useRef(new Animated.Value(0)).current;
+const prevScrollY = useRef(0);
+
+const handleScroll = Animated.event(
+  [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+  {
+    useNativeDriver: false,
+    listener: (event) => {
+      const currentOffset = event.nativeEvent.contentOffset.y;
+      const isScrollingDown = currentOffset > prevScrollY.current;
+      
+      if (isScrollingDown && !showButtons) {
+        setShowButtons(true);
+      } else if (!isScrollingDown && showButtons) {
+        setShowButtons(false);
+      }
+      
+      prevScrollY.current = currentOffset;
+    },
+  }
+);
+
   
 
 return (
   <SafeAreaView style={styles.container}>
-    <ScrollView contentContainerStyle={styles.mainView}>
+    <ScrollView onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.mainView}>
 
-      <View style={{width:width-32}}>
+      <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between', alignItems:'center'}}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Text>Назад</Text>
+        <Ionicons name="arrow-back" size={32} color="black" />
+        </Pressable>
+
+        {/* кнопка ведет на экран редактирования объявления (по сути экран создания объявления только с заполненными инпутами) */}
+        {/* Видна только хозяину объявления */}
+        <Pressable style={{backgroundColor: 'black',
+                           alignItems:'center',
+                           paddingHorizontal: 12,
+                           paddingVertical: 8,
+                           borderRadius: 12
+                           
+                           
+                           
+        }}
+         onPress={() => navigation.goBack()}>
+          <Text style={{color:'white', fontSize: 18, fontWeight:'bold'}}>Редактировать</Text>
         </Pressable>
       </View>   
       
@@ -146,20 +187,24 @@ return (
         </View>
       </View>
 
-      {/* actionButtons - кнопки действия НАПИСАТЬ ПОЗВОНИТЬ (надо сделать оверлеем) */}
-      <View style={styles.actionBlock}>
-        <Pressable style={styles.actionButton}>
-          <Text style={styles.actionText}>Написать</Text>
-        </Pressable>
-        <Pressable style={styles.actionButton}>
-          <Text style={styles.actionText}>Позвонить</Text>
-        </Pressable>
-      </View>
+
 
 
   {/* потом появятся две карусели с домами от этого застройщика и похожими домами */}
 
       </ScrollView>
+
+{/* оверлей кнопки */}
+      {showButtons && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Позвонить</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Написать</Text>
+          </TouchableOpacity>
+        </View>
+      )}
   </SafeAreaView>
 )
 
@@ -287,5 +332,26 @@ actionButton: {
     paddingVertical: 16,
     width: (width - 16*2 - 8)/2
 },
+buttonContainer: {
+  position: 'absolute',
+  bottom: 40,
+  left: 20,
+  right: 20,
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  paddingHorizontal: 20,
+},
+
+button: {
+  backgroundColor: 'blue',
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+},
+buttonText: {
+  color: 'black',
+  fontSize: 18,
+  fontWeight: 'bold',
+}
 
 })

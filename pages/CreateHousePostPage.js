@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, ScrollView, Pressable, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Pressable, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextInputComponent from '../components/TextInputComponent';
 import ModalPickerComponent from '../components/ModalPickerComponent';
 import * as ImagePicker from 'expo-image-picker';
 import { useApi } from '../context/ApiContext';
+
+const { width, height } = Dimensions.get('window');
 
 export default function CreateHousePostPage() {
   const [formData, setFormData] = useState({
@@ -354,14 +356,34 @@ export default function CreateHousePostPage() {
         value={formData.description} handleInputChange={handleInputChange} valueName={"description"}
         />
 
-        <Pressable onPress={() => handleImagePicker()}>
-          <TextInputComponent viewStyle={styles.row} textStyle={styles.label}
-          text={"Картинки"} inputStyle={[styles.input, { height: 100 }]} placeholder={"Картинки"}
-          />
+<Text style={styles.header}>Фото</Text>
+        <Pressable style={{backgroundColor:'black',
+                            width: width*0.65,
+                            height: height*0.055,
+                            borderRadius: 16,
+                            alignItems:'center',
+                            justifyContent:'center',
+                            marginBottom: 8}}
+                    onPress={() => handleImagePicker()}>
+          <Text>Добавить фотографии</Text>
         </Pressable>
         
-          {
-            Object.keys(formData.photos).length != 0
+        <View style={styles.imageContainer}>
+  {
+    formData.photos.length > 0 &&
+    formData.photos.map((item, index) => (
+      <Image 
+        key={index} 
+        source={{ uri: `data:image/jpeg;base64,${item.base64}` }} 
+        style={styles.thumbnail} 
+      />
+    ))
+  }
+</View>
+
+
+          {/* {
+            Object.keys(formData.photos).length != 0.0
             
             &&
             
@@ -374,10 +396,20 @@ export default function CreateHousePostPage() {
             })
               
             
-          }
+          } */}
         
         
-        
+
+       <View style={styles.imageContainer}>
+          {formData.photos.map((photo, index) => (
+            <Image key={index} source={{ uri: photo.uri }} style={styles.thumbnail} />
+          ))}
+        </View>
+
+        <Pressable style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Опубликовать объявление</Text>
+        </Pressable>
+
         {/* Все модальные окна */}
         {
           listModalPicker.map((item, index) => {
@@ -395,9 +427,6 @@ export default function CreateHousePostPage() {
           })
         }
 
-        <Pressable style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Опубликовать объявление</Text>
-        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -445,4 +474,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  imageContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+    justifyContent:'space-between'
+
+  },
+  thumbnail: {
+    width: (width-32-16)/3,
+    height: (width-32-16)/3,
+    borderRadius: 8,
+
+  
+  },
+  
 });
