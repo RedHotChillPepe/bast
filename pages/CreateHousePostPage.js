@@ -70,7 +70,7 @@ export default function CreateHousePostPage() {
     tempPhotos.push({filename:result.assets[0].fileName, 
       base64:result.assets[0].base64})
 
-    console.log(tempPhotos);
+    //console.log(tempPhotos);
     
     setFormData((prevData) => ({...prevData, photos:tempPhotos}))
   }
@@ -83,46 +83,28 @@ export default function CreateHousePostPage() {
     } */
     let result = await sendPost(formData)
 
-    console.log(result);
+    console.log(await result);
     
 
-    console.log('Данные объявления:', formData);
+    // console.log('Данные объявления:', formData);
   };
 
   const inputListLocation=[
-    {
-      text:"Населённый пункт", placeholder:"Название Населённого Пункта", valueName:"settlement"
-    },
-    {
-      text:"Населённый пункт", placeholder:"Улица, Дом", valueName:"location"
-    },
-    {
-      text:"Кадастровые номер", placeholder:"Кадастровый Номер", valueName:"kadastr"
-    },
+    {text:"Населённый пункт", placeholder:"Название Населённого Пункта", valueName:"settlement"},
+    {text:"Населённый пункт", placeholder:"Улица, Дом", valueName:"location"},
+    {text:"Кадастровые номер", placeholder:"Кадастровый Номер", valueName:"kadastr"},
   ]
 
   const inputListHouseinfo = [
-    {
-      keyboardType:"numeric", text:"Этажи *", placeholder:"Количество этажей", valueName:"floors",
-    },
-    {
-      keyboardType:"numeric", text:"Комнаты *", placeholder:"Количество комнат", valueName:"rooms",
-    },
-    {
-      keyboardType:"numeric", text:"Площадь *", placeholder:"Жилплощадь (м²)", valueName:"area",
-    },
-    {
-      keyboardType:"numeric", text:"Площадь Участка", placeholder:"Площадь участка (сот.)", valueName:"plotSize",
-    },
+    {keyboardType:"numeric", text:"Этажи *", placeholder:"Количество этажей", valueName:"floors",},
+    {keyboardType:"numeric", text:"Комнаты *", placeholder:"Количество комнат", valueName:"rooms",},
+    {keyboardType:"numeric", text:"Площадь *", placeholder:"Жилплощадь (м²)", valueName:"area",},
+    {keyboardType:"numeric", text:"Площадь Участка", placeholder:"Площадь участка (сот.)", valueName:"plotSize",},
   ]
 
   const inputListConstruction = [
-    {
-      text:"Кровля", placeholder:"Тип кровли", valueName:"roof",
-    },
-    {
-      text:"Фундамент", placeholder:"Тип фундамента", valueName:"basement",
-    },
+    {text:"Кровля", placeholder:"Тип кровли", valueName:"roof",},
+    {text:"Фундамент", placeholder:"Тип фундамента", valueName:"basement",},
   ]
 
   const listModalPicker = [
@@ -356,7 +338,8 @@ export default function CreateHousePostPage() {
         value={formData.description} handleInputChange={handleInputChange} valueName={"description"}
         />
 
-<Text style={styles.header}>Фото</Text>
+        <Text style={styles.header}>Фото</Text>
+
         <Pressable style={{backgroundColor:'black',
                             width: width*0.65,
                             height: height*0.055,
@@ -365,21 +348,21 @@ export default function CreateHousePostPage() {
                             justifyContent:'center',
                             marginBottom: 8}}
                     onPress={() => handleImagePicker()}>
-          <Text>Добавить фотографии</Text>
+          <Text style={{color:'white'}}>Добавить фотографии</Text>
         </Pressable>
         
         <View style={styles.imageContainer}>
-  {
-    formData.photos.length > 0 &&
-    formData.photos.map((item, index) => (
-      <Image 
-        key={index} 
-        source={{ uri: `data:image/jpeg;base64,${item.base64}` }} 
-        style={styles.thumbnail} 
-      />
-    ))
-  }
-</View>
+          {
+            formData.photos.length > 0 &&
+            formData.photos.map((item, index) => (
+              <Image 
+                key={index} 
+                source={{ uri: `data:image/jpeg;base64,${item.base64}` }} 
+                style={styles.thumbnail} 
+              />
+            ))
+          }
+        </View>
 
 
           {/* {
@@ -400,10 +383,10 @@ export default function CreateHousePostPage() {
         
         
 
-       <View style={styles.imageContainer}>
-          {formData.photos.map((photo, index) => (
-            <Image key={index} source={{ uri: photo.uri }} style={styles.thumbnail} />
-          ))}
+        <View style={styles.imageContainer}>
+            {formData.photos.map((photo, index) => (
+              <Image key={index} source={{ uri: photo.uri }} style={styles.thumbnail} />
+            ))}
         </View>
 
         <Pressable style={styles.button} onPress={handleSubmit}>

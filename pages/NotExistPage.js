@@ -22,9 +22,9 @@ const NotExistPage = () => {
                            alignItems:'center',
                            justifyContent:'center',
                            marginTop: 96}}
-                   onPress={() => navigation.navigate("Main")}>
-            <Text style={{color: 'black', fontSize: 18, fontWeight: 400}}>На главную</Text>
-          </Pressable>
+            onPress={() => navigation.navigate("Main")}>
+          <Text style={{color: 'black', fontSize: 18, fontWeight: 400}}>На главную</Text>
+        </Pressable>
       </View>
       
     </SafeAreaView>

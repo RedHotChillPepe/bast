@@ -62,7 +62,7 @@ return (
 
       <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between', alignItems:'center'}}>
         <Pressable onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={32} color="black" />
+          <Ionicons name="arrow-back" size={32} color="black" />
         </Pressable>
 
         {/* кнопка ведет на экран редактирования объявления (по сути экран создания объявления только с заполненными инпутами) */}
@@ -72,11 +72,8 @@ return (
                            paddingHorizontal: 12,
                            paddingVertical: 8,
                            borderRadius: 12
-                           
-                           
-                           
-        }}
-         onPress={() => navigation.goBack()}>
+                          }}
+          onPress={() => navigation.goBack()}>
           <Text style={{color:'white', fontSize: 18, fontWeight:'bold'}}>Редактировать</Text>
         </Pressable>
       </View>   
@@ -349,7 +346,7 @@ button: {
   borderRadius: 8,
 },
 buttonText: {
-  color: 'black',
+  color: 'white',
   fontSize: 18,
   fontWeight: 'bold',
 }

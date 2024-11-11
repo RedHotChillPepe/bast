@@ -52,7 +52,7 @@ const DynamicHousesPage = ({route}) => {
                                 <View>
                                     <View style={{flexDirection:'row', alignItems:'flex-end'}}>
                                         <Text style={styles.houseItemText}>
-                                            {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                                            {item.price != null && item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
                                         </Text>
                                         <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
                                             {Math.floor(item.price / item.house_area)}₽/м2
