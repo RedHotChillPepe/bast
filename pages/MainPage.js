@@ -109,7 +109,8 @@ const MainPage = () => {
             onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:true}})
         },
         {
-            text:"Выбрать риэлтора"
+            text:"Выбрать риэлтора",
+            onPress: () => navigation.navigate("NotExistPage")
         }
     ]
         
@@ -139,7 +140,7 @@ const MainPage = () => {
                 <View style={styles.functionCards}>
                     {
                         ServicesContent.map((item, index) => (
-                            <Pressable style={styles.functionCard} key={index}>
+                            <Pressable onPress={() => navigation.navigate("NotExistPage")} style={styles.functionCard} key={index}>
                                 <View style={[styles.functionCardView]}>
                                     <Text style={styles.functionCardText}>
                                         {item.text}

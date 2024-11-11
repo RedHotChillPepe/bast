@@ -15,7 +15,7 @@ const DynamicHousesPage = ({route}) => {
     const [houses, setHouses] = useState([])
     const { getAllPosts } = useApi()
 
-    const {searchPrepopulate} = route.params
+    //const {searchPrepopulate} = route.params
     
     useEffect(() => {
       const loadFromAPI = async () => {

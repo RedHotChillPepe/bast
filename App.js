@@ -63,11 +63,11 @@ const AppStack = () => {
 const AppTabs = () => {
   return(
     <Tab.Navigator initialRouteName='Home'>
-      <Tab.Screen name='Search' component={SearchPage}/>
-      <Tab.Screen name='Favourites' component={FavouritesPage}/>
+      <Tab.Screen name='Search' component={DynamicHousesPage}/>
+      <Tab.Screen name='Favourites' component={NotExistPage}/>
       <Tab.Screen name='Home' component={AppStack} options={{headerShown:false}}/>
-      <Tab.Screen name='Chats' component={ChatsPage}/>
-      <Tab.Screen name='Profile' component={ProfilePage}/>
+      <Tab.Screen name='Chats' component={NotExistPage}/>
+      <Tab.Screen name='Profile' component={NotExistPage}/>
     </Tab.Navigator>
   )
   
