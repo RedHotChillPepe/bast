@@ -206,7 +206,7 @@ export default function CreateHousePostPage() {
       <ScrollView contentContainerStyle={styles.formContainer}>
         <Text style={styles.header}>Создание объявления</Text>
 
-        <Text style={styles.header}>Местоположение</Text>
+        <Text style={styles.header2}>Местоположение</Text>
 
         {
           inputListLocation.map((item, index) => {
@@ -218,10 +218,10 @@ export default function CreateHousePostPage() {
           })
         }
 
-        <Text style={styles.header}>Контакты</Text>
+        <Text style={styles.header2}>Контакты</Text>
         <Text>Кто продает собственник\риэлтор\застрощик</Text>
 
-        <Text style={styles.header}>О доме</Text>
+        <Text style={styles.header2}>О доме</Text>
         {/* Тип дома */}
         <View style={styles.row}>
           <Text style={styles.label}>Тип дома *</Text>
@@ -258,7 +258,7 @@ export default function CreateHousePostPage() {
 
 
 
-        <Text style={styles.header}>Конструкция</Text>
+        <Text style={styles.header2}>Конструкция</Text>
         {/* Несущие стены */}
         <View style={styles.row}>
           <Text style={styles.label}>Несущие стены *</Text>
@@ -285,7 +285,7 @@ export default function CreateHousePostPage() {
           })
         }
 
-        <Text style={styles.header}>Коммуникации</Text>
+        <Text style={styles.header2}>Коммуникации</Text>
 
 
         {/* Электричество */}
@@ -334,34 +334,50 @@ export default function CreateHousePostPage() {
         />
 
         <TextInputComponent viewStyle={styles.row} textStyle={styles.label}
-        text={"Описание"} inputStyle={[styles.input, { height: 100 }]} placeholder={"Описание дома"}
+        text={"Описание"} inputStyle={[styles.input, { height: 120 }]} placeholder={"Описание дома"}
         value={formData.description} handleInputChange={handleInputChange} valueName={"description"}
         />
 
-        <Text style={styles.header}>Фото</Text>
+        <Text style={styles.header2}>Фото</Text>
 
-        <Pressable style={{backgroundColor:'black',
+
+        
+        <View style={styles.photoContainer}>
+          {formData.photos.length === 0 ? (
+            <View style={styles.inputPhoto}>
+              <Text style={styles.placeholderText}>Загрузите фотографии</Text>
+              <Pressable style={{backgroundColor:'black',
                             width: width*0.65,
                             height: height*0.055,
                             borderRadius: 16,
                             alignItems:'center',
                             justifyContent:'center',
-                            marginBottom: 8}}
+                            marginVertical: 8}}
                     onPress={() => handleImagePicker()}>
-          <Text style={{color:'white'}}>Добавить фотографии</Text>
-        </Pressable>
-        
-        <View style={styles.imageContainer}>
-          {
-            formData.photos.length > 0 &&
-            formData.photos.map((item, index) => (
-              <Image 
-                key={index} 
-                source={{ uri: `data:image/jpeg;base64,${item.base64}` }} 
-                style={styles.thumbnail} 
-              />
-            ))
-          }
+                 <Text style={{color:'white'}}>Добавить фотографии</Text>
+               </Pressable>
+            </View>
+          ) : (
+            <View style={styles.inputPhoto2}>
+              {formData.photos.map((photo, index) => (
+                <Image key={index} source={{ uri: `data:image/jpeg;base64,${photo.base64}` }} style={styles.thumbnail} />
+                
+              ))}
+              <Pressable style={{backgroundColor:'black',
+                            width: (width-32-8*4)/3,
+                            height: (width-32-8*4)/3,
+                            borderRadius: 16,
+                            marginTop: 8,
+                            marginLeft: 8,
+                            alignItems:'center',
+                            justifyContent:'center',
+                            }}
+                    onPress={() => handleImagePicker()}>
+                 <Text style={{color:'white'}}>Добавить фотографии</Text>
+               </Pressable>
+            </View>
+          )}
+
         </View>
 
 
@@ -380,14 +396,6 @@ export default function CreateHousePostPage() {
               
             
           } */}
-        
-        
-
-        <View style={styles.imageContainer}>
-            {formData.photos.map((photo, index) => (
-              <Image key={index} source={{ uri: photo.uri }} style={styles.thumbnail} />
-            ))}
-        </View>
 
         <Pressable style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Опубликовать объявление</Text>
@@ -429,6 +437,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  header2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    marginTop: 32,
+    textAlign:'left',
+  },
   row: {
     marginBottom: 16,
   },
@@ -445,15 +460,33 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
   },
-  button: {
-    backgroundColor: '#007AFF',
+  inputPhoto: {
+    borderWidth: 1,
+    borderColor: '#ddd',
     borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    justifyContent: 'center',
+    alignItems:'center'
+  },
+  inputPhoto2: {
+    flexDirection:'row',
+    flexWrap:'wrap',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingBottom: 8,
+  },
+  button: {
+    backgroundColor: 'black',
+    borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 20,
+    
   },
   buttonText: {
-    color: 'white',
+    color: 'grey',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -465,9 +498,11 @@ const styles = StyleSheet.create({
 
   },
   thumbnail: {
-    width: (width-32-16)/3,
-    height: (width-32-16)/3,
-    borderRadius: 8,
+    width: (width-32-8*4)/3,
+    height: (width-32-8*4)/3,
+    borderRadius: 16,
+    marginLeft: 8,
+    marginTop: 8
 
   
   },

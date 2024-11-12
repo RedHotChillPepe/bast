@@ -303,8 +303,14 @@ const MainPage = () => {
                             </View>
                             <View>
                                 <View>
-                                    <Text style={styles.houseItemText}>
+                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
                                         {item.name}
+                                    </Text>
+                                    <Text style={styles.houseItemText}>
+                                        от 1 200 000 ₽
+                                    </Text>
+                                    <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
+                                        г. Ижевск, Октябрьский район
                                     </Text>
                                 </View>
                                 <View style={{flexDirection:"row"}}>
