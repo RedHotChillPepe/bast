@@ -63,7 +63,7 @@ const AppStack = () => {
 const AppTabs = () => {
   return(
     <Tab.Navigator initialRouteName='Home'>
-      <Tab.Screen name='Search' component={DynamicHousesPage}/>
+      <Tab.Screen name='Search' component={DynamicHousesPage} options={{headerShown:false}}/>
       <Tab.Screen name='Favourites' component={NotExistPage}/>
       <Tab.Screen name='Home' component={AppStack} options={{headerShown:false}}/>
       <Tab.Screen name='Chats' component={NotExistPage}/>

@@ -18,23 +18,46 @@ const DynamicHousesPage = ({route}) => {
 
     //const {searchPrepopulate} = route.params
     
+    // useEffect(() => {
+    //   const loadFromAPI = async () => {
+    //     setHouses(await getAllPosts())
+    //     //console.log(await getAllPosts());
+        
+    //   }
+      
+    //   loadFromAPI()
+    //   return () => {
+        
+    //   }
+    // }, [])
+
     useEffect(() => {
       const loadFromAPI = async () => {
-        setHouses(await getAllPosts())
-        //console.log(await getAllPosts());
-        
-      }
+        try {
+          const response = await getAllPosts();
+          // Проверяем, что `response` является массивом
+          setHouses(Array.isArray(response) ? response : []);
+        } catch (error) {
+          console.error("Error fetching posts:", error);
+          setHouses([]); // Если ошибка, устанавливаем пустой массив
+        }
+      };
       
-      loadFromAPI()
-      return () => {
-        
-      }
-    }, [])
+      loadFromAPI();
+    }, []);
         
     
   return (
-    <View style={styles.container}>
-        <Text>Фильтры</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={{flexDirection: 'row', width: width-32, justifyContent:'space-between'}}>
+        <Pressable>
+          <Text>Фильтры</Text>
+        </Pressable>
+        <Pressable>
+          <Text>Сортировка</Text>
+        </Pressable> 
+      </View>
+
         <View style={styles.content}>
             <View style={styles.housesView}>
 
@@ -51,7 +74,7 @@ const DynamicHousesPage = ({route}) => {
             </View>  
         </View>
       
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -61,7 +84,7 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         backgroundColor:'#F5F5F5',
-        alignItems:'flex-start'
+        alignItems:'center'
     },
     content: {
         
