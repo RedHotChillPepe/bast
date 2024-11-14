@@ -22,6 +22,10 @@ export default function AuthProvider({ children }) {
       setCheckAuthB(true)
     }
 
+    async function authVK() {
+      
+    }
+
     async function getAuth() {
       let result = await SecureStore.getItemAsync("auth")
       if (result) {
