@@ -5,6 +5,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import HeaderComponent from '../components/HeaderComponent';
+import HouseCard from '../components/HouseCard';
 
 
 const { width } = Dimensions.get('window');
@@ -89,29 +90,28 @@ const MainPage = () => {
         },
         {
             text:"Ипотечный калькулятор",
-            subtext:"Подберите удобный ежемесячный платеж",
-          //  marginTop:8
+            subtext:"Подберите удобный ежемесячный платеж"
         },
         {
             text:"Страхование",
             subtext:"Защитите имущество",
-           // marginTop:8
         }
     ]
 
     const SearchButtonsContent = [
         {
-            text:"Новый поиск",
+            text:"Дом",
             onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:null}})
+        },
+        {
+            text:"Риэтора",
+            onPress: () => navigation.navigate("NotExistPage")
         },
         {
             text:"Мои поиски",
             onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:true}})
-        },
-        {
-            text:"Выбрать риэлтора",
-            onPress: () => navigation.navigate("NotExistPage")
         }
+
     ]
         
     
@@ -131,26 +131,24 @@ const MainPage = () => {
                         <Text style={styles.storyItemText}>{item.text}</Text>
                     </View>}
                 />
+
             <View style={{marginHorizontal: 8}}>
-              <Text style={styles.functionTitleText}>
-                  Сервисы
-              </Text>
+              <Text style={styles.functionTitleText}>Сервисы</Text>
             </View>
 
                 <View style={styles.functionCards}>
-                    {
-                        ServicesContent.map((item, index) => (
-                            <Pressable onPress={() => navigation.navigate("NotExistPage")} style={styles.functionCard} key={index}>
-                                <View style={[styles.functionCardView]}>
-                                    <Text style={styles.functionCardText}>
-                                        {item.text}
-                                    </Text>
-                                    <Text style={styles.functionCardSubText}>
-                                        {item.subtext}
-                                    </Text>
-                                </View>
-                            </Pressable>
-
+                  {
+                    ServicesContent.map((item, index) => (
+                      <Pressable onPress={() => navigation.navigate("NotExistPage")} style={styles.functionCard} key={index}>
+                        <View style={[styles.functionCardView]}>
+                          <Text style={styles.functionCardText}>
+                            {item.text}
+                          </Text>
+                          <Text style={styles.functionCardSubText}>
+                            {item.subtext}
+                          </Text>
+                        </View>
+                      </Pressable>
                         ))
                     }
                     <Pressable style={{width:width-16, backgroundColor: "#FFF", borderRadius: 16, marginTop: 4 }}>
@@ -163,7 +161,7 @@ const MainPage = () => {
                     </Pressable>
                 </View>
 
-                <View style={{marginHorizontal: 8, marginTop: 12}}>
+            <View style={{marginHorizontal: 8, marginTop: 12}}>
               <Text style={styles.functionTitleText}>
                   Найти
               </Text>
@@ -185,105 +183,24 @@ const MainPage = () => {
                     Дома
                 </Text>
 
-                <View style={styles.housesView}>
-                    {
-                        Object.keys(houses).length != 0 && houses != undefined ?
-                        <FlatList
-                        data={houses}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({item}, index) => 
-                        <Pressable onPress={() => navigation.navigate("House", {houseId:item.id})}>   
-                            <View style={styles.houseItem}>
-                                <View style={styles.houseImageView}>
-                                    <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
-                                </View>
-                                <View>
-                                    <View style={{flexDirection:'row', alignItems:'flex-end'}}>
-                                        <Text style={styles.houseItemText}>
-                                            {item.price != null && item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
-                                        </Text>
-                                        <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
-                                            {Math.floor(item.price / item.house_area)}₽/м2
-                                        </Text>
-                                    </View>
-                                    <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
-                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                            {item.bedrooms}-комн.
-                                        </Text>
-                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                            {item.house_area} м²
-                                        </Text>
-                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                            {item.num_floors} этаж
-                                        </Text>
-                                    </View>
-                                    <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
-                                        {item.city}, {item.full_address}
-                                    </Text>
-                                </View>
-                                
-                            </View>
-                        </Pressable> 
-                        }/>
-                        :
-                        <ActivityIndicator
-                        size={"large"}
-                        color={"#32322C"}/>
-                        
-                    }
-                </View>
+                {houses.length ? (
+          <HouseCard data={houses} navigation={navigation} itemWidth={Dimensions.get('window').width * 0.66} />
+        ) : (
+          <ActivityIndicator size="large" color="#32322C" />
+        )}
 
+                
                 <Text style={styles.housesTitleText}>
                     Новостройки
                 </Text>
 
-                <View style={styles.housesView}>
-                    {
-                        Object.keys(newHouses).length != 0 && newHouses != undefined ?
-                        <FlatList
-                        data={newHouses}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({item}) => 
-                        <Pressable onPress={() => navigation.navigate("House", {houseId:item.id})}>
-                            <View style={styles.houseItem}>
-                                <View style={styles.houseImageView}>
-                                    <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
-                                </View>
-                                <View>
-                                    <View style={{flexDirection:'row', alignItems:'flex-end'}}>
-                                        <Text style={styles.houseItemText}>
-                                            {item.price != null && item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
-                                        </Text>
-                                        <Text style={{fontSize: 12, marginLeft: 8, fontWeight:'200'}}>
-                                            {Math.floor(item.price / item.house_area)}₽/м2
-                                        </Text>
-                                    </View>
-                                    <View style={{flexDirection:"row", marginLeft: 8, marginTop: 2}}>
-                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                            {item.bedrooms}-комн.
-                                        </Text>
-                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                            {item.house_area} м²
-                                        </Text>
-                                        <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                            {item.num_floors} этаж
-                                        </Text>
-                                    </View>
-                                    <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
-                                        {item.city}, {item.full_address}
-                                    </Text>
-                                </View>
-                            </View>
-                        </Pressable>}
-                        />
-                        :
-                        <ActivityIndicator
-                        size={"large"}
-                        color={"#32322C"}/>
-                    }
-                </View>
+                {newHouses.length ? (
+          <HouseCard data={newHouses} navigation={navigation} itemWidth={Dimensions.get('window').width * 0.66} horizontalScroll={true} />
+        ) : (
+          <ActivityIndicator size="large" color="#32322C" />
+        )}
+
+               
 
                 <Text style={styles.housesTitleText}>
                     Коттеджные посёлки
@@ -387,7 +304,6 @@ const styles = StyleSheet.create({
         paddingHorizontal:8,
         paddingVertical:8,
         flex:1,
-        justifyContent:'space-between',
     },
     functionCardText:{
         //fontFamily:'Montserrat700',
@@ -398,7 +314,8 @@ const styles = StyleSheet.create({
     functionCardSubText:{
         fontFamily:'Montserrat400',
         fontSize:14,
-        color:"#717171"
+        color:"#717171",
+        marginTop: 16
     },
     searchButtonsView:{
         marginHorizontal: 8,
@@ -407,18 +324,19 @@ const styles = StyleSheet.create({
         marginTop: 4
     },
     searchButtonsContent:{
-        justifyContent:'flex-start',
-        paddingVertical:8,
-        paddingHorizontal:8,
+        justifyContent:'center',
+        paddingVertical:12,
+        paddingHorizontal: 20,
         backgroundColor:"rgba(50, 50, 44, 0.8)",
         borderRadius:12,
-        width: (width-32)/3
+
     },
     searchButtonsText:{
         color:"#FFF",
        // fontFamily:"Montserrat700",
        fontWeight:'600',
-        fontSize:18
+        fontSize:18,
+        textAlign:'center'
     },
     housesTitleText:{
         // fontFamily:'Montserrat700',
