@@ -32,26 +32,28 @@ const DynamicHousesPage = ({route}) => {
     // }, [])
 
     useEffect(() => {
-      const loadFromAPI = async () => {
-        try {
-          const response = await getAllPosts();
-          // Проверяем, что `response` является массивом
-          setHouses(Array.isArray(response) ? response : []);
-        } catch (error) {
-          console.error("Error fetching posts:", error);
-          setHouses([]); // Если ошибка, устанавливаем пустой массив
-        }
-      };
-      
-      loadFromAPI();
-    }, []);
+      // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
+      if (houses.length === 0) {
+        const loadFromAPI = async () => {
+          try {
+            const response = await getAllPosts();
+            // Убедимся, что `response` является массивом
+            setHouses(Array.isArray(response) ? response : []);
+          } catch (error) {
+            console.error("Error fetching posts:", error);
+            setHouses([]); // Устанавливаем пустой массив при ошибке
+          }
+        };
+        loadFromAPI();
+      }
+    }, [houses, getAllPosts]); // Зависимость от `houses` и `getAllPosts`
         
     
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flexDirection: 'row', width: width-32, justifyContent:'space-between'}}>
-        <Pressable>
-          <Text>Фильтры</Text>
+        <Pressable style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12 }}>
+          <Text style={{color:'black', fontSize: 16, fontWeight: '600'}}>Фильтры</Text>
         </Pressable>
         <Pressable>
           <Text>Сортировка</Text>
