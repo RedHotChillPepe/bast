@@ -21,7 +21,10 @@ import UserLoginPage from './pages/UserLoginPage.js';
 import ConfirmationPage from './pages/ConfirmationPage.js';
 import CreateHousePostPage from './pages/CreateHousePostPage.js';
 import NotExistPage from './pages/NotExistPage.js';
-
+import Fontisto from '@expo/vector-icons/Fontisto';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Entypo from '@expo/vector-icons/Entypo';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 
@@ -63,11 +66,56 @@ const AppStack = () => {
 const AppTabs = () => {
   return(
     <Tab.Navigator initialRouteName='Home'>
-      <Tab.Screen name='Search' component={DynamicHousesPage} options={{headerShown:false}}/>
-      <Tab.Screen name='Favourites' component={NotExistPage}/>
-      <Tab.Screen name='Home' component={AppStack} options={{headerShown:false}}/>
-      <Tab.Screen name='Chats' component={NotExistPage}/>
-      <Tab.Screen name='Profile' component={NotExistPage}/>
+      <Tab.Screen
+        name='Search' 
+        component={DynamicHousesPage} 
+        options={{
+          headerShown:false,
+          tabBarIcon: ({ color, size}) => (
+            <FontAwesome name="search" size={24} color="black" />
+        ),
+      }}
+        />
+      <Tab.Screen 
+        name='Favourites' 
+        component={NotExistPage}
+        options={{
+          headerShown:false,
+          tabBarIcon: ({ color, size}) => (
+            <Fontisto name="favorite" size={24} color="black" />
+        ),
+      }}
+        />
+      <Tab.Screen 
+        name='Home'
+        component={AppStack}
+        options={{
+          headerShown:false,
+          tabBarIcon: ({ color, size}) => (
+            <FontAwesome name="home" size={24} color="black" />
+        ),
+      }}
+        />
+      <Tab.Screen
+      name='Chats'
+      component={NotExistPage}
+      options={{
+        headerShown:false,
+        tabBarIcon: ({ color, size}) => (
+          <Entypo name="chat" size={24} color="black" />
+      ),
+    }}
+      />
+      <Tab.Screen
+      name='Profile'
+      component={NotExistPage}
+      options={{
+        headerShown:false,
+        tabBarIcon: ({ color, size}) => (
+          <MaterialIcons name="account-box" size={24} color="black" />
+      ),
+    }}
+      />
     </Tab.Navigator>
   )
   

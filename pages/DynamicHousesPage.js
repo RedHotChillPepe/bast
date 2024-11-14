@@ -6,6 +6,8 @@ import { useApi } from '../context/ApiContext.js'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Image } from 'react-native'
 import HouseCard from '../components/HouseCard.js'
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 const { width } = Dimensions.get('window');
@@ -51,12 +53,21 @@ const DynamicHousesPage = ({route}) => {
     
   return (
     <SafeAreaView style={styles.container}>
+
+      {/* Категории */}
+      <View>
+        
+      </View>
+
+      {/* Фильтры и сортировка */}
       <View style={{flexDirection: 'row', width: width-32, justifyContent:'space-between'}}>
-        <Pressable style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12 }}>
-          <Text style={{color:'black', fontSize: 16, fontWeight: '600'}}>Фильтры</Text>
+        <Pressable style={styles.searchButton}>
+        <AntDesign name="filter" size={24} color="black" />
+          <Text style={styles.searchButtonText}>Фильтры</Text>
         </Pressable>
-        <Pressable>
-          <Text>Сортировка</Text>
+        <Pressable style={styles.searchButton}>
+        <MaterialIcons name="sort" size={24} color="black" />
+          <Text style={styles.searchButtonText}>Сортировка</Text>
         </Pressable> 
       </View>
 
@@ -88,39 +99,23 @@ const styles = StyleSheet.create({
         backgroundColor:'#F5F5F5',
         alignItems:'center'
     },
-    content: {
         
-        
-    },
     housesView:{
         width:width,
-        
+        alignItems:'center'   
+    },
+    searchButton:{
+      flexDirection: 'row',
+      alignItems:'center',
+      paddingHorizontal: 8,
+      paddingVertical: 8,
+      borderRadius: 12,  
+  },
+  searchButtonText:{
+    color:'black',
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: 8
+},
 
-        alignItems:'center'
-        
-    },
-    houseItem:{
-        width: width*0.80,
-        borderRadius:24,
-        backgroundColor:"#FFF",
-        marginBottom:12
-    },
-    houseItemText:{
-        color:"#32322C",
-        // fontFamily:"Inter700",
-        fontSize:16,
-        fontWeight:'700',
-        marginLeft: 8,
-        marginTop: 16
-    },
-    houseImageView:{
-        height:130
-    },
-    houseImage:{
-        flex:1,
-        height:"100%",
-        width:"100%",
-        borderTopLeftRadius:20,
-        borderTopRightRadius:20
-    }
 })
