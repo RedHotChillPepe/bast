@@ -1,14 +1,16 @@
 import { Button, Pressable, StyleSheet, Text, View, Dimensions, Image } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext.js'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const { width, height } = Dimensions.get('window');
 
+
+
 const LoginPage = () => {
     const navigation = useNavigation()
-    //const { setIsAuth, setIsOnboarded } = useAuth()
+    const { authVK } = useAuth()
   return (
     <SafeAreaView style={{flex:1, alignItems: 'center', justifyContent:'center' }}>
       <View style={{alignItems: 'center', marginBottom: 32}}>
@@ -47,7 +49,7 @@ const LoginPage = () => {
       <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', width: width*0.65, marginTop:12}}>
 
         <View style={{height:50, width:50, flexDirection:'row', alignItems:'center'}}>
-          <Pressable style={{ flex:1, backgroundColor:"#0077FF", borderRadius:12,alignItems:'center'}}>
+          <Pressable onPress={()=>authVK()} style={{ flex:1, backgroundColor:"#0077FF", borderRadius:12,alignItems:'center'}}>
             <Image height={50} width={50} source={{uri:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/VK_Compact_Logo_%282021-present%29.svg/2048px-VK_Compact_Logo_%282021-present%29.svg.png"}}/>
           </Pressable>
         </View>
