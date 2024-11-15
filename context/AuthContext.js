@@ -17,9 +17,7 @@ export default function AuthProvider({ children }) {
     const [request, response, promptAsync] = AuthSession.useAuthRequest({
       clientId:'52608804',
       redirectUri: AuthSession.makeRedirectUri(
-        {
-          scheme:"com.bastithouses.app"
-        }
+        
       )
     },
     discovery)
