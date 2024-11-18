@@ -104,7 +104,7 @@ const MainPage = () => {
             onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:null}})
         },
         {
-            text:"Риэтора",
+            text:"Риэлтора",
             onPress: () => navigation.navigate("NotExistPage")
         },
         {

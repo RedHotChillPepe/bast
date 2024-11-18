@@ -15,33 +15,72 @@ import SortModal from '../components/SortModal.js'
 const { width } = Dimensions.get('window');
 
 const filterGroups = [
-  {
-    id: 'group1',
-    title: 'Заголовок 1',
-    options: [
-      { id: '1', label: 'Кнопка 1' },
-      { id: '2', label: 'Кнопка 2' },
-      { id: '3', label: 'Кнопка 3' },
-    ],
-  },
-  {
-    id: 'group2',
-    title: 'Заголовок 2',
-    options: [
-      { id: '4', label: 'Кнопка 4' },
-      { id: '5', label: 'Кнопка 5' },
-      { id: '6', label: 'Кнопка 6' },
-    ],
-  },
+
   {
     id: 'group3',
-    title: 'Заголовок 3',
+    title: 'Этажи',
     options: [
-      { id: '7', label: 'Кнопка 7' },
-      { id: '8', label: 'Кнопка 8' },
-      { id: '9', label: 'Кнопка 9' },
+      { id: '11', label: '1 этаж' },
+      { id: '12', label: '2 этажа' },
+      { id: '13', label: '3 этажа' },
     ],
   },
+  {
+    id: 'group4',
+    title: 'Материал несущих стен',
+    options: [
+      { id: '21', label: 'Кирпич' },
+      { id: '23', label: 'Газоблок' },
+      { id: '24', label: 'Пенеблок' },
+      { id: '25', label: 'Брус' },
+      { id: '26', label: 'Доска' },
+      { id: '27', label: 'Каркасный' },
+    ],
+  },
+  {
+    id: 'group6',
+    title: 'Электричество (льготный тариф)',
+    options: [
+      { id: '31', label: 'Да' },
+      { id: '32', label: 'Нет' },
+    ],
+  },
+  {
+    id: 'group7',
+    title: 'Водоснабжение',
+    options: [
+      { id: '41', label: 'Центральное' },
+      { id: '42', label: 'Скважина' },
+    ],
+  },
+  {
+    id: 'group8',
+    title: 'Канализация',
+    options: [
+      { id: '51', label: 'Центральная' },
+      { id: '52', label: 'Септик' },
+      { id: '53', label: 'Нет' },
+    ],
+  },
+  {
+    id: 'group9',
+    title: 'Газ',
+    options: [
+      { id: '61', label: 'Да' },
+      { id: '61', label: 'Нет' },
+    ],
+  },
+  {
+    id: 'group10',
+    title: 'Отопление',
+    options: [
+      { id: '71', label: 'Котел газовый' },
+      { id: '72', label: 'Котел электрический' },
+      { id: '73', label: 'Печь' },
+      { id: '74', label: 'Нет' },
+    ],
+  },
+
 ];
 
 

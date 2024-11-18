@@ -8,8 +8,10 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import PriceRangeSlider from './PriceRageSlider';
+import AreaRangeSlider from './AreaRageSlider';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, filterGroups }) => {
   const handleOptionPress = (groupId, optionId) => {
@@ -29,8 +31,10 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Выберите фильтры</Text>
+          <Text style={styles.modalHeader}>Параметры поиска</Text>
           <ScrollView contentContainerStyle={styles.groupList}>
+            <PriceRangeSlider />
+            <AreaRangeSlider />
             {filterGroups.map((group) => (
               <View key={group.id} style={styles.groupContainer}>
                 <Text style={styles.groupHeader}>{group.title}</Text>
@@ -59,7 +63,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
             ))}
           </ScrollView>
           <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Закрыть</Text>
+            <Text style={styles.closeButtonText}>Применить</Text>
           </Pressable>
         </View>
       </View>
@@ -73,41 +77,45 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   modalContent: {
     backgroundColor: 'white',
-    width: width - 48,
+    width: width,
     borderRadius: 12,
     padding: 16,
-    maxHeight: '80%',
+    paddingBottom: 32,
+    maxHeight: '90%',
   },
   modalHeader: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 36,
     alignSelf: 'center',
+
   },
   groupList: {},
   groupContainer: {
-    marginBottom: 16,
+    marginBottom: 24,
   },
   groupHeader: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   optionsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexWrap:'wrap'
+    
   },
   filterButton: {
     paddingVertical: 10,
     paddingHorizontal: 16,
     backgroundColor: '#ddd',
     borderRadius: 8,
-    marginHorizontal: 4,
+    marginRight: 12,
+    marginBottom: 12
   },
   selectedFilterButton: {
     backgroundColor: '#007AFF',
