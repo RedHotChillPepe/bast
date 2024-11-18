@@ -148,7 +148,7 @@ const DynamicHousesPage = ({route}) => {
         <View style={styles.content}>
             <View style={styles.housesView}>
 
-            {houses.length ? (
+            {Object.keys(houses).length != 0 && houses != undefined ? (
             <HouseCard data={houses} 
                        navigation={navigation} 
                        itemWidth={Dimensions.get('window').width -32} 
