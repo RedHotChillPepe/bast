@@ -13,12 +13,17 @@ export default function AuthProvider({ children }) {
     const discovery = {
       authorizationEndpoint:'https://id.vk.com/oauth2/auth'
     }
+    
 
     const [request, response, promptAsync] = AuthSession.useAuthRequest({
       clientId:'52608804',
       redirectUri: AuthSession.makeRedirectUri(
-        
-      )
+        {
+          scheme:"com.bastithouses.app",
+          path:'redirect'
+        }
+      ),
+      scopes:[]
     },
     discovery)
 
@@ -39,11 +44,14 @@ export default function AuthProvider({ children }) {
 
 
     async function authVK() {
-      await promptAsync()
+      const result = await promptAsync(discovery)
 
       console.log(await request);
       
       console.log(await response);
+
+      console.log(await result);
+      
       
     }
 
