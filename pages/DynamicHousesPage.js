@@ -103,7 +103,7 @@ const DynamicHousesPage = ({route}) => {
 
     useEffect(() => {
       // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
-      if (houses.length === 0) {
+      if (Object.keys(houses).length === 0) {
         const loadFromAPI = async () => {
           try {
             const response = await getAllPosts();
