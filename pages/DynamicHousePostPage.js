@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidin
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const {width} = Dimensions.get('window');
 
@@ -113,8 +114,8 @@ return (
             </Text>
           </View>
         }
-        
-        <Text>Изб</Text>
+        <MaterialIcons name="favorite-border" size={32} color="grey" />
+        {/* <MaterialIcons name="favorite" size={24} color="black" />  для активного состояния*/}
       </View>
       
       {/* specView - основные характеристики */}
@@ -161,28 +162,108 @@ return (
         </View>
       </View>
 
+      {/* serviciesBlock - блок с услугами */}
+      <View style={styles.serviciesBlock}>
+        <Text style={styles.infoTitle}>Услуги</Text>
+        <View style={styles.serviciesView}>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+            <Text style={styles.serviciesText}>Страхование</Text>
+          </Pressable>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+            <Text style={styles.serviciesText}>Оценка недвижимости</Text>
+          </Pressable>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+            <Text style={styles.serviciesText}>Trade-in</Text>
+          </Pressable>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+            <Text style={styles.serviciesText}>Дизайн интерьера</Text>
+          </Pressable>
+        </View>
+      </View>
+
       {/* infoBlock - блок с подробной информацией об объекте */}
       <View style={styles.infoBlock}>
         <Text style={styles.infoTitle}>
           Об объекте
         </Text>
         <View style={styles.infoSpecRow}>
-          <Text style={styles.infoSpec}>Тип недвижимости</Text>
-          <Text style={styles.infoValue}>ИЖС</Text>
+          <Text style={styles.infoSpec}>Площадь дома</Text>
+          <Text style={styles.infoValue}>{postData.house_area} м2</Text>
         </View>
         <View style={styles.infoSpecRow}>
-          <Text style={styles.infoSpec}>Тип недвижимости</Text>
-          <Text style={styles.infoValue}>ИЖС</Text>
+          <Text style={styles.infoSpec}>Этажи</Text>
+          <Text style={styles.infoValue}>{postData.num_floors}</Text>
         </View>
         <View style={styles.infoSpecRow}>
-          <Text style={styles.infoSpec}>Тип недвижимости</Text>
-          <Text style={styles.infoValue}>ИЖС</Text>
+          <Text style={styles.infoSpec}>Площадь участка</Text>
+          <Text style={styles.infoValue}>{postData.plot_area} сот</Text>
         </View>
         <View style={styles.infoSpecRow}>
-          <Text style={styles.infoSpec}>Тип недвижимости</Text>
-          <Text style={styles.infoValue}>ИЖС</Text>
+          <Text style={styles.infoSpec}>Материал несущих стен</Text>
+          <Text style={styles.infoValue}>{postData.walls_lb}</Text>
         </View>
       </View>
+      <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Материал внутренних стен</Text>
+          <Text style={styles.infoValue}>{postData.walls_part}</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Кровля</Text>
+          <Text style={styles.infoValue}>{postData.roof}</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Фундамент</Text>
+          <Text style={styles.infoValue}>Ленточный</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Электричество (льготный тариф)</Text>
+          <Text style={styles.infoValue}>Да</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Водоснабжение</Text>
+          <Text style={styles.infoValue}>Скважина</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Водоотведение</Text>
+          <Text style={styles.infoValue}>Септик</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Газ</Text>
+          <Text style={styles.infoValue}>Нет</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Отопление</Text>
+          <Text style={styles.infoValue}>Газовый котел</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Материал внутренних стен</Text>
+          <Text style={styles.infoValue}>Гипсокартон</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Кадастровый номер</Text>
+          <Text style={styles.infoValue}>18:26:000000:16741</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Год постройки</Text>
+          <Text style={styles.infoValue}>2022</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Количество спален</Text>
+          <Text style={styles.infoValue}>2</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Состояние дома</Text>
+          <Text style={styles.infoValue}>не требует ремонта</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Тип дома</Text>
+          <Text style={styles.infoValue}>ИЖС</Text>
+        </View>
+        <View style={styles.infoSpecRow}>
+          <Text style={styles.infoSpec}>Дополнительно</Text>
+          <Text style={styles.infoValue}>Гараж, навес, баня</Text>
+        </View>
+    
 
 
 
@@ -297,16 +378,49 @@ infoSpecRow: {
     flexDirection:'row',
     width: width-32,
     justifyContent:'space-between',
-    marginBottom: 12
+    marginBottom: 24
 },
 
 infoSpec: {
+  width: width*0.4,
     fontSize: 16,
+    fontWeight: '400',
     color:'grey'
 },
 
 infoValue: {
-    fontSize: 16
+  textAlign:'right',
+  width: width*0.4,
+    fontSize: 16,
+    fontWeight: '500',
+},
+
+serviciesBlock: {
+  width: width-32,
+  marginTop: 32,
+  alignItems:'flex-start'
+},
+
+serviciesView: {
+  width: width-32,
+  flexDirection:'row',
+  flexWrap:'wrap',
+  justifyContent:'space-between'
+},
+
+serviciesPressable: {
+  width: (width-32-8)/2,
+  height: width*0.25 ,
+  backgroundColor: 'grey',
+  borderRadius: 16,
+  padding: 8,
+  marginBottom: 8
+},
+
+serviciesText: {
+  color:'white',
+  fontSize: 16,
+  fontWeight:'600'
 },
 
 actionBlock: {
