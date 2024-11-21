@@ -25,6 +25,7 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import EditHousePostPage from './pages/EditHousePostPage.js';
 
 
 
@@ -55,6 +56,11 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/>
+        <Stack.Screen name='EditHousePostPage' component={EditHousePostPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
+          
         <Stack.Screen name='NotExistPage' component={NotExistPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  

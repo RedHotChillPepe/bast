@@ -8,7 +8,7 @@ import { useApi } from '../context/ApiContext';
 
 const { width, height } = Dimensions.get('window');
 
-export default function CreateHousePostPage() {
+export default function EditHousePostPage() {
   const [formData, setFormData] = useState({
     title: '',
     houseType: '',
@@ -397,7 +397,7 @@ export default function CreateHousePostPage() {
           } */}
 
         <Pressable style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Опубликовать объявление</Text>
+          <Text style={styles.buttonText}>Сохранить изменения</Text>
         </Pressable>
 
         {/* Все модальные окна */}

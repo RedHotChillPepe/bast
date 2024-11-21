@@ -74,7 +74,7 @@ return (
                            paddingVertical: 8,
                            borderRadius: 12
                           }}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.navigate("EditHousePostPage")}>
           <Text style={{color:'white', fontSize: 18, fontWeight:'bold'}}>Редактировать</Text>
         </Pressable>
       </View>   
