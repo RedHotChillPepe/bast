@@ -21,7 +21,7 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort }) => {
 
   const handleSortPress = (optionId) => {
     setSelectedSort(optionId);
-    onClose();
+
   };
 
   return (
@@ -49,7 +49,7 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort }) => {
             </Pressable>
           ))}
           <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Закрыть</Text>
+            <Text style={styles.closeButtonText}>Применить</Text>
           </Pressable>
         </View>
       </View>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 16,
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#007AFF',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
