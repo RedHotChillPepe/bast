@@ -163,24 +163,24 @@ const DynamicHousesPage = ({route}) => {
 
       {/* Категории */}
       <View style={styles.categoriesContainer}>
-      <FlatList
-        data={categories}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        renderItem={categoriesButton}
-      />
+        <FlatList
+          data={categories}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={categoriesButton}
+        />
       </View>
 
       {/* Фильтры и сортировка */}
       <View style={styles.filterContainer}>
         <Pressable style={styles.searchButton} onPress={() => setModalVisible(true)}>
-        <AntDesign name="filter" size={24} color="black" />
-          <Text style={styles.searchButtonText}>Фильтры</Text>
-        </Pressable>
-        <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
-        <MaterialIcons name="sort" size={24} color="black" />
-          <Text style={styles.searchButtonText}>Сортировка</Text>
+          <AntDesign name="filter" size={24} color="black" />
+            <Text style={styles.searchButtonText}>Фильтры</Text>
+          </Pressable>
+          <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
+            <MaterialIcons name="sort" size={24} color="black" />
+            <Text style={styles.searchButtonText}>Сортировка</Text>
         </Pressable> 
       </View>
 

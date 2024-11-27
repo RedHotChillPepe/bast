@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "newArchEnabled": true,
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/BastLogo.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/BastSplash.png",
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/BastLogo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.bastithouses.app"
@@ -28,7 +28,14 @@
     },
     "plugins": [
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+      {
+        "backgroundColor": "#0077FF",
+        "image": "./assets/BastSplash.png",
+        "imageWidth": 200
+      }]
     ],
     "extra": {
       "eas": {

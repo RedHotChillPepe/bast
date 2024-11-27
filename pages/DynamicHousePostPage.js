@@ -4,15 +4,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useAuth } from '../context/AuthContext';
 
 const {width} = Dimensions.get('window');
 
 export default function DynamicHousePostPage ({ navigation, route }) {
 
   const {houseId} = route.params
-  const {getPost} = useApi()
+  const {getPost, getIsOwner} = useApi()
+  const {getAuth} = useAuth()
 
   const [postData, setPostData]=useState([])
+
+  const [isOwner, setIsOwner]=useState(false)
   
   useEffect(() => {
     const fetchPost = async() => {
@@ -25,6 +29,19 @@ export default function DynamicHousePostPage ({ navigation, route }) {
         
       }
     }
+    const checkUser = async() => {
+      if (houseId) {
+        const auth = JSON.parse(await getAuth())
+        if (auth[0].password) {
+          const result = await getIsOwner(await auth[0].phone, await auth[0].password, houseId)
+          const resultJson = JSON.parse(await result.text())
+          setIsOwner(await resultJson.result)
+          
+        }
+        
+      }
+    }
+    checkUser()
     fetchPost()
     return () => {
       
@@ -68,15 +85,21 @@ return (
 
         {/* кнопка ведет на экран редактирования объявления (по сути экран создания объявления только с заполненными инпутами) */}
         {/* Видна только хозяину объявления */}
-        <Pressable style={{backgroundColor: 'black',
-                           alignItems:'center',
-                           paddingHorizontal: 12,
-                           paddingVertical: 8,
-                           borderRadius: 12
-                          }}
-          onPress={() => navigation.navigate("EditHousePostPage")}>
-          <Text style={{color:'white', fontSize: 18, fontWeight:'bold'}}>Редактировать</Text>
-        </Pressable>
+        {
+          isOwner  
+          &&
+          <Pressable style={{backgroundColor: 'black',
+            alignItems:'center',
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 12
+           }}
+            onPress={() => navigation.navigate("EditHousePostPage", postData)}>
+
+            <Text style={{color:'white', fontSize: 18, fontWeight:'bold'}}>Редактировать</Text>
+          </Pressable>
+        }
+        
       </View>   
       
 
@@ -91,10 +114,6 @@ return (
           <Image source={{uri:item}} style={styles.image} key={index}/>)
         }
 
-        {/* <Image source={require('../assets/house.png')} style={styles.image} />
-        <Image source={require('../assets/house.png')} style={styles.image} />
-        <Image source={require('../assets/house.png')} style={styles.image} />
-        <Image source={require('../assets/house.png')} style={styles.image} /> */}
       </ScrollView>
       
       {/* priceBlock - блок с ценой и кнопкой Избранное */}
@@ -107,7 +126,7 @@ return (
           :
           <View>
             <Text style={styles.priceText}>
-              {postData.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
+              {postData.price != null && postData.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
             </Text>
             <Text style={styles.priceMeter}>
               {Math.floor(postData.price / postData.house_area).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Р/м²
@@ -202,8 +221,7 @@ return (
           <Text style={styles.infoSpec}>Материал несущих стен</Text>
           <Text style={styles.infoValue}>{postData.walls_lb}</Text>
         </View>
-      </View>
-      <View style={styles.infoSpecRow}>
+        <View style={styles.infoSpecRow}>
           <Text style={styles.infoSpec}>Материал внутренних стен</Text>
           <Text style={styles.infoValue}>{postData.walls_part}</Text>
         </View>
@@ -213,7 +231,7 @@ return (
         </View>
         <View style={styles.infoSpecRow}>
           <Text style={styles.infoSpec}>Фундамент</Text>
-          <Text style={styles.infoValue}>Ленточный</Text>
+          <Text style={styles.infoValue}>{postData.base}</Text>
         </View>
         <View style={styles.infoSpecRow}>
           <Text style={styles.infoSpec}>Электричество (льготный тариф)</Text>
@@ -263,12 +281,9 @@ return (
           <Text style={styles.infoSpec}>Дополнительно</Text>
           <Text style={styles.infoValue}>Гараж, навес, баня</Text>
         </View>
-    
+      </View>
 
-
-
-
-  {/* потом появятся две карусели с домами от этого застройщика и похожими домами */}
+        {/* потом появятся две карусели с домами от этого застройщика и похожими домами */}
 
       </ScrollView>
 

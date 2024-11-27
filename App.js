@@ -26,6 +26,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import EditHousePostPage from './pages/EditHousePostPage.js';
+import * as SplashScreen from 'expo-splash-screen';
 
 
 
@@ -170,6 +171,9 @@ const AppInit = () => {
     'Inter700': require('./assets/fonts/Inter_18pt-Bold.ttf'),
   })
   if (loaded) {
+    SplashScreen.hide()
+
+    // Проверка зарегистрирован ли пользователь
     if (!isAuth) {
       return (
         <AppAuthStack/>
@@ -190,7 +194,7 @@ const AppInit = () => {
     }
   }
 
-  // Проверка зарегистрирован ли пользователь
+  
   
 }
 ///

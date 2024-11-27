@@ -8,32 +8,39 @@ import { useApi } from '../context/ApiContext';
 
 const { width, height } = Dimensions.get('window');
 
-export default function EditHousePostPage() {
+export default function EditHousePostPage({route}) {
+  const {additions, base, bedrooms, city, electricity_bill,
+    full_address, gas, heating, house_area, house_status,
+    house_type, id, kad_number, latitude, longitude,
+    name, newbuild, num_floors, photos, plot_area,
+    price, roof, sewage, text, walls_lb, walls_part,
+    water, wc_number, year_built
+  } = route.params
+
   const [formData, setFormData] = useState({
-    title: '',
-    houseType: '',
-    wallMaterial: '',
-    partitionMaterial: '',
-    price: '',
-    area: '',
-    floors: '',
-    rooms: '',
-    location: '',
-    settlement: '',
-    plotSize: '',
-    description: '',
-    roof: '',
-    basement: '',
-    landArea: '',
-    kadastr: '',
-    houseCondition: '',
-    constructionYear: '',
-    gas: '',
-    water: '',
-    sewerege: '',
-    electricity: '',
-    heating: '',
-    photos:[]
+    title: name,
+    houseType: house_type,
+    wallMaterial: walls_lb,
+    partitionMaterial: walls_part,
+    price: price,
+    area: house_area,
+    floors: num_floors,
+    rooms: bedrooms,
+    location: full_address,
+    settlement: city,
+    plotSize: plot_area,
+    description: text,
+    roof: roof,
+    basement: base,
+    kadastr: kad_number,
+    houseCondition: house_status,
+    constructionYear: year_built,
+    gas: gas,
+    water: water,
+    sewerege: sewage,
+    electricity: electricity_bill,
+    heating: heating,
+    photos:photos
   });
 
   const [houseTypeModalVisible, setHouseTypeModalVisible] = useState(false);
@@ -46,7 +53,9 @@ export default function EditHousePostPage() {
   const [electricityModalVisible, setElectricityModalVisible] = useState(false);
   const [heatingModalVisible, setHeatingModalVisible] = useState(false);
 
-  const {sendPost} = useApi()
+  const {updatePost} = useApi()
+
+  
 
   const handleInputChange = (field, value) => {
     setFormData((prevData)=> ({ ...prevData, [field]: value }));
@@ -81,7 +90,7 @@ export default function EditHousePostPage() {
       Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
       return;
     } */
-    let result = await sendPost(formData)
+    let result = await updatePost(formData, id)
 
     console.log(await result);
     
@@ -204,7 +213,7 @@ export default function EditHousePostPage() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.formContainer}>
-        <Text style={styles.header}>Создание объявления</Text>
+        <Text style={styles.header}>Редактирование Объявления</Text>
 
         <Text style={styles.header2}>Местоположение</Text>
 
@@ -359,7 +368,7 @@ export default function EditHousePostPage() {
           ) : (
             <View style={styles.inputPhoto2}>
               {formData.photos.map((photo, index) => (
-                <Image key={index} source={{ uri: `data:image/jpeg;base64,${photo.base64}` }} style={styles.thumbnail} />
+                <Image key={index} source={{ uri: photo.base64 == undefined ? `${photo}` : `data:image/jpeg;base64,${photo.base64}` }} style={styles.thumbnail} />
                 
               ))}
               <Pressable style={{backgroundColor:'black',
@@ -378,23 +387,6 @@ export default function EditHousePostPage() {
           )}
 
         </View>
-
-
-          {/* {
-            Object.keys(formData.photos).length != 0.0
-            
-            &&
-            
-            formData.photos.map((item, index) => {
-              return (
-                <Text key={index}>
-                  {item.filename}
-                </Text>
-              )
-            })
-              
-            
-          } */}
 
         <Pressable style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Сохранить изменения</Text>

@@ -88,6 +88,53 @@ export default function ApiProvider ({ children }){
         }
     }
 
+    const updatePost = async (data, id) => {
+        const url = host + 'api/posts/updatepost'
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify([{
+                    name: data.title == "" ? null : data.title,
+                    house_type: data.houseType == "" ? null : data.houseType,
+                    walls_lb: data.wallMaterial == "" ? null : data.wallMaterial,
+                    walls_part: data.partitionMaterial == "" ? null : data.partitionMaterial,
+                    price: data.price == "" ? null : data.price,
+                    house_area: data.area  == "" ? null : data.area,
+                    num_floors: data.floors == "" ? null : data.floors,
+                    bedrooms: data.rooms == "" ? null : data.rooms,
+                    full_address: data.location == "" ? null : data.location,
+                    city: data.settlement == "" ? null : data.settlement,
+                    plot_area: data.plotSize == "" ? null : data.plotSize,
+                    text: data.description == "" ? null : data.description,
+                    roof: data.roof == "" ? null : data.roof,
+                    base: data.basement == "" ? null : data.basement,
+                    /* landArea: '', */
+                    kad_number: data.kadastr == "" ? null : data.kadastr,
+                    house_status: data.houseCondition == "" ? null : data.houseCondition,
+                    year_built: data.constructionYear == "" ? null : data.constructionYear,
+                    gas: data.gas == "" ? null : data.gas,
+                    water: data.water == "" ? null : data.water,
+                    sewage: data.sewerege == "" ? null : data.sewerege,
+                    electricity_bill: data.electricity== "" ? null : data.electricity,
+                    heating: data.heating == "" ? null :data.heating,
+                    photos:data.photos,
+                    id:id
+                }])
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting user: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getAllVillages = async () =>{
         const url = host + "api/villages/all"
         console.log(url);
@@ -174,6 +221,32 @@ export default function ApiProvider ({ children }){
         }
     }
 
+    const getIsOwner = async (phone, password, postid) => {
+        const url = host + "api/users/getisowner"
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify([{
+                    phone: phone,
+                    password: password,
+                    post_id: postid
+                }])
+            })
+            .then(response => {return response})
+            .catch(error => {
+                console.error("Error getting user ownership: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+            
+        }
+    }
+
     const sendSms = async (phone) => {
         const url = host + "api/sms/sendsms"
 
@@ -226,8 +299,8 @@ export default function ApiProvider ({ children }){
 
     return (
         <ApiContext.Provider value={{getAllPosts, getAllVillages, 
-        getLogin, getUser, postRegister, sendSms, verifySms,
-        getPost, sendPost}}>
+        getLogin, getUser, getIsOwner, postRegister, sendSms, verifySms,
+        getPost, sendPost, updatePost}}>
             {children}
         </ApiContext.Provider>
     )
