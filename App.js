@@ -85,7 +85,7 @@ const AppTabs = () => {
         />
       <Tab.Screen 
         name='Favourites' 
-        component={NotExistPage}
+        component={FavouritesPage}
         options={{
           headerShown:false,
           tabBarIcon: ({ color, size}) => (

@@ -125,21 +125,6 @@ const DynamicHousesPage = ({route}) => {
       '5': 'По размеру участка',
     };
 
-    //const {searchPrepopulate} = route.params
-    
-    // useEffect(() => {
-    //   const loadFromAPI = async () => {
-    //     setHouses(await getAllPosts())
-    //     //console.log(await getAllPosts());
-        
-    //   }
-      
-    //   loadFromAPI()
-    //   return () => {
-        
-    //   }
-    // }, [])
-
     useEffect(() => {
       // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
       if (Object.keys(houses).length === 0) {

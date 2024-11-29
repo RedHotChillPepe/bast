@@ -5,6 +5,7 @@ import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
+import * as SecureStore from 'expo-secure-store';
 
 const {width} = Dimensions.get('window');
 
@@ -17,6 +18,28 @@ export default function DynamicHousePostPage ({ navigation, route }) {
   const [postData, setPostData]=useState([])
 
   const [isOwner, setIsOwner]=useState(false)
+  const [isFavorite, setIsFavorite]=useState(false)
+
+  const toggleFavorite = async () => {
+    if (isFavorite == true) {
+      const result = JSON.parse(await SecureStore.getItemAsync("favs"))
+      console.log("true result:", result)
+      const favIndex = result.indexOf(houseId)
+      console.log("true favindex", favIndex);
+      
+      const newList = result.toSpliced(favIndex, 1)
+      console.log("true newlist", newList);
+      await SecureStore.setItemAsync("favs", JSON.stringify(newList) )
+      setIsFavorite(false)
+    } else if (isFavorite == false) {
+      const result = JSON.parse(await SecureStore.getItemAsync("favs"))
+      console.log("false result", result)
+      const newList = result== null ? [houseId] : result.push(houseId) // если result != null, то newList будет равен кол-ву элементов в новом result
+      console.log("false", newList);
+      await SecureStore.setItemAsync("favs", JSON.stringify(result == null ? newList : result) )
+      setIsFavorite(true)
+    }
+  }
   
   useEffect(() => {
     const fetchPost = async() => {
@@ -41,7 +64,19 @@ export default function DynamicHousePostPage ({ navigation, route }) {
         
       }
     }
+    const checkFavorite = async()=>{
+      const result = JSON.parse(await SecureStore.getItemAsync("favs"))
+      console.log(result);
+      
+      const isFound = result.includes(houseId)
+      console.log(isFound);
+      
+      if (isFound && result != null) {
+        setIsFavorite(true)
+      }
+    }
     checkUser()
+    checkFavorite()
     fetchPost()
     return () => {
       
@@ -133,8 +168,17 @@ return (
             </Text>
           </View>
         }
-        <MaterialIcons name="favorite-border" size={32} color="grey" />
-        {/* <MaterialIcons name="favorite" size={24} color="black" />  для активного состояния*/}
+        {
+          isFavorite 
+          ? 
+          <Pressable onPress={()=>toggleFavorite()}>
+            <MaterialIcons name="favorite" size={32} color="black" />
+          </Pressable>  
+          :
+          <Pressable onPress={()=>toggleFavorite()}>
+            <MaterialIcons name="favorite-border" size={32} color="grey" />
+          </Pressable> 
+        }
       </View>
       
       {/* specView - основные характеристики */}
