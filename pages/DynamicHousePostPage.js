@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -12,13 +12,17 @@ const {width} = Dimensions.get('window');
 export default function DynamicHousePostPage ({ navigation, route }) {
 
   const {houseId} = route.params
-  const {getPost, getIsOwner} = useApi()
+  const {getPost, getIsOwner, getUserByID} = useApi()
   const {getAuth} = useAuth()
 
   const [postData, setPostData]=useState([])
 
   const [isOwner, setIsOwner]=useState(false)
   const [isFavorite, setIsFavorite]=useState(false)
+
+  const [showModal, setShowModal] = useState(false)
+  const [phone, setPhone] = useState("")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const toggleFavorite = async () => {
     if (isFavorite == true) {
@@ -56,6 +60,7 @@ export default function DynamicHousePostPage ({ navigation, route }) {
       if (houseId) {
         const auth = JSON.parse(await getAuth())
         if (auth[0].password) {
+          setIsLoggedIn(true)
           const result = await getIsOwner(await auth[0].phone, await auth[0].password, houseId)
           const resultJson = JSON.parse(await result.text())
           setIsOwner(await resultJson.result)
@@ -106,6 +111,16 @@ const handleScroll = Animated.event(
     },
   }
 );
+
+const handleCallButton = async () => {
+  setShowModal(true)
+
+  const result = await getUserByID(postData.poster_id)
+  const resultJson = JSON.parse(await result.text())
+
+  
+  setPhone(await resultJson[0].phone)
+}
 
   
 
@@ -331,10 +346,10 @@ return (
 
       </ScrollView>
 
-{/* оверлей кнопки */}
+      {/* оверлей кнопки */}
       {showButtons && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity onPress={() => handleCallButton()} style={styles.button}>
             <Text style={styles.buttonText}>Позвонить</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button}>
@@ -342,6 +357,29 @@ return (
           </TouchableOpacity>
         </View>
       )}
+
+      {
+        showModal 
+        &&
+        <Modal visible={showModal} transparent animationType="slide" onDismiss={()=>setShowModal(false)} onRequestClose={()=>setShowModal(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text>
+                {
+                  isLoggedIn 
+                  ?
+                  phone
+                  :
+                  "Пожалуйста зарегиструруйтесь чтобы посмотреть номер телефона"
+                }
+              </Text>
+              <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
+                <Text style={styles.closeButtonText}>Ok</Text>
+              </Pressable>
+            </View>
+          </View>          
+        </Modal>
+      }
   </SafeAreaView>
 )
 
@@ -522,6 +560,32 @@ buttonText: {
   color: 'white',
   fontSize: 18,
   fontWeight: 'bold',
-}
+},
+closeButton: {
+  marginTop: 16,
+  backgroundColor: '#007AFF',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+  alignSelf: 'center',
+},
+closeButtonText: {
+  color: 'white',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalContent: {
+  backgroundColor: 'white',
+  width: width - 48,
+  borderRadius: 12,
+  padding: 16,
+  maxHeight: '80%',
+},
 
 })
