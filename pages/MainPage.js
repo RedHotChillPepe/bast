@@ -139,7 +139,7 @@ const MainPage = () => {
                 <View style={styles.functionCards}>
                   {
                     ServicesContent.map((item, index) => (
-                      <Pressable onPress={() => navigation.navigate("NotExistPage")} style={styles.functionCard} key={index}>
+                      <Pressable onPress={() => navigation.navigate("MortgageCalculator")} style={styles.functionCard} key={index}>
                         <View style={[styles.functionCardView]}>
                           <Text style={styles.functionCardText}>
                             {item.text}

@@ -27,8 +27,11 @@ import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import EditHousePostPage from './pages/EditHousePostPage.js';
 import * as SplashScreen from 'expo-splash-screen';
-
-
+import MortgageCalculator from './pages/MortgageCalculator.js';
+import Error404 from './pages/Error404.js';
+import Error403 from './pages/Error403.js';
+import Error500 from './pages/Error500.js';
+import Error503 from './pages/Error503.js';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
@@ -66,6 +69,31 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/>
+
+        <Stack.Screen name='MortgageCalculator' component={MortgageCalculator}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
+
+        <Stack.Screen name='Error404' component={Error404}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+
+        <Stack.Screen name='Error403' component={Error403}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+
+        <Stack.Screen name='Error500' component={Error500}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+
+        <Stack.Screen name='Error503' component={Error503}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
       </Stack.Navigator>
   );
 }
@@ -85,7 +113,7 @@ const AppTabs = () => {
         />
       <Tab.Screen 
         name='Favourites' 
-        component={NotExistPage}
+        component={FavouritesPage}
         options={{
           headerShown:false,
           tabBarIcon: ({ color, size}) => (
@@ -115,7 +143,7 @@ const AppTabs = () => {
       />
       <Tab.Screen
       name='Profile'
-      component={NotExistPage}
+      component={ProfilePage}
       options={{
         headerShown:false,
         tabBarIcon: ({ color, size}) => (
