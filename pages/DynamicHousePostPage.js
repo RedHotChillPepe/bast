@@ -1,22 +1,49 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
+import * as SecureStore from 'expo-secure-store';
 
 const {width} = Dimensions.get('window');
 
 export default function DynamicHousePostPage ({ navigation, route }) {
 
   const {houseId} = route.params
-  const {getPost, getIsOwner} = useApi()
+  const {getPost, getIsOwner, getUserByID} = useApi()
   const {getAuth} = useAuth()
 
   const [postData, setPostData]=useState([])
 
   const [isOwner, setIsOwner]=useState(false)
+  const [isFavorite, setIsFavorite]=useState(false)
+
+  const [showModal, setShowModal] = useState(false)
+  const [phone, setPhone] = useState("")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  const toggleFavorite = async () => {
+    if (isFavorite == true) {
+      const result = JSON.parse(await SecureStore.getItemAsync("favs"))
+      console.log("true result:", result)
+      const favIndex = result.indexOf(houseId)
+      console.log("true favindex", favIndex);
+      
+      const newList = result.toSpliced(favIndex, 1)
+      console.log("true newlist", newList);
+      await SecureStore.setItemAsync("favs", JSON.stringify(newList) )
+      setIsFavorite(false)
+    } else if (isFavorite == false) {
+      const result = JSON.parse(await SecureStore.getItemAsync("favs"))
+      console.log("false result", result)
+      const newList = result== null ? [houseId] : result.push(houseId) // если result != null, то newList будет равен кол-ву элементов в новом result
+      console.log("false", newList);
+      await SecureStore.setItemAsync("favs", JSON.stringify(result == null ? newList : result) )
+      setIsFavorite(true)
+    }
+  }
   
   useEffect(() => {
     const fetchPost = async() => {
@@ -33,6 +60,7 @@ export default function DynamicHousePostPage ({ navigation, route }) {
       if (houseId) {
         const auth = JSON.parse(await getAuth())
         if (auth[0].password) {
+          setIsLoggedIn(true)
           const result = await getIsOwner(await auth[0].phone, await auth[0].password, houseId)
           const resultJson = JSON.parse(await result.text())
           setIsOwner(await resultJson.result)
@@ -41,7 +69,19 @@ export default function DynamicHousePostPage ({ navigation, route }) {
         
       }
     }
+    const checkFavorite = async()=>{
+      const result = JSON.parse(await SecureStore.getItemAsync("favs"))
+      console.log(result);
+      
+      const isFound = result.includes(houseId)
+      console.log(isFound);
+      
+      if (isFound && result != null) {
+        setIsFavorite(true)
+      }
+    }
     checkUser()
+    checkFavorite()
     fetchPost()
     return () => {
       
@@ -71,6 +111,16 @@ const handleScroll = Animated.event(
     },
   }
 );
+
+const handleCallButton = async () => {
+  setShowModal(true)
+
+  const result = await getUserByID(postData.poster_id)
+  const resultJson = JSON.parse(await result.text())
+
+  
+  setPhone(await resultJson[0].phone)
+}
 
   
 
@@ -133,8 +183,17 @@ return (
             </Text>
           </View>
         }
-        <MaterialIcons name="favorite-border" size={32} color="grey" />
-        {/* <MaterialIcons name="favorite" size={24} color="black" />  для активного состояния*/}
+        {
+          isFavorite 
+          ? 
+          <Pressable onPress={()=>toggleFavorite()}>
+            <MaterialIcons name="favorite" size={32} color="black" />
+          </Pressable>  
+          :
+          <Pressable onPress={()=>toggleFavorite()}>
+            <MaterialIcons name="favorite-border" size={32} color="grey" />
+          </Pressable> 
+        }
       </View>
       
       {/* specView - основные характеристики */}
@@ -287,10 +346,10 @@ return (
 
       </ScrollView>
 
-{/* оверлей кнопки */}
+      {/* оверлей кнопки */}
       {showButtons && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity onPress={() => handleCallButton()} style={styles.button}>
             <Text style={styles.buttonText}>Позвонить</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button}>
@@ -298,6 +357,29 @@ return (
           </TouchableOpacity>
         </View>
       )}
+
+      {
+        showModal 
+        &&
+        <Modal visible={showModal} transparent animationType="slide" onDismiss={()=>setShowModal(false)} onRequestClose={()=>setShowModal(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text>
+                {
+                  isLoggedIn 
+                  ?
+                  phone
+                  :
+                  "Пожалуйста зарегиструруйтесь чтобы посмотреть номер телефона"
+                }
+              </Text>
+              <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
+                <Text style={styles.closeButtonText}>Ok</Text>
+              </Pressable>
+            </View>
+          </View>          
+        </Modal>
+      }
   </SafeAreaView>
 )
 
@@ -478,6 +560,32 @@ buttonText: {
   color: 'white',
   fontSize: 18,
   fontWeight: 'bold',
-}
+},
+closeButton: {
+  marginTop: 16,
+  backgroundColor: '#007AFF',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+  alignSelf: 'center',
+},
+closeButtonText: {
+  color: 'white',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalContent: {
+  backgroundColor: 'white',
+  width: width - 48,
+  borderRadius: 12,
+  padding: 16,
+  maxHeight: '80%',
+},
 
 })

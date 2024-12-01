@@ -221,6 +221,26 @@ export default function ApiProvider ({ children }){
         }
     }
 
+    const getUserByID = async (id) => {
+        const url = host + `api/users/getuser/${id}`
+
+        try {
+            return fetch(url,{
+                method:'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting user: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getIsOwner = async (phone, password, postid) => {
         const url = host + "api/users/getisowner"
 
@@ -300,7 +320,7 @@ export default function ApiProvider ({ children }){
     return (
         <ApiContext.Provider value={{getAllPosts, getAllVillages, 
         getLogin, getUser, getIsOwner, postRegister, sendSms, verifySms,
-        getPost, sendPost, updatePost}}>
+        getPost, getUserByID, sendPost, updatePost}}>
             {children}
         </ApiContext.Provider>
     )
