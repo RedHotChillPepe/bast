@@ -67,7 +67,7 @@ const filterGroups = [
     title: 'Газ',
     options: [
       { id: '61', label: 'Да' },
-      { id: '61', label: 'Нет' },
+      { id: '62', label: 'Нет' },
     ],
   },
   {

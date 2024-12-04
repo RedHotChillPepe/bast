@@ -6,6 +6,8 @@ import {
   Pressable,
   Modal,
   Dimensions,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -26,33 +28,39 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort }) => {
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
+      <TouchableOpacity style={styles.modalOverlay} onPressOut={onClose}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Выберите сортировку</Text>
-          {sortOptions.map((option) => (
-            <Pressable
-              key={option.id}
-              style={[
-                styles.sortButton,
-                selectedSort === option.id && styles.selectedSortButton,
-              ]}
-              onPress={() => handleSortPress(option.id)}
-            >
-              <Text
-                style={[
-                  styles.sortButtonText,
-                  selectedSort === option.id && styles.selectedSortButtonText,
-                ]}
-              >
-                {option.label}
-              </Text>
-            </Pressable>
-          ))}
-          <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Применить</Text>
-          </Pressable>
+          <TouchableWithoutFeedback >
+            <View >
+              <Text style={styles.modalHeader}>Выберите сортировку</Text>
+              {sortOptions.map((option) => (
+                <Pressable
+                  key={option.id}
+                  style={[
+                    styles.sortButton,
+                    selectedSort === option.id && styles.selectedSortButton,
+                  ]}
+                  onPress={() => handleSortPress(option.id)}
+                >
+                  <Text
+                    style={[
+                      styles.sortButtonText,
+                      selectedSort === option.id && styles.selectedSortButtonText,
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+              ))}
+              <Pressable style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>Применить</Text>
+              </Pressable>
+            </View>
+          </TouchableWithoutFeedback>
+          
         </View>
-      </View>
+      </TouchableOpacity>
+      
     </Modal>
   );
 };

@@ -7,6 +7,8 @@ import {
   Modal,
   ScrollView,
   Dimensions,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import PriceRangeSlider from './PriceRageSlider';
 import AreaRangeSlider from './AreaRageSlider';
@@ -28,45 +30,49 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Параметры поиска</Text>
-          <ScrollView contentContainerStyle={styles.groupList}>
-            <PriceRangeSlider />
-            <AreaRangeSlider />
-            {filterGroups.map((group) => (
-              <View key={group.id} style={styles.groupContainer}>
-                <Text style={styles.groupHeader}>{group.title}</Text>
-                <View style={styles.optionsContainer}>
-                  {group.options.map((option) => (
-                    <Pressable
-                      key={option.id}
-                      style={[
-                        styles.filterButton,
-                        selectedFilters[group.id] === option.id && styles.selectedFilterButton,
-                      ]}
-                      onPress={() => handleOptionPress(group.id, option.id)}
-                    >
-                      <Text
-                        style={[
-                          styles.filterButtonText,
-                          selectedFilters[group.id] === option.id && styles.selectedFilterButtonText,
-                        ]}
-                      >
-                        {option.label}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-          <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Применить</Text>
-          </Pressable>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onDismiss={onClose}>
+      <TouchableOpacity activeOpacity={1} style={styles.modalOverlay} onPressOut={onClose}>
+        <View >
+          <TouchableWithoutFeedback >
+            <View style={styles.modalContent}>
+              <Text style={styles.modalHeader}>Параметры поиска</Text>
+              <ScrollView contentContainerStyle={styles.groupList}>
+                <PriceRangeSlider />
+                <AreaRangeSlider />
+                {filterGroups.map((group) => (
+                  <View key={group.id} style={styles.groupContainer}>
+                    <Text style={styles.groupHeader}>{group.title}</Text>
+                    <View style={styles.optionsContainer}>
+                      {group.options.map((option) => (
+                        <Pressable
+                          key={option.id}
+                          style={[
+                            styles.filterButton,
+                            selectedFilters[group.id] === option.id && styles.selectedFilterButton,
+                          ]}
+                          onPress={() => handleOptionPress(group.id, option.id)}
+                        >
+                          <Text
+                            style={[
+                              styles.filterButtonText,
+                              selectedFilters[group.id] === option.id && styles.selectedFilterButtonText,
+                            ]}
+                          >
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+              <Pressable style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>Применить</Text>
+              </Pressable>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };

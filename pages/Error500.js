@@ -10,7 +10,7 @@ const Error500 = () => {
     <SafeAreaView style={{flex: 1, alignItems:'center', justifyContent:'center'}}>
       <Text style={{fontSize: 96, fontWeight:'800', color:'#0077FF'}}>500</Text>
       <Text>There was an error on the server. Please wait, we will fix it soon</Text>
-      <Button title='Home' onPress={() => navigation.navigate("MainPage")}/>
+      <Button title='Home' onPress={() => navigation.navigate("Main")}/>
 
     </SafeAreaView>
   )

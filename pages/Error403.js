@@ -10,7 +10,7 @@ const Error403 = () => {
     <SafeAreaView style={{flex: 1, alignItems:'center', justifyContent:'center'}}>
       <Text style={{fontSize: 96, fontWeight:'800', color:'#0077FF'}}>403</Text>
       <Text>Oops... Access to this page is denied.</Text>
-      <Button title='Home' onPress={() => navigation.navigate("MainPage")}/>
+      <Button title='Home' onPress={() => navigation.navigate("Main")}/>
 
     </SafeAreaView>
   )

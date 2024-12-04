@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React from 'react'
 import { Picker } from '@react-native-picker/picker'
 
@@ -9,32 +9,37 @@ const ModalPickerComponent = (props) => {
           transparent={true}
           animationType="slide"
           onRequestClose={() => props.onRequestClose(false)}
+          onDismiss={() => props.onRequestClose(false)}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalHeader}>{props.headerText}</Text>
-              <Picker
-                selectedValue={props.pickerSelectedValue}
-                onValueChange={(value) => props.handlePickerSelect(`${props.valueName}`, value)}
-              >
-                {/* <Picker.Item label="ИЖС" value="ИЖС" />
-                <Picker.Item label="неИЖС" value="неИЖС" /> */}
-                {
-                  props.pickerData.map((item, index)=>{
-                    return(
-                      <Picker.Item 
-                      key={index}
-                      label={item.label}
-                      value={item.value}/>
-                    )
-                  })
-                }
-              </Picker>
-              <Pressable style={styles.closeButton} onPress={() => props.onRequestClose(false)}>
-                <Text style={styles.closeButtonText}>Выбрать</Text>
-              </Pressable>
+          <TouchableOpacity style={styles.modalContainer} onPressOut={() => props.onRequestClose(false)}>
+            <View>
+              <TouchableWithoutFeedback>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalHeader}>{props.headerText}</Text>
+                  <Picker
+                    selectedValue={props.pickerSelectedValue}
+                    onValueChange={(value) => props.handlePickerSelect(`${props.valueName}`, value)}
+                  >
+                    {/* <Picker.Item label="ИЖС" value="ИЖС" />
+                    <Picker.Item label="неИЖС" value="неИЖС" /> */}
+                    {
+                      props.pickerData.map((item, index)=>{
+                        return(
+                          <Picker.Item 
+                          key={index}
+                          label={item.label}
+                          value={item.value}/>
+                        )
+                      })
+                    }
+                  </Picker>
+                  <Pressable style={styles.closeButton} onPress={() => props.onRequestClose(false)}>
+                    <Text style={styles.closeButtonText}>Выбрать</Text>
+                  </Pressable>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-          </View>
+          </TouchableOpacity>
     </Modal>
   )
 }
