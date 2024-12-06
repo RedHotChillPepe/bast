@@ -3,7 +3,7 @@ import { View, Text, FlatList, Pressable, Image, StyleSheet, Dimensions } from '
 
 const { width } = Dimensions.get('window');
 
-const HouseCard = ({ data, navigation, itemWidth, horizontalScroll = true }) => {
+const HouseCard = ({ data, navigation, itemWidth, horizontalScroll = true, onEndReached }) => {
   const renderHouseItem = ({ item }) => (
     <Pressable onPress={() => navigation.navigate("House", { houseId: item.id })}>
       <View style={[styles.houseItem, {width: itemWidth}]}>
@@ -13,7 +13,7 @@ const HouseCard = ({ data, navigation, itemWidth, horizontalScroll = true }) => 
         <View>
           <View style={styles.priceRow}>
             <Text style={styles.houseItemText}>
-              {item.price != null && item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+              {item.price != null & item.price != undefined && item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
             </Text>
             <Text style={styles.pricePerSquare}>{Math.floor(item.price / item.house_area)}₽/м²</Text>
           </View>
@@ -35,7 +35,8 @@ const HouseCard = ({ data, navigation, itemWidth, horizontalScroll = true }) => 
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       renderItem={renderHouseItem}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item.id != null & item.id != undefined ? item.id.toString() : "lmao"}
+      onEndReached={onEndReached}
     />
   );
 };

@@ -12,19 +12,25 @@ import {
 
 const { width } = Dimensions.get('window');
 
-const SortModal = ({ visible, onClose, selectedSort, setSelectedSort }) => {
+const SortModal = ({ visible, onClose, selectedSort, setSelectedSort, handleFilterChoice }) => {
   const sortOptions = [
-    { id: '1', label: 'Сначала дешевле' },
-    { id: '2', label: 'Сначала дороже' },
-    { id: '3', label: 'По актуальности' },
-    { id: '4', label: 'По площади' },
-    { id: '5', label: 'По размеру участка' },
+    { id: '81', label: 'Сначала дешевле' },
+    { id: '82', label: 'Сначала дороже' },
+    { id: '83', label: 'Сначала новые' },
+    { id: '84', label: 'По площади' },
+    { id: '85', label: 'По размеру участка' },
   ];
 
-  const handleSortPress = (optionId) => {
-    setSelectedSort(optionId);
-
+  const handleSortPress = (option) => {
+    setSelectedSort(option);
+    console.log("sort: ", option);
+    
   };
+
+  const handleApplyPress = ()=>{
+    handleFilterChoice()
+    onClose()
+  }
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -38,21 +44,21 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort }) => {
                   key={option.id}
                   style={[
                     styles.sortButton,
-                    selectedSort === option.id && styles.selectedSortButton,
+                    selectedSort.id === option.id && styles.selectedSortButton,
                   ]}
-                  onPress={() => handleSortPress(option.id)}
+                  onPress={() => handleSortPress(option)}
                 >
                   <Text
                     style={[
                       styles.sortButtonText,
-                      selectedSort === option.id && styles.selectedSortButtonText,
+                      selectedSort.id === option.id && styles.selectedSortButtonText,
                     ]}
                   >
                     {option.label}
                   </Text>
                 </Pressable>
               ))}
-              <Pressable style={styles.closeButton} onPress={onClose}>
+              <Pressable style={styles.closeButton} onPress={()=>handleApplyPress()}>
                 <Text style={styles.closeButtonText}>Применить</Text>
               </Pressable>
             </View>

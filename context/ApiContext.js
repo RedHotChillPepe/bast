@@ -22,6 +22,24 @@ export default function ApiProvider ({ children }){
         })
     }
 
+    const getPaginatedPosts = async (page, params) => {
+        const query = new URLSearchParams(params) != "undefined" || params != undefined ? new URLSearchParams(params) : ""
+        console.log("paginated query: ", typeof(query));
+        
+        const url = host + `api/posts/page/${page}?`+ query.toString()
+        console.log(url);
+
+        return fetch(url)
+        .then(response => response.json()
+        )
+        .then(json =>
+            {return json.rows}
+        )
+        .catch(error => {
+            console.error("Error fetching files: ", error);            
+        })
+    }
+
     const getPost = async (id) =>{
         const url = host + `api/posts/${id}`
 
@@ -318,7 +336,7 @@ export default function ApiProvider ({ children }){
     
 
     return (
-        <ApiContext.Provider value={{getAllPosts, getAllVillages, 
+        <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
         getLogin, getUser, getIsOwner, postRegister, sendSms, verifySms,
         getPost, getUserByID, sendPost, updatePost}}>
             {children}

@@ -14,10 +14,17 @@ import SortModal from '../components/SortModal.js'
 
 const { width } = Dimensions.get('window');
 
-const filterGroups = [
+const categories = [
+  { id: '1', label: 'Все' },
+  { id: '2', label: 'до 2 млн Р' },
+  { id: '3', label: 'до 4 млн Р' },
+  { id: '4', label: 'до 6 млн Р' },
+  { id: '5', label: 'до 10 млн Р' },
+];
 
+const filterGroups = [
   {
-    id: 'group3',
+    id: 'num_floors',
     title: 'Этажи',
     options: [
       { id: '11', label: '1 этаж' },
@@ -26,19 +33,19 @@ const filterGroups = [
     ],
   },
   {
-    id: 'group4',
+    id: 'walls_lb',
     title: 'Материал несущих стен',
     options: [
       { id: '21', label: 'Кирпич' },
-      { id: '23', label: 'Газоблок' },
-      { id: '24', label: 'Пенеблок' },
-      { id: '25', label: 'Брус' },
-      { id: '26', label: 'Доска' },
-      { id: '27', label: 'Каркасный' },
+      { id: '22', label: 'Газоблок' },
+      { id: '23', label: 'Пенеблок' },
+      { id: '24', label: 'Брус' },
+      { id: '25', label: 'Доска' },
+      { id: '26', label: 'Каркасный' },
     ],
   },
   {
-    id: 'group6',
+    id: 'electricity_bill',
     title: 'Электричество (льготный тариф)',
     options: [
       { id: '31', label: 'Да' },
@@ -46,7 +53,7 @@ const filterGroups = [
     ],
   },
   {
-    id: 'group7',
+    id: 'water',
     title: 'Водоснабжение',
     options: [
       { id: '41', label: 'Центральное' },
@@ -54,7 +61,7 @@ const filterGroups = [
     ],
   },
   {
-    id: 'group8',
+    id: 'sewage',
     title: 'Канализация',
     options: [
       { id: '51', label: 'Центральная' },
@@ -63,7 +70,7 @@ const filterGroups = [
     ],
   },
   {
-    id: 'group9',
+    id: 'gas',
     title: 'Газ',
     options: [
       { id: '61', label: 'Да' },
@@ -71,7 +78,7 @@ const filterGroups = [
     ],
   },
   {
-    id: 'group10',
+    id: 'heating',
     title: 'Отопление',
     options: [
       { id: '71', label: 'Котел газовый' },
@@ -83,54 +90,78 @@ const filterGroups = [
 
 ];
 
-
-const categories = [
-  { id: '1', label: 'Все' },
-  { id: '2', label: 'до 2 млн Р' },
-  { id: '3', label: 'до 4 млн Р' },
-  { id: '4', label: 'до 6 млн Р' },
-  { id: '5', label: 'до 10 млн Р' },
-];
-
-const handleCategoryPress = (category) => {
-  console.log('Выбрана категория:', category);
-};
-
-const categoriesButton = ({ item }) => (
-  <Pressable
-    style={styles.categoriesButton}
-    onPress={() => handleCategoryPress(item.label)}
-  >
-    <Text style={styles.categoriesText}>{item.label}</Text>
-  </Pressable>
-);
-
 const DynamicHousesPage = ({route}) => {
 
     const navigation = useNavigation()
     const [houses, setHouses] = useState([])
-    const { getAllPosts } = useApi()
+    const { getPaginatedPosts } = useApi()
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState({});
 
     const [sortModalVisible, setSortModalVisible] = useState(false);
-    const [selectedSort, setSelectedSort] = useState(null);
+    const [selectedSort, setSelectedSort] = useState({});
 
-    const sortOptions = {
-      '1': 'Сначала дешевле',
-      '2': 'Сначала дороже',
-      '3': 'По актуальности',
-      '4': 'По площади',
-      '5': 'По размеру участка',
+    const [selectedCategory, setSelectedCategory] = useState({})
+    const [priceRange, setPriceRange] = useState([])
+    const [areaRange, setAreaRange] = useState([])
+
+    const [queryObject, setQueryObject] = useState({})
+
+    const [page, setPage] = useState(1)
+
+    const handleCategoryPress = (category) => {
+      console.log('Выбрана категория:', category);
+      setSelectedCategory(category)
+      handleFilterChoice()
     };
+    
+    const categoriesButton = ({ item }) => (
+      <Pressable
+        style={styles.categoriesButton}
+        onPress={() => handleCategoryPress(item)}
+      >
+        <Text style={styles.categoriesText}>{item.label}</Text>
+      </Pressable>
+    );
+
+    // Создание объединённого query для поиска
+    useEffect(() => {
+      const isCateroyEmpty = Object.keys(selectedCategory).length == 0
+      const isFiltersEmpty = Object.keys(selectedFilters).length == 0
+      const isSortEmpty = Object.keys(selectedSort).length == 0
+      const isRangeEmpty = Object.keys(priceRange).length == 0
+
+      if (!isCateroyEmpty || !isFiltersEmpty || !isSortEmpty || !isRangeEmpty) {
+        console.log("Something Changed");
+        setPage(1)
+
+        const category = selectedCategory.id
+        const sort = selectedSort.id
+        const filters = JSON.stringify(selectedFilters)
+        const LpriceRange = JSON.stringify({low:priceRange[0], high:priceRange[1]}) 
+        const LareaRange = JSON.stringify({low:areaRange[0],high:areaRange[1]})
+
+        const query = {category, sort, LpriceRange, LareaRange, filters}
+        
+        
+        setQueryObject(query)
+        
+        
+      }
+    
+      return () => {
+        
+      }
+    }, [selectedCategory, selectedFilters, selectedSort, priceRange, areaRange])
+    
 
     useEffect(() => {
       // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
       if (Object.keys(houses).length === 0) {
         const loadFromAPI = async () => {
           try {
-            const response = await getAllPosts();
+            const response = await getPaginatedPosts(page);
             // Убедимся, что `response` является массивом
             setHouses(Array.isArray(response) ? response : []);
           } catch (error) {
@@ -140,8 +171,21 @@ const DynamicHousesPage = ({route}) => {
         };
         loadFromAPI();
       }
-    }, [houses, getAllPosts]); // Зависимость от `houses` и `getAllPosts`
-        
+    }, [houses, getPaginatedPosts]); // Зависимость от `houses` и `getPaginatedPosts`
+    
+    const handleReachBottom = async () => {
+      const newPage = await getPaginatedPosts(page+1)
+      
+      
+      setPage(page+1)        
+
+      setHouses(houses.concat(await newPage));
+    }
+
+    const handleFilterChoice = async () => {
+      const response = await getPaginatedPosts(page, queryObject)
+      setHouses(Array.isArray(response) ? response : []);
+    }
     
   return (
     <SafeAreaView style={styles.container}>
@@ -157,6 +201,23 @@ const DynamicHousesPage = ({route}) => {
         />
       </View>
 
+      {/* Тестовые поля для проверки */}
+      {/* <Text>
+        {JSON.stringify(priceRange)}
+      </Text>
+      <Text>
+        {JSON.stringify(areaRange)}
+      </Text>
+      <Text>
+        {JSON.stringify(selectedCategory)}
+      </Text>
+      <Text>
+        {JSON.stringify(selectedFilters)}
+      </Text>
+      <Text>
+        {JSON.stringify(selectedSort)}
+      </Text> */}
+
       {/* Фильтры и сортировка */}
       <View style={styles.filterContainer}>
         <Pressable style={styles.searchButton} onPress={() => setModalVisible(true)}>
@@ -169,21 +230,24 @@ const DynamicHousesPage = ({route}) => {
         </Pressable> 
       </View>
 
-        <View style={styles.content}>
-            <View style={styles.housesView}>
+      <View style={styles.content}>
+          <View style={styles.housesView}>
 
-            {Object.keys(houses).length != 0 && houses != undefined ? (
+          {Object.keys(houses).length != 0 && houses != undefined 
+          ? 
             <HouseCard data={houses} 
-                       navigation={navigation} 
-                       itemWidth={Dimensions.get('window').width -32} 
-                       horizontalScroll={false} />
-        ) : (
-          <ActivityIndicator size="large" color="#32322C" />
-        )}
+              navigation={navigation} 
+              itemWidth={Dimensions.get('window').width -32} 
+              horizontalScroll={false} 
+              onEndReached={handleReachBottom}
+            />
+          : 
+            <ActivityIndicator size="large" color="#32322C" />
+          }
 
 
-            </View>  
-        </View>
+          </View>  
+      </View>
 
 
 
@@ -194,6 +258,9 @@ const DynamicHousesPage = ({route}) => {
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         filterGroups={filterGroups}
+        setPriceRange={setPriceRange}
+        setAreaRange={setAreaRange}
+        handleFilterChoice={handleFilterChoice}
       />
 
       {/* Модальное окно сортировки */}
@@ -202,6 +269,7 @@ const DynamicHousesPage = ({route}) => {
         onClose={() => setSortModalVisible(false)}
         selectedSort={selectedSort}
         setSelectedSort={setSelectedSort}
+        handleFilterChoice={handleFilterChoice}
       />
       
     </SafeAreaView>

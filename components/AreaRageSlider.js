@@ -4,23 +4,24 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 const { width } = Dimensions.get('window');
 
-const AreaRangeSlider = () => {
-  const [areaRange, setAreaRange] = useState([0, 1_000]);
+const AreaRangeSlider = ({onSliderChange, areaRange}) => {
+  
 
   const handleValuesChange = (values) => {
-    setAreaRange(values);
+    areaRange.current = values
+    onSliderChange(areaRange.current)
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Площадь дома</Text>
       <View style={styles.areaContainer}>
-        <Text style={styles.areaText}>От: {areaRange[0].toLocaleString()} м2</Text>
-        <Text style={styles.areaText}>До: {areaRange[1].toLocaleString()} м2</Text>
+        <Text style={styles.areaText}>От: {areaRange.current[0].toLocaleString()} м2</Text>
+        <Text style={styles.areaText}>До: {areaRange.current[1].toLocaleString()} м2</Text>
       </View>
 
       <MultiSlider
-        values={areaRange}
+        values={areaRange.current}
         sliderLength={width - 40} // Длина слайдера
         onValuesChange={handleValuesChange}
         min={0} // Минимальное значение

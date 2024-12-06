@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 const { width } = Dimensions.get('window');
 
-const AreaRangeSlider = () => {
-  const [areaRange, setAreaRange] = useState([1_000_000, 50_000_000]);
-
+const PriceRangeSlider = ({onSliderChange, priceRange}) => {
+  
   const handleValuesChange = (values) => {
-    setAreaRange(values);
+    priceRange.current = values
+    onSliderChange(priceRange.current)
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Цена</Text>
       <View style={styles.areaContainer}>
-        <Text style={styles.areaText}>От: {areaRange[0].toLocaleString()} Р</Text>
-        <Text style={styles.areaText}>До: {areaRange[1].toLocaleString()} Р</Text>
+        <Text style={styles.areaText}>От: {priceRange.current[0].toLocaleString()} Р</Text>
+        <Text style={styles.areaText}>До: {priceRange.current[1].toLocaleString()} Р</Text>
       </View>
 
       <MultiSlider
-        values={areaRange}
+        values={priceRange.current}
         sliderLength={width - 40} // Длина слайдера
         onValuesChange={handleValuesChange}
         min={0} // Минимальное значение
         max={100_000_000} // Максимальное значение
-        step={10} // Шаг изменения
+        step={1000} // Шаг изменения
         selectedStyle={{ backgroundColor: '#007AFF' }} // Стиль выделенного участка
         unselectedStyle={{ backgroundColor: '#ddd' }} // Стиль невыделенного участка
         trackStyle={{ height: 6 }} // Толщина трека
@@ -35,7 +35,7 @@ const AreaRangeSlider = () => {
   );
 };
 
-export default AreaRangeSlider;
+export default PriceRangeSlider;
 
 const styles = StyleSheet.create({
   container: {

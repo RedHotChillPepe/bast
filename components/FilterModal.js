@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Text,
   View,
@@ -15,19 +15,37 @@ import AreaRangeSlider from './AreaRageSlider';
 
 const { width, height } = Dimensions.get('window');
 
-const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, filterGroups }) => {
-  const handleOptionPress = (groupId, optionId) => {
+const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, filterGroups, setPriceRange, setAreaRange, handleFilterChoice }) => {
+  const priceRange = useRef([1_000_000, 50_000_000]);
+  const areaRange = useRef([0, 1_000])
+  
+  const handleOptionPress = (group, option) => {
     setSelectedFilters((prevFilters) => {
-      if (prevFilters[groupId] === optionId) {
+      if (prevFilters[group.id] === option.id) {
         // Если фильтр уже выбран, отключаем его
         const updatedFilters = { ...prevFilters };
-        delete updatedFilters[groupId];
+        delete updatedFilters[group.id];
         return updatedFilters;
       }
       // Иначе включаем фильтр
-      return { ...prevFilters, [groupId]: optionId };
+      return { ...prevFilters, [group.id]: option.id };
     });
+    console.log("filter:", group.id, option);
+    
   };
+
+  const handlePriceRange = (range)=> {
+    setPriceRange(range)
+  }
+
+  const handleAreaRange = (range)=> {
+    setAreaRange(range)
+  }
+
+  const handleApplyPress = ()=>{
+    handleFilterChoice()
+    onClose()
+  }
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onDismiss={onClose}>
@@ -37,8 +55,8 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
             <View style={styles.modalContent}>
               <Text style={styles.modalHeader}>Параметры поиска</Text>
               <ScrollView contentContainerStyle={styles.groupList}>
-                <PriceRangeSlider />
-                <AreaRangeSlider />
+                <PriceRangeSlider priceRange={priceRange} onSliderChange={handlePriceRange}/>
+                <AreaRangeSlider areaRange={areaRange} onSliderChange={handleAreaRange}/>
                 {filterGroups.map((group) => (
                   <View key={group.id} style={styles.groupContainer}>
                     <Text style={styles.groupHeader}>{group.title}</Text>
@@ -50,7 +68,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
                             styles.filterButton,
                             selectedFilters[group.id] === option.id && styles.selectedFilterButton,
                           ]}
-                          onPress={() => handleOptionPress(group.id, option.id)}
+                          onPress={() => handleOptionPress(group, option)}
                         >
                           <Text
                             style={[
@@ -66,7 +84,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
                   </View>
                 ))}
               </ScrollView>
-              <Pressable style={styles.closeButton} onPress={onClose}>
+              <Pressable style={styles.closeButton} onPress={()=>handleApplyPress()}>
                 <Text style={styles.closeButtonText}>Применить</Text>
               </Pressable>
             </View>
