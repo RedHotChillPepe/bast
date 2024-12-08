@@ -1,378 +1,198 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, FlatList, ActivityIndicator, Dimensions, StatusBar } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+  Dimensions,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useApi } from '../context/ApiContext';
-import HeaderComponent from '../components/HeaderComponent';
 import HouseCard from '../components/HouseCard';
-
+import StoriesComponent from '../components/StoriesComponent';
+import ServicesComponent from '../components/ServiciesComponent';
+import VillageCard from '../components/VillageCard';
 
 const { width } = Dimensions.get('window');
 
 const MainPage = () => {
-    const navigation = useNavigation()
-    const {getAllPosts, getAllVillages} = useApi()
-    const [houses, setHouses] = useState([])
-    const [newHouses, setNewHouses] = useState([])
-    const [villages, setVillages] = useState([])
+  const navigation = useNavigation();
+  const { getAllPosts, getAllVillages } = useApi();
+  const [houses, setHouses] = useState([]);
+  const [newHouses, setNewHouses] = useState([]);
+  const [villages, setVillages] = useState([]);
+  const [selectedList, setSelectedList] = useState('houses'); // Новое состояние для выбранного списка
 
-    useEffect(() => {
-      const housesFetch = async () => {
-        if (await getAllPosts() != undefined) {
-            const tempHouses = await getAllPosts()
-            var tempSetHoues = []
-            var tempSetNewHouses = []
-            
-            for (let index = 0; index < tempHouses.length; index++) {
-                
-                
-                if (tempHouses[index].newbuild) {
-                    tempSetNewHouses.push(tempHouses[index])
-                    setNewHouses(tempSetNewHouses)
-                } else {
-                    tempSetHoues.push(tempHouses[index])
-                    setHouses(tempSetHoues)
-                }
-                
-            }
-        }
+  useEffect(() => {
+    const housesFetch = async () => {
+      const tempHouses = await getAllPosts();
+      if (tempHouses) {
+        const tempSetHouses = [];
+        const tempSetNewHouses = [];
+        tempHouses.forEach((house) => {
+          if (house.newbuild) {
+            tempSetNewHouses.push(house);
+          } else {
+            tempSetHouses.push(house);
+          }
+        });
+        setHouses(tempSetHouses);
+        setNewHouses(tempSetNewHouses);
       }
-      const villagesFetch = async () => {
-        if (await getAllVillages() != undefined) {
-            setVillages(await getAllVillages())
-        }
+    };
+
+    const villagesFetch = async () => {
+      const villageData = await getAllVillages();
+      if (villageData) {
+        setVillages(villageData);
       }
-      housesFetch()
-      villagesFetch()
-      return () => {
-        
-      }
-    }, [])
-    
+    };
 
+    housesFetch();
+    villagesFetch();
+  }, []);
 
-    const ImageCarouselContent = [
-        {
-            imageSource:"https://www.houseplans.net/uploads/plans/25535/elevations/57911-768.jpg",
-            text:"House1 самый лучший"
-        },
-        {
-            imageSource:"https://www.houseplans.net/uploads/styles/54-original.jpg",
-            text:"House2 супер элегантный"
-        },
-        {
-            imageSource:"https://www.houseplans.net/news/wp-content/uploads/2023/07/57260-768.jpeg",
-            text:"House3 покажет ваш характер"
-        },
-        {
-            imageSource:"https://www.houseplans.net/uploads/plans/25535/elevations/57911-768.jpg",
-            text:"House1 самый лучший"
-        },
-        {
-            imageSource:"https://www.houseplans.net/uploads/styles/54-original.jpg",
-            text:"House2 супер элегантный"
-        },
-        {
-            imageSource:"https://www.houseplans.net/news/wp-content/uploads/2023/07/57260-768.jpeg",
-            text:"House3 покажет ваш характер"
-        }
-    ]
+  // const SearchButtonsContent = [
+  //     {
+  //         text:"Для вас",
+  //         onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:true}})
+  //     },
+  //     {
+  //         text:"Дом",
+  //         onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:null}})
+  //     },
+  //     {
+  //         text:"Коттеджный поселок",
+  //         onPress: () => navigation.navigate("NotExistPage")
+  //     },
+  // ]
 
-    const ServicesContent = [
-        {
-            text:"Сопровождение сделки",
-            subtext:"Наши юристы позаботятся о вашей безопасности"
-        },
-        {
-            text:"Оценка недвижимости",
-            subtext:"Бесплатно узнайте рыночную стоимость "
-        },
-        {
-            text:"Ипотечный калькулятор",
-            subtext:"Подберите удобный ежемесячный платеж"
-        },
-        {
-            text:"Страхование",
-            subtext:"Защитите имущество",
-        }
-    ]
+  const SearchButtonsContent = [
+    {
+      text: 'Для вас',
+      value: 'houses',
+    },
+    {
+      text: 'Дома',
+      value: 'newHouses',
+    },
+    {
+      text: 'Коттеджные поселки',
+      value: 'villages',
+    },
+  ];
 
-    const SearchButtonsContent = [
-        {
-            text:"Дом",
-            onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:null}})
-        },
-        {
-            text:"Риэлтора",
-            onPress: () => navigation.navigate("NotExistPage")
-        },
-        {
-            text:"Мои поиски",
-            onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:true}})
-        }
-
-    ]
-        
-    
+  const renderSelectedList = () => {
+    switch (selectedList) {
+      case 'houses':
+        return houses.length ? (
+          <HouseCard data={houses} navigation={navigation} itemWidth={width -32} />
+        ) : (
+          <ActivityIndicator size="large" color="#32322C" />
+        );
+      case 'newHouses':
+        return newHouses.length ? (
+          <HouseCard data={newHouses} navigation={navigation} itemWidth={width -32} horizontalScroll={true} />
+        ) : (
+          <ActivityIndicator size="large" color="#32322C" />
+        );
+      case 'villages':
+        return villages.length ? (
+          <VillageCard villages={villages} />
+        ) : (
+          <ActivityIndicator size="large" color="#32322C" />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-    {/* <StatusBar barStyle='dark-content' /> */}
-       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{justifyContent:'center', alignItems:'center'}} style={styles.scrollView}>
-            <View style={styles.content}> 
-            <HeaderComponent />
-                <FlatList
-                    data={ImageCarouselContent}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({item}) => 
-                    <View style={styles.storyItem}>
-                        <Text style={styles.storyItemText}>{item.text}</Text>
-                    </View>}
-                />
+    <View style={styles.container}>
+      {/* <StatusBar barStyle='dark-content' /> */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+        style={styles.scrollView}
+      >
+        <View style={styles.content}>
+        <StoriesComponent />
+        <View style={{height:28}} />
+          <ServicesComponent />
+          <View style={{height:28}} />
 
-            <View style={{marginHorizontal: 8}}>
-              <Text style={styles.functionTitleText}>Сервисы</Text>
-            </View>
 
-                <View style={styles.functionCards}>
-                  {
-                    ServicesContent.map((item, index) => (
-                      <Pressable onPress={() => navigation.navigate("MortgageCalculator")} style={styles.functionCard} key={index}>
-                        <View style={[styles.functionCardView]}>
-                          <Text style={styles.functionCardText}>
-                            {item.text}
-                          </Text>
-                          <Text style={styles.functionCardSubText}>
-                            {item.subtext}
-                          </Text>
-                        </View>
-                      </Pressable>
-                        ))
-                    }
-                    <Pressable style={{width:width-16, backgroundColor: "#FFF", borderRadius: 16, marginTop: 4 }}>
-                        <View style={styles.functionCardView}>
-                            <Text style={styles.functionCardText}>
-                                Все сервисы
-                            </Text>
-                            <Ionicons style={{alignSelf:'flex-end'}} name="arrow-forward" size={24} color="#32322C" />
-                        </View>
-                    </Pressable>
-                </View>
+          <View style={styles.searchButtonsView}>
+            {SearchButtonsContent.map((item, index) => (
+              <Pressable
+                key={index}
+                onPress={() => setSelectedList(item.value)} // Изменение выбранного списка
+                style={[
+                  styles.searchButtonsContent,
+                  selectedList === item.value && styles.activeButton, // Добавляем стиль для активной кнопки
+                ]}
+              >
+                <Text style={[styles.searchButtonsText, selectedList === item.value && styles.activeButtonsText]}>{item.text}</Text>
+              </Pressable>
+            ))}
+          </View>
 
-            <View style={{marginHorizontal: 8, marginTop: 12}}>
-              <Text style={styles.functionTitleText}>
-                  Найти
-              </Text>
-            </View>
+          {renderSelectedList()}
 
-                <View style={styles.searchButtonsView}>
-                    {
-                        SearchButtonsContent.map((item, index) => (
-                            <Pressable onPress={item.onPress} style={styles.searchButtonsContent} key={index}>
-                                <Text style={styles.searchButtonsText}>
-                                    {item.text}
-                                </Text>
-                            </Pressable>
-                        ))
-                    }
-                </View>
-
-                <Text style={styles.housesTitleText}>
-                    Дома
-                </Text>
-
-                {houses.length ? (
-          <HouseCard data={houses} navigation={navigation} itemWidth={Dimensions.get('window').width * 0.66} />
-        ) : (
-          <ActivityIndicator size="large" color="#32322C" />
-        )}
-
-                
-                <Text style={styles.housesTitleText}>
-                    Новостройки
-                </Text>
-
-                {newHouses.length ? (
-          <HouseCard data={newHouses} navigation={navigation} itemWidth={Dimensions.get('window').width * 0.66} horizontalScroll={true} />
-        ) : (
-          <ActivityIndicator size="large" color="#32322C" />
-        )}
-
-               
-
-                <Text style={styles.housesTitleText}>
-                    Коттеджные посёлки
-                </Text>
-
-                <View style={styles.housesView}>
-                    {
-                        Object.keys(villages).length != 0 && villages != undefined ?
-                        <FlatList
-                        data={villages}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({item}, index) => 
-                        <View style={styles.houseItem}>
-                            <View style={styles.houseImageView}>
-                               <Image style={styles.houseImage} width={100} height={100} source={{uri:item.photos[0]}}/>
-                            </View>
-                            <View>
-                                <View>
-                                    <Text style={{fontSize: 14, fontWeight:'600'}}>
-                                        {item.name}
-                                    </Text>
-                                    <Text style={styles.houseItemText}>
-                                        от 1 200 000 ₽
-                                    </Text>
-                                    <Text style={{ fontSize: 12,marginLeft: 8, fontWeight:'200', marginTop: 2, marginBottom: 12}}>
-                                        г. Ижевск, Октябрьский район
-                                    </Text>
-                                </View>
-                                <View style={{flexDirection:"row"}}>
-                                    
-                                </View>
-                            </View>
-                            
-                        </View>
-                        }/>
-                        :
-                        <ActivityIndicator
-                        size={"large"}
-                        color={"#32322C"}/>
-                        
-                    }
-                </View>
-            </View>
-        </ScrollView>
-      
-    </SafeAreaView>
-  )
-}
+        </View>
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems:'center',
-        backgroundColor:"#F5F5F5"
-    },
-    content: {
-        width:'100%',
-        paddingHorizontal:0
-    },
-    scrollView:{
-    
-        height:'100%',
-        marginTop:16
-    },
-    storyItem:{
-        height:96,
-        width:96,
-        borderRadius:12,
-        backgroundColor:"rgba(50, 50, 44, 0.8)",
-        marginLeft: 8,
-        alignItems:"center"
-    },
-    storyItemText:{
-        color:"#FFF",
-        fontSize:18,
-        paddingTop:8
-    },
-    functionTitleText:{
-      fontFamily:'Montserrat700',
-      fontSize:28,
-      color:"#32322C",
-      marginTop:16,
-      marginBottom: 8
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#f7f7f7',
+  },
+  content: {
+    width: '100%',
+    paddingHorizontal: 0,
+  },
+  scrollView: {
+    paddingTop: 20,
+  },
+  searchButtonsView: {
+    marginHorizontal: 8,
+    flexDirection: 'row',
+    marginTop: 4,
+    width: width - 32,
+  },
+  searchButtonsContent: {
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    marginRight: 8,
+    marginBottom: 12
+  },
+  activeButton: {
+    backgroundColor: '#858585', // Изменение цвета для активной кнопки
+  },
+  searchButtonsText: {
+    color: '#858585',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  activeButtonsText: {
+    color: '#EFEFEF', // Изменение цвета для активной кнопки
+  },
+  housesTitleText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#32322C',
+    marginLeft: 8,
+    marginTop: 32,
+  },
+});
 
-    },
-    functionCards:{
-        marginHorizontal: 8,
-        flexDirection:"row",
-        justifyContent:"space-between",
-        flexWrap:'wrap'
-    },
-    functionCard:{
-        borderRadius:16,
-        backgroundColor:"#FFF",
-        height: (width)/3,
-        width: (width-24)/2,
-        marginVertical: 4
-    },
-    functionCardView:{
-        paddingHorizontal:8,
-        paddingVertical:8,
-        flex:1,
-    },
-    functionCardText:{
-        //fontFamily:'Montserrat700',
-        fontSize:20,
-        fontWeight: '700'
-        //letterSpacing: -0.5
-    },
-    functionCardSubText:{
-        fontFamily:'Montserrat400',
-        fontSize:14,
-        color:"#717171",
-        marginTop: 16
-    },
-    searchButtonsView:{
-        marginHorizontal: 8,
-        flexDirection:'row',
-        justifyContent:'space-between',
-        marginTop: 4
-    },
-    searchButtonsContent:{
-        justifyContent:'center',
-        paddingVertical:12,
-        paddingHorizontal: 20,
-        backgroundColor:"rgba(50, 50, 44, 0.8)",
-        borderRadius:12,
-
-    },
-    searchButtonsText:{
-        color:"#FFF",
-       // fontFamily:"Montserrat700",
-       fontWeight:'600',
-        fontSize:18,
-        textAlign:'center'
-    },
-    housesTitleText:{
-        // fontFamily:'Montserrat700',
-        fontSize:24,
-        fontWeight: '700',
-        color:"#32322C",
-        marginLeft: 8,
-        marginTop: 32
-    },
-    housesView:{
-        marginTop:8,
-    },
-    houseItem:{
-        width: width*0.66,
-        borderRadius:24,
-        backgroundColor:"#FFF",
-        marginLeft: 8
-    },
-    houseItemText:{
-        color:"#32322C",
-        // fontFamily:"Inter700",
-        fontSize:16,
-        fontWeight:'700',
-        marginLeft: 8,
-        marginTop: 16
-    },
-    houseImageView:{
-        height:130
-    },
-    houseImage:{
-        flex:1,
-        height:"100%",
-        width:"100%",
-        borderTopLeftRadius:20,
-        borderTopRightRadius:20
-    }
-  });
-
-export default MainPage
+export default MainPage;

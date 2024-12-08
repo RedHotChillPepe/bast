@@ -45,8 +45,8 @@ const AppStack = () => {
   return(
       <Stack.Navigator initialRouteName='Main'>
         <Stack.Screen name='Main' component={MainPage} 
-        options={{//header:(props) => <HeaderComponent{...props}/>
-        headerShown: false  
+        options={{
+          header:(props) => <HeaderComponent{...props}/>
         }}/>
         <Stack.Screen name='Houses' component={DynamicHousesPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
@@ -106,6 +106,7 @@ const AppTabs = () => {
         component={DynamicHousesPage} 
         options={{
           headerShown:false,
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="search" size={24} color="black" />
         ),
@@ -116,6 +117,7 @@ const AppTabs = () => {
         component={FavouritesPage}
         options={{
           headerShown:false,
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size}) => (
             <Fontisto name="favorite" size={24} color="black" />
         ),
@@ -126,6 +128,7 @@ const AppTabs = () => {
         component={AppStack}
         options={{
           headerShown:false,
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="home" size={24} color="black" />
         ),
@@ -136,16 +139,18 @@ const AppTabs = () => {
       component={NotExistPage}
       options={{
         headerShown:false,
+        tabBarShowLabel: false,
         tabBarIcon: ({ color, size}) => (
           <Entypo name="chat" size={24} color="black" />
       ),
     }}
       />
       <Tab.Screen
-      name='Profile'
+      name='Профиль'
       component={ProfilePage}
       options={{
-        headerShown:false,
+        // headerShown:false,
+        tabBarShowLabel: false,
         tabBarIcon: ({ color, size}) => (
           <MaterialIcons name="account-box" size={24} color="black" />
       ),
