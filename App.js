@@ -32,6 +32,8 @@ import Error404 from './pages/Error404.js';
 import Error403 from './pages/Error403.js';
 import Error500 from './pages/Error500.js';
 import Error503 from './pages/Error503.js';
+import ProfileBuilderPage from './pages/ProfileBuilderPage';
+import ProfileRealtorPage from './pages/ProfileRealtorPage';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
@@ -94,6 +96,15 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/> 
+
+          <Stack.Screen name='ProfileRealtorPage' component={ProfileRealtorPage}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: false  
+            }}/>  
+          <Stack.Screen name='ProfileBuilderPage' component={ProfileBuilderPage}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: false  
+            }}/>    
       </Stack.Navigator>
   );
 }

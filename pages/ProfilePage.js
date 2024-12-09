@@ -80,9 +80,9 @@ const ProfilePage = () => {
       </Pressable>
 
       <View style={styles.buttonsRow}>
-        <Button title="Физик" onPress={() => navigation.navigate('Error404')} />
-        <Button title="Риэлтор" onPress={() => navigation.navigate('Error403')} />
-        <Button title="Застройщик" onPress={() => navigation.navigate('Error500')} />
+        <Button title="Физик" onPress={() => navigation.navigate('ProfilePage')} />
+        <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
+        <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View>
       <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
