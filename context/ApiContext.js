@@ -95,6 +95,7 @@ export default function ApiProvider ({ children }){
                     electricity_bill: data.electricity== "" ? null : data.electricity,
                     heating: data.heating == "" ? null :data.heating,
                     photos:data.photos,
+                    poster_id:data.poster_id
                 }])
             })
             .then(response => {return  response})
