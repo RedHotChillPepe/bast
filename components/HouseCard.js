@@ -3,7 +3,7 @@ import { View, Text, FlatList, Pressable, Image, StyleSheet, Dimensions } from '
 
 const { width } = Dimensions.get('window');
 
-const HouseCard = ({ data, navigation, itemWidth, horizontalScroll = true, onEndReached }) => {
+const HouseCard = ({ data, navigation, itemWidth, onEndReached }) => {
   const renderHouseItem = ({ item }) => (
     <Pressable onPress={() => navigation.navigate("House", { houseId: item.id })}>
       <View style={[styles.houseItem, {width: itemWidth}]}>
@@ -31,7 +31,6 @@ const HouseCard = ({ data, navigation, itemWidth, horizontalScroll = true, onEnd
   return (
     <FlatList
       data={data}
-      horizontal={horizontalScroll}
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       renderItem={renderHouseItem}
@@ -49,7 +48,7 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   houseImageView: {
-    height: 130,
+    height: 280,
   },
   houseImage: {
     flex: 1,

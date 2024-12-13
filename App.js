@@ -32,6 +32,8 @@ import Error404 from './pages/Error404.js';
 import Error403 from './pages/Error403.js';
 import Error500 from './pages/Error500.js';
 import Error503 from './pages/Error503.js';
+import ProfileBuilderPage from './pages/ProfileBuilderPage';
+import ProfileRealtorPage from './pages/ProfileRealtorPage';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
@@ -45,8 +47,8 @@ const AppStack = () => {
   return(
       <Stack.Navigator initialRouteName='Main'>
         <Stack.Screen name='Main' component={MainPage} 
-        options={{//header:(props) => <HeaderComponent{...props}/>
-        headerShown: false  
+        options={{
+          header:(props) => <HeaderComponent{...props}/>
         }}/>
         <Stack.Screen name='Houses' component={DynamicHousesPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
@@ -94,6 +96,15 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/> 
+
+          <Stack.Screen name='ProfileRealtorPage' component={ProfileRealtorPage}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: false  
+            }}/>  
+          <Stack.Screen name='ProfileBuilderPage' component={ProfileBuilderPage}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: false  
+            }}/>    
       </Stack.Navigator>
   );
 }
@@ -106,6 +117,7 @@ const AppTabs = () => {
         component={DynamicHousesPage} 
         options={{
           headerShown:false,
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="search" size={24} color="black" />
         ),
@@ -116,6 +128,7 @@ const AppTabs = () => {
         component={FavouritesPage}
         options={{
           headerShown:false,
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size}) => (
             <Fontisto name="favorite" size={24} color="black" />
         ),
@@ -126,6 +139,7 @@ const AppTabs = () => {
         component={AppStack}
         options={{
           headerShown:false,
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="home" size={24} color="black" />
         ),
@@ -136,16 +150,18 @@ const AppTabs = () => {
       component={NotExistPage}
       options={{
         headerShown:false,
+        tabBarShowLabel: false,
         tabBarIcon: ({ color, size}) => (
           <Entypo name="chat" size={24} color="black" />
       ),
     }}
       />
       <Tab.Screen
-      name='Profile'
+      name='Профиль'
       component={ProfilePage}
       options={{
-        headerShown:false,
+        // headerShown:false,
+        tabBarShowLabel: false,
         tabBarIcon: ({ color, size}) => (
           <MaterialIcons name="account-box" size={24} color="black" />
       ),

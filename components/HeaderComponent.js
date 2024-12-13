@@ -1,55 +1,65 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+import React from 'react';
+import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
+const { width } = Dimensions.get('window');
 
 export default function HeaderComponent() {
-
-  const navigation = useNavigation()
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets(); // Получаем отступы безопасной зоны
 
   return (
-    <View style={styles.headerStyle}>
+    <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
       <View style={styles.headerContent}>
+      <Ionicons name="menu" size={32} color="black" />
         <Text style={styles.headerText}>БАСТ</Text>
-        <Pressable style={styles.headerButton} onPress={() => navigation.navigate("CreateHousePostPage")}>
-          <Text style={styles.headerButtonText}>
-            Создать объявление
-          </Text>
-        </Pressable>
+        {/* <Pressable
+          style={styles.headerButton}
+          onPress={() => navigation.navigate('CreateHousePostPage')}
+        >
+          <Text style={styles.headerButtonText}>Создать{'\n'}объявление</Text>
+        </Pressable> */}
+        <MaterialIcons name="account-circle" size={32} color="black" />
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  headerStyle:{
-    backgroundColor:"#F5F5F5",
-    marginBottom: 16,
-    marginHorizontal: 8
+  headerContainer: {
+    backgroundColor: '#ffffff',
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
-  headerText:{
-    fontSize:48,
-    fontFamily:"Inter700",
-    //fontWeight:"700",
-    color:"black"
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    width: width,
   },
-  headerContent:{
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:'center'
+  headerText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#14080E',
   },
-  headerButton:{
-    backgroundColor:"rgba(50, 50, 44, 0.8)",
-    borderRadius:16,
-    width:120,
-    height:48,
-    alignItems:'center',
-    justifyContent:'center'
+  headerButton: {
+    backgroundColor: '#73AB84',
+    borderRadius: 16,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  headerButtonText:{
-    color:"#FFF",
-
-    fontSize:16,
-    //fontWeight:"400"
-  }
-})
+  headerButtonText: {
+    color: '#EFEFEF',
+    fontWeight: 'bold',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 18, // Улучшает перенос строки
+  },
+});

@@ -370,11 +370,25 @@ return (
                   ?
                   phone
                   :
-                  "Пожалуйста зарегиструруйтесь чтобы посмотреть номер телефона"
+                  "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
                 }
               </Text>
+              <View style={{alignItems: 'center'}}>
+                <Text style={{fontSize: 24}}>
+                  +7 912 563 25 90
+                </Text>
+              </View>
               <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
-                <Text style={styles.closeButtonText}>Ok</Text>
+                <Text style={styles.closeButtonText}>Позвонить</Text>
+              </Pressable>
+
+              <View style={{alignItems: 'center'}}>
+                <Text style={{fontSize: 18, textAlign:'center'}}>
+                Пожалуйста, зарегистрируйтесь
+                </Text>
+              </View>
+              <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
+                <Text style={styles.closeButtonText}>Зарегистрироваться</Text>
               </Pressable>
             </View>
           </View>          

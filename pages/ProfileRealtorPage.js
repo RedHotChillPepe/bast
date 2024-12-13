@@ -8,7 +8,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 
 const { width } = Dimensions.get('window');
 
-const ProfilePage = () => {
+const ProfileRealtorPage = () => {
   const { logout } = useAuth();
   const navigation = useNavigation();
 
@@ -95,7 +95,7 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default ProfileRealtorPage;
 
 const styles = StyleSheet.create({
   container: {
