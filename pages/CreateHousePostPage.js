@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, ScrollView, Pressable, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextInputComponent from '../components/TextInputComponent';
 import ModalPickerComponent from '../components/ModalPickerComponent';
 import * as ImagePicker from 'expo-image-picker';
 import { useApi } from '../context/ApiContext';
+import { useAuth } from '../context/AuthContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CreateHousePostPage() {
+  const {getAuth} = useAuth()
+
+  const userId = useRef()
+  
+
   const [formData, setFormData] = useState({
     title: '',
     houseType: '',
@@ -33,8 +39,21 @@ export default function CreateHousePostPage() {
     sewerege: '',
     electricity: '',
     heating: '',
-    photos:[]
+    photos:[],
+    poster_id: ''
   });
+
+  useEffect(() => {
+    const getUserID = async ()=>{
+      const result = await getAuth()
+      userId.current = JSON.parse(await result)[0].id
+      setFormData((prevData) => ({...prevData, poster_id:userId.current}))
+    }
+    getUserID()
+    return () => {
+      
+    }
+  }, [userId.current])
 
   const [houseTypeModalVisible, setHouseTypeModalVisible] = useState(false);
   const [wallMaterialModalVisible, setWallMaterialModalVisible] = useState(false);
