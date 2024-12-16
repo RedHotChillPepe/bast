@@ -8,7 +8,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 
 const { width } = Dimensions.get('window');
 
-const ProfileBuilderPage = () => {
+const ProfileEmployeePage = () => {
   const { logout } = useAuth();
   const navigation = useNavigation();
 
@@ -80,9 +80,9 @@ const ProfileBuilderPage = () => {
       </Pressable>
 
       <View style={styles.buttonsRow}>
-        <Button title="Физик" onPress={() => navigation.navigate('ProfilePage')} />
-        <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
-        <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
+        <Button title="Пользователь" onPress={() => navigation.navigate('ProfilePage')} />
+        <Button title="Сотрудник" onPress={() => navigation.navigate('ProfileEmployeePage')} />
+        <Button title="Компания" onPress={() => navigation.navigate('ProfileCompanyPage')} />
       </View>
       <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
@@ -95,7 +95,7 @@ const ProfileBuilderPage = () => {
   );
 };
 
-export default ProfileBuilderPage;
+export default ProfileEmployeePage;
 
 const styles = StyleSheet.create({
   container: {

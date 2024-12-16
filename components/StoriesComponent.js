@@ -1,9 +1,14 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Dimensions, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 const { width } = Dimensions.get('window');
 
 const StoriesComponent = () => {
+  const navigation = useNavigation();
+  
   // Переносим данные в сам компонент
   const ImageCarouselContent = [
     {
@@ -38,9 +43,9 @@ const StoriesComponent = () => {
       horizontal={true}
       showsHorizontalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={styles.storyItem}>
+        <Pressable onPress={() => navigation.navigate('DynamicStoriesPage')} style={styles.storyItem}>
           <Text style={styles.storyItemText}>{item.text}</Text>
-        </View>
+        </Pressable>
       )}
       keyExtractor={(item, index) => index.toString()}
     />

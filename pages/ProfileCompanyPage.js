@@ -8,7 +8,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 
 const { width } = Dimensions.get('window');
 
-const ProfileRealtorPage = () => {
+const ProfileCompanyPage = () => {
   const { logout } = useAuth();
   const navigation = useNavigation();
 
@@ -56,9 +56,9 @@ const ProfileRealtorPage = () => {
       <View style={styles.nameBlock}>
         <View style={{ flexDirection: 'row' }}>
           <FontAwesome6 name="face-tired" size={56} color="black" />
-          <View style={{ marginLeft: 16 }}>
-            <Text style={styles.name}>Имя Фамилия</Text>
-            <Text style={styles.email}>example@yandex.ru</Text>
+          <View style={{ marginLeft: 16, width: width -32 }}>
+            <Text style={styles.name}>Пеликан</Text>
+            <Text style={styles.email}>Проверенная компания</Text>
           </View>
         </View>
         <Ionicons name="settings-outline" size={32} color="black" />
@@ -80,9 +80,9 @@ const ProfileRealtorPage = () => {
       </Pressable>
 
       <View style={styles.buttonsRow}>
-        <Button title="Физик" onPress={() => navigation.navigate('ProfilePage')} />
-        <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
-        <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
+        <Button title="Пользователь" onPress={() => navigation.navigate('ProfilePage')} />
+        <Button title="Сотрудник" onPress={() => navigation.navigate('ProfileEmployeePage')} />
+        <Button title="Компания" onPress={() => navigation.navigate('ProfileCompanyPage')} />
       </View>
       <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
@@ -95,7 +95,7 @@ const ProfileRealtorPage = () => {
   );
 };
 
-export default ProfileRealtorPage;
+export default ProfileCompanyPage;
 
 const styles = StyleSheet.create({
   container: {
