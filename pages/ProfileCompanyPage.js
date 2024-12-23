@@ -17,7 +17,28 @@ const ProfileCompanyPage = () => {
     {
       title: 'Основные',
       data: [
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Текущие проекты' },
+      ],
+    },
+    {
+      title: 'Основные',
+      data: [
         { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы' },
+      ],
+    },
+    {
+      title: 'Основные',
+      data: [
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Компания' },
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Комнада' },
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Контрагенты' },
+      ],
+    },
+    {
+      title: 'Основные',
+      data: [
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Клиенты' },
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Сделки' },
       ],
     },
     {
@@ -64,6 +85,35 @@ const ProfileCompanyPage = () => {
         <Ionicons name="settings-outline" size={32} color="black" />
       </View>
 
+    <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between'}}>   
+      <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>
+        <Text style={[styles.itemText, {marginLeft: 0, }]}>
+         Уведомления
+        </Text>
+        <View style={{backgroundColor: 'red', alignItems:'center', justifyContent:'center', height: 18+8, width: 18+8, borderRadius: 13}}>
+         <Text style={{color:'#fff', fontSize: 18, fontWeight:'bold'}}>9</Text>
+        </View>
+      </View>
+
+      <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>
+        <Text style={[styles.itemText, {marginLeft: 0, }]}>
+         Акции
+        </Text>
+        <View style={{backgroundColor: 'red', alignItems:'center', justifyContent:'center', height: 18+8, width: 18+8, borderRadius: 13}}>
+         <Text style={{color:'#fff', fontSize: 18, fontWeight:'bold'}}>9</Text>
+        </View>
+      </View>
+    </View>
+
+    <View style={[styles.itemBlock, {flexDirection: 'row'}]}>
+      <Text style={styles.itemText}>
+        Баланс
+      </Text>
+      <Text style={styles.itemText}>
+        9222 руб
+      </Text>
+    </View>
+
       {sections.map((section, index) => (
         <View style={styles.itemBlock} key={index}>
           <FlatList
@@ -80,7 +130,6 @@ const ProfileCompanyPage = () => {
       </Pressable>
 
       <View style={styles.buttonsRow}>
-        <Button title="Пользователь" onPress={() => navigation.navigate('ProfilePage')} />
         <Button title="Сотрудник" onPress={() => navigation.navigate('ProfileEmployeePage')} />
         <Button title="Компания" onPress={() => navigation.navigate('ProfileCompanyPage')} />
       </View>

@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const { width } = Dimensions.get('window');
 
@@ -15,7 +16,21 @@ const ProfileEmployeePage = () => {
   // Массив данных для списков
   const sections = [
     {
-      title: 'Основные',
+      title: 'Команда',
+      data: [
+        { icon: <FontAwesome6 name="house-circle-check" size={24} color="black" />, label: 'Компания' },
+        { icon: <Ionicons name="people-outline" size={20} color="black" />, label: 'Команда' },
+        { icon: <FontAwesome5 name="people-arrows" size={20} color="black" />, label: 'Контрагенты' },
+      ],
+    },
+    {
+      title: 'Команда',
+      data: [
+        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Клиенты' },
+      ],
+    },
+    {
+      title: 'Документы',
       data: [
         { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы' },
       ],
@@ -26,7 +41,6 @@ const ProfileEmployeePage = () => {
         { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления' },
         { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное' },
         { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски' },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы' },
       ],
     },
     {
@@ -80,7 +94,6 @@ const ProfileEmployeePage = () => {
       </Pressable>
 
       <View style={styles.buttonsRow}>
-        <Button title="Пользователь" onPress={() => navigation.navigate('ProfilePage')} />
         <Button title="Сотрудник" onPress={() => navigation.navigate('ProfileEmployeePage')} />
         <Button title="Компания" onPress={() => navigation.navigate('ProfileCompanyPage')} />
       </View>

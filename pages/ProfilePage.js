@@ -80,7 +80,6 @@ const ProfilePage = () => {
       </Pressable>
 
       <View style={styles.buttonsRow}>
-        <Button title="Пользователь" onPress={() => navigation.navigate('ProfilePage')} />
         <Button title="Сотрудник" onPress={() => navigation.navigate('ProfileEmployeePage')} />
         <Button title="Компания" onPress={() => navigation.navigate('ProfileCompanyPage')} />
       </View>
