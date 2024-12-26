@@ -205,16 +205,16 @@ return (
         :
         <View style={styles.specView}>
           <View style={styles.specElement}>
+            <Text style={styles.specText}>{postData.num_floors}-эт.</Text>
+            <Text>этажей</Text>
+          </View>
+          <View style={styles.specElement}>
             <Text style={styles.specText}>{postData.bedrooms}-комн.</Text>
-            <Text>дом</Text>
+            <Text>комнат</Text>
           </View>
           <View style={styles.specElement}>
             <Text style={styles.specText}>{postData.house_area} м²</Text>
             <Text>общая пл.</Text>
-          </View>
-          <View style={styles.specElement}>
-            <Text style={styles.specText}>{postData.plot_area} сот</Text>
-            <Text>участок</Text>
           </View>
           <View style={styles.specElement}>
             <Text style={styles.specText}>{postData.plot_area} сот</Text>

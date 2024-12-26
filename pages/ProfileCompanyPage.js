@@ -10,7 +10,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 
 const { width } = Dimensions.get('window');
 
-const ProfileBuilderPage = () => {
+const ProfileCompanyPage = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
 
@@ -136,6 +136,10 @@ const ProfileBuilderPage = () => {
         <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View> */}
       <View style={styles.buttonsRow}>
+        <Button title="Компания внеш" onPress={() => navigation.navigate('ProfileCompanyPageView')} />
+      </View>
+
+      <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
         <Button title="404" onPress={() => navigation.navigate('Error404')} />
         <Button title="403" onPress={() => navigation.navigate('Error403')} />
@@ -146,7 +150,7 @@ const ProfileBuilderPage = () => {
   );
 };
 
-export default ProfileBuilderPage;
+export default ProfileCompanyPage;
 
 const styles = StyleSheet.create({
   container: {

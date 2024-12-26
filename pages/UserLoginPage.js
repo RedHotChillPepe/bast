@@ -57,7 +57,7 @@ const UserLoginPage = () => {
     }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{marginTop: 64}}>
         <View style={styles.block}>
             <View style={styles.title}>
             <Text style={styles.titleText} >Телефон:</Text>
@@ -92,7 +92,7 @@ const UserLoginPage = () => {
             />
         </View>
 
-        <Pressable style={{backgroundColor: 'black', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 44}} 
+        <Pressable style={{backgroundColor: 'black', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 32, alignSelf:'center'}} 
                     //  onPress={() => setIsAuth(true)}
                     onPress={() => handleSubmit()}>
             <Text style={{fontSize: 20, color:'white'}}>

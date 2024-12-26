@@ -7,16 +7,50 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
+import HouseCard from '../components/HouseCard.js';
 
 const { width } = Dimensions.get('window');
 
-const ProfileRealtorPage = () => {
+const ProfileEmployeePageView = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
 
   const {getUser} =useApi()
+
+   const { getAllPosts, getAllVillages } = useApi();
+     const [houses, setHouses] = useState([]);
+      const [selectedList, setSelectedList] = useState('houses');
   
     const [userr, setUser]=useState([])
+
+        useEffect(() => {
+          const housesFetch = async () => {
+            const tempHouses = await getAllPosts();
+            if (tempHouses) {
+              const tempSetHouses = [];
+              const tempSetNewHouses = [];
+              tempHouses.forEach((house) => {
+                if (house.newbuild) {
+                  tempSetNewHouses.push(house);
+                } else {
+                  tempSetHouses.push(house);
+                }
+              });
+              setHouses(tempSetHouses);
+              setNewHouses(tempSetNewHouses);
+            }
+          };
+      
+          const villagesFetch = async () => {
+            const villageData = await getAllVillages();
+            if (villageData) {
+              setVillages(villageData);
+            }
+          };
+      
+          housesFetch();
+          villagesFetch();
+        }, []);
   
     useEffect(() => {
       const init = async () => {
@@ -118,51 +152,12 @@ const ProfileRealtorPage = () => {
         <Ionicons name="settings-outline" size={32} color="black" />
       </View>
 
-    <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between'}}>   
-      <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>
-        <Text style={[styles.itemText, {marginLeft: 0, }]}>
-         Уведомления
-        </Text>
-        <View style={{backgroundColor: 'red', alignItems:'center', justifyContent:'center', height: 18+8, width: 18+8, borderRadius: 13}}>
-         <Text style={{color:'#fff', fontSize: 18, fontWeight:'bold'}}>9</Text>
-        </View>
-      </View>
+      <Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>Объявления</Text>
+      <HouseCard data={houses} navigation={navigation} itemWidth={width -32} />
 
-      <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>
-        <Text style={[styles.itemText, {marginLeft: 0, }]}>
-         Акции
-        </Text>
-        <View style={{backgroundColor: 'red', alignItems:'center', justifyContent:'center', height: 18+8, width: 18+8, borderRadius: 13}}>
-         <Text style={{color:'#fff', fontSize: 18, fontWeight:'bold'}}>9</Text>
-        </View>
-      </View>
-    </View>
+ 
 
-    <View style={[styles.itemBlock, {flexDirection: 'row'}]}>
-      <Text style={styles.itemText}>
-        Баланс
-      </Text>
-      <Text style={styles.itemText}>
-        9222 руб
-      </Text>
-    </View>
-
-      {sections.map((section, index) => (
-        <View style={styles.itemBlock} key={index}>
-          {/* <FlatList
-            data={section.data}
-            renderItem={renderItem}
-            keyExtractor={(item, idx) => idx.toString()}
-          /> */}
-
-          {
-            section.data.map((item, index) => 
-              renderItem(item, index)
-            )
-          }
-
-        </View>
-      ))}
+  
 
       <Pressable onPress={logout} style={styles.logoutButton}>
         <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
@@ -175,10 +170,6 @@ const ProfileRealtorPage = () => {
         <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View> */}
 
-
-<View style={styles.buttonsRow}>
-        <Button title="Риэлтор внеш" onPress={() => navigation.navigate('ProfileEmployeePageView')} />
-      </View>
       
       <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
@@ -191,7 +182,7 @@ const ProfileRealtorPage = () => {
   );
 };
 
-export default ProfileRealtorPage;
+export default ProfileEmployeePageView;
 
 const styles = StyleSheet.create({
   container: {

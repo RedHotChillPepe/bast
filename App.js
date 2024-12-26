@@ -33,6 +33,10 @@ import Error403 from './pages/Error403.js';
 import Error500 from './pages/Error500.js';
 import Error503 from './pages/Error503.js';
 import DynamicStoriesPage from './pages/DynamicStoriesPage.js';
+import ProfilePageView from './pages/ProfilePageView.js'; 
+import SettingsPage from './pages/SettingsPage.js';
+import ProfileCompanyPageView from './pages/ProfileCompanyPageView.js';
+import ProfileEmployeePageView from './pages/ProfileEmployeePageView.js';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
@@ -96,10 +100,30 @@ const AppStack = () => {
           headerShown: false  
           }}/> 
         
-          <Stack.Screen name='DynamicStoriesPage' component={DynamicStoriesPage}
+        <Stack.Screen name='DynamicStoriesPage' component={DynamicStoriesPage}
           options={{//header:(props) => <HeaderComponent{...props}/>
             headerShown: false  
+            }}/>
+
+        <Stack.Screen name='ProfilePageView' component={ProfilePageView}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: true  
             }}/>   
+
+        <Stack.Screen name='SettingsPage' component={SettingsPage}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: true  
+          }}/> 
+
+        <Stack.Screen name='ProfileCompanyPageView' component={ProfileCompanyPageView}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+           headerShown: true  
+        }}/>
+
+        <Stack.Screen name='ProfileEmployeePageView' component={ProfileEmployeePageView}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+         headerShown: true  
+      }}/>
           
       </Stack.Navigator>
   );

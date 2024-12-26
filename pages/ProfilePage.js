@@ -6,7 +6,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
-import ProfileBuilderPage from './ProfileCompanyPage.js';
+import ProfileCompanyPage from './ProfileCompanyPage.js';
 import ProfileRealtorPage from './ProfileEmployeePage.js';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 
@@ -86,7 +86,7 @@ const ProfilePage = () => {
 
   switch (usertype) {
     case 2:
-      return <ProfileBuilderPage/>;
+      return <ProfileCompanyPage/>;
     case 3:
       return <ProfileRealtorPage/>;
     default:
@@ -109,7 +109,7 @@ const ProfilePage = () => {
                 <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
               </View>
             </View>
-            <Ionicons name="settings-outline" size={32} color="black" />
+            <Ionicons name="settings-outline" size={32} color="black" onPress={() => navigation.navigate('SettingsPage')} />
           </View>
     
           {sections.map((section, index) => (
@@ -137,6 +137,12 @@ const ProfilePage = () => {
             <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
             <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
           </View> */}
+
+          <View style={styles.buttonsRow}>
+            <Button title="Пользователь внеш" onPress={() => navigation.navigate('ProfilePageView')} />
+            
+          </View>
+
           <View style={styles.buttonsRow}>
             <Button title="Logout" onPress={logout} />
             <Button title="404" onPress={() => navigation.navigate('Error404')} />

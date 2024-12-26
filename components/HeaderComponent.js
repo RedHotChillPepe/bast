@@ -23,7 +23,7 @@ export default function HeaderComponent() {
         >
           <Text style={styles.headerButtonText}>Создать{'\n'}объявление</Text>
         </Pressable> */}
-        <MaterialIcons name="account-circle" size={32} color="black" />
+        <Ionicons name="add-circle-outline" size={32} color="black" onPress={() => navigation.navigate('CreateHousePostPage')}/>
       </View>
     </View>
   );
