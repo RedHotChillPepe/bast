@@ -32,8 +32,6 @@ import Error404 from './pages/Error404.js';
 import Error403 from './pages/Error403.js';
 import Error500 from './pages/Error500.js';
 import Error503 from './pages/Error503.js';
-import ProfileCompanyPage from './pages/ProfileCompanyPage';
-import ProfileEmployeePage from './pages/ProfileEmployeePage';
 import DynamicStoriesPage from './pages/DynamicStoriesPage.js';
 
 const Stack = createNativeStackNavigator();
@@ -97,20 +95,6 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/> 
-
-          {/* <Stack.Screen name='ProfileRealtorPage' component={ProfileRealtorPage}
-          options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: true,
-            headerTitle:"Профиль"  
-          <Stack.Screen name='ProfileEmployeePage' component={ProfileEmployeePage}
-          options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: true  
-            }}/>  
-          <Stack.Screen name='ProfileCompanyPage' component={ProfileCompanyPage}
-          options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: true,
-            headerTitle:"Профиль"  
-            }}/> */}
         
           <Stack.Screen name='DynamicStoriesPage' component={DynamicStoriesPage}
           options={{//header:(props) => <HeaderComponent{...props}/>

@@ -6,8 +6,9 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
-import ProfileBuilderPage from './ProfileBuilderPage';
-import ProfileRealtorPage from './ProfileRealtorPage';
+import ProfileBuilderPage from './ProfileCompanyPage.js';
+import ProfileRealtorPage from './ProfileEmployeePage.js';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 
 const { width } = Dimensions.get('window');
 

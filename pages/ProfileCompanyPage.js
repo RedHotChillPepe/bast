@@ -6,65 +6,59 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 
 const { width } = Dimensions.get('window');
 
-const ProfileRealtorPage = () => {
+const ProfileBuilderPage = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
 
   const {getUser} =useApi()
-  
-    const [userr, setUser]=useState([])
-  
-    useEffect(() => {
-      const init = async () => {
-        const auth = JSON.parse(await getAuth())
-        const user = await getUser(await auth[0].phone, "realtor")
-        /* console.log(await user.text()); */
-        
-        const userJson = JSON.parse(await user.text())
-        console.log(await userJson[1]); 
-        if (userJson.result != false) {
-          setUser(await userJson[1])
-        }
-        
-        
-      }
-      init()
     
-      return () => {
-        
-      }
-    }, [])
+      const [userr, setUser]=useState([])
+    
+      useEffect(() => {
+        const init = async () => {
+          const auth = JSON.parse(await getAuth())
+          const user = await getUser(auth[0].phone, "company")
+          /* console.log(await user.text()); */
+          
+          
+          const userJson = JSON.parse(await user.text())
+          if (userJson.result != false) {
+            setUser(await userJson[1])
+          }
+          
+          
+        }
+        init()
+      
+        return () => {
+          
+        }
+      }, [])
 
   // Массив данных для списков
   const sections = [
     {
-      title: 'Основные',
+      title: 'Команда',
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Текущие проекты' },
+        { icon: <FontAwesome6 name="house-circle-check" size={24} color="black" />, label: 'Компания' },
+        { icon: <Ionicons name="people-outline" size={20} color="black" />, label: 'Команда' },
+        { icon: <FontAwesome5 name="people-arrows" size={20} color="black" />, label: 'Контрагенты' },
       ],
     },
     {
-      title: 'Основные',
+      title: 'Команда',
+      data: [
+        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Клиенты' },
+      ],
+    },
+    {
+      title: 'Документы',
       data: [
         { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы' },
-      ],
-    },
-    {
-      title: 'Основные',
-      data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Компания' },
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Комнада' },
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Контрагенты' },
-      ],
-    },
-    {
-      title: 'Основные',
-      data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Клиенты' },
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Сделки' },
       ],
     },
     {
@@ -73,7 +67,6 @@ const ProfileRealtorPage = () => {
         { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления' },
         { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное' },
         { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски' },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы' },
       ],
     },
     {
@@ -102,7 +95,7 @@ const ProfileRealtorPage = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.nameBlock}>
         <View style={{ flexDirection: 'row' }}>
-          {
+           {
             Object.keys(userr).length != 0 && userr.photo != undefined
             ?
             <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={56} height={56} source={{uri:userr.photo}}/>
@@ -110,42 +103,12 @@ const ProfileRealtorPage = () => {
             <FontAwesome6 name="face-tired" size={56} color="black" />
           }
           <View style={{ marginLeft: 16 }}>
-            <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
+            <Text style={styles.name}>{userr.name != undefined ? userr.name : "Company Name"}</Text>
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
         </View>
         <Ionicons name="settings-outline" size={32} color="black" />
       </View>
-
-    <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between'}}>   
-      <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>
-        <Text style={[styles.itemText, {marginLeft: 0, }]}>
-         Уведомления
-        </Text>
-        <View style={{backgroundColor: 'red', alignItems:'center', justifyContent:'center', height: 18+8, width: 18+8, borderRadius: 13}}>
-         <Text style={{color:'#fff', fontSize: 18, fontWeight:'bold'}}>9</Text>
-        </View>
-      </View>
-
-      <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>
-        <Text style={[styles.itemText, {marginLeft: 0, }]}>
-         Акции
-        </Text>
-        <View style={{backgroundColor: 'red', alignItems:'center', justifyContent:'center', height: 18+8, width: 18+8, borderRadius: 13}}>
-         <Text style={{color:'#fff', fontSize: 18, fontWeight:'bold'}}>9</Text>
-        </View>
-      </View>
-    </View>
-
-    <View style={[styles.itemBlock, {flexDirection: 'row'}]}>
-      <Text style={styles.itemText}>
-        Баланс
-      </Text>
-      <Text style={styles.itemText}>
-        9222 руб
-      </Text>
-    </View>
-
       {sections.map((section, index) => (
         <View style={styles.itemBlock} key={index}>
           {/* <FlatList
@@ -159,7 +122,6 @@ const ProfileRealtorPage = () => {
               renderItem(item, index)
             )
           }
-
         </View>
       ))}
 
@@ -168,13 +130,11 @@ const ProfileRealtorPage = () => {
         <Ionicons name="exit-outline" size={24} color="grey" />
       </Pressable>
 
-    {/* <View style={styles.buttonsRow}>
+{/*       <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
         <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View> */}
-
-      
       <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
         <Button title="404" onPress={() => navigation.navigate('Error404')} />
@@ -186,7 +146,7 @@ const ProfileRealtorPage = () => {
   );
 };
 
-export default ProfileCompanyPage;
+export default ProfileBuilderPage;
 
 const styles = StyleSheet.create({
   container: {
