@@ -97,14 +97,16 @@ const AppStack = () => {
           headerShown: false  
           }}/> 
 
-          <Stack.Screen name='ProfileRealtorPage' component={ProfileRealtorPage}
+          {/* <Stack.Screen name='ProfileRealtorPage' component={ProfileRealtorPage}
           options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: false  
+            headerShown: true,
+            headerTitle:"Профиль"  
             }}/>  
           <Stack.Screen name='ProfileBuilderPage' component={ProfileBuilderPage}
           options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: false  
-            }}/>    
+            headerShown: true,
+            headerTitle:"Профиль"  
+            }}/> */}    
       </Stack.Navigator>
   );
 }

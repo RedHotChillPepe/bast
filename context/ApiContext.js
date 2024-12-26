@@ -217,8 +217,9 @@ export default function ApiProvider ({ children }){
         }
     }
 
-    const getUser = async (phone) => {
-        const url = host + "api/users/getuser"
+    const getUser = async (phone, query) => {
+        const url = host + "api/users/getuser" + (query!=undefined ? "?user="+query : "")
+        
 
         try {
             return fetch(url,{

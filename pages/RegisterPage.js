@@ -32,7 +32,7 @@ const RegisterPage = () => {
           const result = await getUser(phoneNumber)
           const resultJson = JSON.parse([await result.text()])
             if (await result.status == 200) {
-              if (resultJson.result) {
+              if (resultJson[0].result) {
                 setIsUserExistsLabelShown(true)
               } else {
                 navigation.navigate("ConfirmationPage", {

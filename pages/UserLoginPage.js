@@ -44,7 +44,8 @@ const UserLoginPage = () => {
                             onboarded:false,
                             phone:phoneNumber,
                             password:responseJson.hash,
-                            id: responseJson.id
+                            id: responseJson.id,
+                            usertype:responseJson.usertype
                         }])
                     } else {
                         setIsAuthLabelShown(true)

@@ -1,16 +1,48 @@
-import React from 'react';
-import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useApi } from '../context/ApiContext';
+import ProfileBuilderPage from './ProfileBuilderPage';
+import ProfileRealtorPage from './ProfileRealtorPage';
 
 const { width } = Dimensions.get('window');
 
+
+
 const ProfilePage = () => {
-  const { logout } = useAuth();
+  const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
+  const {getUser} =useApi()
+
+  const [usertype, setUsertype] = useState(1) 
+
+  const [userr, setUser]=useState([])
+
+  useEffect(() => {
+    const init = async () => {
+      const auth = JSON.parse(await getAuth())
+      const user = await getUser(await auth[0].phone, "user")
+      /* console.log(await user.text()); */
+      
+      const userJson = JSON.parse(await user.text()) 
+      if (userJson.result != false) {
+        setUser(await userJson[1])
+      }
+      
+      setUsertype(await auth[0].usertype)
+      
+    }
+    init()
+  
+    return () => {
+      
+    }
+  }, [usertype, userr, getAuth, getUser])
+  
 
   // Массив данных для списков
   const sections = [
@@ -41,8 +73,8 @@ const ProfilePage = () => {
     },
   ];
 
-  const renderItem = ({ item }) => (
-    <Pressable style={styles.listItem}>
+  const renderItem = ( item, index ) => (
+    <Pressable key={index} style={styles.listItem}>
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
@@ -51,48 +83,71 @@ const ProfilePage = () => {
     </Pressable>
   );
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.nameBlock}>
-        <View style={{ flexDirection: 'row' }}>
-          <FontAwesome6 name="face-tired" size={56} color="black" />
-          <View style={{ marginLeft: 16 }}>
-            <Text style={styles.name}>Имя Фамилия</Text>
-            <Text style={styles.email}>example@yandex.ru</Text>
+  switch (usertype) {
+    case 2:
+      return <ProfileBuilderPage/>;
+    case 3:
+      return <ProfileRealtorPage/>;
+    default:
+      return (
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.nameBlock}>        
+            <View style={{ flexDirection: 'row' }}>
+              {
+                Object.keys(userr).length != 0 && userr.photo != undefined
+                ?
+                <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={56} height={56} source={{uri:userr.photo}}/>
+                :
+                <FontAwesome6 name="face-tired" size={56} color="black" />
+              }
+              
+              
+              
+              <View style={{ marginLeft: 16 }}>
+                <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
+                <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
+              </View>
+            </View>
+            <Ionicons name="settings-outline" size={32} color="black" />
           </View>
-        </View>
-        <Ionicons name="settings-outline" size={32} color="black" />
-      </View>
+    
+          {sections.map((section, index) => (
+            <View style={styles.itemBlock} key={index}>
+              {/* <FlatList
+                data={section.data}
+                renderItem={renderItem}
+                keyExtractor={(item, idx) => idx.toString()}
+              /> */}
+              {
+                section.data.map((item, index) => 
+                  renderItem(item, index)
+                )
+              }
+            </View>
+          ))}
+    
+          <Pressable onPress={logout} style={styles.logoutButton}>
+            <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
+            <Ionicons name="exit-outline" size={24} color="grey" />
+          </Pressable>
+    
+{/*           <View style={styles.buttonsRow}>
+            <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
+            <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
+            <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
+          </View> */}
+          <View style={styles.buttonsRow}>
+            <Button title="Logout" onPress={logout} />
+            <Button title="404" onPress={() => navigation.navigate('Error404')} />
+            <Button title="403" onPress={() => navigation.navigate('Error403')} />
+            <Button title="500" onPress={() => navigation.navigate('Error500')} />
+            <Button title="503" onPress={() => navigation.navigate('Error503')} />
+          </View>
+        </ScrollView>
+      );
+  }
 
-      {sections.map((section, index) => (
-        <View style={styles.itemBlock} key={index}>
-          <FlatList
-            data={section.data}
-            renderItem={renderItem}
-            keyExtractor={(item, idx) => idx.toString()}
-          />
-        </View>
-      ))}
-
-      <Pressable onPress={logout} style={styles.logoutButton}>
-        <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
-        <Ionicons name="exit-outline" size={24} color="grey" />
-      </Pressable>
-
-      <View style={styles.buttonsRow}>
-        <Button title="Физик" onPress={() => navigation.navigate('ProfilePage')} />
-        <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
-        <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
-      </View>
-      <View style={styles.buttonsRow}>
-        <Button title="Logout" onPress={logout} />
-        <Button title="404" onPress={() => navigation.navigate('Error404')} />
-        <Button title="403" onPress={() => navigation.navigate('Error403')} />
-        <Button title="500" onPress={() => navigation.navigate('Error500')} />
-        <Button title="503" onPress={() => navigation.navigate('Error503')} />
-      </View>
-    </ScrollView>
-  );
+  
 };
 
 export default ProfilePage;

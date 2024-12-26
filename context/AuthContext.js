@@ -9,7 +9,7 @@ export default function AuthProvider({ children }) {
     const [checkAuthB, setCheckAuthB] = useState(false)
 
     async function setAuth(json) {
-      const {phone, password, status, onboarded, id} = json[0]
+      const {phone, password, status, onboarded, id, usertype} = json[0]
       await SecureStore.setItemAsync("auth", 
         JSON.stringify([
           {
@@ -17,7 +17,8 @@ export default function AuthProvider({ children }) {
             onboarded:onboarded,
             phone:phone,
             password:password,
-            id:id
+            id:id,
+            usertype:usertype
           }
         ]))
       setCheckAuthB(true)
@@ -32,13 +33,14 @@ export default function AuthProvider({ children }) {
 
     async function setOnboard(bool) {
       const tempauth = JSON.parse(await getAuth())
-      const {status, phone, password, id} = tempauth[0]
+      const {status, phone, password, id, usertype} = tempauth[0]
       await setAuth([{
           status:status,
           onboarded:bool,
           phone:phone,
           password:password,
-          id:id
+          id:id,
+          usertype:usertype
       }])
       setCheckAuthB(true)
     }
@@ -56,7 +58,8 @@ export default function AuthProvider({ children }) {
             onboarded:false,
             phone:"",
             password:"",
-            id:""
+            id:"",
+            usertype:-1
           }])
           const tempauth = JSON.parse(await getAuth())
           const {status, isOnboarded} = tempauth[0]
