@@ -48,7 +48,6 @@ const FavouritesPage = ({route}) => {
     
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={{fontSize: 24, fontWeight: '600',marginTop: 16, marginBottom: 32, textAlign:'left',alignSelf:'flex-start', marginLeft:32}}>Избранное</Text>
       <View style={styles.content}>
         <View style={styles.housesView}>
         {Object.keys(houses).length != 0 && houses != undefined 

@@ -137,18 +137,18 @@ const AppTabs = () => {
         component={DynamicHousesPage} 
         options={{
           headerShown:false,
-          tabBarShowLabel: false,
+          tabBarShowLabel: true,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="search" size={24} color="black" />
         ),
       }}
         />
       <Tab.Screen 
-        name='Favourites' 
+        name='Избранное' 
         component={FavouritesPage}
         options={{
-          headerShown:false,
-          tabBarShowLabel: false,
+          headerShown:true,
+          tabBarShowLabel: true,
           tabBarIcon: ({ color, size}) => (
             <Fontisto name="favorite" size={24} color="black" />
         ),
@@ -236,6 +236,7 @@ const AppInit = () => {
   })
   if (loaded) {
     SplashScreen.hide()
+
 
     // Проверка зарегистрирован ли пользователь
     if (!isAuth) {

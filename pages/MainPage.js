@@ -7,6 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
   Dimensions,
+  StatusBar
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useApi } from '../context/ApiContext';
@@ -111,7 +112,10 @@ const MainPage = () => {
 
   return (
     <View style={styles.container}>
-      {/* <StatusBar barStyle='dark-content' /> */}
+      <StatusBar 
+      backgroundColor="#fff"
+      barStyle='dark-content' /> 
+      
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}

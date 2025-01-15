@@ -128,7 +128,7 @@ return (
   <SafeAreaView style={styles.container}>
     <ScrollView onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.mainView}>
 
-      <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between', alignItems:'center'}}>
+      <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between', alignItems:'center', }}>
         <Pressable onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={32} color="black" />
         </Pressable>
@@ -341,22 +341,22 @@ return (
           <Text style={styles.infoValue}>Гараж, навес, баня</Text>
         </View>
       </View>
-
+      
+      {/*Вид для отступа снизу*/}
+      <View style={{height: '5%'}} />
+      
         {/* потом появятся две карусели с домами от этого застройщика и похожими домами */}
 
       </ScrollView>
 
       {/* оверлей кнопки */}
-      {showButtons && (
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={() => handleCallButton()} style={styles.button}>
             <Text style={styles.buttonText}>Позвонить</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Написать</Text>
-          </TouchableOpacity>
         </View>
-      )}
+
 
       {
         showModal 
@@ -382,14 +382,14 @@ return (
                 <Text style={styles.closeButtonText}>Позвонить</Text>
               </Pressable>
 
-              <View style={{alignItems: 'center'}}>
+              {/* <View style={{alignItems: 'center'}}>
                 <Text style={{fontSize: 18, textAlign:'center'}}>
                 Пожалуйста, зарегистрируйтесь
                 </Text>
               </View>
               <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
                 <Text style={styles.closeButtonText}>Зарегистрироваться</Text>
-              </Pressable>
+              </Pressable> */}
             </View>
           </View>          
         </Modal>
@@ -405,7 +405,7 @@ container: {
 },
 
 mainView: {
-    alignItems:'center'   
+    alignItems:'center',
 },
 
 priceBlock: {
@@ -556,30 +556,31 @@ actionButton: {
 },
 buttonContainer: {
   position: 'absolute',
-  bottom: 40,
-  left: 20,
-  right: 20,
+  bottom: 0,
+  paddingVertical: 12,
   flexDirection: 'row',
   justifyContent: 'space-around',
-  paddingHorizontal: 20,
+  backgroundColor: 'white',
+  width: width
 },
 
 button: {
-  backgroundColor: 'blue',
-  paddingVertical: 10,
-  paddingHorizontal: 20,
+  backgroundColor: 'grey',
+  paddingVertical: 12,
+  width: width -64,
   borderRadius: 8,
+  alignItems: 'center'
 },
 buttonText: {
   color: 'white',
-  fontSize: 18,
-  fontWeight: 'bold',
+  fontSize: 20,
+  fontWeight: '600',
 },
 closeButton: {
   marginTop: 16,
-  backgroundColor: '#007AFF',
+  backgroundColor: 'grey',
   paddingVertical: 10,
-  paddingHorizontal: 16,
+  paddingHorizontal: 20,
   borderRadius: 8,
   alignSelf: 'center',
 },
