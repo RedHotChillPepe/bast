@@ -18,8 +18,7 @@ import VillageCard from '../components/VillageCard';
 
 const { width } = Dimensions.get('window');
 
-const MainPage = () => {
-  const navigation = useNavigation();
+const MainPage = ({ navigation }) => {
   const { getAllPosts, getAllVillages } = useApi();
   const [houses, setHouses] = useState([]);
   const [newHouses, setNewHouses] = useState([]);
@@ -89,13 +88,17 @@ const MainPage = () => {
     switch (selectedList) {
       case 'houses':
         return houses.length ? (
-          <HouseCard data={houses} navigation={navigation} itemWidth={width -32} />
+          houses.map((house) => (
+            <HouseCard key={house.id} item={house} navigation={navigation} itemWidth={width - 32} />
+          ))
         ) : (
           <ActivityIndicator size="large" color="#32322C" />
         );
       case 'newHouses':
         return newHouses.length ? (
-          <HouseCard data={newHouses} navigation={navigation} itemWidth={width -32} horizontalScroll={true} />
+          newHouses.map((house) => (
+            <HouseCard key={house.id} item={house} navigation={navigation} itemWidth={width - 32} />
+          ))
         ) : (
           <ActivityIndicator size="large" color="#32322C" />
         );
@@ -166,13 +169,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   searchButtonsView: {
-    marginHorizontal: 8,
+    alignSelf:'center',
+    marginHorizontal: 4,
     flexDirection: 'row',
-    marginTop: 4,
-    width: width - 32,
+    marginTop: 4
   },
+
   searchButtonsContent: {
-    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 12,
@@ -184,8 +188,8 @@ const styles = StyleSheet.create({
   },
   searchButtonsText: {
     color: '#858585',
-    fontWeight: 'bold',
-    fontSize: 20,
+    // fontWeight: 'bold',
+    fontSize: 16,
   },
   activeButtonsText: {
     color: '#EFEFEF', // Изменение цвета для активной кнопки

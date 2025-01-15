@@ -186,6 +186,17 @@ const DynamicHousesPage = ({route}) => {
       const response = await getPaginatedPosts(page, queryObject)
       setHouses(Array.isArray(response) ? response : []);
     }
+
+    const loadMoreData = async () => {
+      const nextPage = page + 1;
+      try {
+        const response = await getPaginatedPosts(nextPage);
+        setPage(nextPage);
+        setHouses((prev) => [...prev, ...(response || [])]);
+      } catch (error) {
+        console.error('Error loading more data:', error);
+      }
+    };
     
   return (
     <SafeAreaView style={styles.container}>
@@ -230,10 +241,10 @@ const DynamicHousesPage = ({route}) => {
         </Pressable> 
       </View>
 
-      <View style={styles.content}>
+      <View style={{paddingBottom: 64}}>
           <View style={styles.housesView}>
 
-          {Object.keys(houses).length != 0 && houses != undefined 
+          {/* {Object.keys(houses).length != 0 && houses != undefined 
           ? 
             <HouseCard data={houses} 
               navigation={navigation} 
@@ -246,10 +257,27 @@ const DynamicHousesPage = ({route}) => {
           }
 
 
-          </View>  
+          </View>   */}
+
+{houses.length ? (
+          <FlatList
+            data={houses}
+            renderItem={({ item }) => (
+              <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            onEndReached={loadMoreData}
+            onEndReachedThreshold={0.5}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <ActivityIndicator size="large" color="#32322C" />
+        )}
+      </View>
+        
       </View>
 
-
+    
 
       {/* Модальное окно */}
       <FilterModal
@@ -271,7 +299,7 @@ const DynamicHousesPage = ({route}) => {
         setSelectedSort={setSelectedSort}
         handleFilterChoice={handleFilterChoice}
       />
-      
+        
     </SafeAreaView>
   )
 }

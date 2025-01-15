@@ -133,10 +133,10 @@ const AppTabs = () => {
   return(
     <Tab.Navigator initialRouteName='Home'>
       <Tab.Screen
-        name='Search' 
+        name='Поиск' 
         component={DynamicHousesPage} 
         options={{
-          headerShown:false,
+          headerShown:true,
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="search" size={24} color="black" />
@@ -159,7 +159,7 @@ const AppTabs = () => {
         component={AppStack}
         options={{
           headerShown:false,
-          tabBarShowLabel: false,
+          tabBarShowLabel: true,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="home" size={24} color="black" />
         ),
@@ -170,7 +170,7 @@ const AppTabs = () => {
       component={NotExistPage}
       options={{
         headerShown:false,
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         tabBarIcon: ({ color, size}) => (
           <Entypo name="chat" size={24} color="black" />
       ),
@@ -181,7 +181,7 @@ const AppTabs = () => {
       component={ProfilePage}
       options={{
         // headerShown:false,
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         tabBarIcon: ({ color, size}) => (
           <MaterialIcons name="account-box" size={24} color="black" />
       ),

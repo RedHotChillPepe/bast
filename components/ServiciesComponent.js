@@ -57,8 +57,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: '#d6d6d6',
     marginRight: 16, // Отступ между карточками
-    paddingTop: 12,
-    paddingBottom: 72,
+    paddingVertical: 12,
+    // paddingTop: 12,
+    // paddingBottom: 72,
     paddingHorizontal: 12,
   },
   functionCardView: {
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
   },
   functionCardText: {
     fontSize: 18,
-    fontWeight:'bold',
+    // fontWeight:'bold',
     color: '#14080E',
   },
 });

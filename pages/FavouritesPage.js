@@ -47,25 +47,49 @@ const FavouritesPage = ({route}) => {
         
     
   return (
+    // <SafeAreaView style={styles.container}>
+    //   <View style={styles.content}>
+    //     <View style={styles.housesView}>
+    //     {Object.keys(houses).length != 0 && houses != undefined 
+    //       ? 
+    //       <HouseCard data={houses} 
+    //         navigation={navigation} 
+    //         itemWidth={Dimensions.get('window').width -32} 
+    //         horizontalScroll={false} 
+    //       />
+    //       :
+    //         isFavs 
+    //         ? 
+    //         <ActivityIndicator size="large" color="#32322C" /> 
+    //         :
+    //         <Text>У вас нет избранных!</Text>
+    //       }
+    //      </View>  
+    //   </View>      
+    // </SafeAreaView>
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.housesView}>
-        {Object.keys(houses).length != 0 && houses != undefined 
-          ? 
-          <HouseCard data={houses} 
-            navigation={navigation} 
-            itemWidth={Dimensions.get('window').width -32} 
-            horizontalScroll={false} 
-          />
-          :
-            isFavs 
-            ? 
-            <ActivityIndicator size="large" color="#32322C" /> 
-            :
-            <Text>У вас нет избранных!</Text>
-          }
-         </View>  
-      </View>      
+          {houses.length > 0 ? (
+            <FlatList
+              data={houses}
+              renderItem={({ item }) => (
+                <HouseCard
+                  item={item}
+                  navigation={navigation}
+                  itemWidth={width - 32}
+                />
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              showsVerticalScrollIndicator={false}
+            />
+          ) : isFavs ? (
+            <ActivityIndicator size="large" color="#32322C" />
+          ) : (
+            <Text style={styles.noFavsText}>У вас нет избранных!</Text>
+          )}
+        </View>
+      </View>
     </SafeAreaView>
   )
 }

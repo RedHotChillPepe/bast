@@ -3,10 +3,8 @@ import { View, Text, FlatList, Pressable, Image, StyleSheet, Dimensions } from '
 
 const { width } = Dimensions.get('window');
 
-const HouseCard = ({ item, navigation, itemWidth }) => {
-  if (!item) return null;
-
-  return (
+const HouseCard = ({ data, navigation, itemWidth, onEndReached }) => {
+  const renderHouseItem = ({ item }) => (
     <Pressable onPress={() => navigation.navigate("House", { houseId: item.id })}>
       <View style={[styles.houseItem, {width: itemWidth}]}>
         <View style={styles.houseImageView}>
@@ -28,6 +26,17 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
         </View>
       </View>
     </Pressable>
+  );
+
+  return (
+    <FlatList
+      data={data}
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      renderItem={renderHouseItem}
+      keyExtractor={(item) => item.id != null & item.id != undefined ? item.id.toString() : "lmao"}
+      onEndReached={onEndReached}
+    />
   );
 };
 
