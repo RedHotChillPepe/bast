@@ -33,7 +33,7 @@ export default function ApiProvider ({ children }){
         .then(response => response.json()
         )
         .then(json =>
-            {return json.rows}
+            {return [json.rows, json.rowCount]}
         )
         .catch(error => {
             console.error("Error fetching files: ", error);            

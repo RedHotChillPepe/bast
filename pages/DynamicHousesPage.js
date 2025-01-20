@@ -105,6 +105,7 @@ const DynamicHousesPage = ({route}) => {
     const [selectedCategory, setSelectedCategory] = useState({})
     const [priceRange, setPriceRange] = useState([])
     const [areaRange, setAreaRange] = useState([])
+    const [zeroRows, setZeroRows] = useState(false)
 
     const [queryObject, setQueryObject] = useState({})
 
@@ -127,6 +128,8 @@ const DynamicHousesPage = ({route}) => {
 
     // Создание объединённого query для поиска
     useEffect(() => {
+      console.log("First UseEffect!");
+      
       const isCateroyEmpty = Object.keys(selectedCategory).length == 0
       const isFiltersEmpty = Object.keys(selectedFilters).length == 0
       const isSortEmpty = Object.keys(selectedSort).length == 0
@@ -157,13 +160,21 @@ const DynamicHousesPage = ({route}) => {
     
 
     useEffect(() => {
+      console.log("Second UseEffect!");
+      
       // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
       if (Object.keys(houses).length === 0) {
         const loadFromAPI = async () => {
           try {
-            const response = await getPaginatedPosts(page);
+            const response = await getPaginatedPosts(page, queryObject);
             // Убедимся, что `response` является массивом
-            setHouses(Array.isArray(response) ? response : []);
+            if (response[1] == 0) {
+              setHouses([])
+              setZeroRows(true)
+            } else {
+              setHouses(Array.isArray(response[0]) ? response[0] : []);
+            }
+            
           } catch (error) {
             console.error("Error fetching posts:", error);
             setHouses([]); // Устанавливаем пустой массив при ошибке
@@ -171,28 +182,25 @@ const DynamicHousesPage = ({route}) => {
         };
         loadFromAPI();
       }
-    }, [houses, getPaginatedPosts]); // Зависимость от `houses` и `getPaginatedPosts`
-    
-    const handleReachBottom = async () => {
-      const newPage = await getPaginatedPosts(page+1)
-      
-      
-      setPage(page+1)        
-
-      setHouses(houses.concat(await newPage));
-    }
+    }, []);
 
     const handleFilterChoice = async () => {
+      console.log("FilterChoice!");
+      
       const response = await getPaginatedPosts(page, queryObject)
-      setHouses(Array.isArray(response) ? response : []);
+      setHouses(Array.isArray(response[0]) ? response[0] : []);
     }
 
     const loadMoreData = async () => {
+      console.log("Loading new page!");
+      
       const nextPage = page + 1;
       try {
-        const response = await getPaginatedPosts(nextPage);
+        const response = await getPaginatedPosts(nextPage, queryObject);
+
         setPage(nextPage);
-        setHouses((prev) => [...prev, ...(response || [])]);
+        setHouses((prev) => [...prev, ...(response[0] || [])]);
+        
       } catch (error) {
         console.error('Error loading more data:', error);
       }
@@ -213,7 +221,7 @@ const DynamicHousesPage = ({route}) => {
       </View>
 
       {/* Тестовые поля для проверки */}
-      {/* <Text>
+      <Text>
         {JSON.stringify(priceRange)}
       </Text>
       <Text>
@@ -227,7 +235,7 @@ const DynamicHousesPage = ({route}) => {
       </Text>
       <Text>
         {JSON.stringify(selectedSort)}
-      </Text> */}
+      </Text>
 
       {/* Фильтры и сортировка */}
       <View style={styles.filterContainer}>
@@ -270,9 +278,10 @@ const DynamicHousesPage = ({route}) => {
             onEndReachedThreshold={0.5}
             showsVerticalScrollIndicator={false}
           />
-        ) : (
+        ) : zeroRows ? <Text>Не нашлось объявления которое подходит под Ваш запрос :(</Text>:
+        
           <ActivityIndicator size="large" color="#32322C" />
-        )}
+        }
       </View>
         
       </View>
