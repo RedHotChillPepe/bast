@@ -189,6 +189,9 @@ const DynamicHousesPage = ({route}) => {
       
       const response = await getPaginatedPosts(page, queryObject)
       setHouses(Array.isArray(response[0]) ? response[0] : []);
+      if (response[1] == 0) {
+        setZeroRows(true)
+      }
     }
 
     const loadMoreData = async () => {
