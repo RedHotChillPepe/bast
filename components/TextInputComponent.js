@@ -10,7 +10,10 @@ const TextInputComponent = (props) => {
             style={props.inputStyle}
             placeholder={props.placeholder}
             value={props.value}
-            onChangeText={(value) => props.handleInputChange(`${props.valueName}`, value)}
+            onChangeText={(value) => {
+              console.log(`ValueName: ${props.valueName}, Value: ${value}`);
+              props.handleInputChange(props.valueName, value);
+            }}
         />
     </View>
   )

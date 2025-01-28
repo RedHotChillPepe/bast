@@ -17,12 +17,6 @@ export default function HeaderComponent() {
       <View style={styles.headerContent}>
       <Ionicons name="menu" size={32} color="#fff" />
         <Text style={styles.headerText}>БАСТ</Text>
-        {/* <Pressable
-          style={styles.headerButton}
-          onPress={() => navigation.navigate('CreateHousePostPage')}
-        >
-          <Text style={styles.headerButtonText}>Создать{'\n'}объявление</Text>
-        </Pressable> */}
         <Ionicons name="add-circle-outline" size={32} color="black" onPress={() => navigation.navigate('CreateHousePostPage')}/>
       </View>
     </View>

@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, ScrollView, Pressable, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Pressable, TouchableOpacity, Image, Dimensions, TextInput, Button, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TextInputComponent from '../components/TextInputComponent';
 import ModalPickerComponent from '../components/ModalPickerComponent';
 import * as ImagePicker from 'expo-image-picker';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -14,7 +15,7 @@ export default function CreateHousePostPage() {
 
   const userId = useRef()
   
-
+  
   const [formData, setFormData] = useState({
     title: '',
     houseType: '',
@@ -94,23 +95,45 @@ export default function CreateHousePostPage() {
     setFormData((prevData) => ({...prevData, photos:tempPhotos}))
   }
 
+  // const handleSubmit = async () => {
+  //   if (!formData.price || isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
+  //     Alert.alert('Ошибка', 'Пожалуйста, заполните корректное значение для цены.');
+  //     return;
+  //   }
+  
+  //   console.log('Данные для отправки:', formData);
+  
+  //   try {
+  //     const result = await sendPost(formData);
+  //     console.log('Результат отправки:', result);
+  //     Alert.alert('Успешно', 'Объявление опубликовано.');
+  //   } catch (error) {
+  //     console.error('Ошибка отправки:', error);
+  //     Alert.alert('Ошибка', 'Не удалось отправить объявление.');
+  //   }
+  // };
+
+  // const handleSubmit = () => {
+  //   console.log('Submitted data:', formData);
+  // };
+  
 
   const handleSubmit = async () => {
-    /* if (!formData.title || !formData.houseType || !formData.price || !formData.area || !formData.rooms || !formData.location) {
-      Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
-      return;
-    } */
-    let result = await sendPost(formData)
-
-    console.log(await result);
+  if ( !formData.price ) {
+       Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
+       return;
+     } 
+     console.log('Данные для отправки:', formData);
+     let result = await sendPost(formData)
+     console.log('Результат отправки:', result);
     
 
-    // console.log('Данные объявления:', formData);
-  };
+   console.log('Данные объявления:', formData);
+ };
 
   const inputListLocation=[
     {text:"Населённый пункт", placeholder:"Название Населённого Пункта", valueName:"settlement"},
-    {text:"Населённый пункт", placeholder:"Улица, Дом", valueName:"location"},
+    {text:"Адрес", placeholder:"Улица, Дом", valueName:"location"},
     {text:"Кадастровые номер", placeholder:"Кадастровый Номер", valueName:"kadastr"},
   ]
 
@@ -223,10 +246,10 @@ export default function CreateHousePostPage() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.formContainer}>
+
         <Text style={styles.header}>Создание объявления</Text>
 
         <Text style={styles.header2}>Местоположение</Text>
-
         {
           inputListLocation.map((item, index) => {
             return (
@@ -348,7 +371,7 @@ export default function CreateHousePostPage() {
         </View>
 
         <TextInputComponent keyboardType={"numeric"} viewStyle={styles.row} textStyle={styles.label}
-        text={"Цена (обязательно)"} inputStyle={styles.input} placeholder={"Цена (руб)"}
+        text={"Цена*"} inputStyle={styles.input} placeholder={"Цена (руб)"}
         value={formData.price} handleInputChange={handleInputChange} valueName={"price"}
         />
 
@@ -399,21 +422,6 @@ export default function CreateHousePostPage() {
         </View>
 
 
-          {/* {
-            Object.keys(formData.photos).length != 0.0
-            
-            &&
-            
-            formData.photos.map((item, index) => {
-              return (
-                <Text key={index}>
-                  {item.filename}
-                </Text>
-              )
-            })
-              
-            
-          } */}
 
         <Pressable style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Опубликовать объявление</Text>

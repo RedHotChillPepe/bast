@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
+import Yamap, { Marker } from 'react-native-yamap';
 
 const {width} = Dimensions.get('window');
 
@@ -224,21 +225,37 @@ return (
       }
       
 
-      {/* adressView - блок с адресом и картой */}
       <View style={styles.adressView}>
-        <View >   
-          <Text style={styles.adressTitle}>
-            Новый город
-          </Text>
-          <Text style={styles.adressText}>
-            Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
-          </Text>
-        </View> 
+        <View style={{borderRadius: 16}}>
+  <Yamap 
+    style={styles.map}
+    initialRegion={{
+      lat: 50,
+      lon: 60,
+      zoom: 10,
+    }}
+  >
+    {/* Добавление круга на карту */}
+    <Marker point={{ lat: 50, lon: 60 }} source={require('../assets/marker.png')} />
+  </Yamap>
+  </View>
 
-        <View style={{alignItems: 'center', marginTop: 8}}> 
-          <Image source={require('../assets/adress.png')} style={styles.imageMap} />
-        </View>
-      </View>
+  <View>   
+    <Text style={styles.adressTitle}>
+      Новый город
+    </Text>
+    <Text style={styles.adressText}>
+      Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
+    </Text>
+  </View> 
+
+  <View style={{ alignItems: 'center', marginTop: 8 }}> 
+    <Image source={require('../assets/adress.png')} style={styles.imageMap} />
+  </View>
+</View>
+
+
+
 
       {/* serviciesBlock - блок с услугами */}
       <View style={styles.serviciesBlock}>
@@ -601,6 +618,11 @@ modalContent: {
   borderRadius: 12,
   padding: 16,
   maxHeight: '80%',
+},
+
+map: {
+  width: width,
+  height: 250,
 },
 
 })
