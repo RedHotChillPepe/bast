@@ -38,15 +38,15 @@ import ProfilePageView from './pages/ProfilePageView.js';
 import SettingsPage from './pages/SettingsPage.js';
 import ProfileCompanyPageView from './pages/ProfileCompanyPageView.js';
 import ProfileEmployeePageView from './pages/ProfileEmployeePageView.js';
-import Yamap from 'react-native-yamap';
 import { Geocoder } from 'react-native-yamap';
+import { YaMap } from 'react-native-yamap';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
 const OnboardingStack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
-
+YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
 
 /// Объявление доступных страниц, навигация (возможно стоит в отдельный компонент)
 const AppStack = () => {
@@ -272,14 +272,14 @@ const AppInit = () => {
 // Корневой (Root) компонент
 export default function App() {
 
-  useEffect(() => {
-    if (Yamap && typeof Yamap.init === 'function') {
-      Yamap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
-      Yamap.setLocale('ru_RU'); // Устанавливаем русский язык
-    } else {
-      console.error("Yamap не инициализирован");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (Yamap && typeof Yamap.init === 'function') {
+  //     Yamap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
+  //     Yamap.setLocale('ru_RU'); // Устанавливаем русский язык
+  //   } else {
+  //     console.error("Yamap не инициализирован");
+  //   }
+  // }, []);
 
   return (
     <ApiProvider>

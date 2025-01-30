@@ -6,7 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import Yamap, { Marker } from 'react-native-yamap';
+import  { YaMap, Marker } from 'react-native-yamap';
 
 const {width} = Dimensions.get('window');
 
@@ -227,7 +227,7 @@ return (
 
       <View style={styles.adressView}>
         <View style={{borderRadius: 16}}>
-  <Yamap 
+  <YaMap 
     style={styles.map}
     initialRegion={{
       lat: 50,
@@ -237,7 +237,7 @@ return (
   >
     {/* Добавление круга на карту */}
     <Marker point={{ lat: 50, lon: 60 }} source={require('../assets/marker.png')} />
-  </Yamap>
+  </YaMap>
   </View>
 
   <View>   

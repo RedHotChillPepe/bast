@@ -17,6 +17,7 @@
       "bundleIdentifier": "com.bastithouses.app"
     },
     "android": {
+      "minSdkVersion": 26,
       "adaptiveIcon": {
         "foregroundImage": "./assets/BastLogo.png",
         "backgroundColor": "#ffffff"
