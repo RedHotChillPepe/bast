@@ -7,6 +7,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useAuth } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import  { YaMap, Marker } from 'react-native-yamap';
+import { Geocoder } from 'react-native-yamap';
 
 const {width} = Dimensions.get('window');
 
@@ -17,6 +18,15 @@ export default function DynamicHousePostPage ({ navigation, route }) {
   const {getAuth} = useAuth()
 
   const [postData, setPostData]=useState([])
+
+  const [combinedAddr, setCombinedAddr]=useState('')
+  const [geoState, setGeoState]=useState({
+    lat:0,
+    lon:0
+  })
+  const mapRef = useRef(null)
+  
+  const [isGeoLoaded, setIsGeoLoaded] = useState(false)
 
   const [isOwner, setIsOwner]=useState(false)
   const [isFavorite, setIsFavorite]=useState(false)
@@ -54,6 +64,27 @@ export default function DynamicHousePostPage ({ navigation, route }) {
         console.log(resultJson.rows);
         
         setPostData(resultJson.rows[0])
+        
+        const addressString = resultJson.rows[0].city + " " + resultJson.rows[0].fulladdress
+
+        if (resultJson.rows[0].latitude == null || resultJson.rows[0].longitude == null) {
+          Geocoder.addressToGeo(addressString)
+          .then(({lat, lon}) => {
+            console.log("lat: ", lat, "lon", lon);
+            
+            setGeoState({lat:lat, lon:lon})
+          })
+          .finally(
+            setIsGeoLoaded(true)
+          )
+        } else {
+          setGeoState({
+            lat:parseFloat(resultJson.rows[0].latitude),
+            lon: parseFloat(resultJson.rows[0].longitude) 
+          })
+          setIsGeoLoaded(true)
+          
+        }
         
       }
     }
@@ -227,32 +258,34 @@ return (
 
       <View style={styles.adressView}>
         <View style={{borderRadius: 16}}>
-  <YaMap 
-    style={styles.map}
-    initialRegion={{
-      lat: 50,
-      lon: 60,
-      zoom: 10,
-    }}
-  >
-    {/* Добавление круга на карту */}
-    <Marker point={{ lat: 50, lon: 60 }} source={require('../assets/marker.png')} />
-  </YaMap>
-  </View>
+          {
+            isGeoLoaded 
+            ? 
+            <YaMap ref={mapRef} style={styles.map}
+            onMapLoaded={()=>{mapRef.current.setCenter({ lon:geoState.lon, lat:geoState.lat}, 10)}}
+            >
+              {/* Добавление круга на карту */}
+              <Marker point={{ lat: geoState.lat, lon: geoState.lon }} source={require('../assets/marker.png')} />
+            </YaMap> 
+            : 
+            <Text>Загрузка Карты...</Text>
+          }
+          
+        </View>
 
-  <View>   
-    <Text style={styles.adressTitle}>
-      Новый город
-    </Text>
-    <Text style={styles.adressText}>
-      Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
-    </Text>
-  </View> 
+        <View>   
+          <Text style={styles.adressTitle}>
+            Новый город
+          </Text>
+          <Text style={styles.adressText}>
+            Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
+          </Text>
+        </View> 
 
-  <View style={{ alignItems: 'center', marginTop: 8 }}> 
-    <Image source={require('../assets/adress.png')} style={styles.imageMap} />
-  </View>
-</View>
+        <View style={{ alignItems: 'center', marginTop: 8 }}> 
+          <Image source={require('../assets/adress.png')} style={styles.imageMap} />
+        </View>
+      </View>
 
 
 

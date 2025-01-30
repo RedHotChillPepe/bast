@@ -47,6 +47,7 @@ const OnboardingStack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
 YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
+Geocoder.init('d4e0fa5b-61fc-468d-886c-31740a78b323')
 
 /// Объявление доступных страниц, навигация (возможно стоит в отдельный компонент)
 const AppStack = () => {

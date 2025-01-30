@@ -95,7 +95,9 @@ export default function ApiProvider ({ children }){
                     electricity_bill: data.electricity== "" ? null : data.electricity,
                     heating: data.heating == "" ? null :data.heating,
                     photos:data.photos,
-                    poster_id:data.poster_id
+                    poster_id:data.poster_id,
+                    latitude: data.lat == "" ? null : data.lat,
+                    longitude: data.lon == "" ? null : data.lon
                 }])
             })
             .then(response => {return  response})

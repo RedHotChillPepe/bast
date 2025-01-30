@@ -6,6 +6,7 @@ import ModalPickerComponent from '../components/ModalPickerComponent';
 import * as ImagePicker from 'expo-image-picker';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
+import { Geocoder } from 'react-native-yamap';
 
 
 const { width, height } = Dimensions.get('window');
@@ -41,7 +42,9 @@ export default function CreateHousePostPage() {
     electricity: '',
     heating: '',
     photos:[],
-    poster_id: ''
+    poster_id: '',
+    lat:'',
+    lon:''
   });
 
   useEffect(() => {
@@ -119,16 +122,33 @@ export default function CreateHousePostPage() {
   
 
   const handleSubmit = async () => {
-  if ( !formData.price ) {
-       Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
-       return;
-     } 
-     console.log('Данные для отправки:', formData);
-     let result = await sendPost(formData)
-     console.log('Результат отправки:', result);
-    
+    if ( !formData.price || !formData.settlement || !formData.location ) {
+      Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
+      return;
+    } else {
+      var antiStaleFormData = formData
 
-   console.log('Данные объявления:', formData);
+      const addressString = formData.settlement + " " + formData.location
+      await Geocoder.addressToGeo(addressString)
+      .then(({lat, lon}) => {
+        if ((lat == undefined || lat == null) || (lon == undefined || lon == null)) {
+          Alert.alert('Ошибка, неправильный адрес')
+        } else {
+          antiStaleFormData = {...antiStaleFormData, lat:lat, lon:lon}
+          /* setFormData((prevData) => ({...prevData, lat:lat, lon:lon})); */
+          console.log("lat: ", lat, "lon: ", lon);
+          
+        }
+      })
+      .finally (async ()=>{
+        console.log('Данные для отправки:', antiStaleFormData);
+        let result = await sendPost(antiStaleFormData)
+        console.log("result: ", result);
+        
+      })
+      
+    }
+     
  };
 
   const inputListLocation=[
