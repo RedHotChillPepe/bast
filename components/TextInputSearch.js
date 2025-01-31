@@ -3,11 +3,13 @@ import React from 'react'
 
 const {width} = Dimensions.get('window');
 
-const TextInputSearch = () => {
+const TextInputSearch = (props) => {
   return (
     <View style={styles.searchContainer}>
         <Text>Начать поиск</Text>
         <TextInput
+            readOnly={props.readOnly}
+            editable={props.readOnly}
             style={styles.inputSearchStyle}
             placeholder='Поиск'
             // value={props.value}

@@ -7,7 +7,9 @@ import {
   Pressable,
   ActivityIndicator,
   Dimensions,
-  StatusBar
+  StatusBar,
+  TouchableWithoutFeedback,
+  TouchableOpacity
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useApi } from '../context/ApiContext';
@@ -127,9 +129,11 @@ const MainPage = ({ navigation }) => {
         style={styles.scrollView}
       >
         <View style={styles.content}>
-          <Pressable onPress={() => navigation.navigate('Поиск')}>
-            <TextInputSearch />
-          </Pressable>
+          <TouchableOpacity onPress={() => navigation.navigate('Поиск')}>
+            <TouchableWithoutFeedback>
+              <TextInputSearch readOnly={true}/>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
           <View style={{height:28}} />
         <StoriesComponent />
         <View style={{height:28}} />
