@@ -32,7 +32,7 @@ const ProfilePageView = () => {
     useEffect(() => {
       const housesFetch = async () => {
         const tempHouses = await getAllPosts();
-        if (tempHouses) {
+        if (tempHouses[0].id != undefined) {
           const tempSetHouses = [];
           const tempSetNewHouses = [];
           tempHouses.forEach((house) => {
@@ -77,7 +77,7 @@ const ProfilePageView = () => {
     return () => {
       
     }
-  }, [usertype, userr, getAuth, getUser])
+  }, [usertype, getAuth, getUser])
   
 
 

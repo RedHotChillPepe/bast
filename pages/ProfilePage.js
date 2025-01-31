@@ -42,7 +42,7 @@ const ProfilePage = () => {
     return () => {
       
     }
-  }, [usertype, userr, getAuth, getUser])
+  }, [usertype, getAuth, getUser])
   
 
   // Массив данных для списков
