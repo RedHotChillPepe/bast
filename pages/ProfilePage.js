@@ -50,32 +50,32 @@ const ProfilePage = () => {
     {
       title: 'Основные',
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы' },
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы', navigation:'NotExistPage' },
       ],
     },
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления' },
-        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное' },
-        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски' },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы' },
+        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation:'NotExistPage' },
+        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation:'NotExistPage' },
+        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation:'NotExistPage' },
+        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation:'NotExistPage' },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления' },
-        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой' },
-        { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор' },
-        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр' },
-        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении' },
+        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления', navigation:'NotExistPage' },
+        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой', navigation:'NotExistPage' },
+        { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор', navigation:'NotExistPage' },
+        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр', navigation:'NotExistPage' },
+        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении', navigation:'NotExistPage' },
       ],
     },
   ];
 
   const renderItem = ( item, index ) => (
-    <Pressable key={index} style={styles.listItem}>
+    <Pressable onPress={()=>{navigation.navigate(item.navigation)}} key={index} style={styles.listItem}>
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
