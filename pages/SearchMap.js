@@ -18,7 +18,7 @@ export default function SearchMap ({ navigation, route }) {
           if (house.longitude != null || house.latitude != null) {
             setPosts((prevData) => [...prevData, {point:{lon:parseFloat(house.longitude), lat:parseFloat(house.latitude)}, id:house.id}])
           } else {
-            const addressString = house.city + " " + house.fulladdress
+            const addressString = house.city + " " + house.full_address
             Geocoder.addressToGeo(addressString)
             .then(({lat, lon}) => {
               setPosts((prevData) => [...prevData, {point:{lon:lon, lat:lat}, id:house.id}])
