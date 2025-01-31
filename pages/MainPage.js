@@ -15,6 +15,8 @@ import HouseCard from '../components/HouseCard';
 import StoriesComponent from '../components/StoriesComponent';
 import ServicesComponent from '../components/ServiciesComponent';
 import VillageCard from '../components/VillageCard';
+import TextInputSearch from '../components/TextInputSearch';
+
 
 const { width } = Dimensions.get('window');
 
@@ -125,6 +127,10 @@ const MainPage = ({ navigation }) => {
         style={styles.scrollView}
       >
         <View style={styles.content}>
+          <Pressable onPress={() => navigation.navigate('Поиск')}>
+            <TextInputSearch />
+          </Pressable>
+          <View style={{height:28}} />
         <StoriesComponent />
         <View style={{height:28}} />
           <ServicesComponent />

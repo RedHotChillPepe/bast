@@ -254,10 +254,26 @@ return (
           </View>
         </View>
       }
+
+
+      {/* adressView - блок с продавцом */}
       
+      <View style={{marginTop: 32}}>
+        <Text style={{fontSize: 24, fontWeight:'bold', marginBottom: 12}}>Продавец</Text>
+        <Pressable ><Text style={{fontSize:20}}>Имя Фамилия</Text></Pressable>
+        
+      </View>
 
       <View style={styles.adressView}>
-        <View style={{borderRadius: 16}}>
+      <View>   
+          <Text style={styles.adressTitle}>
+            Новый город
+          </Text>
+          <Text style={styles.adressText}>
+            Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
+          </Text>
+        </View> 
+        <View style={{borderRadius: 16, width: width-32, alignSelf:'center'}}>
           {
             isGeoLoaded 
             ? 
@@ -271,19 +287,6 @@ return (
             <Text>Загрузка Карты...</Text>
           }
           
-        </View>
-
-        <View>   
-          <Text style={styles.adressTitle}>
-            Новый город
-          </Text>
-          <Text style={styles.adressText}>
-            Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
-          </Text>
-        </View> 
-
-        <View style={{ alignItems: 'center', marginTop: 8 }}> 
-          <Image source={require('../assets/adress.png')} style={styles.imageMap} />
         </View>
       </View>
 
@@ -656,6 +659,7 @@ modalContent: {
 map: {
   width: width,
   height: 250,
+  alignSelf: 'center',
 },
 
 })

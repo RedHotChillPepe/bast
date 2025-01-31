@@ -40,6 +40,7 @@ import ProfileCompanyPageView from './pages/ProfileCompanyPageView.js';
 import ProfileEmployeePageView from './pages/ProfileEmployeePageView.js';
 import { Geocoder } from 'react-native-yamap';
 import { YaMap } from 'react-native-yamap';
+import SearchMap from './pages/SearchMap.js';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
@@ -128,6 +129,11 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
          headerShown: true  
       }}/>
+
+      <Stack.Screen name='SearchMap' component={SearchMap}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: true  
+    }}/>
           
       </Stack.Navigator>
   );
@@ -222,6 +228,7 @@ const AppAuthStack = () => {
       options={{
         headerShown: false  
       }}/>
+
     </AuthStack.Navigator>
   )
 }

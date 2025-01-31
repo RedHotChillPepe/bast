@@ -10,6 +10,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FilterModal from '../components/FilterModal.js'
 import SortModal from '../components/SortModal.js'
+import TextInputSearch from '../components/TextInputSearch';
+import { Button } from 'react-native-elements'
 
 
 const { width } = Dimensions.get('window');
@@ -93,6 +95,9 @@ const filterGroups = [
 const DynamicHousesPage = ({route}) => {
 
     const navigation = useNavigation()
+
+    const [selectedList, setSelectedList] = useState('houses');
+
     const [houses, setHouses] = useState([])
     const { getPaginatedPosts } = useApi()
 
@@ -212,8 +217,29 @@ const DynamicHousesPage = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
 
-      {/* Категории */}
-      <View style={styles.categoriesContainer}>
+      <Pressable onPress={() => navigation.navigate('SearchMap')}>
+        <Text>Поиск по карте</Text>
+      </Pressable>
+
+     <View style={{width: width-32, flexDirection: 'row', justifyContent: 'space-between'}}>
+       <Pressable style={{backgroundColor: selectedList === 'house' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
+         onPress={() => setSelectedList('house')}
+       >
+        <Text>Поиск дома</Text>
+       </Pressable>
+
+       <Pressable style={{backgroundColor: selectedList === 'organization' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
+         onPress={() => setSelectedList('organization')}
+       >
+        <Text>Поиск организации</Text>
+       </Pressable>
+     </View>
+
+    <View>
+     {selectedList === 'house' ? 
+     (<>
+     {/* Категории */}
+     <View style={styles.categoriesContainer}>
         <FlatList
           data={categories}
           keyExtractor={(item) => item.id}
@@ -223,22 +249,6 @@ const DynamicHousesPage = ({route}) => {
         />
       </View>
 
-      {/* Тестовые поля для проверки */}
-      <Text>
-        {JSON.stringify(priceRange)}
-      </Text>
-      <Text>
-        {JSON.stringify(areaRange)}
-      </Text>
-      <Text>
-        {JSON.stringify(selectedCategory)}
-      </Text>
-      <Text>
-        {JSON.stringify(selectedFilters)}
-      </Text>
-      <Text>
-        {JSON.stringify(selectedSort)}
-      </Text>
 
       {/* Фильтры и сортировка */}
       <View style={styles.filterContainer}>
@@ -251,24 +261,13 @@ const DynamicHousesPage = ({route}) => {
             <Text style={styles.searchButtonText}>Сортировка</Text>
         </Pressable> 
       </View>
+   
 
       <View style={{paddingBottom: 64}}>
           <View style={styles.housesView}>
 
-          {/* {Object.keys(houses).length != 0 && houses != undefined 
-          ? 
-            <HouseCard data={houses} 
-              navigation={navigation} 
-              itemWidth={Dimensions.get('window').width -32} 
-              horizontalScroll={false} 
-              onEndReached={handleReachBottom}
-            />
-          : 
-            <ActivityIndicator size="large" color="#32322C" />
-          }
+ 
 
-
-          </View>   */}
 
 {houses.length ? (
           <FlatList
@@ -311,6 +310,15 @@ const DynamicHousesPage = ({route}) => {
         setSelectedSort={setSelectedSort}
         handleFilterChoice={handleFilterChoice}
       />
+     </>) : 
+     (<><TextInputSearch />
+     </>)}
+     </View>
+     
+
+      
+
+      
         
     </SafeAreaView>
   )
