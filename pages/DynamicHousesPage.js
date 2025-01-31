@@ -221,104 +221,97 @@ const DynamicHousesPage = ({route}) => {
         <Text>Поиск по карте</Text>
       </Pressable>
 
-     <View style={{width: width-32, flexDirection: 'row', justifyContent: 'space-between'}}>
-       <Pressable style={{backgroundColor: selectedList === 'house' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
-         onPress={() => setSelectedList('house')}
-       >
-        <Text>Поиск дома</Text>
-       </Pressable>
+      <View style={{width: width-32, flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Pressable style={{backgroundColor: selectedList === 'house' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
+          onPress={() => setSelectedList('house')}
+        >
+          <Text>Поиск дома</Text>
+        </Pressable>
 
-       <Pressable style={{backgroundColor: selectedList === 'organization' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
-         onPress={() => setSelectedList('organization')}
-       >
-        <Text>Поиск организации</Text>
-       </Pressable>
-     </View>
-
-    <View>
-     {selectedList === 'house' ? 
-     (<>
-     {/* Категории */}
-     <View style={styles.categoriesContainer}>
-        <FlatList
-          data={categories}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={categoriesButton}
-        />
+        <Pressable style={{backgroundColor: selectedList === 'organization' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
+          onPress={() => setSelectedList('organization')}
+        >
+          <Text>Поиск организации</Text>
+        </Pressable>
       </View>
 
-
-      {/* Фильтры и сортировка */}
-      <View style={styles.filterContainer}>
-        <Pressable style={styles.searchButton} onPress={() => setModalVisible(true)}>
-          <AntDesign name="filter" size={24} color="black" />
-            <Text style={styles.searchButtonText}>Фильтры</Text>
-          </Pressable>
-          <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
-            <MaterialIcons name="sort" size={24} color="black" />
-            <Text style={styles.searchButtonText}>Сортировка</Text>
-        </Pressable> 
-      </View>
-   
-
-      <View style={{paddingBottom: 64}}>
-          <View style={styles.housesView}>
-
- 
+      <View>
+        {selectedList === 'house' ? 
+          (<>
+          {/* Категории */}
+          <View style={styles.categoriesContainer}>
+                <FlatList
+                  data={categories}
+                  keyExtractor={(item) => item.id}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  renderItem={categoriesButton}
+                />
+          </View>
 
 
-{houses.length ? (
-          <FlatList
-            data={houses}
-            renderItem={({ item }) => (
-              <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
-            )}
-            keyExtractor={(item) => item.id.toString()}
-            onEndReached={loadMoreData}
-            onEndReachedThreshold={0.5}
-            showsVerticalScrollIndicator={false}
-          />
-        ) : zeroRows ? <Text>Не нашлось объявления которое подходит под Ваш запрос :(</Text>:
-        
-          <ActivityIndicator size="large" color="#32322C" />
-        }
-      </View>
-        
-      </View>
-
+          {/* Фильтры и сортировка */}
+          <View style={styles.filterContainer}>
+            <Pressable style={styles.searchButton} onPress={() => setModalVisible(true)}>
+              <AntDesign name="filter" size={24} color="black" />
+                <Text style={styles.searchButtonText}>Фильтры</Text>
+              </Pressable>
+              <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
+                <MaterialIcons name="sort" size={24} color="black" />
+                <Text style={styles.searchButtonText}>Сортировка</Text>
+            </Pressable> 
+          </View>
     
 
-      {/* Модальное окно */}
-      <FilterModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        selectedFilters={selectedFilters}
-        setSelectedFilters={setSelectedFilters}
-        filterGroups={filterGroups}
-        setPriceRange={setPriceRange}
-        setAreaRange={setAreaRange}
-        handleFilterChoice={handleFilterChoice}
-      />
+          <View style={{paddingBottom: 64}}>
+            <View style={styles.housesView}>
+              
+              {houses.length ? (
+                  <FlatList
+                    data={houses}
+                    renderItem={({ item }) => (
+                      <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
+                    )}
+                    keyExtractor={(item) => item.id.toString()}
+                    onEndReached={loadMoreData}
+                    onEndReachedThreshold={0.5}
+                    showsVerticalScrollIndicator={false}
+                  />
+                ) : zeroRows ? <Text>Не нашлось объявления которое подходит под Ваш запрос :(</Text>:
+                
+                  <ActivityIndicator size="large" color="#32322C" />
+              }
+            </View>
+            
+          </View>
 
-      {/* Модальное окно сортировки */}
-      <SortModal
-        visible={sortModalVisible}
-        onClose={() => setSortModalVisible(false)}
-        selectedSort={selectedSort}
-        setSelectedSort={setSelectedSort}
-        handleFilterChoice={handleFilterChoice}
-      />
-     </>) : 
-     (<><TextInputSearch />
-     </>)}
-     </View>
-     
+          {/* Модальное окно */}
+          <FilterModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            selectedFilters={selectedFilters}
+            setSelectedFilters={setSelectedFilters}
+            filterGroups={filterGroups}
+            setPriceRange={setPriceRange}
+            setAreaRange={setAreaRange}
+            handleFilterChoice={handleFilterChoice}
+          />
 
-      
+          {/* Модальное окно сортировки */}
+          <SortModal
+            visible={sortModalVisible}
+            onClose={() => setSortModalVisible(false)}
+            selectedSort={selectedSort}
+            setSelectedSort={setSelectedSort}
+            handleFilterChoice={handleFilterChoice}
+          />
+          </>) : 
+          (<><TextInputSearch />
+          </>)
+        }
 
-      
+    </View>
+  
         
     </SafeAreaView>
   )
@@ -327,51 +320,56 @@ const DynamicHousesPage = ({route}) => {
 export default DynamicHousesPage
 
 const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        backgroundColor:'#F5F5F5',
-        alignItems:'center'
-    },
-
-    filterContainer: {
-      flexDirection: 'row',
-      width: width-32,
-      justifyContent:'space-between',
-      marginBottom: 16
-    },
-        
-    housesView:{
-        width:width,
-        alignItems:'center'   
-    },
-    searchButton:{
-      flexDirection: 'row',
-      alignItems:'center',
-      paddingHorizontal: 8,
-      paddingVertical: 8,
-      borderRadius: 12,  
+  container:{
+    flex:1,
+      backgroundColor:'#F5F5F5',
+      alignItems:'center'
   },
+
+  filterContainer: {
+    flexDirection: 'row',
+    width: width-32,
+    justifyContent:'space-between',
+    marginBottom: 16
+  },
+        
+  housesView:{
+    width:width,
+    alignItems:'center'   
+  },
+
+  searchButton:{
+    flexDirection: 'row',
+    alignItems:'center',
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 12,  
+  },
+
   searchButtonText:{
     color:'black',
     fontSize: 18,
     fontWeight: '600',
     marginLeft: 8
 },
-categoriesContainer:{
-  flexDirection: 'row',
-  alignItems:'baseline',
-  marginBottom: 8
-},
-categoriesButton:{
-  backgroundColor: 'grey',
-  paddingHorizontal: 12,
-  paddingVertical: 8,
-  borderRadius: 12,
-  marginLeft: 8
-},
-categoriesText: {
-  fontSize: 16,
-  color: 'white'
-}
+
+  categoriesContainer:{
+    flexDirection: 'row',
+    alignItems:'baseline',
+    marginBottom: 8
+  },
+
+  categoriesButton:{
+    backgroundColor: 'grey',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    marginLeft: 8
+  },
+
+  categoriesText: {
+    fontSize: 16,
+    color: 'white'
+  }
 
 })
