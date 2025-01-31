@@ -139,7 +139,7 @@ const ProfilePage = () => {
           </View> */}
 
           <View style={styles.buttonsRow}>
-            <Button title="Пользователь внеш" onPress={() => navigation.navigate('ProfilePageView')} />
+            <Button title="Пользователь внеш" onPress={() => navigation.navigate('ProfilePageView', { posterId: userr.id })} />
             
           </View>
 

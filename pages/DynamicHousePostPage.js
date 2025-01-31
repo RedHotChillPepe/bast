@@ -19,7 +19,6 @@ export default function DynamicHousePostPage ({ navigation, route }) {
 
   const [postData, setPostData]=useState([])
 
-  const [combinedAddr, setCombinedAddr]=useState('')
   const [geoState, setGeoState]=useState({
     lat:0,
     lon:0
@@ -32,8 +31,11 @@ export default function DynamicHousePostPage ({ navigation, route }) {
   const [isFavorite, setIsFavorite]=useState(false)
 
   const [showModal, setShowModal] = useState(false)
-  const [phone, setPhone] = useState("")
+  
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  const [phone, setPhone] = useState("")
+  const [ownerUser, setOwnerUser] = useState({})
 
   const toggleFavorite = async () => {
     if (isFavorite == true) {
@@ -57,6 +59,8 @@ export default function DynamicHousePostPage ({ navigation, route }) {
   }
   
   useEffect(() => {
+    var ownerId = null
+
     const fetchPost = async() => {
       if (houseId) {
         const result = await getPost(houseId)
@@ -64,8 +68,15 @@ export default function DynamicHousePostPage ({ navigation, route }) {
         console.log(resultJson.rows);
         
         setPostData(resultJson.rows[0])
+
+        ownerId = resultJson.rows[0].poster_id
+
+        const tempUser = await getUserByID(ownerId)
+        const tempUserJson = JSON.parse(await tempUser.text())
+
+        setOwnerUser(tempUserJson)
         
-        const addressString = resultJson.rows[0].city + " " + resultJson.rows[0].fulladdress
+        const addressString = resultJson.rows[0].city + " " + resultJson.rows[0].full_address
 
         if (resultJson.rows[0].latitude == null || resultJson.rows[0].longitude == null) {
           Geocoder.addressToGeo(addressString)
@@ -260,7 +271,12 @@ return (
       
       <View style={{marginTop: 32}}>
         <Text style={{fontSize: 24, fontWeight:'bold', marginBottom: 12}}>Продавец</Text>
-        <Pressable ><Text style={{fontSize:20}}>Имя Фамилия</Text></Pressable>
+        {
+          Object.keys(ownerUser).length != 0
+          &&
+          <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}><Text style={{fontSize:20}}>{ownerUser[0].name} {ownerUser[0].surname}</Text></Pressable>
+        }
+        
         
       </View>
 
@@ -417,32 +433,24 @@ return (
         <Modal visible={showModal} transparent animationType="slide" onDismiss={()=>setShowModal(false)} onRequestClose={()=>setShowModal(false)}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <Text>
-                {
-                  isLoggedIn 
-                  ?
-                  phone
-                  :
-                  "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
-                }
-              </Text>
+             
               <View style={{alignItems: 'center'}}>
+
                 <Text style={{fontSize: 24}}>
-                  +7 912 563 25 90
+                  {
+                    isLoggedIn 
+                    ?
+                    phone
+                    :
+                    "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
+                  }
                 </Text>
+                
               </View>
               <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
                 <Text style={styles.closeButtonText}>Позвонить</Text>
               </Pressable>
 
-              {/* <View style={{alignItems: 'center'}}>
-                <Text style={{fontSize: 18, textAlign:'center'}}>
-                Пожалуйста, зарегистрируйтесь
-                </Text>
-              </View>
-              <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
-                <Text style={styles.closeButtonText}>Зарегистрироваться</Text>
-              </Pressable> */}
             </View>
           </View>          
         </Modal>

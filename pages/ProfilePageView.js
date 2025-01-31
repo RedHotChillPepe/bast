@@ -16,14 +16,16 @@ const { width } = Dimensions.get('window');
 
 
 
-const ProfilePageView = () => {
+const ProfilePageView = ({route}) => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
   const {getUser} =useApi()
 
-   const { getAllPosts, getAllVillages } = useApi();
-   const [houses, setHouses] = useState([]);
-    const [selectedList, setSelectedList] = useState('houses');
+  const {posterId} = route.params
+
+  const { getAllPosts, getAllVillages } = useApi();
+  const [houses, setHouses] = useState([]);
+  const [selectedList, setSelectedList] = useState('houses');
 
   const [usertype, setUsertype] = useState(1) 
 
@@ -88,6 +90,8 @@ const ProfilePageView = () => {
 
           <View style={{flexDirection:'row', alignSelf:'flex-start', marginLeft: 16, marginTop: 32, alignItems:'flex-start'}} >
             <FontAwesome6 name="face-tired" size={56} color="black" />
+
+            <Text>posterId: {posterId}</Text>
 
             <View style={{marginLeft: 16}}>
                 <Text style={styles.name}>Иван Петров</Text>
