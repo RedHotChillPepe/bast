@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
@@ -8,6 +8,8 @@ import { useAuth } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import  { YaMap, Marker } from 'react-native-yamap';
 import { Geocoder } from 'react-native-yamap';
+import Feather from '@expo/vector-icons/Feather';
+import ImageCarousel from '../components/ImageCarousel';
 
 const {width} = Dimensions.get('window');
 
@@ -57,6 +59,7 @@ export default function DynamicHousePostPage ({ navigation, route }) {
       setIsFavorite(true)
     }
   }
+
   
   useEffect(() => {
     var ownerId = null
@@ -131,6 +134,7 @@ export default function DynamicHousePostPage ({ navigation, route }) {
     }
   }, [])
 
+
 // оверлей кнопки
 const [showButtons, setShowButtons] = useState(false);
 const scrollY = useRef(new Animated.Value(0)).current;
@@ -161,53 +165,40 @@ const handleCallButton = async () => {
   const result = await getUserByID(postData.poster_id)
   const resultJson = JSON.parse(await result.text())
 
-  
   setPhone(await resultJson[0].phone)
 }
+
+  // Обновление кнопки в хедере
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{flexDirection: 'row'}}>
+        <Pressable onPress={toggleFavorite} style={{ marginRight: 16 }}>
+          <MaterialIcons
+            name={isFavorite ? 'favorite' : 'favorite-border'}
+            size={27}
+            color={isFavorite ? 'red' : '#007AFF'}
+          />
+        </Pressable>
+        {
+          isOwner  
+          &&
+        <Pressable onPress={() => navigation.navigate("EditHousePostPage", postData)}>
+          <Feather name="edit" size={22} color="#007AFF" />     
+        </Pressable>
+        }
+        </View>
+      ),
+    });
+  }, [navigation, isFavorite])
 
   
 
 return (
-  <SafeAreaView style={styles.container}>
+  <View style={styles.container}>
     <ScrollView onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.mainView}>
 
-      <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between', alignItems:'center', }}>
-        <Pressable onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={32} color="black" />
-        </Pressable>
-
-        {/* кнопка ведет на экран редактирования объявления (по сути экран создания объявления только с заполненными инпутами) */}
-        {/* Видна только хозяину объявления */}
-        {
-          isOwner  
-          &&
-          <Pressable style={{backgroundColor: 'black',
-            alignItems:'center',
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-            borderRadius: 12
-           }}
-            onPress={() => navigation.navigate("EditHousePostPage", postData)}>
-
-            <Text style={{color:'white', fontSize: 18, fontWeight:'bold'}}>Редактировать</Text>
-          </Pressable>
-        }
-        
-      </View>   
-      
-
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scrollView}>
-        {
-          Object.keys(postData).length == 0
-          ?
-          <ActivityIndicator size={"large"}
-          color={"#32322C"}/>
-          :
-          postData.photos.map((item, index) =>
-          <Image source={{uri:item}} style={styles.image} key={index}/>)
-        }
-
-      </ScrollView>
+      <ImageCarousel style={{marginLeft: 16}} postData={postData} />
       
       {/* priceBlock - блок с ценой и кнопкой Избранное */}
       <View style={styles.priceBlock}>
@@ -217,16 +208,17 @@ return (
           <ActivityIndicator size={"large"}
           color={"#32322C"}/>
           :
-          <View>
+          <View style={{flexDirection:'row', alignItems:'baseline'}}>
             <Text style={styles.priceText}>
-              {postData.price != null && postData.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
+              {postData.price != null && postData.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
             </Text>
+            <View style={{width: 16}} />
             <Text style={styles.priceMeter}>
-              {Math.floor(postData.price / postData.house_area).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Р/м²
+              {Math.floor(postData.price / postData.house_area).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽/м²
             </Text>
           </View>
         }
-        {
+        {/* {
           isFavorite 
           ? 
           <Pressable onPress={()=>toggleFavorite()}>
@@ -236,7 +228,7 @@ return (
           <Pressable onPress={()=>toggleFavorite()}>
             <MaterialIcons name="favorite-border" size={32} color="grey" />
           </Pressable> 
-        }
+        } */}
       </View>
       
       {/* specView - основные характеристики */}
@@ -249,47 +241,42 @@ return (
         <View style={styles.specView}>
           <View style={styles.specElement}>
             <Text style={styles.specText}>{postData.num_floors}-эт.</Text>
-            <Text>этажей</Text>
+            <Text style={styles.caption1}>дом</Text> 
           </View>
           <View style={styles.specElement}>
             <Text style={styles.specText}>{postData.bedrooms}-комн.</Text>
-            <Text>комнат</Text>
+            <Text style={styles.caption1}>планировка</Text>
           </View>
           <View style={styles.specElement}>
             <Text style={styles.specText}>{postData.house_area} м²</Text>
-            <Text>общая пл.</Text>
+            <Text style={styles.caption1}>общая</Text>
           </View>
           <View style={styles.specElement}>
             <Text style={styles.specText}>{postData.plot_area} сот</Text>
-            <Text>участок</Text>
+            <Text style={styles.caption1}>участок</Text>
           </View>
         </View>
       }
 
 
-      {/* adressView - блок с продавцом */}
-      
-      <View style={{marginTop: 32}}>
+      {/* adressView - блок с продавцом */}    
+      {/* <View style={{marginTop: 32}}>
         <Text style={{fontSize: 24, fontWeight:'bold', marginBottom: 12}}>Продавец</Text>
         {
           Object.keys(ownerUser).length != 0
           &&
           <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}><Text style={{fontSize:20}}>{ownerUser[0].name} {ownerUser[0].surname}</Text></Pressable>
         }
-        
-        
-      </View>
+      </View> */}
 
       <View style={styles.adressView}>
       <View>   
-          <Text style={styles.adressTitle}>
-            Новый город
-          </Text>
           <Text style={styles.adressText}>
-            Россия, Удмуртская республика, Ижевск, улица имени В.С. Тарасова, 4
+            {postData.city}, {postData.full_address}
           </Text>
         </View> 
-        <View style={{borderRadius: 16, width: width-32, alignSelf:'center'}}>
+        <View style={{height: 12}} />
+        <View style={{borderRadius: 16, width: width, alignSelf:'center'}}>
           {
             isGeoLoaded 
             ? 
@@ -412,7 +399,7 @@ return (
       </View>
       
       {/*Вид для отступа снизу*/}
-      <View style={{height: '5%'}} />
+      <View style={{height: 128}} />
       
         {/* потом появятся две карусели с домами от этого застройщика и похожими домами */}
 
@@ -433,7 +420,19 @@ return (
         <Modal visible={showModal} transparent animationType="slide" onDismiss={()=>setShowModal(false)} onRequestClose={()=>setShowModal(false)}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-             
+
+            <View style={{alignItems: 'center'}}>
+                {
+                  Object.keys(ownerUser).length != 0
+                  &&
+                  <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}>
+                    <Text style={{fontSize:20, lineHeight: 25, letterSpacing: -0.43, fontWeight: '600', marginBottom: 16, color: '#007AFF'}}>
+                      {ownerUser[0].name} {ownerUser[0].surname}
+                      </Text>
+                  </Pressable>
+                }
+              </View>
+
               <View style={{alignItems: 'center'}}>
 
                 <Text style={{fontSize: 24}}>
@@ -445,17 +444,16 @@ return (
                     "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
                   }
                 </Text>
-                
               </View>
-              <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
-                <Text style={styles.closeButtonText}>Позвонить</Text>
-              </Pressable>
 
+              <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
+                <Text style={styles.closeButtonText}>Закрыть</Text>
+              </Pressable>
             </View>
           </View>          
         </Modal>
       }
-  </SafeAreaView>
+  </View>
 )
 
 }
@@ -466,22 +464,15 @@ container: {
 },
 
 mainView: {
-    alignItems:'center',
+  alignItems: 'center',
 },
 
 priceBlock: {
     flexDirection:'row',
     width: width-32,
     justifyContent:'space-between',
-    marginTop: 16
-},
-    
-image: {
-   width: width*0.8,
-   height: width*0.8,
-   borderRadius: 12,
-   marginVertical: 8,
-   marginLeft: 12
+    marginTop: 16,
+    alignSelf: 'center'
 },
 
 imageMap: {
@@ -489,18 +480,23 @@ imageMap: {
     height: width*0.34,
     borderRadius: 12,
     marginVertical: 8,
-    marginLeft: 12
+    marginLeft: 12,
+    alignSelf: 'center'
  },
 
 priceText: {
-    fontSize: 24,
-    fontWeight:'600'
+    fontSize: 28,
+    lineHeight: 34,
+    letterSpacing: 0.38,
+    fontWeight:'bold'
 },
 
 priceMeter: {
-    fontSize: 16,
-    fontWeight:'400',
-    color: 'grey'
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
+    opacity: 0.7
+  
 },
 
 specView: {
@@ -511,17 +507,27 @@ specView: {
 },
 
 specElement: {
-    alignItems:'center'
+    alignItems:'center',
 },
 
 specText: {
-    fontSize: 20,
+    fontSize: 17,
+    letterSpacing: -0.43,
+    lineHeight: 22,
     fontWeight:'600'
+},
+
+caption1: {
+    fontSize: 15,
+    lineHeight: 20,
+    letterSpacing: -0.23,
+    opacity: 0.7
 },
 
 adressView: {
     width: width-32,
-    marginTop: 32
+    marginTop: 32,
+    alignSelf: 'center'
 },
 
 adressTitle: {
@@ -532,7 +538,9 @@ adressTitle: {
 },
 
 adressText: {
-    color: 'grey'
+    fontSize: 17,
+    lineHeight: 22,
+    opacity: 0.7
 },
 
 infoBlock: {
@@ -550,26 +558,28 @@ infoSpecRow: {
     flexDirection:'row',
     width: width-32,
     justifyContent:'space-between',
-    marginBottom: 24
+    marginBottom: 16
 },
 
 infoSpec: {
   width: width*0.4,
-    fontSize: 16,
-    fontWeight: '400',
-    color:'grey'
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
 },
 
 infoValue: {
   textAlign:'right',
   width: width*0.4,
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
+    opacity: 0.7,
 },
 
 serviciesBlock: {
   width: width-32,
-  marginTop: 32,
+  marginTop: 40,
   alignItems:'flex-start'
 },
 
@@ -581,18 +591,18 @@ serviciesView: {
 },
 
 serviciesPressable: {
-  width: (width-32-8)/2,
+  width: (width-32-16)/2,
   height: width*0.25 ,
-  backgroundColor: 'grey',
+  backgroundColor: '#d6d6d6',
   borderRadius: 16,
-  padding: 8,
-  marginBottom: 8
+  padding: 12,
+  marginBottom: 16
 },
 
 serviciesText: {
-  color:'white',
-  fontSize: 16,
-  fontWeight:'600'
+  fontSize: 17,
+  lineHeight: 22,
+  letterSpacing: -0.43,
 },
 
 actionBlock: {
@@ -626,16 +636,18 @@ buttonContainer: {
 },
 
 button: {
-  backgroundColor: 'grey',
+  backgroundColor: '#d6d6d6',
   paddingVertical: 12,
-  width: width -64,
+  width: width - 128,
   borderRadius: 8,
   alignItems: 'center'
 },
 buttonText: {
-  color: 'white',
+  color: 'black',
   fontSize: 20,
   fontWeight: '600',
+  letterSpacing: -0.43,
+  lineHeight: 25,
 },
 closeButton: {
   marginTop: 16,
@@ -647,8 +659,8 @@ closeButton: {
 },
 closeButtonText: {
   color: 'white',
-  fontSize: 16,
-  fontWeight: 'bold',
+  fontSize: 20,
+  fontWeight: '600',
 },
 modalOverlay: {
   flex: 1,
@@ -658,16 +670,15 @@ modalOverlay: {
 },
 modalContent: {
   backgroundColor: 'white',
-  width: width - 48,
-  borderRadius: 12,
+  width: width - 32,
+  borderRadius: 16,
   padding: 16,
-  maxHeight: '80%',
 },
 
 map: {
   width: width,
-  height: 250,
-  alignSelf: 'center',
+  height: width*0.6,
+
 },
 
 })

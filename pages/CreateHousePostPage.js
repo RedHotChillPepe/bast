@@ -280,9 +280,6 @@ export default function CreateHousePostPage() {
           })
         }
 
-        <Text style={styles.header2}>Контакты</Text>
-        <Text>Кто продает собственник\риэлтор\застрощик</Text>
-
         <Text style={styles.header2}>О доме</Text>
         {/* Тип дома */}
         <View style={styles.row}>

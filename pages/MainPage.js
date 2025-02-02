@@ -18,6 +18,8 @@ import StoriesComponent from '../components/StoriesComponent';
 import ServicesComponent from '../components/ServiciesComponent';
 import VillageCard from '../components/VillageCard';
 import TextInputSearch from '../components/TextInputSearch';
+import HouseSearchButton from '../components/HouseSearchButton';
+import AddPostButton from '../components/AddPostButton';
 
 
 const { width } = Dimensions.get('window');
@@ -129,17 +131,27 @@ const MainPage = ({ navigation }) => {
         style={styles.scrollView}
       >
         <View style={styles.content}>
-          <TouchableOpacity onPress={() => navigation.navigate('Поиск')}>
-            <TouchableWithoutFeedback>
-              <TextInputSearch readOnly={true}/>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
-          <View style={{height:28}} />
-        <StoriesComponent />
-        <View style={{height:28}} />
+          <StoriesComponent />
+        
+        <View style={{height:16}} />
+        
           <ServicesComponent />
-          <View style={{height:28}} />
+        
+        <View style={{height:16}} />
 
+        <View flexDirection='row' style={{width: width - 32, alignItems: 'center', alignSelf: 'center'}}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+          <TouchableOpacity onPress={() => navigation.navigate('Поиск')}>
+              <HouseSearchButton readOnly={true}/>
+          </TouchableOpacity>
+          <View style={{width: 16}} />
+          <TouchableOpacity onPress={() => navigation.navigate('CreateHousePostPage')}>
+          <AddPostButton /> 
+          </TouchableOpacity>
+          </View>
+        </View>
+
+          <View style={{height:28}} />
 
           <View style={styles.searchButtonsView}>
             {SearchButtonsContent.map((item, index) => (
@@ -194,15 +206,18 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   activeButton: {
-    backgroundColor: '#858585', // Изменение цвета для активной кнопки
+    backgroundColor: '#007AFF', // Изменение цвета для активной кнопки
   },
   searchButtonsText: {
-    color: '#858585',
+    color: '#007AFF',
     // fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
   },
   activeButtonsText: {
-    color: '#EFEFEF', // Изменение цвета для активной кнопки
+    color: '#fff', // Изменение цвета для активной кнопки
+    fontWeight: '600',
   },
   housesTitleText: {
     fontSize: 24,

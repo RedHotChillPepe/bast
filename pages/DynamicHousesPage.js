@@ -1,5 +1,5 @@
 import { ActivityIndicator, Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useLayoutEffect} from 'react'
 import houses from '../assets/testassets/houses.json'
 import { useNavigation } from '@react-navigation/native'
 import { useApi } from '../context/ApiContext.js'
@@ -11,12 +11,11 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FilterModal from '../components/FilterModal.js'
 import SortModal from '../components/SortModal.js'
 import TextInputSearch from '../components/TextInputSearch';
-import { Button } from 'react-native-elements'
 
 
 const { width } = Dimensions.get('window');
 
-const categories = [
+ const categories = [
   { id: '1', label: 'Все' },
   { id: '2', label: 'до 2 млн Р' },
   { id: '3', label: 'до 4 млн Р' },
@@ -96,7 +95,7 @@ const DynamicHousesPage = ({route}) => {
 
     const navigation = useNavigation()
 
-    const [selectedList, setSelectedList] = useState('houses');
+    const [selectedList, setSelectedList] = useState('organization');
 
     const [houses, setHouses] = useState([])
     const { getPaginatedPosts } = useApi()
@@ -213,55 +212,43 @@ const DynamicHousesPage = ({route}) => {
         console.error('Error loading more data:', error);
       }
     };
+ // Обновление кнопки в хедере
+ useLayoutEffect(() => {
+  navigation.setOptions({
+    headerLeft: () => (
+      <View style={{flexDirection: 'row'}}> 
+      <Pressable onPress={() => navigation.navigate('SearchMap')}>
+        <Text style={{fontSize: 17, lineHeight: 20, color:"#007AFF", letterSpacing: -0.43, marginLeft: 20}}>Поиск по карте</Text>   
+      </Pressable>
+      </View>
+    ),
+    headerRight: () => (
+      <View style={{flexDirection: 'row', marginRight: 20}}> 
+          <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
+            <MaterialIcons name="sort" size={24} color="#007AFF" />
+          </Pressable> 
+          <Pressable style={styles.searchButton} onPress={() => setModalVisible(true)}>
+            <AntDesign name="filter" size={24} color="#007AFF" />
+          </Pressable>
+      </View>
+    ),
+  });
+}, [navigation])
     
   return (
-    <SafeAreaView style={styles.container}>
-
-      <Pressable onPress={() => navigation.navigate('SearchMap')}>
-        <Text>Поиск по карте</Text>
-      </Pressable>
-
-      <View style={{width: width-32, flexDirection: 'row', justifyContent: 'space-between'}}>
-        <Pressable style={{backgroundColor: selectedList === 'house' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
-          onPress={() => setSelectedList('house')}
-        >
-          <Text>Поиск дома</Text>
-        </Pressable>
-
-        <Pressable style={{backgroundColor: selectedList === 'organization' ? 'grey' : 'white', padding: 8, borderRadius: 12}}
-          onPress={() => setSelectedList('organization')}
-        >
-          <Text>Поиск организации</Text>
-        </Pressable>
-      </View>
-
-      <View>
-        {selectedList === 'house' ? 
-          (<>
-          {/* Категории */}
-          <View style={styles.categoriesContainer}>
-                <FlatList
-                  data={categories}
-                  keyExtractor={(item) => item.id}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={categoriesButton}
-                />
+    <View style={styles.container}>
+      <View style={{height: 16}} />
+      <View> 
+        {/* Категории */}
+        <View style={styles.categoriesContainer}>
+            <FlatList
+               data={categories}
+               keyExtractor={(item) => item.id}
+               horizontal
+               showsHorizontalScrollIndicator={false}  
+               renderItem={categoriesButton}
+             />
           </View>
-
-
-          {/* Фильтры и сортировка */}
-          <View style={styles.filterContainer}>
-            <Pressable style={styles.searchButton} onPress={() => setModalVisible(true)}>
-              <AntDesign name="filter" size={24} color="black" />
-                <Text style={styles.searchButtonText}>Фильтры</Text>
-              </Pressable>
-              <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
-                <MaterialIcons name="sort" size={24} color="black" />
-                <Text style={styles.searchButtonText}>Сортировка</Text>
-            </Pressable> 
-          </View>
-    
 
           <View style={{paddingBottom: 64}}>
             <View style={styles.housesView}>
@@ -305,21 +292,22 @@ const DynamicHousesPage = ({route}) => {
             setSelectedSort={setSelectedSort}
             handleFilterChoice={handleFilterChoice}
           />
-          </>) : 
-          (<><TextInputSearch />
-          </>)
-        }
+
+        
+ 
+          
+  
 
     </View>
-  
-        
-    </SafeAreaView>
+  </View>
   )
 }
 
 export default DynamicHousesPage
 
 const styles = StyleSheet.create({
+
+  
   container:{
     flex:1,
       backgroundColor:'#F5F5F5',
@@ -330,12 +318,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: width-32,
     justifyContent:'space-between',
-    marginBottom: 16
+    alignSelf: 'center',
+    marginBottom: 16,
+
   },
         
   housesView:{
-    width:width,
-    alignItems:'center'   
+ 
   },
 
   searchButton:{
@@ -343,13 +332,14 @@ const styles = StyleSheet.create({
     alignItems:'center',
     paddingHorizontal: 8,
     paddingVertical: 8,
-    borderRadius: 12,  
   },
 
   searchButtonText:{
-    color:'black',
-    fontSize: 18,
-    fontWeight: '600',
+    color:'#007AFF',
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
+    fontWeight: '500',
     marginLeft: 8
 },
 
@@ -360,16 +350,55 @@ const styles = StyleSheet.create({
   },
 
   categoriesButton:{
-    backgroundColor: 'grey',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
     marginLeft: 8
   },
 
   categoriesText: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#007AFF'
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 12,
+    width: width,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+// Цвет неактивной вкладки
+  },
+  activeTab: {
+    backgroundColor: '#616161', // Цвет активной вкладки
+  },
+  tabText: {
     fontSize: 16,
-    color: 'white'
-  }
+    color: '#FFFFFF',
+  },
+  activeTabText: {
+    fontWeight: 'bold',
+  },
+  mapButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginLeft: 8,
+    borderWidth: 1,
+  },
+  mapButtonText: {
+    fontSize: 17,
+    color: '#007AFF',
+
+  },
 
 })

@@ -7,6 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -92,6 +93,7 @@ const ProfileCompanyPage = () => {
   );
 
   return (
+    <SafeAreaView>
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.nameBlock}>
         <View style={{ flexDirection: 'row' }}>
@@ -135,7 +137,7 @@ const ProfileCompanyPage = () => {
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
         <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View> */}
-      <View style={styles.buttonsRow}>
+      {/* <View style={styles.buttonsRow}>
         <Button title="Компания внеш" onPress={() => navigation.navigate('ProfileCompanyPageView')} />
       </View>
 
@@ -145,8 +147,9 @@ const ProfileCompanyPage = () => {
         <Button title="403" onPress={() => navigation.navigate('Error403')} />
         <Button title="500" onPress={() => navigation.navigate('Error500')} />
         <Button title="503" onPress={() => navigation.navigate('Error503')} />
-      </View>
+      </View> */}
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     backgroundColor: '#FFF',
     marginLeft: 8,
-    marginBottom: 12
+    marginBottom: 12,
+    alignSelf: 'center',
   },
   houseImageView: {
     height: 280,

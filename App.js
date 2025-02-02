@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { View, Text, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -41,6 +42,9 @@ import ProfileEmployeePageView from './pages/ProfileEmployeePageView.js';
 import { Geocoder } from 'react-native-yamap';
 import { YaMap } from 'react-native-yamap';
 import SearchMap from './pages/SearchMap.js';
+import { Button } from 'react-native-elements';
+import Feather from '@expo/vector-icons/Feather';
+
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
@@ -60,12 +64,19 @@ const AppStack = () => {
         }}/>
         <Stack.Screen name='Houses' component={DynamicHousesPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
+          headerShown: false
           }}/>
         <Stack.Screen name='House' component={DynamicHousePostPage}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
-          }}/>
+        options={({ navigation }) => ({
+          headerShown: true,
+          headerTitle: '',
+          headerLeft: () => (
+            <Pressable  onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+            <Text style={{fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF'}}>Назад</Text>
+            </Pressable>
+          ),
+          })}/>
         <Stack.Screen name='CreateHousePostPage' component={CreateHousePostPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
@@ -147,9 +158,15 @@ const AppTabs = () => {
         component={DynamicHousesPage} 
         options={{
           headerShown:true,
+          headerTitle: ' ',   // текст заголовка скрыт
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="search" size={24} color="black" />
+        ),
+        headerLeft: () => (
+          <View style={{marginLeft: 20}}>
+            <Text>Поиск по карте</Text>
+          </View>
         ),
       }}
         />
@@ -190,7 +207,7 @@ const AppTabs = () => {
       name='Профиль'
       component={ProfilePage}
       options={{
-        // headerShown:false,
+        headerShown:false,
         tabBarShowLabel: true,
         tabBarIcon: ({ color, size}) => (
           <MaterialIcons name="account-box" size={24} color="black" />

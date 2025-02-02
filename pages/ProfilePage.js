@@ -9,6 +9,7 @@ import { useApi } from '../context/ApiContext';
 import ProfileCompanyPage from './ProfileCompanyPage.js';
 import ProfileRealtorPage from './ProfileEmployeePage.js';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -50,37 +51,44 @@ const ProfilePage = () => {
     {
       title: 'Основные',
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы', navigation:'NotExistPage' },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation:'NotExistPage' },
       ],
     },
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation:'NotExistPage' },
-        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation:'NotExistPage' },
-        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation:'NotExistPage' },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation:'NotExistPage' },
+        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:'NotExistPage' },
+        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:'NotExistPage' },
+        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:'NotExistPage' },
+        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Риэлторы', navigation:'NotExistPage' },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления', navigation:'NotExistPage' },
-        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой', navigation:'NotExistPage' },
-        { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор', navigation:'NotExistPage' },
-        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр', navigation:'NotExistPage' },
-        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении', navigation:'NotExistPage' },
+        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления', navigation:'NotExistPage' },
+        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой', navigation:'NotExistPage' },
+        { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор', navigation:'NotExistPage' },
+        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation:'NotExistPage' },
+        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation:'NotExistPage' },
       ],
     },
   ];
 
-  const renderItem = ( item, index ) => (
-    <Pressable onPress={()=>{navigation.navigate(item.navigation)}} key={index} style={styles.listItem}>
+  const renderItem = (item, index, sectionData) => (
+    <Pressable
+      onPress={() => navigation.navigate(item.navigation)}
+      key={index}
+      style={[
+        styles.listItem,
+        index !== sectionData.length - 1 && styles.withBorder, // Проверяем, что это не последний элемент
+      ]}
+    >
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={24} color="black" />
+      <Ionicons name="chevron-forward" size={17} color="black" />
     </Pressable>
   );
 
@@ -91,41 +99,35 @@ const ProfilePage = () => {
       return <ProfileRealtorPage/>;
     default:
       return (
-        <ScrollView contentContainerStyle={styles.container}>
-          <View style={styles.nameBlock}>        
-            <View style={{ flexDirection: 'row' }}>
-              {
-                Object.keys(userr).length != 0 && userr.photo != undefined
-                ?
-                <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={56} height={56} source={{uri:userr.photo}}/>
-                :
-                <FontAwesome6 name="face-tired" size={56} color="black" />
-              }
-              
-              
-              
-              <View style={{ marginLeft: 16 }}>
-                <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
-                <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
-              </View>
-            </View>
-            <Ionicons name="settings-outline" size={32} color="black" onPress={() => navigation.navigate('SettingsPage')} />
+        <SafeAreaView>
+        <View style={styles.nameBlock}>        
+        <View style={{ flexDirection: 'row' }}>
+          {
+            Object.keys(userr).length != 0 && userr.photo != undefined
+            ?
+            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={80} height={80} source={{uri:userr.photo}}/>
+            :
+            <FontAwesome6 name="face-tired" size={56} color="black" />
+          }
+          
+          
+          
+          <View style={{ marginLeft: 16 }}>
+            <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
+            <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
+        </View>
+        <Ionicons name="settings-outline" size={32} color="black" onPress={() => navigation.navigate('SettingsPage')} />
+      </View>
+        <ScrollView contentContainerStyle={styles.container}>
+
     
           {sections.map((section, index) => (
-            <View style={styles.itemBlock} key={index}>
-              {/* <FlatList
-                data={section.data}
-                renderItem={renderItem}
-                keyExtractor={(item, idx) => idx.toString()}
-              /> */}
-              {
-                section.data.map((item, index) => 
-                  renderItem(item, index)
-                )
-              }
-            </View>
-          ))}
+  <View style={styles.itemBlock} key={index}>
+    {section.data.map((item, idx) => renderItem(item, idx, section.data))}
+  </View>
+))}
+
     
           <Pressable onPress={logout} style={styles.logoutButton}>
             <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
@@ -138,19 +140,21 @@ const ProfilePage = () => {
             <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
           </View> */}
 
-          <View style={styles.buttonsRow}>
+          {/* <View style={styles.buttonsRow}>
             <Button title="Пользователь внеш" onPress={() => navigation.navigate('ProfilePageView', { posterId: userr.id })} />
             
-          </View>
+          </View> */}
 
-          <View style={styles.buttonsRow}>
+          {/* <View style={styles.buttonsRow}>
             <Button title="Logout" onPress={logout} />
             <Button title="404" onPress={() => navigation.navigate('Error404')} />
             <Button title="403" onPress={() => navigation.navigate('Error403')} />
             <Button title="500" onPress={() => navigation.navigate('Error500')} />
             <Button title="503" onPress={() => navigation.navigate('Error503')} />
-          </View>
+          </View> */}
+          <View style={{height: 128}} />
         </ScrollView>
+        </SafeAreaView>
       );
   }
 
@@ -171,28 +175,32 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
+    alignSelf: 'center',
   },
   itemBlock: {
     width: width - 32,
     backgroundColor: '#d6d6d6',
-    paddingTop: 12,
+
     paddingBottom: 12,
-    paddingHorizontal: 24,
-    borderRadius: 24,
+    paddingHorizontal: 32,
+    borderRadius: 16,
     marginTop: 20,
   },
   listItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 12,
+    paddingTop: 12,
+    
   },
   listItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   itemText: {
-    fontSize: 20,
+    fontSize: 17,
+    letterSpacing: -0.43,
+    lineHeight: 22,
     color: '#14080E',
     marginLeft: 12,
   },
@@ -211,12 +219,21 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   name: {
-    fontSize: 32,
+    fontSize: 28,
+    letterSpacing: -0.43,
+    lineHeight: 34,
     fontWeight: 'bold',
     color: '#14080E',
   },
   email: {
-    fontSize: 18,
+    fontSize: 12,
+    letterSpacing: 0,
+    lineHeight: 16,
     color: '#858585',
+  },
+  withBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#b0b0b0',
+    paddingBottom: 12,
   },
 });

@@ -1,36 +1,34 @@
 import { StyleSheet, Text, TextInput, View, Dimensions } from 'react-native'
 import React from 'react'
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const {width} = Dimensions.get('window');
 
-const TextInputSearch = (props) => {
+const HouseSearchButton = (props) => {
   return (
     <View style={styles.searchContainer}>
-        <Text style={styles.headline}>Найти организацию или услугу</Text>
-        <TextInput
-            readOnly={props.readOnly}
-            editable={props.readOnly}
-            style={styles.inputSearchStyle}
-            placeholder='Поиск'
-            // value={props.value}
-            // onChangeText={(value) => {
-            //   console.log(`ValueName: ${props.valueName}, Value: ${value}`);
-            //   props.handleInputChange(props.valueName, value);
-            // }}
-        />
+        <FontAwesome5 name="home" size={32} color="black" />
+        <View>
+          <Text style={styles.headline}>Найти дом</Text>
+          <Text style={styles.bodyRegular}>3843 предложения</Text>
+        </View>
+        {/* <AntDesign name="filter" size={24} color="black" /> */}
     </View>
   )
 }
 
-export default TextInputSearch
+export default HouseSearchButton
 
 const styles = StyleSheet.create({
     searchContainer: {
-        width: width - 32,
-        alignSelf: 'center',
+        width: (width -48)/2,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         backgroundColor: '#d6d6d6',
         paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingVertical: 12,
         borderRadius: 16,
     },
     inputSearchStyle: {
@@ -41,12 +39,12 @@ const styles = StyleSheet.create({
     },
     headline: {
         fontSize: 17,
-        fontWeight: '600',
+        fontWeight: '500',
         letterSpacing: -0.43,
         lineHeight: 22
     },
     bodyRegular: {
-        fontSize: 17,
+        fontSize: 12,
         fontWeight: 'regular',
         letterSpacing: -0.43,
         lineHeight: 22
