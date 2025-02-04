@@ -59,11 +59,13 @@ const styles = StyleSheet.create({
   },
   functionCard: {
     borderRadius: 16,
-    backgroundColor: '#d6d6d6',
+    backgroundColor: '#fff',
     marginRight: 16, // Отступ между карточками
     paddingTop: 12,
     paddingBottom: 32,
     paddingHorizontal: 12,
+    borderColor: '#54545630',
+    borderWidth: 1,
   },
   functionCardView: {
     flex: 1,

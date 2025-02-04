@@ -215,10 +215,11 @@ const DynamicHousesPage = ({route}) => {
  // Обновление кнопки в хедере
  useLayoutEffect(() => {
   navigation.setOptions({
+    headerShadowVisible: false, // Убирает тень и линию
     headerLeft: () => (
       <View style={{flexDirection: 'row'}}> 
       <Pressable onPress={() => navigation.navigate('SearchMap')}>
-        <Text style={{fontSize: 17, lineHeight: 20, color:"#007AFF", letterSpacing: -0.43, marginLeft: 20}}>Поиск по карте</Text>   
+        <Text style={{fontSize: 20, lineHeight: 25, color:"#007AFF", letterSpacing: -0.43, marginLeft: 20}}>Поиск по карте</Text>   
       </Pressable>
       </View>
     ),
@@ -237,7 +238,7 @@ const DynamicHousesPage = ({route}) => {
     
   return (
     <View style={styles.container}>
-      <View style={{height: 16}} />
+      <View style={{height: 8}} />
       <View> 
         {/* Категории */}
         <View style={styles.categoriesContainer}>
@@ -249,8 +250,6 @@ const DynamicHousesPage = ({route}) => {
                renderItem={categoriesButton}
              />
           </View>
-
-          <View style={{paddingBottom: 64}}>
             <View style={styles.housesView}>
               
               {houses.length ? (
@@ -298,7 +297,7 @@ const DynamicHousesPage = ({route}) => {
           
   
 
-    </View>
+
   </View>
   )
 }
@@ -310,7 +309,7 @@ const styles = StyleSheet.create({
   
   container:{
     flex:1,
-      backgroundColor:'#F5F5F5',
+      backgroundColor:'#fff',
       alignItems:'center'
   },
 
@@ -324,6 +323,8 @@ const styles = StyleSheet.create({
   },
         
   housesView:{
+    backgroundColor: '#F2F2F7',
+    width: width,
  
   },
 

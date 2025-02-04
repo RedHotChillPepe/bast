@@ -21,10 +21,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#d6d6d6',
+        backgroundColor: '#fff',
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderRadius: 16,
+        borderColor: '#54545630',
+        borderWidth: 1,
     },
     headline: {
         fontSize: 17,

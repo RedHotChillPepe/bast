@@ -58,11 +58,13 @@ const styles = StyleSheet.create({
     height: 72,
     width: 72,
     borderRadius: 42,
-    backgroundColor: "#d6d6d6",
+    backgroundColor: "#fff",
     alignItems:'center',
     justifyContent:'center',
     marginLeft: 8,
-    padding: 8
+    padding: 8,
+    borderColor: '#54545630',
+    borderWidth: 1,
   },
   caption1: {
     color: '#14080E',
