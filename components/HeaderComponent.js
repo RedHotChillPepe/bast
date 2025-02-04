@@ -75,12 +75,15 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Octicons from '@expo/vector-icons/Octicons';
+import { useApi } from '../context/ApiContext';
 
 const { width } = Dimensions.get('window');
 
 export default function HeaderComponent() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+
+  const {getCompanyByName} = useApi()
 
   // Состояние для модального окна поиска
   const [modalVisible, setModalVisible] = useState(false);
@@ -89,26 +92,26 @@ export default function HeaderComponent() {
   // Состояние для результатов поиска (в данном примере – статический массив)
   const [results, setResults] = useState([]);
 
-  // Функция для обработки ввода текста поиска
-  const handleSearch = (query) => {
+  const handleText = (query) => {
     setSearchQuery(query);
-    // Здесь можно реализовать запрос к API или фильтрацию локальных данных.
-    // В данном примере создадим фиктивные результаты, если введён хотя бы один символ:
-    if (query.length > 0) {
-      const dummyResults = [
-        { id: 1, name: 'Организация А' },
-        { id: 2, name: 'Организация Б' },
-        { id: 3, name: 'Организация В' },
-      ];
-      // Можно отфильтровать dummyResults по запросу:
-      const filteredResults = dummyResults.filter(item =>
-        item.name.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filteredResults);
-    } else {
-      setResults([]);
-    }
   };
+
+  const handleSubmit = async () => {
+
+    
+
+    if (String(searchQuery).length != 0) {
+      
+      const result = await getCompanyByName(searchQuery)
+      const resultJson = JSON.parse(await result.text())
+
+      
+      setResults(resultJson[1])
+
+    }
+
+    
+  }
 
   // Рендер одного элемента результата поиска
   const renderResult = ({ item }) => (
@@ -156,10 +159,14 @@ export default function HeaderComponent() {
             <TextInput
               placeholder="Введите название организации..."
               value={searchQuery}
-              onChangeText={handleSearch}
+              onChangeText={handleText}
               style={styles.searchInput}
               autoFocus={true}
             />
+            
+            <Pressable onPress={()=>{handleSubmit()}} style={{backgroundColor:'grey', color:'white', width:100, height:30}}>
+              <Text>Поиск</Text>
+            </Pressable>
 
             <FlatList
               data={results}
