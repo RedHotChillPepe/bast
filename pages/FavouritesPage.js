@@ -47,28 +47,7 @@ const FavouritesPage = ({route}) => {
         
     
   return (
-    // <SafeAreaView style={styles.container}>
-    //   <View style={styles.content}>
-    //     <View style={styles.housesView}>
-    //     {Object.keys(houses).length != 0 && houses != undefined 
-    //       ? 
-    //       <HouseCard data={houses} 
-    //         navigation={navigation} 
-    //         itemWidth={Dimensions.get('window').width -32} 
-    //         horizontalScroll={false} 
-    //       />
-    //       :
-    //         isFavs 
-    //         ? 
-    //         <ActivityIndicator size="large" color="#32322C" /> 
-    //         :
-    //         <Text>У вас нет избранных!</Text>
-    //       }
-    //      </View>  
-    //   </View>      
-    // </SafeAreaView>
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+    <View style={styles.container}>
         <View style={styles.housesView}>
           {houses.length > 0 ? (
             <FlatList
@@ -88,9 +67,10 @@ const FavouritesPage = ({route}) => {
           ) : (
             <Text style={styles.noFavsText}>У вас нет избранных!</Text>
           )}
+          <View style={{height: 512}} />
         </View>
-      </View>
-    </SafeAreaView>
+        
+    </View>
   )
 }
 
@@ -99,13 +79,13 @@ export default FavouritesPage
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor:'#F5F5F5',
-        alignItems:'center'
+        backgroundColor:'#F2F2F7',
+        alignItems:'center',
     },
         
     housesView:{
         width:width,
-        alignItems:'center'   
+        alignItems:'center', 
     },
 
 

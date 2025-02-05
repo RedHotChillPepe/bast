@@ -45,39 +45,39 @@ const ProfileCompanyPage = () => {
     {
       title: 'Команда',
       data: [
-        { icon: <FontAwesome6 name="house-circle-check" size={24} color="black" />, label: 'Компания' },
-        { icon: <Ionicons name="people-outline" size={20} color="black" />, label: 'Команда' },
-        { icon: <FontAwesome5 name="people-arrows" size={20} color="black" />, label: 'Контрагенты' },
+        { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания' },
+        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда' },
+        { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты' },
       ],
     },
     {
       title: 'Команда',
       data: [
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Клиенты' },
+        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Клиенты' },
       ],
     },
     {
       title: 'Документы',
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы' },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы' },
       ],
     },
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления' },
-        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное' },
-        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски' },
+        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления' },
+        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное' },
+        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски' },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления' },
-        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой' },
-        { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор' },
-        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр' },
-        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении' },
+        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления' },
+        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой' },
+        { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор' },
+        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр' },
+        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении' },
       ],
     },
   ];
@@ -88,7 +88,7 @@ const ProfileCompanyPage = () => {
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={24} color="black" />
+      <Ionicons name="chevron-forward" size={17} color="black" />
     </Pressable>
   );
 
@@ -158,7 +158,7 @@ export default ProfileCompanyPage;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#efefef',
+    backgroundColor: '#F2F2F7',
   },
   nameBlock: {
     flexDirection: 'row',
@@ -170,25 +170,30 @@ const styles = StyleSheet.create({
   },
   itemBlock: {
     width: width - 32,
-    backgroundColor: '#d6d6d6',
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingHorizontal: 24,
+    backgroundColor: '#fff',
+    paddingTop: 11,
+    paddingBottom: 11,
+    paddingHorizontal: 16,
     borderRadius: 24,
     marginTop: 20,
+    borderColor: '#54545630',
+    borderWidth: 1,
   },
   listItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 12,
+    paddingTop: 11,
+    paddingBottom: 11,
   },
   listItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   itemText: {
-    fontSize: 20,
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
     color: '#14080E',
     marginLeft: 12,
   },

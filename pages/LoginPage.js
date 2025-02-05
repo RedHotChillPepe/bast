@@ -10,39 +10,36 @@ const LoginPage = () => {
     const navigation = useNavigation()
     //const { setIsAuth, setIsOnboarded } = useAuth()
   return (
-    <SafeAreaView style={{flex:1, alignItems: 'center', justifyContent:'center' }}>
-      <View style={{alignItems: 'center', marginBottom: 32}}>
-        <Text style={{fontSize: 64, fontWeight: 600}}>БАСТ</Text>
-        <Text style={{fontSize: 24, fontWeight: 400}}>Недвижимость</Text>
+    <SafeAreaView style={{flex:1, alignItems: 'center', justifyContent:'center', backgroundColor: '#fff'}}>
+      <View style={{alignItems: 'center', marginBottom: 48}}>
+        <Text style={{fontSize: 64, fontWeight: 700, letterSpacing: -0.8, lineHeight: 80}}>БАСТ</Text>
+        <Text style={{fontSize: 22, lineHeight: 28, letterSpacing: -0.26, fontWeight: 500}}>Недвижимость</Text>
       </View>
 
-      <View>
-          <Pressable style={{backgroundColor:'black',
-                            width: width*0.65,
-                            height: height*0.055,
+
+          <Pressable style={{backgroundColor:'rgba(0, 122, 255, 1)',
+                            width: width * 0.5,
+                            paddingVertical: 14,
                             borderRadius: 16,
                             alignItems:'center',
-                            justifyContent:'center',
-                            marginBottom: 8}}
+                            justifyContent:'center'}}
                             onPress={()=> navigation.navigate("LoginEntry")} 
             >
             <Text style={{color: 'white', fontSize: 18}}>Войти</Text>
           </Pressable>
-      </View>
 
-      <View>
-        <Pressable style={{backgroundColor:'white',
-                           borderColor: 'black',
-                           borderWidth: 1,
-                           width: width*0.65,
-                           height: height*0.055,
+        <View style={{height: 12}} />
+
+        <Pressable style={{backgroundColor:'rgba(0, 122, 255, 0.15)',
+                           width: width * 0.5,
+                           paddingVertical: 14,
                            borderRadius: 16,
                            alignItems:'center',
                            justifyContent:'center'}}
                    onPress={() => navigation.navigate("Register")}>
-            <Text style={{color: 'black', fontSize: 18, fontWeight: 400}}>Регистрация</Text>
+            <Text style={{color: '#007AFF', fontSize: 17, lineHeight: 22, letterSpacing: -0.43, fontWeight: 400}}>Регистрация</Text>
           </Pressable>
-      </View>
+
       
     </SafeAreaView>
   )

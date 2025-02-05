@@ -228,14 +228,29 @@ const AppAuthStack = () => {
       }}/>
 
       <AuthStack.Screen name='Register' component={RegisterPage}
-      options={{
-        headerShown: false  
-      }}/>
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: 'Регистрация',   // текст заголовка скрыт
+        headerLeft: () => (
+          <Pressable  onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+          <Text style={{fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF'}}>Назад</Text>
+          </Pressable>
+        ),
+      })}/>
 
       <AuthStack.Screen name='LoginEntry' component={UserLoginPage}
-      options={{
-        headerShown: false  
-      }}/>
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: 'Авторизация',   // текст заголовка скрыт
+        headerLeft: () => (
+          <Pressable  onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+          <Text style={{fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF'}}>Назад</Text>
+          </Pressable>
+        ),
+      })}/>
+
       <AuthStack.Screen name='ConfirmationPage' component={ConfirmationPage}
       options={{
         headerShown: false  

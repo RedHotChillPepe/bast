@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
-import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
+import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -14,6 +14,9 @@ import ImageCarousel from '../components/ImageCarousel';
 const {width} = Dimensions.get('window');
 
 export default function DynamicHousePostPage ({ navigation, route }) {
+
+  const [isInteractingWithMap, setIsInteractingWithMap] = useState(false); // Добавляем состояние
+
 
   const {houseId} = route.params
   const {getPost, getIsOwner, getUserByID} = useApi()
@@ -196,7 +199,10 @@ const handleCallButton = async () => {
 
 return (
   <View style={styles.container}>
-    <ScrollView onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.mainView}>
+    <ScrollView contentContainerStyle={styles.scrollContainer} 
+  nestedScrollEnabled={true} // Разрешает вложенный скролл
+  keyboardShouldPersistTaps="handled"
+  scrollEnabled={!isInteractingWithMap}>
 
       <ImageCarousel style={{marginLeft: 16}} postData={postData} />
       
@@ -276,20 +282,28 @@ return (
           </Text>
         </View> 
         <View style={{height: 12}} />
+
         <View style={{borderRadius: 16, width: width, alignSelf:'center'}}>
           {
             isGeoLoaded 
             ? 
+            <View onTouchStart={() => setIsInteractingWithMap(true)} // Блокируем скролл
+          onTouchEnd={() => setIsInteractingWithMap(false)} // Разрешаем скролл после взаимодействия
+       >
             <YaMap ref={mapRef} style={styles.map}
             onMapLoaded={()=>{mapRef.current.setCenter({ lon:geoState.lon, lat:geoState.lat}, 10)}}
             >
               {/* Добавление круга на карту */}
               <Marker point={{ lat: geoState.lat, lon: geoState.lon }} source={require('../assets/marker.png')} />
             </YaMap> 
+            </View>
+            
             : 
             <Text>Загрузка Карты...</Text>
           }
+
           
+        
         </View>
       </View>
 
@@ -461,6 +475,7 @@ return (
 const styles = StyleSheet.create({
 container: {
     flex: 1,
+    backgroundColor: '#F2F2F7',
 },
 
 mainView: {
@@ -593,10 +608,12 @@ serviciesView: {
 serviciesPressable: {
   width: (width-32-16)/2,
   height: width*0.25 ,
-  backgroundColor: '#d6d6d6',
+  backgroundColor: '#fff',
   borderRadius: 16,
   padding: 12,
-  marginBottom: 16
+  marginBottom: 16,
+  borderColor: '#54545630',
+  borderWidth: 1,
 },
 
 serviciesText: {
@@ -636,16 +653,18 @@ buttonContainer: {
 },
 
 button: {
-  backgroundColor: '#d6d6d6',
+  backgroundColor: '#007AFF',
   paddingVertical: 12,
   width: width - 128,
   borderRadius: 8,
   alignItems: 'center'
 },
 buttonText: {
-  color: 'black',
-  fontSize: 20,
-  fontWeight: '600',
+  color: '#fff',
+  fontSize: 17,
+  lineHeight: 22,
+  letterSpacing: -0.43,
+  fontWeight: '400',
   letterSpacing: -0.43,
   lineHeight: 25,
 },

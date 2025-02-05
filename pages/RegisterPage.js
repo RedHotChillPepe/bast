@@ -51,15 +51,10 @@ const RegisterPage = () => {
   return (
     <SafeAreaView style={{
       flex: 1,
+      backgroundColor: '#fff',
       justifyContent:'center',
       alignItems:'center'
     }}>
-      <View style={{marginBottom: 48}}>
-        <Text style={styles.h1}>
-              Регистрация
-        </Text>
-      </View>
-
       <View style={styles.block}>
         <View style={styles.title}>
           <Text style={styles.titleText} >Телефон:</Text>
@@ -71,6 +66,8 @@ const RegisterPage = () => {
           keyboardType='phone-pad'
           value={phoneNumber}
           onChangeText={text => setPhoneNumber(text)}
+          placeholderTextColor='rgba(60,60,67, 0.6'
+          fontSize={17}
         />
         {
           isPhoneLabelShown
@@ -91,12 +88,14 @@ const RegisterPage = () => {
           value={password}
           onChangeText={(text) => setPassword(text)}
           maxLength={20}
+          placeholderTextColor='rgba(60,60,67, 0.6'
+          fontSize={17}
         />
       </View>
 
       <View style={styles.block}>
         <View style={styles.title}>
-          <Text style={styles.titleText}>Введите пароль еще раз:</Text>
+          <Text style={styles.titleText}>Подтвердите пароль:</Text>
         </View>
 
         <TextInput
@@ -106,6 +105,8 @@ const RegisterPage = () => {
           value={doublePass}
           onChangeText={text => setDoublePass(text)}
           maxLength={20}
+          placeholderTextColor='rgba(60,60,67, 0.6'
+          fontSize={17}
         />
         {
           isPasswordLabelShown 
@@ -117,16 +118,11 @@ const RegisterPage = () => {
 
 
 
-
-
-
-
-
-      <Pressable style={{backgroundColor: 'black', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 44}} 
+      <Pressable style={{backgroundColor: '#007AFF', paddingVertical: 7, paddingHorizontal: 14, borderRadius: 12, marginTop: 32}} 
                 //  onPress={() => setIsAuth(true)}
                 onPress={() => handleSubmit()}
                 >
-        <Text style={{fontSize: 20, color:'white'}}>
+        <Text style={{fontSize: 17, lineHeight: 22, letterSpacing: -0.43, color:'white'}}>
           Подтвердить
         </Text>
       </Pressable>
@@ -146,30 +142,36 @@ export default RegisterPage
 
 const styles = StyleSheet.create({
   block: {
-    paddingHorizontal: 32,
-    width: width, 
+    width: width*0.6, 
+    marginBottom: 24
   },
 
   h1: {
-    fontSize: 32,
+    fontSize: 28,
+    lineHeight: 34,
+    letterSpacing: 0.38,
     fontWeight: '600'
   },
 
   title: {
-    marginBottom:4
+    marginBottom:12
   },
 
   titleText: {
-    fontSize:18,
+    fontSize:20,
+    lineHeight: 25,
+    letterSpacing: -0.45,
     fontWeight: '500',
   },
 
   input: {
+    backgroundColor: 'rgba(120,120,128, 0.12)',
     height: 40,
+    width: width * 0.6,
     marginBottom: 12,
-    borderWidth: 1,
     borderRadius: 12,
-    padding: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 8,
   },
   inputLabel:{
     color:"red"

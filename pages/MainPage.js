@@ -171,7 +171,7 @@ const MainPage = ({ navigation }) => {
           {renderSelectedList()}
 
         </View>
-        <View style={{ height: 20 }} />
+        <View style={{ height: 128 }} />
       </ScrollView>
     </View>
   );

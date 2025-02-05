@@ -205,16 +205,18 @@ const styles = StyleSheet.create({
     color: '#14080E',
   },
   modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0)',
     justifyContent: 'center',
+    width: '100%',
+    height: '95%',
   },
   modalContent: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F2F2F7',
     borderRadius: 8,
     padding: 16,
-    maxHeight: '80%',
   },
   modalTitle: {
     fontSize: 20,

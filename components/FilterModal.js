@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import PriceRangeSlider from './PriceRageSlider';
 import AreaRangeSlider from './AreaRageSlider';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -49,14 +50,15 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onDismiss={onClose}>
-      <TouchableOpacity activeOpacity={1} style={styles.modalOverlay} onPressOut={onClose}>
+      <View activeOpacity={1} style={styles.modalOverlay} onPressOut={onClose}>
         <View >
-          <TouchableWithoutFeedback >
             <View style={styles.modalContent}>
               <Text style={styles.modalHeader}>Параметры поиска</Text>
               <ScrollView contentContainerStyle={styles.groupList}>
                 <PriceRangeSlider priceRange={priceRange} onSliderChange={handlePriceRange}/>
+                <View style={{height: 24}} />
                 <AreaRangeSlider areaRange={areaRange} onSliderChange={handleAreaRange}/>
+                <View style={{height: 32}} />
                 {filterGroups.map((group) => (
                   <View key={group.id} style={styles.groupContainer}>
                     <Text style={styles.groupHeader}>{group.title}</Text>
@@ -88,9 +90,9 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
                 <Text style={styles.closeButtonText}>Применить</Text>
               </Pressable>
             </View>
-          </TouchableWithoutFeedback>
+          
         </View>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 };
@@ -99,34 +101,46 @@ export default FilterModal;
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    flex: 1,
+    width: width,
+    height: height,
+    position: 'absolute',
+    bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: 'white',
-    width: width,
+    backgroundColor: '#F2F2F7',
+    flex: 1,
     borderRadius: 12,
     padding: 16,
     paddingBottom: 32,
-    maxHeight: '90%',
+    maxHeight: height * 0.9,
   },
   modalHeader: {
-    fontSize: 24,
+    fontSize: 22,
+    lineHeight: 28,
+    letterSpacing: -0.26,
     fontWeight: 'bold',
     marginBottom: 36,
     alignSelf: 'center',
 
   },
-  groupList: {},
+  groupList: {
+    
+    alignItems: 'flex-start',
+    paddingLeft: 16,
+  },
   groupContainer: {
+  
     marginBottom: 24,
   },
   groupHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
+    fontSize: 20,
+    lineHeight: 25,
+    letterSpacing: -0.45,
+    fontWeight: '500',
+    marginBottom: 16,
   },
   optionsContainer: {
     flexDirection: 'row',
@@ -134,19 +148,21 @@ const styles = StyleSheet.create({
     
   },
   filterButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: '#ddd',
-    borderRadius: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    backgroundColor: 'rgba(0, 122, 255, 0.15)',
+    borderRadius: 40,
     marginRight: 12,
     marginBottom: 12
   },
   selectedFilterButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: 'rgba(0, 122, 255, 1)',
   },
   filterButtonText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    lineHeight: 20,
+    letterSpacing: -0.23,
+    color: '#007AFF',
   },
   selectedFilterButtonText: {
     color: 'white',

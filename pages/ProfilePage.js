@@ -45,6 +45,8 @@ const ProfilePage = () => {
     }
   }, [usertype, getAuth, getUser])
   
+  
+  
 
   // Массив данных для списков
   const sections = [
@@ -79,11 +81,7 @@ const ProfilePage = () => {
     <Pressable
       onPress={() => navigation.navigate(item.navigation)}
       key={index}
-      style={[
-        styles.listItem,
-        index !== sectionData.length - 1 && styles.withBorder, // Проверяем, что это не последний элемент
-      ]}
-    >
+      style={styles.listItem}>
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
@@ -166,7 +164,7 @@ export default ProfilePage;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#efefef',
+    backgroundColor: '#F2F2F7',
   },
   nameBlock: {
     flexDirection: 'row',
@@ -179,18 +177,21 @@ const styles = StyleSheet.create({
   },
   itemBlock: {
     width: width - 32,
-    backgroundColor: '#d6d6d6',
-
-    paddingBottom: 12,
-    paddingHorizontal: 32,
+    backgroundColor: '#fff',
+    paddingBottom: 11,
+    paddingTop: 11,
+    paddingHorizontal: 16,
     borderRadius: 16,
     marginTop: 20,
+    borderColor: '#54545630',
+    borderWidth: 1,
   },
   listItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 12,
+    paddingTop: 11,
+    paddingBottom: 11,
     
   },
   listItemContent: {
@@ -231,9 +232,9 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: '#858585',
   },
-  withBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#b0b0b0',
-    paddingBottom: 12,
-  },
+  // withBorder: {
+  //   borderBottomWidth: 1,
+  //   borderBottomColor: '#b0b0b0',
+  //   paddingBottom: 12,
+  // },
 });

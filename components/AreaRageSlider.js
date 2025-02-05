@@ -14,15 +14,19 @@ const AreaRangeSlider = ({onSliderChange, areaRange}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Площадь дома</Text>
+      <Text style={styles.header}>Площадь дома:</Text>
       <View style={styles.areaContainer}>
-        <Text style={styles.areaText}>От: {areaRange.current[0].toLocaleString()} м2</Text>
-        <Text style={styles.areaText}>До: {areaRange.current[1].toLocaleString()} м2</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        <Text style={styles.areaText}>От: </Text> <Text style={styles.valueText}>{areaRange.current[0].toLocaleString()} м2</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        <Text style={styles.areaText}>До: </Text> <Text style={styles.valueText}>{areaRange.current[1].toLocaleString()} м2</Text>
+        </View>
       </View>
 
       <MultiSlider
         values={areaRange.current}
-        sliderLength={width - 40} // Длина слайдера
+        sliderLength={width - 64} // Длина слайдера
         onValuesChange={handleValuesChange}
         min={0} // Минимальное значение
         max={1_000} // Максимальное значение
@@ -45,19 +49,30 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 20,
-    fontWeight: 'bold',
+    lineHeight: 25,
+    letterSpacing: -0.45,
+    fontWeight: '500',
     marginBottom: 16,
     textAlign: 'center',
   },
   areaContainer: {
-    width: width-32,
+    width: width-64,
     flexDirection: 'row',
     alignItems:'flex-start',
     justifyContent: 'space-between',
     marginBottom: 16,
   },
   areaText: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
+    fontWeight: '400',
   },
+  valueText: {
+    fontSize: 22,
+    lineHeight: 28,
+    letterSpacing: -0.43,
+    fontWeight: '600',
+  },
+
 });

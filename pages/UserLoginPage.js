@@ -57,7 +57,7 @@ const UserLoginPage = () => {
     }
 
   return (
-    <SafeAreaView style={{marginTop: 64}}>
+    <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
         <View style={styles.block}>
             <View style={styles.title}>
             <Text style={styles.titleText} >Телефон:</Text>
@@ -69,6 +69,8 @@ const UserLoginPage = () => {
             keyboardType='phone-pad'
             value={phoneNumber}
             onChangeText={text => setPhoneNumber(text)}
+            placeholderTextColor='rgba(60,60,67, 0.6'
+            fontSize={17}
             />
             {
             isPhoneLabelShown
@@ -89,10 +91,12 @@ const UserLoginPage = () => {
             value={password}
             onChangeText={(text) => setPassword(text)}
             maxLength={20}
+            placeholderTextColor='rgba(60,60,67, 0.6'
+            fontSize={17}
             />
         </View>
 
-        <Pressable style={{backgroundColor: 'black', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, marginTop: 32, alignSelf:'center'}} 
+        <Pressable style={{backgroundColor: '#007AFF', paddingVertical: 7, paddingHorizontal: 14, borderRadius: 12, marginTop: 32}} 
                     //  onPress={() => setIsAuth(true)}
                     onPress={() => handleSubmit()}>
             <Text style={{fontSize: 20, color:'white'}}>
@@ -115,30 +119,31 @@ export default UserLoginPage
 
 const styles = StyleSheet.create({
     block: {
-        paddingHorizontal: 32,
-        width: width, 
+      width: width*0.6, 
+      marginBottom: 24
       },
     
-      h1: {
-        fontSize: 32,
-        fontWeight: '600'
-      },
     
       title: {
         marginBottom:4
       },
     
       titleText: {
-        fontSize:18,
+        fontSize:20,
+        lineHeight: 25,
+        letterSpacing: -0.45,
         fontWeight: '500',
+        marginBottom: 8,
       },
     
       input: {
+        backgroundColor: 'rgba(120,120,128, 0.12)',
         height: 40,
+        width: width * 0.6,
         marginBottom: 12,
-        borderWidth: 1,
         borderRadius: 12,
-        padding: 8,
+        paddingVertical: 7,
+        paddingHorizontal: 8,
       },
       inputLabel:{
         color:"red"
