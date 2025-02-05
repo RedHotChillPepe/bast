@@ -17,7 +17,6 @@
       "bundleIdentifier": "com.bastithouses.app"
     },
     "android": {
-      "minSdkVersion": 26,
       "adaptiveIcon": {
         "foregroundImage": "./assets/BastLogo.png",
         "backgroundColor": "#ffffff"
@@ -29,6 +28,12 @@
     },
     "plugins": [
       "expo-font",
+      [
+      "expo-build-properties",{
+        "android":{
+          "minSdkVersion": 26
+        }
+      }],
       "expo-secure-store",
       [
         "expo-splash-screen",
@@ -36,7 +41,8 @@
         "backgroundColor": "#0077FF",
         "image": "./assets/BastSplash.png",
         "imageWidth": 200
-      }]
+      }
+      ]
     ],
     "extra": {
       "eas": {
