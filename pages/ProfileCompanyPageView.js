@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image } from 'react-native';
+import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image, ActivityIndicator } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -16,68 +16,29 @@ const { width } = Dimensions.get('window');
 
 
 
-const ProfileCompanyPageView = () => {
-  const { logout, getAuth } = useAuth();
-  const navigation = useNavigation();
-  const {getUser} =useApi()
-
-   const { getAllPosts, getAllVillages } = useApi();
-   const [houses, setHouses] = useState([]);
-    const [selectedList, setSelectedList] = useState('houses');
-
-  const [usertype, setUsertype] = useState(1) 
+const ProfileCompanyPageView = ({route, navigation}) => {
+  const {CompanyId} = route.params
+  const { getUserByID } = useApi();
 
   const [userr, setUser]=useState([])
 
-    useEffect(() => {
-      const housesFetch = async () => {
-        const tempHouses = await getAllPosts();
-        if (tempHouses) {
-          const tempSetHouses = [];
-          const tempSetNewHouses = [];
-          tempHouses.forEach((house) => {
-            if (house.newbuild) {
-              tempSetNewHouses.push(house);
-            } else {
-              tempSetHouses.push(house);
-            }
-          });
-          setHouses(tempSetHouses);
-          setNewHouses(tempSetNewHouses);
-        }
-      };
   
-      const villagesFetch = async () => {
-        const villageData = await getAllVillages();
-        if (villageData) {
-          setVillages(villageData);
-        }
-      };
-  
-      housesFetch();
-      villagesFetch();
-    }, []);
 
   useEffect(() => {
     const init = async () => {
-      const auth = JSON.parse(await getAuth())
-      const user = await getUser(await auth[0].phone, "user")
-      /* console.log(await user.text()); */
+      const result = await getUserByID(CompanyId, "company")
+      const resultJson = JSON.parse(await result.text())
+
+      console.log(resultJson);
       
-      const userJson = JSON.parse(await user.text()) 
-      if (userJson.result != false) {
-        setUser(await userJson[1])
-      }
-      
-      setUsertype(await auth[0].usertype)
-      
+      setUser(resultJson[0])
     }
     init()
   
     return () => {
       
     }
-  }, [usertype, userr, getAuth, getUser])
+  }, [getUserByID])
   
 
 
@@ -87,31 +48,73 @@ const ProfileCompanyPageView = () => {
         <ScrollView contentContainerStyle={styles.container}>
 
           <View style={{flexDirection:'row', alignSelf:'flex-start', marginLeft: 16, marginTop: 32, alignItems:'flex-start'}} >
-            <FontAwesome6 name="face-tired" size={56} color="black" />
+
+            {
+              Object.keys(userr).length != 0
+              ?
+              <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={80} height={80} source={{uri:userr.photo}}/>
+              :
+              <FontAwesome6 name="face-tired" size={56} color="black" />
+            }
+
+            
+
 
             <View style={{marginLeft: 16}}>
-                <Text style={styles.name}>Строительная компания</Text>
-                <View style={{flexDirection: 'row', marginTop: 8}}>
-                  <FontAwesome name="star" size={20} color="#858585" />
-                  <FontAwesome name="star" size={20} color="#858585" />
-                  <FontAwesome name="star" size={20} color="#858585" />
-                  <FontAwesome name="star" size={20} color="#858585" />  
+              {
+                Object.keys(userr).length != 0
+                ?
+                <View>
+                  <Text style={styles.name}>{userr.name}</Text>
+                  <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text>
+                  <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text>
                 </View>
-                <Text style={{fontSize: 16, marginTop: 12, color:'#858585'}}>На сайте с мая 2024</Text>
+                
+                :
+                <ActivityIndicator size="large" color="#32322C" />
+              }
 
-                <Pressable style={{backgroundColor: '#d6d6d6', padding: 16, borderRadius: 12, marginTop: 24, flexDirection: 'row', alignItems: 'center', alignSelf:'flex-start'}}>
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                Написать
-            </Text>
-          </Pressable>
+              
+
+
+              <View style={{flexDirection: 'row', marginTop: 8}}>
+                <FontAwesome name="star" size={20} color="#858585" />
+                <FontAwesome name="star" size={20} color="#858585" />
+                <FontAwesome name="star" size={20} color="#858585" />
+                <FontAwesome name="star" size={20} color="#858585" />  
+              </View>
+              <Text style={{fontSize: 16, marginTop: 12, color:'#858585'}}>На сайте с мая 2024</Text>
+
+              <Pressable style={{backgroundColor: '#d6d6d6', padding: 16, 
+                borderRadius: 12, marginTop: 24, flexDirection: 'row', 
+                alignItems: 'center', alignSelf:'flex-start'}} onPress={()=>{navigation.navigate("NotExistPage")}}>
+
+                <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                  Написать
+                </Text>
+
+              </Pressable>
 
             </View>
           </View>
 
 
 
-<Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>Объявления</Text>
-<HouseCard data={houses} navigation={navigation} itemWidth={width -32} />
+          <Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>
+            Объявления
+          </Text>
+
+          <Pressable style={{backgroundColor: '#d6d6d6', padding: 16, 
+            borderRadius: 12, marginTop: 24, flexDirection: 'row', 
+            alignItems: 'center', alignSelf:'flex-start'}} onPress={()=>{navigation.navigate("NotExistPage")}}>
+
+            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+              Посмотреть
+            </Text>
+
+          </Pressable>
+
+          {/* <HouseCard data={houses} navigation={navigation} itemWidth={width -32} /> */}
 
     
 {/*           <View style={styles.buttonsRow}>
@@ -120,7 +123,6 @@ const ProfileCompanyPageView = () => {
             <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
           </View> */}
           <View style={styles.buttonsRow}>
-            <Button title="Logout" onPress={logout} />
             <Button title="404" onPress={() => navigation.navigate('Error404')} />
             <Button title="403" onPress={() => navigation.navigate('Error403')} />
             <Button title="500" onPress={() => navigation.navigate('Error500')} />
