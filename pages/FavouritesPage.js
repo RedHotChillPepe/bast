@@ -19,25 +19,23 @@ const FavouritesPage = ({route}) => {
   const [houses, setHouses]= useState([])
   const [isFavs, setIsFavs]= useState(true)
 
-  const {getPost} = useApi()
+  const {getManyPosts} = useApi()
 
   useEffect(() => {
     const getFavHouses = async () => {
       const favs = JSON.parse(await SecureStore.getItemAsync("favs"))
+
       console.log(favs);
         
       if (favs == null) {
         setIsFavs(false)
         
       } else if (Object.keys(favs).length != 0) {
-        const tempHouses = []
-
-        for (let index = 0; index < favs.length; index++) {
-          const result = await getPost(favs[index])
-          const resultJson = JSON.parse(await result.text())
-          tempHouses.push(resultJson.rows[0])          
-        }
-        setHouses(tempHouses)
+        const tempHouses = await getManyPosts(favs)
+        
+        const tempHousesJson = JSON.parse(await tempHouses.text())
+        
+        setHouses(tempHousesJson.rows)
       }
     }
 

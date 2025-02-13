@@ -40,6 +40,27 @@ export default function ApiProvider ({ children }){
         })
     }
 
+    const getManyPosts = async(data) => {
+        const url = host + `api/posts/manyPosts`
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify(data)
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting user: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getPost = async (id) =>{
         const url = host + `api/posts/${id}`
 
@@ -362,7 +383,7 @@ export default function ApiProvider ({ children }){
     return (
         <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
         getLogin, getUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms,
-        getPost, getUserByID, sendPost, updatePost}}>
+        getPost,getManyPosts, getUserByID, sendPost, updatePost}}>
             {children}
         </ApiContext.Provider>
     )
