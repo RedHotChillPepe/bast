@@ -18,7 +18,7 @@ const RegisterPage = () => {
     const [isUserExistsLabelShown, setIsUserExistsLabelShown] = useState(false)
 
     const handleSubmit = async () => {
-      const phonePattern = /(?:\+|\d)[\d\-\(\) ]{9,}\d/g
+      const phonePattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/g
 
       if (password != doublePass) {
         setIsPasswordLabelShown(true)
