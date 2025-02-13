@@ -18,7 +18,7 @@ const UserLoginPage = () => {
     const [isAuthLabelShown, setIsAuthLabelShown] = useState(false)
 
     const handleSubmit = async () => {
-        const phonePattern = /(?:\+|\d)[\d\-\(\) ]{9,}\d/g
+        const phonePattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/g
 
         if (!phonePattern.test(phoneNumber)) {
             console.log(phonePattern.test(phoneNumber));
