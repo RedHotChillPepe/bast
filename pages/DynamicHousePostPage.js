@@ -514,11 +514,16 @@ priceMeter: {
   
 },
 
+scrollContainer: {
+  alignItems: 'center',
+},
+
 specView: {
     flexDirection:'row',
     width: width-32,
     justifyContent:'space-between',
-    marginTop: 16
+    marginTop: 16,
+    alignSelf: 'center'
 },
 
 specElement: {
