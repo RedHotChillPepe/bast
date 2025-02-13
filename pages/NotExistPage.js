@@ -23,7 +23,7 @@ const NotExistPage = () => {
                            justifyContent:'center',
                            marginTop: 96}}
             onPress={() => navigation.navigate("Main")}>
-          <Text style={{color: 'black', fontSize: 18, fontWeight: 400}}>На главную</Text>
+          <Text style={{color: 'black', fontSize: 18, fontWeight: 400}}>Назад</Text>
         </Pressable>
       </View>
       
