@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image } from 'react-native';
+import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image, ActivityIndicator } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -16,70 +16,29 @@ const { width } = Dimensions.get('window');
 
 
 
-const ProfilePageView = ({route}) => {
-  const { logout, getAuth } = useAuth();
-  const navigation = useNavigation();
-  const {getUser} =useApi()
-
+const ProfilePageView = ({route, navigation}) => {
   const {posterId} = route.params
-
-  const { getAllPosts, getAllVillages } = useApi();
-  const [houses, setHouses] = useState([]);
-  const [selectedList, setSelectedList] = useState('houses');
-
-  const [usertype, setUsertype] = useState(1) 
-
-  const [userr, setUser]=useState([])
-
+    const { getUserByID } = useApi();
+  
+    const [userr, setUser]=useState([])
+  
+    
+  
     useEffect(() => {
-      const housesFetch = async () => {
-        const tempHouses = await getAllPosts();
-        if (tempHouses[0].id != undefined) {
-          const tempSetHouses = [];
-          const tempSetNewHouses = [];
-          tempHouses.forEach((house) => {
-            if (house.newbuild) {
-              tempSetNewHouses.push(house);
-            } else {
-              tempSetHouses.push(house);
-            }
-          });
-          setHouses(tempSetHouses);
-          setNewHouses(tempSetNewHouses);
-        }
-      };
+      const init = async () => {
+        const result = await getUserByID(posterId, "user")
+        const resultJson = JSON.parse(await result.text())
   
-      const villagesFetch = async () => {
-        const villageData = await getAllVillages();
-        if (villageData) {
-          setVillages(villageData);
-        }
-      };
-  
-      housesFetch();
-      villagesFetch();
-    }, []);
-
-  useEffect(() => {
-    const init = async () => {
-      const auth = JSON.parse(await getAuth())
-      const user = await getUser(await auth[0].phone, "user")
-      /* console.log(await user.text()); */
-      
-      const userJson = JSON.parse(await user.text()) 
-      if (userJson.result != false) {
-        setUser(await userJson[1])
+        console.log(resultJson);
+        
+        setUser(resultJson[0])
       }
-      
-      setUsertype(await auth[0].usertype)
-      
-    }
-    init()
-  
-    return () => {
-      
-    }
-  }, [usertype, getAuth, getUser])
+      init()
+    
+      return () => {
+        
+      }
+    }, [getUserByID])
   
 
 
@@ -89,12 +48,28 @@ const ProfilePageView = ({route}) => {
         <ScrollView contentContainerStyle={styles.container}>
 
           <View style={{flexDirection:'row', alignSelf:'flex-start', marginLeft: 16, marginTop: 32, alignItems:'flex-start'}} >
-            <FontAwesome6 name="face-tired" size={56} color="black" />
+            {
+              Object.keys(userr).length != 0
+              ?
+              <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={80} height={80} source={{uri:userr.photo}}/>
+              :
+              <FontAwesome6 name="face-tired" size={56} color="black" />
+            }
 
-            <Text>posterId: {posterId}</Text>
 
             <View style={{marginLeft: 16}}>
-                <Text style={styles.name}>Иван Петров</Text>
+              {
+                Object.keys(userr).length != 0
+                ?
+                <View>
+                  <Text style={styles.name}>{userr.name} {userr.surname}</Text>
+                  <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text>
+                  <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text>
+                </View>
+                
+                :
+                <ActivityIndicator size="large" color="#32322C" />
+              }
                 <View style={{flexDirection: 'row', marginTop: 8}}>
                   <FontAwesome name="star" size={20} color="#858585" />
                   <FontAwesome name="star" size={20} color="#858585" />
@@ -114,22 +89,28 @@ const ProfilePageView = ({route}) => {
 
 
 
-<Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>Объявления</Text>
-<HouseCard data={houses} navigation={navigation} itemWidth={width -32} />
+          <Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>
+            Объявления
+          </Text>
 
-    
+          <Pressable style={{backgroundColor: '#d6d6d6', padding: 16, 
+            borderRadius: 12, marginTop: 24, flexDirection: 'row', 
+            alignItems: 'center', alignSelf:'flex-start'}} onPress={()=>{navigation.navigate("NotExistPage")}}>
+
+            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+              Посмотреть
+            </Text>
+
+          </Pressable>
+
+
 {/*           <View style={styles.buttonsRow}>
-            <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
-            <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
-            <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
-          </View> */}
-          <View style={styles.buttonsRow}>
             <Button title="Logout" onPress={logout} />
             <Button title="404" onPress={() => navigation.navigate('Error404')} />
             <Button title="403" onPress={() => navigation.navigate('Error403')} />
             <Button title="500" onPress={() => navigation.navigate('Error500')} />
             <Button title="503" onPress={() => navigation.navigate('Error503')} />
-          </View>
+          </View> */}
         </ScrollView>
       );
 

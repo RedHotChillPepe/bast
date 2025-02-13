@@ -114,14 +114,6 @@ const ProfileCompanyPageView = ({route, navigation}) => {
 
           </Pressable>
 
-          {/* <HouseCard data={houses} navigation={navigation} itemWidth={width -32} /> */}
-
-    
-{/*           <View style={styles.buttonsRow}>
-            <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
-            <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
-            <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
-          </View> */}
           <View style={styles.buttonsRow}>
             <Button title="404" onPress={() => navigation.navigate('Error404')} />
             <Button title="403" onPress={() => navigation.navigate('Error403')} />
