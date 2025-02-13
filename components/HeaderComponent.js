@@ -115,11 +115,7 @@ export default function HeaderComponent() {
 
   // Рендер одного элемента результата поиска
   const renderResult = ({ item }) => (
-    <Pressable style={styles.resultItem} onPress={() => {
-      // Например, переходим на профиль выбранной организации или выполняем другую логику
-      console.log('Выбран элемент:', item.name);
-      setModalVisible(false);
-    }}>
+    <Pressable style={styles.resultItem} onPress={() => {navigation.navigate("ProfileCompanyPageView", {CompanyId: item.id})}}>
       <Text style={styles.resultText}>{item.name}</Text>
     </Pressable>
   );

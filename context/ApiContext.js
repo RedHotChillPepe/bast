@@ -263,8 +263,8 @@ export default function ApiProvider ({ children }){
         }
     }
 
-    const getUserByID = async (id) => {
-        const url = host + `api/users/getuser/${id}`
+    const getUserByID = async (id, usertype) => {
+        const url = host + `api/users/getuser/${usertype || "user"}/${id}`
 
         try {
             return fetch(url,{
