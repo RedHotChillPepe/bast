@@ -121,10 +121,11 @@ const ProfilePage = () => {
 
     
           {sections.map((section, index) => (
-  <View style={styles.itemBlock} key={index}>
-    {section.data.map((item, idx) => renderItem(item, idx, section.data))}
-  </View>
-))}
+              <View style={styles.itemBlock} key={index}>
+                {section.data.map((item, idx) => renderItem(item, idx, section.data))}
+              </View>
+            ))
+          }
 
     
           <Pressable onPress={logout} style={styles.logoutButton}>

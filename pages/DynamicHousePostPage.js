@@ -266,14 +266,14 @@ return (
 
 
       {/* adressView - блок с продавцом */}    
-      {/* <View style={{marginTop: 32}}>
+      <View style={{marginTop: 32}}>
         <Text style={{fontSize: 24, fontWeight:'bold', marginBottom: 12}}>Продавец</Text>
         {
           Object.keys(ownerUser).length != 0
           &&
           <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}><Text style={{fontSize:20}}>{ownerUser[0].name} {ownerUser[0].surname}</Text></Pressable>
         }
-      </View> */}
+      </View>
 
       <View style={styles.adressView}>
       <View>   
@@ -439,7 +439,7 @@ return (
                 {
                   Object.keys(ownerUser).length != 0
                   &&
-                  <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}>
+                  <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id }); setShowModal(false)}}>
                     <Text style={{fontSize:20, lineHeight: 25, letterSpacing: -0.43, fontWeight: '600', marginBottom: 16, color: '#007AFF'}}>
                       {ownerUser[0].name} {ownerUser[0].surname}
                       </Text>
