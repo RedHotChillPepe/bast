@@ -287,15 +287,15 @@ const AppInit = () => {
         <AppAuthStack/>
       )
     }
-    // Проверка проведён ли пользователь через "онбординг"
+    /* // Проверка проведён ли пользователь через "онбординг"
     if (!isOnboarded) {
       return (
         <OnboardingStack.Navigator initialRouteName='Onboarding'>
           <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
         </OnboardingStack.Navigator>
       )
-    }
-    if (isOnboarded && isAuth) {
+    } */
+    if (/* isOnboarded &&  */isAuth) {
       return (
         <AppTabs/>
       )
