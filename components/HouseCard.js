@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, Pressable, Image, StyleSheet, Dimensions } from 'react-native';
+import Octicons from '@expo/vector-icons/Octicons';
 
 const { width } = Dimensions.get('window');
 
@@ -20,9 +21,11 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
             <Text style={styles.pricePerSquare}>{Math.floor(item.price / item.house_area)}₽/м²</Text>
           </View>
           <View style={styles.detailsRow}>
-            <Text style={styles.detailsText}>{item.bedrooms}-комн.</Text>
-            <Text style={styles.detailsText}>{item.house_area} м²</Text>
-            <Text style={styles.detailsText}>{item.num_floors} этаж</Text>
+            <Text style={styles.detailsText}>{item.bedrooms}-комн </Text>
+            <Octicons name="dot-fill" size={12} color="black" />
+            <Text style={styles.detailsText}> {item.house_area} м² </Text>
+            <Octicons name="dot-fill" size={12} color="black" />
+            <Text style={styles.detailsText}> {item.num_floors} эт</Text>
           </View>
           <Text style={styles.addressText}>{item.city}, {item.full_address}</Text>
         </View>
@@ -41,7 +44,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   houseImageView: {
-    height: 280,
+    height: 180,
   },
   houseImage: {
     flex: 1,
@@ -73,8 +76,9 @@ const styles = StyleSheet.create({
   },
   detailsRow: {
     flexDirection: 'row',
-    marginTop: 8,
+    marginTop: 4,
     marginLeft: 12,
+    alignItems: 'center',
   },
   detailsText: {
     fontSize: 17,

@@ -294,12 +294,12 @@ return (
             onMapLoaded={()=>{mapRef.current.setCenter({ lon:geoState.lon, lat:geoState.lat}, 10)}}
             >
               {/* Добавление круга на карту */}
-              <Marker point={{ lat: geoState.lat, lon: geoState.lon }} source={require('../assets/marker.png')} />
+              <Marker point={{ lat: geoState.lat, lon: geoState.lon }} scale={0.25} source={require('../assets/marker.png')} />
             </YaMap> 
             </View>
             
             : 
-            <Text>Загрузка Карты...</Text>
+            <Text style={{alignSelf:'center'}}>Загрузка Карты...</Text>
           }
 
           
@@ -514,11 +514,16 @@ priceMeter: {
   
 },
 
+scrollContainer: {
+  alignItems: 'center',
+},
+
 specView: {
     flexDirection:'row',
     width: width-32,
     justifyContent:'space-between',
-    marginTop: 16
+    marginTop: 16,
+    alignSelf: 'center'
 },
 
 specElement: {

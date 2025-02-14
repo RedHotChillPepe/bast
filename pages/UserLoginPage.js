@@ -107,7 +107,7 @@ const UserLoginPage = () => {
         {
             isAuthLabelShown
             &&
-            <Text style={styles.inputLabel}>Неверные данные</Text>
+            <Text style={styles.inputLabel}>Неверный номер телефона или пароль</Text>
         }
         
 

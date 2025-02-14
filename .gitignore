@@ -62,3 +62,4 @@ ios/bast/Images.xcassets/SplashScreenLogo.imageset/image.png
 ios/bast/Images.xcassets/SplashScreenLogo.imageset/image@3x.png
 ios/bast/Supporting/Expo.plist
 ios/bast/Images.xcassets/SplashScreenLogo.imageset/image@2x.png
+package-lock.json

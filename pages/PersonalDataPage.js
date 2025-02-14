@@ -157,7 +157,7 @@ const PersonalDataPage = ({route}) => {
           showDateLabel
           &&
           <Text style={styles.inputLabel}>
-            Вам не может быть меньше 18 лет
+            Вам должно быть больше 18 лет
           </Text>
         }
       </View>

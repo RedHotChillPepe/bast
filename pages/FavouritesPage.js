@@ -46,8 +46,9 @@ const FavouritesPage = ({route}) => {
     
   return (
     <View style={styles.container}>
-        <View style={styles.housesView}>
+        
           {houses.length > 0 ? (
+            <View style={styles.housesView}>
             <FlatList
               data={houses}
               renderItem={({ item }) => (
@@ -60,15 +61,19 @@ const FavouritesPage = ({route}) => {
               keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}
             />
+            <View style={{height: 512}} />
+            </View>
           ) : isFavs ? (
             <ActivityIndicator size="large" color="#32322C" />
           ) : (
-            <Text style={styles.noFavsText}>У вас нет избранных!</Text>
+            <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
+              <Text style={styles.noFavsText}>У вас нет избранных объявлений</Text>
+            </View>
           )}
-          <View style={{height: 512}} />
+          
         </View>
         
-    </View>
+    
   )
 }
 
@@ -83,7 +88,15 @@ const styles = StyleSheet.create({
         
     housesView:{
         width:width,
-        alignItems:'center', 
+        alignItems:'center',
+        justifyContent: 'center'
+    },
+
+    noFavsText: {
+      fontSize: 22,
+      lineHeight: 25,
+      fontWeight: 500,
+      letterSpacing: -0.43
     },
 
 
