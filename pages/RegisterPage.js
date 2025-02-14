@@ -130,7 +130,7 @@ const RegisterPage = () => {
         {
           isUserExistsLabelShown
           &&
-          <Text style={styles.inputLabel}>Этот телефон уже зарегистрирован</Text>
+          <Text style={styles.inputLabel}>Этот номер телефона уже зарегистрирован</Text>
         }
 
     </SafeAreaView>
