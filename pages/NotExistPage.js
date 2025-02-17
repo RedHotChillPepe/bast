@@ -22,7 +22,7 @@ const NotExistPage = () => {
                            alignItems:'center',
                            justifyContent:'center',
                            marginTop: 96}}
-            onPress={() => navigation.navigate("Main")}>
+            onPress={() => navigation.goBack()}>
           <Text style={{color: 'black', fontSize: 18, fontWeight: 400}}>Назад</Text>
         </Pressable>
       </View>

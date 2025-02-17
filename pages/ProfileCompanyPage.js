@@ -45,46 +45,46 @@ const ProfileCompanyPage = () => {
     {
       title: 'Команда',
       data: [
-        { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания', navigation:'NotExistPage' },
-        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда', navigation:'NotExistPage' },
-        { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты', navigation:'NotExistPage' },
+        { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
     },
     {
       title: 'Команда',
       data: [
-        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Клиенты', navigation:'NotExistPage' },
+        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Клиенты', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
     },
     {
       title: 'Документы',
       data: [
-        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation:'NotExistPage' },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
     },
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:'NotExistPage' },
-        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:'NotExistPage' },
-        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:'NotExistPage' },
+        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления', navigation:'NotExistPage' },
-        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой', navigation:'NotExistPage' },
-        { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор', navigation:'MortgageCalculator' },
-        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation:'NotExistPage' },
-        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation:'NotExistPage' },
+        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор', navigation:['MortgageCalculator'] },
+        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
     },
   ];
 
   const renderItem = ( item, index ) => (
     <Pressable key={index} style={styles.listItem}
-      onPress={() => navigation.navigate(item.navigation)}>
+      onPress={() => navigation.navigate(item.navigation[0], item.navigation[1])}>
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>

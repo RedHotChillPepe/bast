@@ -12,22 +12,22 @@ const ServicesComponent = () => {
     {
       text: 'Все сервисы',
       subtext: 'Наши юристы позаботятся о вашей безопасности',
-      navigation:'NotExistPage'
+      navigation:['Errors',{screen:"NotExistPage"}]
     },
     {
       text: 'Продать дом',
       subtext: 'Наши юристы позаботятся о вашей безопасности',
-      navigation:'NotExistPage'
+      navigation:['Errors',{screen:"NotExistPage"}]
     },
     {
       text: 'Оценка',
       subtext: 'Бесплатно узнайте рыночную стоимость',
-      navigation:'NotExistPage'
+      navigation:['Errors',{screen:"NotExistPage"}]
     },
     {
       text: 'Ипотечный калькулятор',
       subtext: 'Подберите удобный ежемесячный платеж',
-      navigation:'MortgageCalculator'
+      navigation:['MortgageCalculator']
     },
   ];
 
@@ -38,7 +38,7 @@ const ServicesComponent = () => {
       contentContainerStyle={styles.functionCards}>
       {ServicesContent.map((item, index) => (
         <Pressable
-          onPress={() => navigation.navigate(item.navigation)}
+          onPress={() => navigation.navigate(item.navigation[0], item.navigation[1])}
           style={styles.functionCard}
           key={index}
         >

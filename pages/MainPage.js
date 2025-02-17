@@ -60,21 +60,6 @@ const MainPage = ({ navigation }) => {
     villagesFetch();
   }, []);
 
-  // const SearchButtonsContent = [
-  //     {
-  //         text:"Для вас",
-  //         onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:true}})
-  //     },
-  //     {
-  //         text:"Дом",
-  //         onPress: () => navigation.navigate("Houses", {searchPrepopulate:{status:null}})
-  //     },
-  //     {
-  //         text:"Коттеджный поселок",
-  //         onPress: () => navigation.navigate("NotExistPage")
-  //     },
-  // ]
-
   const SearchButtonsContent = [
     {
       text: 'Для вас',

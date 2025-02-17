@@ -95,7 +95,7 @@ const ProfilePageView = ({route, navigation}) => {
 
           <Pressable style={{backgroundColor: '#d6d6d6', padding: 16, 
             borderRadius: 12, marginTop: 24, flexDirection: 'row', 
-            alignItems: 'center', alignSelf:'flex-start'}} onPress={()=>{navigation.navigate("NotExistPage")}}>
+            alignItems: 'center', alignSelf:'flex-start'}} onPress={()=>{navigation.navigate('Errors',{screen:"NotExistPage"})}}>
 
             <Text style={{fontSize: 20, fontWeight: 'bold'}}>
               Посмотреть

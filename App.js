@@ -49,15 +49,50 @@ import Feather from '@expo/vector-icons/Feather';
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator()
 const OnboardingStack = createNativeStackNavigator()
+const ErrorStack = createNativeStackNavigator()
+const ProfileStack = createNativeStackNavigator()
+const TopStack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
 YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
 Geocoder.init('d4e0fa5b-61fc-468d-886c-31740a78b323')
 
+const Errors = () => {
+  return(
+    <ErrorStack.Navigator>
+      <ErrorStack.Screen name='Error404' component={Error404}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+
+        <ErrorStack.Screen name='Error403' component={Error403}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+
+        <ErrorStack.Screen name='Error500' component={Error500}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+
+        <ErrorStack.Screen name='Error503' component={Error503}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+
+        <ErrorStack.Screen name='NotExistPage' component={NotExistPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
+    </ErrorStack.Navigator>
+  )
+}
+
+
 /// Объявление доступных страниц, навигация (возможно стоит в отдельный компонент)
 const AppStack = () => {
   return(
-      <Stack.Navigator initialRouteName='Main'>
+      <Stack.Navigator initialRouteName='Main' >
         <Stack.Screen name='Main' component={MainPage} 
         options={{
           header:(props) => <HeaderComponent{...props}/>
@@ -85,37 +120,13 @@ const AppStack = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/>
-          
-        <Stack.Screen name='NotExistPage' component={NotExistPage}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
-          }}/>
+        
 
         <Stack.Screen name='MortgageCalculator' component={MortgageCalculator}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
           }}/>
 
-        <Stack.Screen name='Error404' component={Error404}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
-          }}/> 
-
-        <Stack.Screen name='Error403' component={Error403}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
-          }}/> 
-
-        <Stack.Screen name='Error500' component={Error500}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
-          }}/> 
-
-        <Stack.Screen name='Error503' component={Error503}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
-          }}/> 
-        
         <Stack.Screen name='DynamicStoriesPage' component={DynamicStoriesPage}
           options={{//header:(props) => <HeaderComponent{...props}/>
             headerShown: false  
@@ -152,7 +163,7 @@ const AppStack = () => {
 
 const AppTabs = () => {
   return(
-    <Tab.Navigator initialRouteName='Home'>
+    <Tab.Navigator initialRouteName='Home' backBehavior='history'>
       <Tab.Screen
         name='Поиск' 
         component={DynamicHousesPage} 
@@ -265,6 +276,19 @@ const AppAuthStack = () => {
   )
 }
 
+const AppTopStack = () => {
+  return(
+    <TopStack.Navigator initialRouteName='Tabs'>
+      <TopStack.Screen name="Tabs" component={AppTabs} options={{
+        headerShown: false  
+      }}/>
+      <TopStack.Screen name='Errors' component={Errors} options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/> 
+    </TopStack.Navigator>
+  )
+}
+
 // Условный рендер в зависимости от того авторизирован ли пользователь или нет
 const AppInit = () => {
   const {isAuth, isOnboarded} = useAuth()
@@ -297,7 +321,7 @@ const AppInit = () => {
     } */
     if (/* isOnboarded &&  */isAuth) {
       return (
-        <AppTabs/>
+        <AppTopStack/>
       )
     }
   }

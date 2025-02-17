@@ -314,16 +314,16 @@ return (
       <View style={styles.serviciesBlock}>
         <Text style={styles.infoTitle}>Услуги</Text>
         <View style={styles.serviciesView}>
-          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate('Errors',{screen:"NotExistPage"})}>
             <Text style={styles.serviciesText}>Страхование</Text>
           </Pressable>
-          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate('Errors',{screen:"NotExistPage"})}>
             <Text style={styles.serviciesText}>Оценка недвижимости</Text>
           </Pressable>
-          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate('Errors',{screen:"NotExistPage"})}>
             <Text style={styles.serviciesText}>Trade-in</Text>
           </Pressable>
-          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate("NotExistPage")}>
+          <Pressable style={styles.serviciesPressable} onPress= {() => navigation.navigate('Errors',{screen:"NotExistPage"})}>
             <Text style={styles.serviciesText}>Дизайн интерьера</Text>
           </Pressable>
         </View>
