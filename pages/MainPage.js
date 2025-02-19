@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   Dimensions,
   StatusBar,
   TouchableWithoutFeedback,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useApi } from '../context/ApiContext';
@@ -20,32 +21,27 @@ import VillageCard from '../components/VillageCard';
 import TextInputSearch from '../components/TextInputSearch';
 import HouseSearchButton from '../components/HouseSearchButton';
 import AddPostButton from '../components/AddPostButton';
+import {OptimizedFlatList} from 'react-native-optimized-flatlist'
 
 
 const { width } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 const MainPage = ({ navigation }) => {
-  const { getAllPosts, getAllVillages } = useApi();
+  const { getPaginatedPosts, getAllVillages } = useApi();
   const [houses, setHouses] = useState([]);
   const [newHouses, setNewHouses] = useState([]);
   const [villages, setVillages] = useState([]);
-  const [selectedList, setSelectedList] = useState('houses'); // Новое состояние для выбранного списка
+  const selectedList = useRef('houses'); // Новое состояние для выбранного списка
+
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     const housesFetch = async () => {
-      const tempHouses = await getAllPosts();
-      if (tempHouses[0].id != undefined) {
-        const tempSetHouses = [];
-        const tempSetNewHouses = [];
-        tempHouses.forEach((house) => {
-          if (house.newbuild) {
-            tempSetNewHouses.push(house);
-          } else {
-            tempSetHouses.push(house);
-          }
-        });
-        setHouses(tempSetHouses);
-        setNewHouses(tempSetNewHouses);
+      const tempHouses = await getPaginatedPosts(page);      
+      
+      if (tempHouses[0][0].id != undefined) {
+        setHouses(tempHouses[0])
       }
     };
 
@@ -58,7 +54,40 @@ const MainPage = ({ navigation }) => {
 
     housesFetch();
     villagesFetch();
-  }, []);
+  }, [getPaginatedPosts, getAllVillages]);
+
+  const getMoreData = async (var_page) => {
+    if (selectedList !== "villages") {
+      
+          const tempPage = var_page != undefined ? var_page : (page + 1) 
+          
+
+          try {
+            setPage(tempPage)
+            console.log("temppage: ", tempPage);
+            
+            const result = await getPaginatedPosts(tempPage)
+            if (Object.keys(houses).length == 0) {
+              setHouses(await result[0])
+            } else {
+              setHouses((prev) => [...prev, ...( result[0])]);
+            }
+            
+          } catch (error) {
+            if (error) {
+              throw(error)
+            }
+          
+          }
+    }
+  
+  }
+
+  const handleSearchButton = async (value) => {
+    selectedList.current = value
+    setHouses([]); 
+    getMoreData(1);
+  }
 
   const SearchButtonsContent = [
     {
@@ -75,34 +104,53 @@ const MainPage = ({ navigation }) => {
     },
   ];
 
-  const renderSelectedList = () => {
-    switch (selectedList) {
-      case 'houses':
-        return houses.length ? (
-          houses.map((house) => (
-            <HouseCard key={house.id} item={house} navigation={navigation} itemWidth={width - 32} />
-          ))
-        ) : (
-          <ActivityIndicator size="large" color="#32322C" />
-        );
-      case 'newHouses':
-        return newHouses.length ? (
-          newHouses.map((house) => (
-            <HouseCard key={house.id} item={house} navigation={navigation} itemWidth={width - 32} />
-          ))
-        ) : (
-          <ActivityIndicator size="large" color="#32322C" />
-        );
-      case 'villages':
-        return villages.length ? (
-          <VillageCard villages={villages} />
-        ) : (
-          <ActivityIndicator size="large" color="#32322C" />
-        );
-      default:
-        return null;
-    }
-  };
+
+  const FlatListHeaderComponent = () => {
+    return (
+      <View>
+        <View style={styles.content}>
+          <StoriesComponent />
+        
+          <View style={{height:16}} />
+          
+            <ServicesComponent />
+          
+            <View style={{height:16}} />
+
+              <View flexDirection='row' style={{width: width - 32, alignItems: 'center', alignSelf: 'center'}}>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <TouchableOpacity onPress={() => navigation.navigate('Поиск')}>
+                      <HouseSearchButton readOnly={true}/>
+                  </TouchableOpacity>
+                <View style={{width: 16}} />
+                  <TouchableOpacity onPress={() => navigation.navigate('CreateHousePostPage')}>
+                    <AddPostButton /> 
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+            <View style={{height:28}} />
+
+            <View style={styles.searchButtonsView}>
+              {SearchButtonsContent.map((item, index) => (
+                <Pressable
+                  key={index}
+                  onPress={() => {handleSearchButton(item.value)} } // Изменение выбранного списка
+                  style={[
+                    styles.searchButtonsContent,
+                    selectedList.current === item.value && styles.activeButton, // Добавляем стиль для активной кнопки
+                  ]}
+                >
+                  <Text style={[styles.searchButtonsText, selectedList.current === item.value && styles.activeButtonsText]}>{item.text}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        <View/>
+      </View>
+      
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -110,54 +158,38 @@ const MainPage = ({ navigation }) => {
       backgroundColor="#fff"
       barStyle='dark-content' /> 
       
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
-        style={styles.scrollView}
-      >
-        <View style={styles.content}>
-          <StoriesComponent />
-        
-        <View style={{height:16}} />
-        
-          <ServicesComponent />
-        
-        <View style={{height:16}} />
+        {
+          Object.keys(houses).length != 0
+          ?
+          <OptimizedFlatList
+          ListHeaderComponent={<FlatListHeaderComponent/>}
+          ListEmptyComponent={<ActivityIndicator size="large" color="#32322C" />}
+          data={selectedList.current === "villages" ? villages : houses}
+          style={styles.scrollView}
+          onEndReached={() => {
+            if ( selectedList.current ==="villages") {
+              return;
+            } else {          
+              getMoreData()
+            }
+            
+          }}
+          /* onEndReachedThreshold={0.8} */
+          renderItem={({item, index} ) => (
+            
+              selectedList.current === "villages" 
+              ?
+              <VillageCard key={item.id} village={item} />
+              :
+              <HouseCard key={item.id} item={item} navigation={navigation} itemWidth={width - 32} />
+          )}
+          />
+          :
+          <ActivityIndicator size="large" color="#32322C" />
+        }
+      
 
-        <View flexDirection='row' style={{width: width - 32, alignItems: 'center', alignSelf: 'center'}}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-          <TouchableOpacity onPress={() => navigation.navigate('Поиск')}>
-              <HouseSearchButton readOnly={true}/>
-          </TouchableOpacity>
-          <View style={{width: 16}} />
-          <TouchableOpacity onPress={() => navigation.navigate('CreateHousePostPage')}>
-          <AddPostButton /> 
-          </TouchableOpacity>
-          </View>
-        </View>
 
-          <View style={{height:28}} />
-
-          <View style={styles.searchButtonsView}>
-            {SearchButtonsContent.map((item, index) => (
-              <Pressable
-                key={index}
-                onPress={() => setSelectedList(item.value)} // Изменение выбранного списка
-                style={[
-                  styles.searchButtonsContent,
-                  selectedList === item.value && styles.activeButton, // Добавляем стиль для активной кнопки
-                ]}
-              >
-                <Text style={[styles.searchButtonsText, selectedList === item.value && styles.activeButtonsText]}>{item.text}</Text>
-              </Pressable>
-            ))}
-          </View>
-
-          {renderSelectedList()}
-
-        </View>
-        <View style={{ height: 128 }} />
-      </ScrollView>
     </View>
   );
 };
@@ -165,6 +197,7 @@ const MainPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height:height,
     alignItems: 'center',
     backgroundColor: '#F2F2F7',
   },

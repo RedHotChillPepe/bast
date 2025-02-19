@@ -3,37 +3,28 @@ import { View, Text, FlatList, ActivityIndicator, Image, StyleSheet, Dimensions 
 
 const { width } = Dimensions.get('window');
 
-const VillageCard = ({ villages }) => {
+const VillageCard = ({ village }) => {
   return (
     <View style={styles.housesView}>
-      {villages.length ? (
-        <FlatList
-          data={villages}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
+      
             <View style={styles.houseItem}>
               <View style={styles.houseImageView}>
                 <Image
                   style={styles.houseImage}
                   width={100}
                   height={100}
-                  source={{ uri: item.photos[0] }}
+                  source={{ uri: village.photos[0] }}
                 />
               </View>
               <View>
-                <Text style={styles.houseName}>{item.name}</Text>
+                <Text style={styles.houseName}>{village.name}</Text>
                 <Text style={styles.housePrice}>от 1 200 000 ₽</Text>
                 <Text style={styles.houseLocation}>
                   г. Ижевск, Октябрьский район
                 </Text>
               </View>
             </View>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      ) : (
-        <ActivityIndicator size="large" color="#32322C" />
-      )}
+          
     </View>
   );
 };

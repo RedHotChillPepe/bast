@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Pressable, Image, StyleSheet, Dimensions } from 'react-native';
 import Octicons from '@expo/vector-icons/Octicons';
+import FastImage from 'react-native-fast-image'
 
 const { width } = Dimensions.get('window');
 
@@ -11,7 +12,7 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
     <Pressable onPress={() => navigation.navigate("House", { houseId: item.id })}>
       <View style={[styles.houseItem, {width: itemWidth}]}>
         <View style={styles.houseImageView}>
-          <Image style={styles.houseImage} width={100} height={100} source={{ uri: item.photos[0] }} />
+          <FastImage style={[styles.houseImage]} source={{ uri: item.photos[0] }} />
         </View>
         <View>
           <View style={styles.priceRow}>
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   houseImageView: {
-    height: 180,
+    height: 180
   },
   houseImage: {
     flex: 1,
