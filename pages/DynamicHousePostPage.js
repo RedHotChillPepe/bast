@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
@@ -123,7 +123,7 @@ export default function DynamicHousePostPage ({ navigation, route }) {
       console.log(result);
       
       const isFound = result.includes(houseId)
-      console.log(isFound);
+      console.log("is favourite: ", isFound);
       
       if (isFound && result != null) {
         setIsFavorite(true)
@@ -172,7 +172,7 @@ const handleCallButton = async () => {
 }
 
   // Обновление кнопки в хедере
-  useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <View style={{flexDirection: 'row'}}>
@@ -193,7 +193,7 @@ const handleCallButton = async () => {
         </View>
       ),
     });
-  }, [navigation, isFavorite])
+  }, [navigation, isFavorite, isOwner])
 
   
 
