@@ -8,6 +8,7 @@ const HouseSearchButton = (props) => {
   return (
     <View style={styles.searchContainer}>
         <MaterialIcons name="add-home" size={32} color="black" />
+
         <Text style={styles.headline}>Добавить{'\n'}объявление</Text>
     </View>
   )
@@ -17,20 +18,21 @@ export default HouseSearchButton
 
 const styles = StyleSheet.create({
     searchContainer: {
-        width: (width -48)/2,
+        width: (width - 48)/2,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         backgroundColor: '#fff',
-        paddingHorizontal: 16,
         paddingVertical: 12,
-        borderRadius: 16,
+        paddingLeft: 12,
+        borderRadius: 20,
         borderColor: '#54545630',
         borderWidth: 1,
     },
     headline: {
+        marginLeft: 12,
         fontSize: 17,
-        fontWeight: '500',
+        fontWeight: '400',
         letterSpacing: -0.43,
         lineHeight: 22
     },

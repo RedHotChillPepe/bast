@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -105,13 +105,16 @@ const AppStack = () => {
         options={({ navigation }) => ({
           headerShown: true,
           headerTitle: '',
-          headerLeft: () => (
-            <Pressable  onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
-            <Text style={{fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF'}}>Назад</Text>
-            </Pressable>
-          ),
-          })}/>
+          ...(Platform.OS === 'ios' && {
+            headerLeft: () => (
+              <Pressable onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+                <Text style={{ fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF' }}>Назад</Text>
+              </Pressable>
+            )
+          }),
+        })}
+      />
         <Stack.Screen name='CreateHousePostPage' component={CreateHousePostPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
@@ -134,27 +137,32 @@ const AppStack = () => {
 
         <Stack.Screen name='ProfilePageView' component={ProfilePageView}
           options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: true  
+            headerShown: true,
+            headerTitle: 'Частное лицо', 
             }}/>   
 
         <Stack.Screen name='SettingsPage' component={SettingsPage}
           options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: true  
+            headerShown: true,
+            headerTitle: 'Настройки', 
           }}/> 
 
         <Stack.Screen name='ProfileCompanyPageView' component={ProfileCompanyPageView}
           options={{//header:(props) => <HeaderComponent{...props}/>
-           headerShown: true  
+           headerShown: true,
+           headerTitle: 'Компания',   
         }}/>
 
         <Stack.Screen name='ProfileEmployeePageView' component={ProfileEmployeePageView}
         options={{//header:(props) => <HeaderComponent{...props}/>
-         headerShown: true  
+         headerShown: true,
+         headerTitle: 'Риэлтор',   
       }}/>
 
       <Stack.Screen name='SearchMap' component={SearchMap}
       options={{//header:(props) => <HeaderComponent{...props}/>
-       headerShown: true  
+       headerShown: true,
+       headerTitle: 'Поиск по карте',  
     }}/>
           
       </Stack.Navigator>
@@ -204,7 +212,7 @@ const AppTabs = () => {
       }}
         />
       <Tab.Screen
-      name='Chats'
+      name='Чаты'
       component={NotExistPage}
       options={{
         headerShown:false,
@@ -241,26 +249,32 @@ const AppAuthStack = () => {
       <AuthStack.Screen name='Register' component={RegisterPage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: 'Регистрация',   // текст заголовка скрыт
+        headerTitle: 'Регистрация',  
+        ...(Platform.OS === 'ios' && {
         headerLeft: () => (
           <Pressable  onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
           <Text style={{fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF'}}>Назад</Text>
           </Pressable>
-        ),
-      })}/>
+      )
+    }),
+  })}
+/>
 
       <AuthStack.Screen name='LoginEntry' component={UserLoginPage}
       options={({ navigation }) => ({
         headerShown: true,
-        headerTitle: 'Авторизация',   // текст заголовка скрыт
+        headerTitle: 'Авторизация', 
+        ...(Platform.OS === 'ios' && {
         headerLeft: () => (
           <Pressable  onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
           <Text style={{fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF'}}>Назад</Text>
           </Pressable>
-        ),
-      })}/>
+      )
+    }),
+  })}
+/>
 
       <AuthStack.Screen name='ConfirmationPage' component={ConfirmationPage}
       options={{

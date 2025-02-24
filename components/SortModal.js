@@ -14,9 +14,9 @@ const { width } = Dimensions.get('window');
 
 const SortModal = ({ visible, onClose, selectedSort, setSelectedSort, handleFilterChoice }) => {
   const sortOptions = [
-    { id: '81', label: 'Сначала дешевле' },
-    { id: '82', label: 'Сначала дороже' },
-    { id: '83', label: 'Сначала новые' },
+    { id: '81', label: 'Дешевле' },
+    { id: '82', label: 'Дороже' },
+    { id: '83', label: 'Новые' },
     { id: '84', label: 'По площади' },
     { id: '85', label: 'По размеру участка' },
   ];
@@ -38,7 +38,7 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort, handleFilt
         <View style={styles.modalContent}>
           <TouchableWithoutFeedback >
             <View >
-              <Text style={styles.modalHeader}>Выберите сортировку</Text>
+              <Text style={styles.modalHeader}>Сортировка</Text>
               {sortOptions.map((option) => (
                 <Pressable
                   key={option.id}
@@ -77,13 +77,14 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
+    paddingBottom: 32
   },
   modalContent: {
     backgroundColor: 'white',
     width: width - 48,
-    borderRadius: 12,
+    borderRadius: 20,
     padding: 16,
     maxHeight: '80%',
   },

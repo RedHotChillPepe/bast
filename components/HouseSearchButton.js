@@ -8,10 +8,10 @@ const {width} = Dimensions.get('window');
 const HouseSearchButton = (props) => {
   return (
     <View style={styles.searchContainer}>
-        <FontAwesome5 name="home" size={32} color="black" />
+        <FontAwesome5 name="home" size={28} color="black" />
         <View>
-          <Text style={styles.headline}>Найти дом</Text>
-          <Text style={styles.bodyRegular}>3843 предложения</Text>
+          <Text style={styles.headline}>Найти{'\n'}дом</Text>
+          {/* <Text style={styles.bodyRegular}>3843 предложения</Text> */}
         </View>
         {/* <AntDesign name="filter" size={24} color="black" /> */}
     </View>
@@ -22,33 +22,22 @@ export default HouseSearchButton
 
 const styles = StyleSheet.create({
     searchContainer: {
-        width: (width -48)/2,
+        width: (width - 48)/2,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         backgroundColor: '#fff',
-        paddingHorizontal: 16,
         paddingVertical: 12,
-        borderRadius: 16,
+        paddingLeft: 12,
+        borderRadius: 20,
         borderColor: '#54545630',
         borderWidth: 1,
     },
-    inputSearchStyle: {
-        backgroundColor: '#f0f0f0',
-        borderRadius: 10,
-        padding: 10,
-        marginVertical: 10
-    },
     headline: {
+        paddingLeft: 8,
         fontSize: 17,
         fontWeight: '500',
         letterSpacing: -0.43,
         lineHeight: 22
     },
-    bodyRegular: {
-        fontSize: 12,
-        fontWeight: 'regular',
-        letterSpacing: -0.43,
-        lineHeight: 22
-    }
 })
