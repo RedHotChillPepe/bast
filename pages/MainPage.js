@@ -21,7 +21,6 @@ import VillageCard from '../components/VillageCard';
 import TextInputSearch from '../components/TextInputSearch';
 import HouseSearchButton from '../components/HouseSearchButton';
 import AddPostButton from '../components/AddPostButton';
-import {OptimizedFlatList} from 'react-native-optimized-flatlist'
 
 
 const { width } = Dimensions.get('window');
@@ -36,12 +35,15 @@ const MainPage = ({ navigation }) => {
 
   const [page, setPage] = useState(1)
 
+  const [isLoaded, setIsLoaded] = useState(false)
+
   useEffect(() => {
     const housesFetch = async () => {
       const tempHouses = await getPaginatedPosts(page);      
       
       if (tempHouses[0][0].id != undefined) {
         setHouses(tempHouses[0])
+        setIsLoaded(true)
       }
     };
 
@@ -60,7 +62,10 @@ const MainPage = ({ navigation }) => {
     if (selectedList !== "villages") {
       
           const tempPage = var_page != undefined ? var_page : (page + 1) 
-          
+       
+          if (var_page == 1) {
+            setHouses([])
+          }
 
           try {
             setPage(tempPage)
@@ -85,8 +90,10 @@ const MainPage = ({ navigation }) => {
 
   const handleSearchButton = async (value) => {
     selectedList.current = value
-    setHouses([]); 
+    
     getMoreData(1);
+    
+    
   }
 
   const SearchButtonsContent = [
@@ -159,22 +166,32 @@ const MainPage = ({ navigation }) => {
       barStyle='light-content' /> 
       
         {
-          Object.keys(houses).length != 0
+          isLoaded
           ?
-          <OptimizedFlatList
-          ListHeaderComponent={<FlatListHeaderComponent/>}
+          <FlatList
+          ListHeaderComponent={FlatListHeaderComponent}
           ListEmptyComponent={<ActivityIndicator size="large" color="#32322C" />}
           data={selectedList.current === "villages" ? villages : houses}
+          extraData={selectedList.current}
           style={styles.scrollView}
+          initialNumToRender={3}
+          getItemLayout={(data, index) => (
+            {length: 250, offset: 250*index, index}
+          )}
           onEndReached={() => {
             if ( selectedList.current ==="villages") {
               return;
-            } else {          
-              getMoreData()
+            } else {
+              if (Object.keys(houses).length == 0) {
+                getMoreData(1)
+              } else {
+                getMoreData()
+              }     
+              
             }
             
           }}
-          /* onEndReachedThreshold={0.8} */
+          onEndReachedThreshold={0.8}
           renderItem={({item, index} ) => (
             
               selectedList.current === "villages" 
@@ -196,7 +213,6 @@ const MainPage = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     height:height,
     alignItems: 'center',
     backgroundColor: '#9DC0F6',
