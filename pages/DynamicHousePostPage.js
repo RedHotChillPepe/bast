@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState} from 'react';
-import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, StyleSheet, Pressable, Animated, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -195,7 +195,6 @@ const handleCallButton = async () => {
       ),
     });
   }, [navigation, isFavorite, isOwner])
-
   
 
 return (
@@ -457,15 +456,24 @@ return (
 
               <View style={{alignItems: 'center'}}>
 
-                <Text style={{fontSize: 24}}>
+                
                   {
+                    
                     isLoggedIn 
                     ?
-                    phone
-                    :
-                    "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
+                    (
+                    <Pressable onPress={() => Linking.openURL(`tel:${phone}`)}>
+                    <Text style={{fontSize: 24}}>
+                      {phone}
+                      </Text>
+                    </Pressable>  
+                     ) : (
+                    <Text style={{fontSize: 24}}>
+                      "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
+                    </Text>
+                  )
                   }
-                </Text>
+                
               </View>
 
               <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
