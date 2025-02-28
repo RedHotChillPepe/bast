@@ -212,6 +212,24 @@ const DynamicHousesPage = ({route}) => {
         console.error('Error loading more data:', error);
       }
     };
+
+    const clearFilters = async () => {
+      setAreaRange([])
+      setPriceRange([])
+      setSelectedCategory({})
+      setSelectedFilters({})
+      setQueryObject({})
+
+      try {
+        const response = await getPaginatedPosts(1);
+
+        setHouses(Array.isArray(response[0]) ? response[0] : []);
+      } catch (error) {
+        if (error) {
+          throw(error)
+        }
+      }
+    }
  // Обновление кнопки в хедере
  useLayoutEffect(() => {
   navigation.setOptions({
@@ -225,6 +243,9 @@ const DynamicHousesPage = ({route}) => {
     ),
     headerRight: () => (
       <View style={{flexDirection: 'row', marginRight: 20}}> 
+          <Pressable style={{backgroundColor:"grey"}} onPress={()=>{clearFilters()}}>
+            <Text style={{color:"white"}}>Сбросить</Text>
+          </Pressable>
           <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
             <MaterialIcons name="sort" size={24} color="#007AFF" />
           </Pressable> 
@@ -239,66 +260,62 @@ const DynamicHousesPage = ({route}) => {
   return (
     <View style={styles.container}>
       <View style={{height: 8}} />
-      <View> 
-        {/* Категории */}
-        <View style={styles.categoriesContainer}>
+        <View> 
+          {/* Категории */}
+          <View style={styles.categoriesContainer}>
             <FlatList
-               data={categories}
-               keyExtractor={(item) => item.id}
-               horizontal
-               showsHorizontalScrollIndicator={false}  
-               renderItem={categoriesButton}
-             />
+              data={categories}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}  
+              renderItem={categoriesButton}
+            />
           </View>
-            <View style={styles.housesView}>
+
+          <View style={styles.housesView}>
               
-              {houses.length ? (
-                  <FlatList
-                    data={houses}
-                    renderItem={({ item }) => (
-                      <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
-                    )}
-                    keyExtractor={(item) => item.id.toString()}
-                    onEndReached={loadMoreData}
-                    onEndReachedThreshold={0.5}
-                    showsVerticalScrollIndicator={false}
-                  />
-                ) : zeroRows ? <Text>Не нашлось объявления которое подходит под Ваш запрос :(</Text>:
-                
-                  <ActivityIndicator size="large" color="#32322C" />
-              }
-            </View>
-            
+            {houses.length ? (
+              <FlatList
+              data={houses}
+              renderItem={({ item }) => (
+                <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              onEndReached={loadMoreData}
+              onEndReachedThreshold={0.5}
+              showsVerticalScrollIndicator={false}
+              />
+              ) : zeroRows 
+                ? 
+                <Text>Не нашлось объявления которое подходит под Ваш запрос :(</Text>
+                :
+                <ActivityIndicator size="large" color="#32322C" />
+            }
           </View>
+            
+        </View>
 
           {/* Модальное окно */}
-          <FilterModal
-            visible={modalVisible}
-            onClose={() => setModalVisible(false)}
-            selectedFilters={selectedFilters}
-            setSelectedFilters={setSelectedFilters}
-            filterGroups={filterGroups}
-            setPriceRange={setPriceRange}
-            setAreaRange={setAreaRange}
-            handleFilterChoice={handleFilterChoice}
-          />
+        <FilterModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+          filterGroups={filterGroups}
+          setPriceRange={setPriceRange}
+          setAreaRange={setAreaRange}
+          handleFilterChoice={handleFilterChoice}
+        />
 
           {/* Модальное окно сортировки */}
-          <SortModal
-            visible={sortModalVisible}
-            onClose={() => setSortModalVisible(false)}
-            selectedSort={selectedSort}
-            setSelectedSort={setSelectedSort}
-            handleFilterChoice={handleFilterChoice}
-          />
-
-        
- 
-          
-  
-
-
-  </View>
+        <SortModal
+          visible={sortModalVisible}
+          onClose={() => setSortModalVisible(false)}
+          selectedSort={selectedSort}
+          setSelectedSort={setSelectedSort}
+          handleFilterChoice={handleFilterChoice}
+        />
+    </View>
   )
 }
 
