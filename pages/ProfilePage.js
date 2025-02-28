@@ -10,6 +10,7 @@ import ProfileCompanyPage from './ProfileCompanyPage.js';
 import ProfileRealtorPage from './ProfileEmployeePage.js';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +20,7 @@ const ProfilePage = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
   const {getUser} =useApi()
+  const insets = useSafeAreaInsets();
 
   const [usertype, setUsertype] = useState(1) 
 
@@ -97,7 +99,7 @@ const ProfilePage = () => {
       return <ProfileRealtorPage/>;
     default:
       return (
-        <SafeAreaView>
+       <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
         <View style={styles.nameBlock}>        
         <View style={{ flexDirection: 'row' }}>
           {
@@ -107,15 +109,12 @@ const ProfilePage = () => {
             :
             <FontAwesome6 name="face-tired" size={56} color="black" />
           }
-          
-          
-          
           <View style={{ marginLeft: 16 }}>
             <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
         </View>
-        <Ionicons name="settings-outline" size={32} color="black" onPress={() => navigation.navigate('SettingsPage')} />
+        <Ionicons name="settings-outline" size={32} color="#fff" onPress={() => navigation.navigate('SettingsPage')} />
       </View>
         <ScrollView contentContainerStyle={styles.container}>
 
@@ -130,7 +129,7 @@ const ProfilePage = () => {
     
           <Pressable onPress={logout} style={styles.logoutButton}>
             <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
-            <Ionicons name="exit-outline" size={24} color="grey" />
+            <Ionicons name="exit-outline" size={24} color="#fff" />
           </Pressable>
     
 {/*           <View style={styles.buttonsRow}>
@@ -153,7 +152,7 @@ const ProfilePage = () => {
           </View> */}
           <View style={{height: 128}} />
         </ScrollView>
-        </SafeAreaView>
+        </View>
       );
   }
 
@@ -165,12 +164,12 @@ export default ProfilePage;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#9DC0F6',
+    paddingBottom: 64
   },
   nameBlock: {
     flexDirection: 'row',
     width: width - 32,
-    marginTop: 32,
     marginBottom: 24,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
@@ -182,7 +181,7 @@ const styles = StyleSheet.create({
     paddingBottom: 11,
     paddingTop: 11,
     paddingHorizontal: 16,
-    borderRadius: 16,
+    borderRadius: 20,
     marginTop: 20,
     borderColor: '#54545630',
     borderWidth: 1,
@@ -213,7 +212,8 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   logoutText: {
-    color: 'grey',
+    color: '#fff',
+    fontWeight: '500',
     marginRight: 8,
   },
   buttonsRow: {
@@ -221,17 +221,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   name: {
-    fontSize: 28,
-    letterSpacing: -0.43,
-    lineHeight: 34,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#14080E',
+    color: '#fff',
   },
   email: {
-    fontSize: 12,
-    letterSpacing: 0,
-    lineHeight: 16,
-    color: '#858585',
+    fontSize: 18,
+    color: '#fff',
+    opacity: 0.6
   },
   // withBorder: {
   //   borderBottomWidth: 1,

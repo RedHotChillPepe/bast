@@ -8,12 +8,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
 const ProfileCompanyPage = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   const {getUser} =useApi()
     
@@ -94,8 +96,7 @@ const ProfileCompanyPage = () => {
   );
 
   return (
-    <SafeAreaView>
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
       <View style={styles.nameBlock}>
         <View style={{ flexDirection: 'row' }}>
            {
@@ -110,8 +111,10 @@ const ProfileCompanyPage = () => {
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
         </View>
-        <Ionicons name="settings-outline" size={32} color="black" />
+        <Ionicons name="settings-outline" size={32} color="#fff" />
       </View>
+
+    <ScrollView contentContainerStyle={styles.container}>
       {sections.map((section, index) => (
         <View style={styles.itemBlock} key={index}>
           {/* <FlatList
@@ -130,7 +133,7 @@ const ProfileCompanyPage = () => {
 
       <Pressable onPress={logout} style={styles.logoutButton}>
         <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
-        <Ionicons name="exit-outline" size={24} color="grey" />
+        <Ionicons name="exit-outline" size={24} color="#fff" />
       </Pressable>
 
 {/*       <View style={styles.buttonsRow}>
@@ -150,7 +153,8 @@ const ProfileCompanyPage = () => {
         <Button title="503" onPress={() => navigation.navigate('Error503')} />
       </View> */}
     </ScrollView>
-    </SafeAreaView>
+    </View>
+ 
   );
 };
 
@@ -159,9 +163,11 @@ export default ProfileCompanyPage;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#9DC0F6',
+    paddingBottom: 64
   },
   nameBlock: {
+    alignSelf:'center',
     flexDirection: 'row',
     width: width - 32,
     marginTop: 32,
@@ -200,12 +206,14 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     flexDirection: 'row',
+    alignItems:'flex-start',
     alignSelf: 'flex-start',
     marginLeft: 16,
     marginTop: 32,
   },
   logoutText: {
-    color: 'grey',
+    color: '#fff',
+    fontWeight: '500',
     marginRight: 8,
   },
   buttonsRow: {
@@ -215,10 +223,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#14080E',
+    color: '#fff',
   },
   email: {
     fontSize: 18,
-    color: '#858585',
+    color: '#fff',
+    opacity: 0.6
   },
 });

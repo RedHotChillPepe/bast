@@ -58,12 +58,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Выравнивание по центру
   },
   functionCard: {
-    borderRadius: 16,
+    borderRadius: 20,
     backgroundColor: '#fff',
     marginRight: 16, // Отступ между карточками
     paddingTop: 12,
-    paddingBottom: 32,
-    paddingHorizontal: 12,
+    paddingBottom: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
     borderColor: '#54545630',
     borderWidth: 1,
   },

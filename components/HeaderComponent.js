@@ -62,17 +62,17 @@ export default function HeaderComponent() {
     <>
       <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
         <View style={styles.headerContent}>
-          <Ionicons
+          {/* <Ionicons
             name="menu"
             size={32}
-            color="#fff"
+            color="#9DC0F6"
             onPress={() => navigation.openDrawer()} // пример открытия бокового меню
-          />
-          <Text style={styles.headerText}>БАСТ</Text>
+          /> */}
+          <Text style={styles.headerText}>БАСТ Недвижимость</Text>
           <Octicons
             name="search"
             size={24}
-            color="#007AFF"
+            color="#fff"
             onPress={() => setModalVisible(true)}
           />
         </View>
@@ -121,10 +121,10 @@ export default function HeaderComponent() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: '#ffffff',
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    backgroundColor: '#9DC0F6',
+    // paddingBottom: 8,
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#ddd',
   },
   headerContent: {
     flexDirection: 'row',
@@ -134,9 +134,10 @@ const styles = StyleSheet.create({
     width: width,
   },
   headerText: {
-    fontSize: 32,
+    fontSize: 28,
+    lineHeight: 34,
     fontWeight: 'bold',
-    color: '#14080E',
+    color: '#fff',
   },
   modalOverlay: {
     position: 'absolute',

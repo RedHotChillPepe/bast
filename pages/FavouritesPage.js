@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 
 
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 
 const FavouritesPage = ({route}) => {
@@ -51,6 +51,7 @@ const FavouritesPage = ({route}) => {
             <View style={styles.housesView}>
             <FlatList
               data={houses}
+              style={{paddingBottom: 512}}
               renderItem={({ item }) => (
                 <HouseCard
                   item={item}
@@ -81,13 +82,13 @@ export default FavouritesPage
 
 const styles = StyleSheet.create({
     container:{
-        flex:1,
+        height: height,
         backgroundColor:'#F2F2F7',
-        alignItems:'center',
+        alignItems:'center'
     },
         
     housesView:{
-        width:width,
+        width: width,
         alignItems:'center',
         justifyContent: 'center'
     },

@@ -37,12 +37,12 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
 
 const styles = StyleSheet.create({
   houseItem: {
-    borderRadius: 24,
+    borderRadius: 20,
     backgroundColor: '#FFF',
-    marginTop: 16,
+    marginTop: 12,
     alignSelf: 'center',
-    borderColor: '#54545630',
-    borderWidth: 1,
+    // borderColor: '#54545630',
+    // borderWidth: 1,
   },
   houseImageView: {
     height: 180

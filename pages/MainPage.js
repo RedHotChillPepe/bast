@@ -116,16 +116,16 @@ const MainPage = ({ navigation }) => {
     return (
       <View>
         <View style={styles.content}>
-          <StoriesComponent />
+          {/* <StoriesComponent /> */}
         
-          <View style={{height:16}} />
+          {/* <View style={{height:16}} /> */}
           
             <ServicesComponent />
           
             <View style={{height:16}} />
 
               <View flexDirection='row' style={{width: width - 32, alignItems: 'center', alignSelf: 'center'}}>
-                <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={{ flexDirection: 'row'}}>
                   <TouchableOpacity onPress={() => navigation.navigate('Поиск')}>
                       <HouseSearchButton readOnly={true}/>
                   </TouchableOpacity>
@@ -136,7 +136,7 @@ const MainPage = ({ navigation }) => {
                 </View>
               </View>
 
-            <View style={{height:28}} />
+            <View style={{height:24}} />
 
             <View style={styles.searchButtonsView}>
               {SearchButtonsContent.map((item, index) => (
@@ -162,8 +162,8 @@ const MainPage = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar 
-      backgroundColor="#fff"
-      barStyle='dark-content' /> 
+      backgroundColor="#9DC0F6"
+      barStyle='light-content' /> 
       
         {
           isLoaded
@@ -215,43 +215,39 @@ const styles = StyleSheet.create({
   container: {
     height:height,
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#9DC0F6',
   },
   content: {
     width: '100%',
-    paddingHorizontal: 0,
   },
   scrollView: {
     paddingTop: 20,
   },
   searchButtonsView: {
-    alignSelf:'center',
-    marginHorizontal: 4,
     flexDirection: 'row',
-    marginTop: 4
+    marginHorizontal: 4,
+
   },
 
   searchButtonsContent: {
     alignItems: 'center',
-    paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 12,
-    marginRight: 8,
-    marginBottom: 12
   },
   activeButton: {
-    backgroundColor: '#007AFF', // Изменение цвета для активной кнопки
+    // backgroundColor: '#007AFF', // Изменение цвета для активной кнопки
   },
   searchButtonsText: {
-    color: '#007AFF',
-    // fontWeight: 'bold',
-    fontSize: 17,
-    lineHeight: 22,
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 25,
     letterSpacing: -0.43,
+    opacity: 0.6
   },
   activeButtonsText: {
-    color: '#fff', // Изменение цвета для активной кнопки
     fontWeight: '600',
+    opacity: 1
   },
   housesTitleText: {
     fontSize: 24,

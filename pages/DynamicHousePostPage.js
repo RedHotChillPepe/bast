@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState} from 'react';
-import { Text, View, StyleSheet, Pressable, Animated, TextInput, KeyboardAvoidingView, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, StyleSheet, Pressable, Animated, Platform, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity, Modal, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -10,6 +10,7 @@ import  { YaMap, Marker } from 'react-native-yamap';
 import { Geocoder } from 'react-native-yamap';
 import Feather from '@expo/vector-icons/Feather';
 import ImageCarousel from '../components/ImageCarousel';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 const {width} = Dimensions.get('window');
 
@@ -294,12 +295,7 @@ return (
       </View>
 
       <View style={styles.adressView}>
-      <View>   
-          <Text style={styles.adressText}>
-            {postData.city}, {postData.full_address}
-          </Text>
-        </View> 
-        <View style={{height: 12}} />
+  
 
         <View style={{borderRadius: 16, width: width, alignSelf:'center'}}>
           {
@@ -319,13 +315,34 @@ return (
             : 
             <Text style={{alignSelf:'center'}}>Загрузка Карты...</Text>
           }
-
-          
-        
         </View>
+        <View>   
+          <Text style={styles.adressText}>
+            {postData.city}, {postData.full_address}
+          </Text>
+        </View> 
       </View>
 
-
+      {/* sellerView - блок с продавцом */}    
+      <View style={{marginTop: 32, alignSelf:'flex-start', marginLeft: 16}}>
+        <Text style={styles.infoTitle}>Продавец</Text>
+        {
+          Object.keys(ownerUser).length != 0
+          &&
+          
+            <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}>
+              <View style={{flexDirection:'row', alignItems:'flex-start', backgroundColor: '#fff', width: width - 32, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 20}}>
+                <FontAwesome6 name="face-meh" size={40} color="black" opacity={0.6} />
+                <View style={{width: 12}} />
+                <View>
+                  <Text style={[styles.serviciesText, {color: '#007AFF'}]}>{ownerUser[0].name} {ownerUser[0].surname}</Text>
+                  <Text style={{opacity: 0.6}}>Риэлтор</Text>
+                </View>
+              </View>
+            </Pressable>
+          
+        }
+      </View>
 
 
       {/* serviciesBlock - блок с услугами */}
@@ -467,15 +484,24 @@ return (
 
               <View style={{alignItems: 'center'}}>
 
-                <Text style={{fontSize: 24}}>
+                
                   {
+                    
                     isLoggedIn 
                     ?
-                    phone
-                    :
-                    "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
+                    (
+                    <Pressable onPress={() => Linking.openURL(`tel:${phone}`)}>
+                    <Text style={{fontSize: 24}}>
+                      {phone}
+                      </Text>
+                    </Pressable>  
+                     ) : (
+                    <Text style={{fontSize: 24}}>
+                      "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона"
+                    </Text>
+                  )
                   }
-                </Text>
+                
               </View>
 
               <Pressable style={styles.closeButton} onPress={()=>setShowModal(false)}>
@@ -564,7 +590,7 @@ caption1: {
 
 adressView: {
     width: width-32,
-    marginTop: 32,
+    marginTop: 24,
     alignSelf: 'center'
 },
 
@@ -576,6 +602,7 @@ adressTitle: {
 },
 
 adressText: {
+    marginTop: 8,
     fontSize: 17,
     lineHeight: 22,
     opacity: 0.7
@@ -632,7 +659,7 @@ serviciesPressable: {
   width: (width-32-16)/2,
   height: width*0.25 ,
   backgroundColor: '#fff',
-  borderRadius: 16,
+  borderRadius: 20,
   padding: 12,
   marginBottom: 16,
   borderColor: '#54545630',

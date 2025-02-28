@@ -8,12 +8,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
 const ProfileRealtorPage = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   const {getUser} =useApi()
   
@@ -102,7 +104,7 @@ const ProfileRealtorPage = () => {
   );
 
   return (
-    <SafeAreaView>
+    <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.nameBlock}>
         <View style={{ flexDirection: 'row' }}>
@@ -118,7 +120,7 @@ const ProfileRealtorPage = () => {
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
         </View>
-        <Ionicons name="settings-outline" size={32} color="black" />
+        <Ionicons name="settings-outline" size={32} color="#fff" />
       </View>
 
     <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between'}}>   
@@ -141,7 +143,7 @@ const ProfileRealtorPage = () => {
       </View>
     </View>
 
-    <View style={[styles.itemBlock, {flexDirection: 'row'}]}>
+    <View style={[styles.itemBlock, {flexDirection: 'row', justifyContent:'space-between'}]}>
       <Text style={styles.itemText}>
         Баланс
       </Text>
@@ -169,7 +171,7 @@ const ProfileRealtorPage = () => {
 
       <Pressable onPress={logout} style={styles.logoutButton}>
         <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
-        <Ionicons name="exit-outline" size={24} color="grey" />
+        <Ionicons name="exit-outline" size={24} color="#fff" />
       </Pressable>
 
     {/* <View style={styles.buttonsRow}>
@@ -179,9 +181,9 @@ const ProfileRealtorPage = () => {
       </View> */}
 
 
-      <View style={styles.buttonsRow}>
+      {/* <View style={styles.buttonsRow}>
         <Button title="Риэлтор внеш" onPress={() => navigation.navigate('ProfileEmployeePageView')} />
-      </View>
+      </View> */}
       
       {/* <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
@@ -191,7 +193,7 @@ const ProfileRealtorPage = () => {
         <Button title="503" onPress={() => navigation.navigate('Error503')} />
       </View>  */}
     </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -200,7 +202,8 @@ export default ProfileRealtorPage;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#9DC0F6',
+    paddingBottom: 64
   },
   nameBlock: {
     flexDirection: 'row',
@@ -225,7 +228,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 11,
+    paddingTop: 11,
+    paddingBottom: 11,
   },
   listItemContent: {
     flexDirection: 'row',
@@ -245,7 +249,8 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   logoutText: {
-    color: 'grey',
+    color: '#fff',
+    fontWeight: '500',
     marginRight: 8,
   },
   buttonsRow: {
@@ -255,11 +260,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#14080E',
+    color: '#fff',
   },
   email: {
     fontSize: 18,
-    color: '#858585',
-    marginTop: 8
+    color: '#fff',
+    opacity: 0.6
   },
 });

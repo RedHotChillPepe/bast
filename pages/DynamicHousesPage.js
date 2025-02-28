@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    marginLeft: 8
+    marginLeft: 12
   },
 
   categoriesText: {
