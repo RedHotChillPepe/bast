@@ -67,7 +67,7 @@ const ProfileCompanyPage = () => {
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:['Errors',{screen:"UserPostsPage"}] },
         { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:['Errors',{screen:"NotExistPage"}] },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:['Errors',{screen:"NotExistPage"}] },
       ],

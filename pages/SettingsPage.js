@@ -31,13 +31,6 @@ const SettingsPage = () => {
 
         <Pressable style={styles.itemBlock}>
             <View style={styles.listItemContent}>
-            <Text style={styles.itemText}>Решения для бизнеса</Text>
-            <Ionicons name="chevron-forward" size={24} color="black" />
-            </View>
-        </Pressable>
-
-        <Pressable style={styles.itemBlock}>
-            <View style={styles.listItemContent}>
             <Text style={styles.itemText}>Settings Page</Text>
             <Ionicons name="chevron-forward" size={24} color="black" />
             </View>
