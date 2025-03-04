@@ -20,7 +20,7 @@ export default function DynamicHousePostPage ({ navigation, route }) {
 
 
   const {houseId} = route.params
-  const {getPost, getIsOwner, getUserByID} = useApi()
+  const {getPost, getIsOwner, getUserByID, updateStatus} = useApi()
   const {getAuth} = useAuth()
 
   const [postData, setPostData]=useState([])
@@ -195,6 +195,13 @@ const handleCallButton = async () => {
       ),
     });
   }, [navigation, isFavorite, isOwner])
+
+
+  const changeStatus = async (value) => {
+    const {post_id, post_status} = value
+
+    const result = await updateStatus({post_id, post_status})
+  }
   
 
 return (
@@ -265,7 +272,28 @@ return (
       }
 
 
-      {/* adressView - блок с адресом */} 
+      {/* adressView - блок с продавцом */}    
+      <View style={{marginTop: 32}}>
+        <Text style={{fontSize: 24, fontWeight:'bold', marginBottom: 12}}>Продавец</Text>
+        {
+          isOwner
+          &&
+          <View>
+            <Pressable onPress={()=>{changeStatus({post_id: houseId, post_status: -1})}}>
+              <Text>Удалить</Text>
+            </Pressable>
+            <Pressable onPress={()=>{changeStatus({post_id: houseId, post_status: 3})}}>
+              <Text>Закрыть</Text>
+            </Pressable>
+          </View>
+        }
+        {
+          Object.keys(ownerUser).length != 0
+          &&
+          <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}><Text style={{fontSize:20}}>{ownerUser[0].name} {ownerUser[0].surname}</Text></Pressable>
+        }
+      </View>
+
       <View style={styles.adressView}>
   
 

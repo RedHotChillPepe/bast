@@ -177,6 +177,32 @@ export default function ApiProvider ({ children }){
         }
     }
 
+    const updateStatus = async (value) => {
+        const url = host + 'api/posts/updateStatus'
+
+        const {post_id, post_status} = value
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    post_id: post_id, 
+                    post_status: post_status
+                })
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error updating status: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getAllVillages = async () =>{
         const url = host + "api/villages/all"
         console.log(url);
@@ -384,7 +410,7 @@ export default function ApiProvider ({ children }){
     return (
         <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
         getLogin, getUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms,
-        getPost,getManyPosts, getUserByID, sendPost, updatePost}}>
+        getPost,getManyPosts, getUserByID, sendPost, updatePost, updateStatus}}>
             {children}
         </ApiContext.Provider>
     )
