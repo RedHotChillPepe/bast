@@ -25,7 +25,7 @@ const ProfilePageView = ({route, navigation}) => {
   
     useEffect(() => {
       const init = async () => {
-        const result = await getUserByID(CompanyId, "user")
+        const result = await getUserByID(posterId, "user")
         const resultJson = JSON.parse(await result.text())
   
         console.log(resultJson);
@@ -97,15 +97,7 @@ const ProfilePageView = ({route, navigation}) => {
 
 
           <Button title="риэлтор" onPress={() => navigation.navigate('ProfileEmployeePageView')} />
-
-
-          
-
-
-
-
           <Button title="юр лицо" onPress={() => navigation.navigate('ProfileCompanyPageView')} />
-
         </ScrollView>
       );
 

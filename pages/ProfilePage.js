@@ -11,6 +11,8 @@ import ProfileRealtorPage from './ProfileEmployeePage.js';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AvatarModal from '../components/AvatarModal.js';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const { width } = Dimensions.get('window');
 
@@ -77,6 +79,15 @@ const ProfilePage = () => {
         { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
     },
+
+    {
+      title: 'Дополнительные',
+      data: [
+        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation:['SettingsPage'] },
+      ],
+    },
+
+    
   ];
 
   const renderItem = (item, index, sectionData) => (
@@ -100,23 +111,35 @@ const ProfilePage = () => {
     default:
       return (
        <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
-        <View style={styles.nameBlock}>        
-        <View style={{ flexDirection: 'row' }}>
-          {
+         <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.nameBlock}>  
+          <View style={{flexDirection:'row', width: width -32, justifyContent:'space-between' }}>
+            <View style={{height: 17, width: 16}} />
+
+            {
             Object.keys(userr).length != 0 && userr.photo != undefined
             ?
-            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={80} height={80} source={{uri:userr.photo}}/>
+            <Image style={{overflow:'hidden',  borderRadius: 150 / 2, alignSelf:'center'}} width={100} height={100} source={{uri:userr.photo}}/>
             :
             <FontAwesome6 name="face-tired" size={56} color="black" />
-          }
-          <View style={{ marginLeft: 16 }}>
+            }  
+
+          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
+          <FontAwesome name="edit" size={24} color="#fff" />
+          </Pressable>
+        </View>
+    
+        <View style={{ flexDirection: 'row' }}>
+
+          <View style={{ alignItems:'center' }}>
             <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
+            <Text style={styles.email}>{userr.phone != undefined ? userr.phone : "+ 7 (xxx) xxx xx xx"}</Text>
           </View>
         </View>
-        <Ionicons name="settings-outline" size={32} color="#fff" onPress={() => navigation.navigate('SettingsPage')} />
+
       </View>
-        <ScrollView contentContainerStyle={styles.container}>
+       
 
     
           {sections.map((section, index) => (
@@ -125,31 +148,11 @@ const ProfilePage = () => {
               </View>
             ))
           }
-
     
           <Pressable onPress={logout} style={styles.logoutButton}>
             <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
             <Ionicons name="exit-outline" size={24} color="#fff" />
           </Pressable>
-    
-{/*           <View style={styles.buttonsRow}>
-            <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
-            <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
-            <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
-          </View> */}
-
-          {/* <View style={styles.buttonsRow}>
-            <Button title="Пользователь внеш" onPress={() => navigation.navigate('ProfilePageView', { posterId: userr.id })} />
-            
-          </View> */}
-
-          {/* <View style={styles.buttonsRow}>
-            <Button title="Logout" onPress={logout} />
-            <Button title="404" onPress={() => navigation.navigate('Error404')} />
-            <Button title="403" onPress={() => navigation.navigate('Error403')} />
-            <Button title="500" onPress={() => navigation.navigate('Error500')} />
-            <Button title="503" onPress={() => navigation.navigate('Error503')} />
-          </View> */}
           <View style={{height: 128}} />
         </ScrollView>
         </View>
@@ -168,10 +171,9 @@ const styles = StyleSheet.create({
     paddingBottom: 64
   },
   nameBlock: {
-    flexDirection: 'row',
     width: width - 32,
     marginBottom: 24,
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     alignSelf: 'center',
   },
@@ -226,13 +228,10 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   email: {
-    fontSize: 18,
+    fontSize: 15,
+    letterSpacing: -0.43,
+    lineHeight: 18,
     color: '#fff',
     opacity: 0.6
   },
-  // withBorder: {
-  //   borderBottomWidth: 1,
-  //   borderBottomColor: '#b0b0b0',
-  //   paddingBottom: 12,
-  // },
 });

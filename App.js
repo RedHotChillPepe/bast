@@ -44,6 +44,8 @@ import { YaMap } from 'react-native-yamap';
 import SearchMap from './pages/SearchMap.js';
 import { Button } from 'react-native-elements';
 import Feather from '@expo/vector-icons/Feather';
+import UserPostsPage from './pages/UserPostsPage.js';
+import ChangeAvatarPage from './pages/ChangeAvatarPage.js';
 
 
 const Stack = createNativeStackNavigator();
@@ -167,14 +169,11 @@ const AppStack = () => {
         options={({ navigation }) => ({
           headerShown: true,
           headerTitle: '',
-          ...(Platform.OS === 'ios' && {
             headerLeft: () => (
               <Pressable onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
-                <Text style={{ fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF' }}>Назад</Text>
               </Pressable>
             )
-          }),
         })}
       />
         <Stack.Screen name='CreateHousePostPage' component={CreateHousePostPage}
@@ -243,7 +242,7 @@ const AppTabs = () => {
       }}
         />
       <Tab.Screen 
-        name='Избранное' 
+        name='Favourites' 
         component={FavouritesPage}
         options={{
           headerShown:true,

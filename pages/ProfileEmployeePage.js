@@ -74,7 +74,7 @@ const ProfileRealtorPage = () => {
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:'NotExistPage' },
+        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:'UserPostsPage' },
         { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:'NotExistPage' },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:'NotExistPage' },
         { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Риэлторы', navigation:'NotExistPage' },
