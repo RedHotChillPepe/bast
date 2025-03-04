@@ -292,7 +292,7 @@ const DynamicHousesPage = ({route}) => {
                 <ActivityIndicator size="large" color="#32322C" />
             }
           </View>
-            
+  
         </View>
 
           {/* Модальное окно */}
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
 
   
   container:{
-    flex:1,
+      flex:1,
       backgroundColor:'#fff',
       alignItems:'center'
   },
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   housesView:{
     backgroundColor: '#F2F2F7',
     width: width,
- 
+    alignItems:'center',
   },
 
   searchButton:{

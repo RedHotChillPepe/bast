@@ -146,11 +146,15 @@ const StackProfile = () => {
           }}/>
       <ProfileStack.Screen name='SettingsPage' component={SettingsPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
+          headerShown: true  
           }}/>
       <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false  
+          }}/>
+      <ProfileStack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: true  
           }}/>
     </ProfileStack.Navigator>
   )

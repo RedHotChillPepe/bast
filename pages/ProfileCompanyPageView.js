@@ -47,7 +47,20 @@ const ProfileCompanyPageView = ({route, navigation}) => {
       return (
         <ScrollView contentContainerStyle={styles.container}>
 
-          <View style={{flexDirection:'row', alignSelf:'flex-start', marginLeft: 16, marginTop: 32, alignItems:'flex-start'}} >
+          <View style={{flexDirection:'row', alignSelf:'flex-start', marginTop: 32, width: width -32, alignSelf:'center', justifyContent:'space-between'}} >
+            {
+              Object.keys(userr).length != 0
+              ?
+              <View>
+                <Text style={styles.name}>{userr.name}</Text>
+                <Text style={styles.email}>Надежная компания</Text>
+                <Text style={styles.email}>На сайте с 2025 года</Text>
+                {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text>
+                <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text> */}
+              </View>        
+              :
+              <ActivityIndicator size="large" color="#32322C" />
+            }
 
             {
               Object.keys(userr).length != 0
@@ -56,48 +69,33 @@ const ProfileCompanyPageView = ({route, navigation}) => {
               :
               <FontAwesome6 name="face-tired" size={56} color="black" />
             }
+          </View>
 
-            
-
-
-            <View style={{marginLeft: 16}}>
-              {
-                Object.keys(userr).length != 0
-                ?
-                <View>
-                  <Text style={styles.name}>{userr.name}</Text>
-                  <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text>
-                  <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text>
-                </View>
-                
-                :
-                <ActivityIndicator size="large" color="#32322C" />
-              }
-
-              
-
-
-              <View style={{flexDirection: 'row', marginTop: 8}}>
-                <FontAwesome name="star" size={20} color="#858585" />
-                <FontAwesome name="star" size={20} color="#858585" />
-                <FontAwesome name="star" size={20} color="#858585" />
-                <FontAwesome name="star" size={20} color="#858585" />  
-              </View>
-              <Text style={{fontSize: 16, marginTop: 12, color:'#858585'}}>На сайте с мая 2024</Text>
-
-              <Pressable style={{backgroundColor: '#d6d6d6', padding: 16, 
-                borderRadius: 12, marginTop: 24, flexDirection: 'row', 
-                alignItems: 'center', alignSelf:'flex-start'}} onPress={()=>{navigation.navigate('Errors',{screen:"NotExistPage"})}}>
-
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                  Написать
-                </Text>
-
-              </Pressable>
-
+          <View style={styles.itemBlock}>
+            <View style={styles.listItem}>
+            <AntDesign name="check" size={17} color="black" />
+            <Text style={styles.itemText}>Телефон подтвержден</Text>
+            </View>
+          </View>
+          <View style={styles.itemBlock}>
+            <View style={styles.listItem}>
+            <AntDesign name="check" size={17} color="black" />
+            <Text style={styles.itemText}>Почта подтверждена</Text>
             </View>
           </View>
 
+          <Pressable style={{backgroundColor: '#d6d6d6',
+                             width: width - 32,
+                             paddingVertical: 16, 
+                             borderRadius: 12,
+                             marginTop: 24,
+                             alignItems: 'center',
+                             alignSelf:'center'}} 
+                      onPress={()=>{navigation.navigate('Errors',{screen:"NotExistPage"})}}>
+            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+              Написать
+            </Text>
+          </Pressable>
 
 
           <Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>
@@ -114,12 +112,6 @@ const ProfileCompanyPageView = ({route, navigation}) => {
 
           </Pressable>
 
-          <View style={styles.buttonsRow}>
-            <Button title="404" onPress={() => navigation.navigate('Error404')} />
-            <Button title="403" onPress={() => navigation.navigate('Error403')} />
-            <Button title="500" onPress={() => navigation.navigate('Error500')} />
-            <Button title="503" onPress={() => navigation.navigate('Error503')} />
-          </View>
         </ScrollView>
       );
 
@@ -144,24 +136,23 @@ const styles = StyleSheet.create({
   itemBlock: {
     width: width - 32,
     backgroundColor: '#d6d6d6',
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingHorizontal: 24,
-    borderRadius: 24,
-    marginTop: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    marginTop: 8,
   },
   listItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 12,
+    marginVertical: 8,
   },
   listItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   itemText: {
-    fontSize: 20,
+    fontSize: 17,
     color: '#14080E',
     marginLeft: 12,
   },

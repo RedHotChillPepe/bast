@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View, Dimensions, Pressable } from 'react-native'
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const { width } = Dimensions.get('window');
 
 const SettingsPage = () => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
         <Pressable style={styles.itemBlock}>
             <View style={styles.listItemContent}>
             <Text style={styles.itemText}>Регион поиска</Text>
@@ -28,15 +29,8 @@ const SettingsPage = () => {
             <Ionicons name="chevron-forward" size={24} color="black" />
             </View>
         </Pressable>
-
-        <Pressable style={styles.itemBlock}>
-            <View style={styles.listItemContent}>
-            <Text style={styles.itemText}>Settings Page</Text>
-            <Ionicons name="chevron-forward" size={24} color="black" />
-            </View>
-        </Pressable>
       
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -44,6 +38,7 @@ export default SettingsPage
 
 const styles = StyleSheet.create({
     container: {
+
         alignItems: 'center',
         backgroundColor: '#efefef',
       },

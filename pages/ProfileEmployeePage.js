@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, Flat
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
@@ -90,6 +91,12 @@ const ProfileRealtorPage = () => {
         { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation:'NotExistPage' },
       ],
     },
+    {
+      title: 'Настройки',
+      data: [
+        { icon: <Ionicons name="settings-outline" size={17} color="black" />, label: 'Настройки', navigation:'SettingsPage' },
+      ],
+    },
   ];
 
   const renderItem = ( item, index ) => (
@@ -107,21 +114,24 @@ const ProfileRealtorPage = () => {
     <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.nameBlock}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{height: 17, width: 28}} />
           {
             Object.keys(userr).length != 0 && userr.photo != undefined
             ?
-            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={56} height={56} source={{uri:userr.photo}}/>
+            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={100} height={100} source={{uri:userr.photo}}/>
             :
-            <FontAwesome6 name="face-tired" size={56} color="black" />
+            <FontAwesome6 name="face-tired" size={100} color="#fff" />
           }
-          <View style={{ marginLeft: 16, width:'60%' }}>
+
+      <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}> 
+        <FontAwesome name="edit" size={28} color="#fff" />
+      </Pressable>   
+      </View>
+
+      <View style={{ marginLeft: 16, width:width-32, alignItems: 'center'}}>
             <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
-        </View>
-        <Ionicons name="settings-outline" size={32} color="#fff" />
-      </View>
 
     <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between'}}>   
       <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>
