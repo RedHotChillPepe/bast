@@ -19,8 +19,10 @@ const RegisterPage = () => {
 
     const handleSubmit = async () => {
       
-      const phonePattern = new RegExp(/^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/)
+      const phonePattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/g
 
+      console.log("log");
+      
       if (password != doublePass) {
         setIsPasswordLabelShown(true)
       } else {
@@ -32,10 +34,13 @@ const RegisterPage = () => {
         } else {
           const result = await getUser(phoneNumber)
           const resultJson = JSON.parse([await result.text()])
+          
             if (await result.status == 200) {
-              if (resultJson[0].result) {
+              if (resultJson.result) {
                 setIsUserExistsLabelShown(true)
               } else {
+                console.log("else");
+                
                 navigation.navigate("ConfirmationPage", {
                     regData:{
                     phoneNumber: phoneNumber,
