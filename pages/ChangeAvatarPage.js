@@ -34,8 +34,6 @@ const ChangeAvatarPage = () => {
   return (
       <ScrollView
       contentContainerStyle={styles.container}>
-      <ScrollView
-      contentContainerStyle={styles.container}>
       <View style={styles.avatarContainer}>
         {avatar ? (
           <Image source={{ uri: avatar }} style={styles.avatarImage} />
@@ -43,8 +41,6 @@ const ChangeAvatarPage = () => {
           <Text>Нет аватара</Text>
         )}
       </View>
-      <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>Сменить аватар</Text>
       <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Сменить аватар</Text>
       </Pressable>
@@ -133,9 +129,6 @@ const ChangeAvatarPage = () => {
   );
 };
 
-export default ChangeAvatarPage;
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -159,13 +152,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   button: {
-  button: {
     backgroundColor: '#9DC0F6',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
-  buttonText: {
   buttonText: {
     color: '#fff',
     fontSize: 16,
@@ -221,3 +212,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 });
+
+export default ChangeAvatarPage;
+
+
