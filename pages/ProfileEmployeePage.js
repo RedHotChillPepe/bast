@@ -10,7 +10,6 @@ import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const { width } = Dimensions.get('window');
 
