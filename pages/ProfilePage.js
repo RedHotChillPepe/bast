@@ -64,7 +64,7 @@ const ProfilePage = () => {
       title: 'Мои действия',
       data: [
         { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation:['Избранное'] },
+        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation:['Favourites'] },
         { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation:['Errors',{screen:"NotExistPage"}] },
         { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
