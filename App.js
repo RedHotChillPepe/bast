@@ -57,11 +57,13 @@ const OnboardingStack = createNativeStackNavigator()
 const ErrorStack = createNativeStackNavigator()
 const ProfileStack = createNativeStackNavigator()
 const TopStack = createNativeStackNavigator()
+const SearchStack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
 YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
 Geocoder.init('d4e0fa5b-61fc-468d-886c-31740a78b323')
 
+// Все доступные ошибки
 const Errors = () => {
   return(
     <ErrorStack.Navigator>
@@ -93,19 +95,83 @@ const Errors = () => {
   )
 }
 
+const SearchPostsStack = () => {
+  return(
+    <SearchStack.Navigator screenOptions={{headerShown:false}} initialRouteName='SearchScreen'>
+
+      <SearchStack.Screen name='SearchScreen' component={DynamicHousesPage}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+        headerShown: true,
+        headerTitle:""
+        }}/>
+
+      <SearchStack.Screen name='House' component={DynamicHousePostPage}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: '',
+        ...(Platform.OS === 'ios' && {
+          headerLeft: () => (
+            <Pressable onPress={() => navigation.goBack()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+              <Text style={{ fontSize: 17, letterSpacing: -0.43, lineHeight: 22, color: '#007AFF' }}>Назад</Text>
+            </Pressable>
+          )
+        }),
+      })}
+      />
+
+      <SearchStack.Screen name='SearchMap' component={SearchMap}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+        headerShown: false, 
+      }}/>
+      
+      <SearchStack.Screen name='EditHousePostPage' component={EditHousePostPage}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: false  
+          }}/>
+
+      <SearchStack.Screen name='ProfilePageView' component={ProfilePageView}
+          options={{//header:(props) => <HeaderComponent{...props}/>
+            headerShown: true,
+            headerTitle: 'Частное лицо', 
+          }}/>   
+
+    </SearchStack.Navigator>
+  )
+}
+
+const StackProfile = () => {
+  return(
+    <ProfileStack.Navigator initialRouteName='Profile'>
+      <ProfileStack.Screen name='Profile' component={ProfilePage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
+      <ProfileStack.Screen name='SettingsPage' component={SettingsPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: true  
+          }}/>
+      <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
+      <ProfileStack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: true  
+          }}/>
+    </ProfileStack.Navigator>
+  )
+}
 
 /// Объявление доступных страниц, навигация (возможно стоит в отдельный компонент)
 const AppStack = () => {
   return(
-      <Stack.Navigator initialRouteName='Main' >
+      <Stack.Navigator initialRouteName='Main'  backBehavior='history'>
         <Stack.Screen name='Main' component={MainPage} 
         options={{
           header:(props) => <HeaderComponent{...props}/>
         }}/>
-        <Stack.Screen name='Houses' component={DynamicHousesPage}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: true
-          }}/>
+        
         <Stack.Screen name='House' component={DynamicHousePostPage}
         options={({ navigation }) => ({
           headerShown: true,
@@ -200,19 +266,14 @@ const AppTabs = () => {
     <Tab.Navigator initialRouteName='Home' backBehavior='history'>
       <Tab.Screen
         name='Поиск' 
-        component={DynamicHousesPage} 
+        component={SearchPostsStack} 
         options={{
-          headerShown:true,
+          headerShown:false,
           headerTitle: ' ',   // текст заголовка скрыт
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size}) => (
             <FontAwesome name="search" size={24} color="black" />
-        ),
-        headerLeft: () => (
-          <View style={{marginLeft: 20}}>
-            <Text>Поиск по карте</Text>
-          </View>
-        ),
+        )
       }}
         />
       <Tab.Screen 
@@ -250,7 +311,7 @@ const AppTabs = () => {
       />
       <Tab.Screen
       name='Профиль'
-      component={ProfilePage}
+      component={StackProfile}
       options={{
         headerShown:false,
         tabBarShowLabel: true,

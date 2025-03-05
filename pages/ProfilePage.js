@@ -155,6 +155,11 @@ const ProfilePage = () => {
             <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
             <Ionicons name="exit-outline" size={24} color="#fff" />
           </Pressable>
+
+          <Pressable onPress={()=>{navigation.navigate("ProfileCompanyPageView", {CompanyId:1})}} style={styles.logoutButton}>
+            <Text style={[styles.itemText, styles.logoutText]}>Профиль компании</Text>
+            <Ionicons name="exit-outline" size={24} color="#fff" />
+          </Pressable>
           <View style={{height: 128}} />
         </ScrollView>
         </View>

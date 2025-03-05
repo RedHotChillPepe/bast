@@ -27,8 +27,9 @@ const FavouritesPage = ({route}) => {
 
       console.log(favs);
         
-      if (favs == null) {
+      if (favs == null || Object.keys(favs).length == 0) {
         setIsFavs(false)
+        setHouses([])
         
       } else if (Object.keys(favs).length != 0) {
         const tempHouses = await getManyPosts(favs)
@@ -46,8 +47,9 @@ const FavouritesPage = ({route}) => {
     
   return (
     <View style={styles.container}>
-      {houses.length > 0 ? (
-        <View style={styles.housesView}>
+        
+          {Object.keys(houses).length != 0 ? (
+            <View style={styles.housesView}>
             <FlatList
               data={houses}
               style={{paddingBottom: 512}}

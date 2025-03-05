@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   housesView:{
     backgroundColor: '#F2F2F7',
     width: width,
- 
+    alignItems:'center',
   },
 
   searchButton:{

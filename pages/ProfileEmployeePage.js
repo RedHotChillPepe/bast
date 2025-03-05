@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, Flat
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useApi } from '../context/ApiContext';
@@ -91,6 +92,12 @@ const ProfileRealtorPage = () => {
         { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор', navigation:'MortgageCalculator' },
         { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation:'NotExistPage' },
         { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation:'NotExistPage' },
+      ],
+    },
+    {
+      title: 'Настройки',
+      data: [
+        { icon: <Ionicons name="settings-outline" size={17} color="black" />, label: 'Настройки', navigation:'SettingsPage' },
       ],
     },
   ];

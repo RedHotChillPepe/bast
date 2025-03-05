@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import AvatarModal from '../components/AvatarModal';
 
@@ -48,83 +49,7 @@ const ChangeAvatarPage = () => {
         onClose={() => setModalVisible(false)}
         onSelectAvatar={handleAvatarSelect}
       />
-
-      <View style={{height: 32}} />
-
-
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Имя:</Text>
-        </View>
-      
-        <TextInput
-          style={styles.input}
-          placeholder="Имя"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
-    
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Фамилия:</Text>
-        </View>
-      
-        <TextInput
-          style={styles.input}
-          placeholder="Фамилия"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
-
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Почта:</Text>
-        </View>
-      
-        <TextInput
-          style={styles.input}
-          placeholder="Почта"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
-
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Телефон:</Text>
-        </View>
-      
-        <TextInput
-          style={styles.input}
-          placeholder="Телефон"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
-    
-    <Pressable style={styles.button}>
-      <Text style={styles.buttonText}>Сохранить изменения</Text>
-    </Pressable>
-    <View style={{height: 128}} />
-    </ScrollView>
+    </View>
   );
 };
 
