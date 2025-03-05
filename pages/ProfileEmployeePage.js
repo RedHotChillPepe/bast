@@ -9,6 +9,7 @@ import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const { width } = Dimensions.get('window');
 
@@ -75,6 +76,8 @@ const ProfileRealtorPage = () => {
       title: 'Мои действия',
       data: [
         { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:'UserPostsPage' },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation:['UserPostsClosed'] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation:['UserRecycleBin'] },
         { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:'NotExistPage' },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:'NotExistPage' },
         { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Риэлторы', navigation:'NotExistPage' },
@@ -107,21 +110,24 @@ const ProfileRealtorPage = () => {
     <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.nameBlock}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{height: 17, width: 28}} />
           {
             Object.keys(userr).length != 0 && userr.photo != undefined
             ?
-            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={56} height={56} source={{uri:userr.photo}}/>
+            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={100} height={100} source={{uri:userr.photo}}/>
             :
-            <FontAwesome6 name="face-tired" size={56} color="black" />
+            <FontAwesome6 name="face-tired" size={100} color="#fff" />
           }
-          <View style={{ marginLeft: 16, width:'60%' }}>
+
+      <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}> 
+        <FontAwesome name="edit" size={28} color="#fff" />
+      </Pressable>   
+      </View>
+
+      <View style={{ marginLeft: 16, width:width-32, alignItems: 'center'}}>
             <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
-        </View>
-        <Ionicons name="settings-outline" size={32} color="#fff" />
-      </View>
 
     <View style={{flexDirection:'row', width:width-32, justifyContent:'space-between'}}>   
       <View style={[styles.itemBlock, {width: (width-16*3)/2, flexDirection:'row', justifyContent:'space-between'}]}>

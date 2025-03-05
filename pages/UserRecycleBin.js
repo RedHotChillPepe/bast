@@ -11,7 +11,7 @@ import * as SecureStore from 'expo-secure-store';
 const { width, height } = Dimensions.get('window');
 
 
-const UserPostsPage = ({route}) => {
+const UserRecycleBin = ({route}) => {
 
   const navigation = useNavigation()
   const isFocused = useIsFocused()
@@ -44,48 +44,49 @@ const UserPostsPage = ({route}) => {
     }, [isFocused]);
         
     
-    return (
-      <View style={styles.container}>
-        {houses.length > 0 ? (
-          <View style={styles.housesView}>
-              <FlatList
-                data={houses}
-                style={{paddingBottom: 512}}
-                renderItem={({ item }) => (
-                  <HouseCard
-                    item={item}
-                    navigation={navigation}
-                    itemWidth={width - 32}
-                  />
-                )}
-                keyExtractor={(item) => item.id.toString()}
-                showsVerticalScrollIndicator={false}
-              /> 
-            </View>
-              ) : isFavs ? (
-                <ActivityIndicator size="large" color="#32322C" />
-              ) : (
-                <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
-                  <Text style={styles.noFavsText}>У вас нет избранных объявлений</Text>
-                </View>
+  return (
+    <View style={styles.container}>
+      {houses.length > 0 ? (
+        <View style={styles.housesView}>
+            <FlatList
+              data={houses}
+              style={{paddingBottom: 512}}
+              renderItem={({ item }) => (
+                <HouseCard
+                  item={item}
+                  navigation={navigation}
+                  itemWidth={width - 32}
+                />
               )}
-            </View>
-    )
+              keyExtractor={(item) => item.id.toString()}
+              showsVerticalScrollIndicator={false}
+            /> 
+          </View>
+            ) : isFavs ? (
+              <ActivityIndicator size="large" color="#32322C" />
+            ) : (
+              <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
+                <Text style={styles.noFavsText}>У вас нет избранных объявлений</Text>
+              </View>
+            )}
+          </View>
+  )
 }
 
-export default UserPostsPage
+export default UserRecycleBin
 
 const styles = StyleSheet.create({
     container:{
+        flex: 1,
         height: height,
         backgroundColor:'#F2F2F7',
-        alignItems:'center'
+        alignItems:'center',
     },
         
     housesView:{
         width: width,
         alignItems:'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
 
     noFavsText: {

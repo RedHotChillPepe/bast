@@ -272,28 +272,6 @@ return (
       }
 
 
-      {/* adressView - блок с продавцом */}    
-      <View style={{marginTop: 32}}>
-        <Text style={{fontSize: 24, fontWeight:'bold', marginBottom: 12}}>Продавец</Text>
-        {
-          isOwner
-          &&
-          <View>
-            <Pressable onPress={()=>{changeStatus({post_id: houseId, post_status: -1})}}>
-              <Text>Удалить</Text>
-            </Pressable>
-            <Pressable onPress={()=>{changeStatus({post_id: houseId, post_status: 3})}}>
-              <Text>Закрыть</Text>
-            </Pressable>
-          </View>
-        }
-        {
-          Object.keys(ownerUser).length != 0
-          &&
-          <Pressable onPress={()=> {navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}}><Text style={{fontSize:20}}>{ownerUser[0].name} {ownerUser[0].surname}</Text></Pressable>
-        }
-      </View>
-
       <View style={styles.adressView}>
   
 
@@ -446,6 +424,8 @@ return (
           <Text style={styles.infoValue}>Гараж, навес, баня</Text>
         </View>
       </View>
+
+
       
       {/*Вид для отступа снизу*/}
       <View style={{height: 128}} />
@@ -454,13 +434,32 @@ return (
 
       </ScrollView>
 
-      {/* оверлей кнопки */}
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={() => handleCallButton()} style={styles.button}>
-            <Text style={styles.buttonText}>Позвонить</Text>
-          </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+  {
+    isOwner
+      ? (
+        <View style={{flexDirection: 'row', width: width - 32, justifyContent: 'space-between'}}>
+          <Pressable
+            style={[styles.button_1, {backgroundColor: '#FF8680', paddingVertical: 8}]}
+            onPress={() => changeStatus({ post_id: houseId, post_status: -1 })}
+          >
+            <Text style={styles.buttonText}>Удалить</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.button_1, { paddingVertical: 8}]}
+            onPress={() => changeStatus({ post_id: houseId, post_status: 3 })}
+          >
+            <Text style={styles.buttonText}>Закрыть</Text>
+          </Pressable>
         </View>
+      )
+      : (
+        <TouchableOpacity onPress={() => handleCallButton()} style={styles.button}>
+          <Text style={styles.buttonText}>Позвонить</Text>
+        </TouchableOpacity>
+      )
+  }
+</View>
 
 
       {
@@ -696,19 +695,28 @@ buttonContainer: {
   position: 'absolute',
   bottom: 0,
   paddingVertical: 12,
-  flexDirection: 'row',
   justifyContent: 'space-around',
   backgroundColor: 'white',
+  alignItems: 'center',
   width: width
 },
 
 button: {
   backgroundColor: '#007AFF',
   paddingVertical: 12,
-  width: width - 128,
+  width: width - 32,
   borderRadius: 8,
   alignItems: 'center'
 },
+
+button_1: {
+  backgroundColor: '#007AFF',
+  paddingVertical: 12,
+  width: (width - 48)/2,
+  borderRadius: 8,
+  alignItems: 'center'
+},
+
 buttonText: {
   color: '#fff',
   fontSize: 17,

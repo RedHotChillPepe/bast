@@ -46,6 +46,9 @@ import { Button } from 'react-native-elements';
 import Feather from '@expo/vector-icons/Feather';
 import UserPostsPage from './pages/UserPostsPage.js';
 import ChangeAvatarPage from './pages/ChangeAvatarPage.js';
+import UserPostsClosed from './pages/UserPostsClosed.js';
+import UserRecycleBin from './pages/UserRecycleBin.js';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -168,6 +171,18 @@ const AppStack = () => {
       options={{//header:(props) => <HeaderComponent{...props}/>
        headerShown: true,
        headerTitle: 'Мои объявления',  
+      }}/>
+
+      <Stack.Screen name='UserPostsClosed' component={UserPostsClosed}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: true,
+       headerTitle: 'Закрытые объявления',  
+      }}/>
+
+      <Stack.Screen name='UserRecycleBin' component={UserRecycleBin}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: true,
+       headerTitle: 'Удаленные объявления',  
       }}/>
 
       <Stack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
