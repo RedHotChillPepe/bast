@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
-import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import AvatarModal from '../components/AvatarModal';
 
