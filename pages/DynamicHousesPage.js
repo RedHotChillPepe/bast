@@ -243,9 +243,7 @@ const DynamicHousesPage = ({route}) => {
     ),
     headerRight: () => (
       <View style={{flexDirection: 'row', marginRight: 20}}> 
-          <Pressable style={{backgroundColor:"grey"}} onPress={()=>{clearFilters()}}>
-            <Text style={{color:"white"}}>Сбросить</Text>
-          </Pressable>
+
           <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
             <MaterialIcons name="sort" size={24} color="#007AFF" />
           </Pressable> 
@@ -260,9 +258,13 @@ const DynamicHousesPage = ({route}) => {
   return (
     <View style={styles.container}>
       <View style={{height: 8}} />
-        <View> 
+    
+
           {/* Категории */}
           <View style={styles.categoriesContainer}>
+          <Pressable style={{backgroundColor:'#007AFF', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8, alignSelf: 'flex-start', marginLeft: 12}} onPress={()=>{clearFilters()}}>
+            <Text style={{color: '#fff', fontSize: 12, lineHeight: 18 }}>Сбросить</Text>
+          </Pressable>
             <FlatList
               data={categories}
               keyExtractor={(item) => item.id}
@@ -272,7 +274,9 @@ const DynamicHousesPage = ({route}) => {
             />
           </View>
 
-          <View style={styles.housesView}>
+
+        
+        <View style={styles.housesView}>
               
             {houses.length ? (
               <FlatList
@@ -291,8 +295,8 @@ const DynamicHousesPage = ({route}) => {
                 :
                 <ActivityIndicator size="large" color="#32322C" />
             }
-          </View>
-  
+        
+            
         </View>
 
           {/* Модальное окно */}
@@ -325,9 +329,9 @@ const styles = StyleSheet.create({
 
   
   container:{
-      flex:1,
-      backgroundColor:'#fff',
-      alignItems:'center'
+    flex:1,
+    backgroundColor:'#fff',
+    alignItems:'center'
   },
 
   filterContainer: {
@@ -363,7 +367,6 @@ const styles = StyleSheet.create({
 
   categoriesContainer:{
     flexDirection: 'row',
-    alignItems:'baseline',
     marginBottom: 8
   },
 

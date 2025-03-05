@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import AvatarModal from '../components/AvatarModal';
 
@@ -33,6 +34,8 @@ const ChangeAvatarPage = () => {
   return (
       <ScrollView
       contentContainerStyle={styles.container}>
+      <ScrollView
+      contentContainerStyle={styles.container}>
       <View style={styles.avatarContainer}>
         {avatar ? (
           <Image source={{ uri: avatar }} style={styles.avatarImage} />
@@ -40,6 +43,8 @@ const ChangeAvatarPage = () => {
           <Text>Нет аватара</Text>
         )}
       </View>
+      <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
+        <Text style={styles.buttonText}>Сменить аватар</Text>
       <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Сменить аватар</Text>
       </Pressable>
@@ -123,17 +128,19 @@ const ChangeAvatarPage = () => {
     <Pressable style={styles.button}>
       <Text style={styles.buttonText}>Сохранить изменения</Text>
     </Pressable>
-    
+    <View style={{height: 128}} />
     </ScrollView>
   );
 };
 
 export default ChangeAvatarPage;
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    paddingTop: 16,
     paddingTop: 16,
     backgroundColor: '#f7f7f7',
   },
@@ -152,14 +159,41 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   button: {
+  button: {
     backgroundColor: '#9DC0F6',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
   buttonText: {
+  buttonText: {
     color: '#fff',
     fontSize: 16,
+  },
+
+  block: {
+    width: width - 72, 
+    marginBottom: 12
+  },
+
+  title: {
+    marginBottom:8
+  },
+
+  titleText: {
+    fontSize:20,
+    lineHeight: 25,
+    letterSpacing: -0.45,
+    fontWeight: '500',
+  },
+
+  input: {
+    backgroundColor: 'rgba(120,120,128, 0.12)',
+    height: 40,
+    marginBottom: 12,
+    borderRadius: 12,
+    paddingVertical: 7,
+    paddingHorizontal: 8,
   },
 
   block: {

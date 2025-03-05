@@ -10,6 +10,7 @@ import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const { width } = Dimensions.get('window');
 
@@ -76,6 +77,8 @@ const ProfileRealtorPage = () => {
       title: 'Мои действия',
       data: [
         { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:'UserPostsPage' },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation:['UserPostsClosed'] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation:['UserRecycleBin'] },
         { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:'NotExistPage' },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:'NotExistPage' },
         { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Риэлторы', navigation:'NotExistPage' },

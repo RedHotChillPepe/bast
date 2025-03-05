@@ -9,6 +9,7 @@ import { useApi } from '../context/ApiContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const { width } = Dimensions.get('window');
 
@@ -68,6 +69,8 @@ const ProfileCompanyPage = () => {
       title: 'Мои действия',
       data: [
         { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:['Errors',{screen:"UserPostsPage"}] },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation:['UserPostsClosed'] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation:['UserRecycleBin'] },
         { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:['Errors',{screen:"NotExistPage"}] },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
@@ -81,6 +84,12 @@ const ProfileCompanyPage = () => {
         { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation:['Errors',{screen:"NotExistPage"}] },
         { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation:['Errors',{screen:"NotExistPage"}] },
       ],
+    },
+    {
+      title: 'Настрйоки',
+      data: [
+        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Настройки', navigation:['SettingsPage'] },
+        ],
     },
   ];
 
@@ -111,7 +120,9 @@ const ProfileCompanyPage = () => {
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
         </View>
-        <Ionicons name="settings-outline" size={32} color="#fff" />
+        <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
+          <FontAwesome name="edit" size={24} color="#fff" />
+          </Pressable>
       </View>
 
     <ScrollView contentContainerStyle={styles.container}>
