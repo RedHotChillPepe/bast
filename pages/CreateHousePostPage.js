@@ -11,7 +11,7 @@ import { Geocoder } from 'react-native-yamap';
 
 const { width, height } = Dimensions.get('window');
 
-export default function CreateHousePostPage() {
+export default function CreateHousePostPage({navigation}) {
   const {getAuth} = useAuth()
 
   const userId = useRef()
@@ -98,27 +98,6 @@ export default function CreateHousePostPage() {
     setFormData((prevData) => ({...prevData, photos:tempPhotos}))
   }
 
-  // const handleSubmit = async () => {
-  //   if (!formData.price || isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
-  //     Alert.alert('Ошибка', 'Пожалуйста, заполните корректное значение для цены.');
-  //     return;
-  //   }
-  
-  //   console.log('Данные для отправки:', formData);
-  
-  //   try {
-  //     const result = await sendPost(formData);
-  //     console.log('Результат отправки:', result);
-  //     Alert.alert('Успешно', 'Объявление опубликовано.');
-  //   } catch (error) {
-  //     console.error('Ошибка отправки:', error);
-  //     Alert.alert('Ошибка', 'Не удалось отправить объявление.');
-  //   }
-  // };
-
-  // const handleSubmit = () => {
-  //   console.log('Submitted data:', formData);
-  // };
   
 
   const handleSubmit = async () => {
@@ -142,8 +121,10 @@ export default function CreateHousePostPage() {
       })
       .finally (async ()=>{
         console.log('Данные для отправки:', antiStaleFormData);
-        let result = await sendPost(antiStaleFormData)
-        console.log("result: ", result);
+        const result = await sendPost(antiStaleFormData)
+        const resultJson = JSON.parse(await result.text())
+        navigation.navigate("House", { houseId: resultJson[0].id })
+        console.log("result: ", resultJson);
         
       })
       
