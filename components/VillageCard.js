@@ -37,11 +37,11 @@ const styles = StyleSheet.create({
     width: width-32,
     borderRadius: 24,
     backgroundColor: '#ffffff',
-    marginLeft: 8,
+    marginLeft: 16,
     marginTop: 12,
   },
   houseImageView: {
-    height: 280,
+    height: 180,
 
   },
   houseImage: {

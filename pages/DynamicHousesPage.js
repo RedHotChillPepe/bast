@@ -288,6 +288,7 @@ const DynamicHousesPage = ({route}) => {
               onEndReached={loadMoreData}
               onEndReachedThreshold={0.5}
               showsVerticalScrollIndicator={false}
+              ListFooterComponent={<View style={{ height: 128 }} />}
               />
               ) : zeroRows 
                 ? 
@@ -298,6 +299,7 @@ const DynamicHousesPage = ({route}) => {
         
             
         </View>
+        
 
           {/* Модальное окно */}
         <FilterModal
@@ -319,6 +321,7 @@ const DynamicHousesPage = ({route}) => {
           setSelectedSort={setSelectedSort}
           handleFilterChoice={handleFilterChoice}
         />
+
     </View>
   )
 }

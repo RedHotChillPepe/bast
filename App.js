@@ -123,11 +123,13 @@ const SearchPostsStack = () => {
       <SearchStack.Screen name='SearchMap' component={SearchMap}
         options={{//header:(props) => <HeaderComponent{...props}/>
         headerShown: false, 
+        headerTitle: 'Поиск по карте',  
       }}/>
       
       <SearchStack.Screen name='EditHousePostPage' component={EditHousePostPage}
           options={{//header:(props) => <HeaderComponent{...props}/>
-            headerShown: false  
+            headerShown: false,
+            headerTitle: 'Редактирование объявления',  
           }}/>
 
       <SearchStack.Screen name='ProfilePageView' component={ProfilePageView}
@@ -149,7 +151,8 @@ const StackProfile = () => {
           }}/>
       <ProfileStack.Screen name='SettingsPage' component={SettingsPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: true  
+          headerShown: true,
+          headerTitle: 'Настройки',   
           }}/>
       <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
         options={{//header:(props) => <HeaderComponent{...props}/>
@@ -157,7 +160,8 @@ const StackProfile = () => {
           }}/>
       <ProfileStack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: true  
+          headerShown: true,  
+          headerTitle: 'Редактирование профиля'
           }}/>
     </ProfileStack.Navigator>
   )
@@ -250,12 +254,6 @@ const AppStack = () => {
        headerShown: true,
        headerTitle: 'Удаленные объявления',  
       }}/>
-
-      <Stack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
-      options={{//header:(props) => <HeaderComponent{...props}/>
-       headerShown: true,
-       headerTitle: 'Личные данные',  
-      }}/>
           
       </Stack.Navigator>
   );
@@ -281,6 +279,7 @@ const AppTabs = () => {
         component={FavouritesPage}
         options={{
           headerShown:true,
+          headerTitle: 'Избранное',  
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size}) => (
             <Fontisto name="favorite" size={24} color="black" />

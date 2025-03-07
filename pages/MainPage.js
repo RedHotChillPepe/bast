@@ -177,6 +177,7 @@ const MainPage = ({ navigation }) => {
           data={selectedList.current === "villages" ? villages : houses}
           extraData={selectedList.current}
           style={styles.scrollView}
+          ListFooterComponent={<View style={{ height: 256 }} />}
           initialNumToRender={3}
           getItemLayout={(data, index) => (
             {length: 250, offset: 250*index, index}
