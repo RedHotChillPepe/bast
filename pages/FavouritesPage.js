@@ -62,6 +62,7 @@ const FavouritesPage = ({route}) => {
               )}
               keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}
+              ListFooterComponent={<View style={{ height: 128 }} />}
             /> 
           </View>
             ) : isFavs ? (

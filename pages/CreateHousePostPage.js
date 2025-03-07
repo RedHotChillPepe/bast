@@ -383,7 +383,7 @@ export default function CreateHousePostPage() {
         <View style={styles.row}>
           <Text style={styles.label}>Канализация</Text>
           <TouchableOpacity style={styles.input} onPress={() => setSeweregeModalVisible(true)}>
-            <Text>{formData.sewerege ? formData.sewerege : "Каналтзация?"}</Text>
+            <Text>{formData.sewerege ? formData.sewerege : "Канализация?"}</Text>
           </TouchableOpacity>
         </View>
 

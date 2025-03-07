@@ -67,7 +67,7 @@ export default function ConfirmationPage({ navigation, route }) {
       style={styles.container}
     >
       <Text style={styles.title}>Подтверждение номера телефона</Text>
-      <Text style={styles.text}>Введите последние 4 цифры телефона</Text>
+      <Text style={styles.text}>Вам поступит входящий звонок, введите последние 4 цифры номера телефона</Text>
 
       <View style={styles.inputContainer}>
         {code.map((value, index) => (
