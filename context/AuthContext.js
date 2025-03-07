@@ -18,7 +18,7 @@ export default function AuthProvider({ children }) {
             phone:phone,
             password:password,
             id:id,
-            usertype:usertype
+            usertype:usertype // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
           }
         ]))
       setCheckAuthB(true)
@@ -40,7 +40,7 @@ export default function AuthProvider({ children }) {
           phone:phone,
           password:password,
           id:id,
-          usertype:usertype
+          usertype:usertype // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
       }])
       setCheckAuthB(true)
     }
@@ -59,7 +59,7 @@ export default function AuthProvider({ children }) {
             phone:"",
             password:"",
             id:"",
-            usertype:-1
+            usertype:-1 // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
           }])
           const tempauth = JSON.parse(await getAuth())
           const {status, isOnboarded} = tempauth[0]

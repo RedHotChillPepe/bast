@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   FlatList
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useApi } from '../context/ApiContext';
 import HouseCard from '../components/HouseCard';
 import StoriesComponent from '../components/StoriesComponent';
@@ -31,6 +31,7 @@ const MainPage = ({ navigation }) => {
   const [houses, setHouses] = useState([]);
   const [newHouses, setNewHouses] = useState([]);
   const [villages, setVillages] = useState([]);
+  const isFocused = useIsFocused()
   const selectedList = useRef('houses'); // Новое состояние для выбранного списка
 
   const [page, setPage] = useState(1)
@@ -42,6 +43,7 @@ const MainPage = ({ navigation }) => {
       const tempHouses = await getPaginatedPosts(page);      
       
       if (tempHouses[0][0].id != undefined) {
+        setHouses([])
         setHouses(tempHouses[0])
         setIsLoaded(true)
       }
@@ -50,13 +52,14 @@ const MainPage = ({ navigation }) => {
     const villagesFetch = async () => {
       const villageData = await getAllVillages();
       if (villageData) {
+        setVillages([])
         setVillages(villageData);
       }
     };
 
     housesFetch();
     villagesFetch();
-  }, [getPaginatedPosts, getAllVillages]);
+  }, [getPaginatedPosts, getAllVillages, isFocused]);
 
   const getMoreData = async (var_page) => {
     if (selectedList !== "villages") {

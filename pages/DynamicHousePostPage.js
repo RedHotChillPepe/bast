@@ -67,6 +67,7 @@ export default function DynamicHousePostPage ({ navigation, route }) {
   
   useEffect(() => {
     var ownerId = null
+    var ownerType = null
 
     const fetchPost = async() => {
       if (houseId) {
@@ -77,8 +78,23 @@ export default function DynamicHousePostPage ({ navigation, route }) {
         setPostData(resultJson.rows[0])
 
         ownerId = resultJson.rows[0].poster_id
+        ownerType = resultJson.rows[0].poster_type
 
-        const tempUser = await getUserByID(ownerId)
+        var ownerTypeStr = "user"
+
+        switch (ownerType) {
+          case 1:
+            break;
+          case 2:
+            ownerTypeStr = "company"
+            break;
+          case 3:
+            ownerTypeStr = "realtor"
+          default:
+            break;
+        }
+
+        const tempUser = await getUserByID(ownerId, ownerTypeStr)
         const tempUserJson = JSON.parse(await tempUser.text())
 
         setOwnerUser(tempUserJson)

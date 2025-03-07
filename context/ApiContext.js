@@ -118,7 +118,8 @@ export default function ApiProvider ({ children }){
                     photos:data.photos,
                     poster_id:data.poster_id,
                     latitude: data.lat == "" ? null : data.lat,
-                    longitude: data.lon == "" ? null : data.lon
+                    longitude: data.lon == "" ? null : data.lon,
+                    usertype: data.usertype // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
                 }])
             })
             .then(response => {return  response})

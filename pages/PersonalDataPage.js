@@ -50,7 +50,7 @@ const PersonalDataPage = ({route}) => {
               onboarded:false,
               phone:regData.phoneNumber,
               password:await response.text(),
-              usertype:1
+              usertype:1 // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
             }])
             setCheckAuthB(true)
             
