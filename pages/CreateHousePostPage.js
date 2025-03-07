@@ -15,6 +15,7 @@ export default function CreateHousePostPage({navigation}) {
   const {getAuth} = useAuth()
 
   const userId = useRef()
+  const usertype = useRef()
   
   
   const [formData, setFormData] = useState({
@@ -51,6 +52,7 @@ export default function CreateHousePostPage({navigation}) {
     const getUserID = async ()=>{
       const result = await getAuth()
       userId.current = JSON.parse(await result)[0].id
+      usertype.current = JSON.parse(await result)[0].usertype
       setFormData((prevData) => ({...prevData, poster_id:userId.current}))
     }
     getUserID()
@@ -113,7 +115,7 @@ export default function CreateHousePostPage({navigation}) {
         if ((lat == undefined || lat == null) || (lon == undefined || lon == null)) {
           Alert.alert('Ошибка, неправильный адрес')
         } else {
-          antiStaleFormData = {...antiStaleFormData, lat:lat, lon:lon}
+          antiStaleFormData = {...antiStaleFormData, lat:lat, lon:lon, usertype:usertype.current}
           /* setFormData((prevData) => ({...prevData, lat:lat, lon:lon})); */
           console.log("lat: ", lat, "lon: ", lon);
           
