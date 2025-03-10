@@ -17,40 +17,38 @@ const UserRecycleBin = ({route}) => {
   const isFocused = useIsFocused()
 
   const [houses, setHouses]= useState([])
-  const [isFavs, setIsFavs]= useState(true)
+  const [isEmpty, setIsEmpty]=useState(false)
 
-  const {getManyPosts} = useApi()
+  const {user_id} = route.params
+
+  const {getUserPostsByStatus} = useApi()
 
   useEffect(() => {
-    const getFavHouses = async () => {
-      const favs = JSON.parse(await SecureStore.getItemAsync("favs"))
-
-      console.log(favs);
-        
-      if (favs == null) {
-        setIsFavs(false)
-        
-      } else if (Object.keys(favs).length != 0) {
-        const tempHouses = await getManyPosts(favs)
-        
-        const tempHousesJson = JSON.parse(await tempHouses.text())
-        
-        setHouses(tempHousesJson.rows)
+    const getHouses = async () => {
+      const tempHouses = await getUserPostsByStatus(user_id, -1)
+      const tempHousesJson = JSON.parse(await tempHouses.text())
+      
+      if (Object.keys(tempHousesJson.rows).length != 0) {
+        setHouses(tempHousesJson.rows) 
+      }
+      if (Object.keys(tempHousesJson.rows).length == 0) {
+        setIsEmpty(true)
       }
     }
 
-    getFavHouses()
+    getHouses()
 
     }, [isFocused]);
         
     
   return (
     <View style={styles.container}>
-      {houses.length > 0 ? (
+      {!isEmpty ? 
         <View style={styles.housesView}>
             <FlatList
               data={houses}
               style={{paddingBottom: 512}}
+              ListEmptyComponent={<ActivityIndicator size="large" color="#32322C" />}
               renderItem={({ item }) => (
                 <HouseCard
                   item={item}
@@ -62,13 +60,11 @@ const UserRecycleBin = ({route}) => {
               showsVerticalScrollIndicator={false}
             /> 
           </View>
-            ) : isFavs ? (
-              <ActivityIndicator size="large" color="#32322C" />
-            ) : (
+            : 
               <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
-                <Text style={styles.noFavsText}>У вас нет избранных объявлений</Text>
+                <Text style={styles.noFavsText}>У вас нет удалённых объявлений</Text>
               </View>
-            )}
+            }
           </View>
   )
 }

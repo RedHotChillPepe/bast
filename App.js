@@ -163,6 +163,24 @@ const StackProfile = () => {
           headerShown: true,  
           headerTitle: 'Редактирование профиля'
           }}/>
+
+      <ProfileStack.Screen name='UserPostsPage' component={UserPostsPage}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: true,
+       headerTitle: 'Мои объявления',  
+      }}/>
+
+      <ProfileStack.Screen name='UserPostsClosed' component={UserPostsClosed}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: true,
+       headerTitle: 'Закрытые объявления',  
+      }}/>
+
+      <ProfileStack.Screen name='UserRecycleBin' component={UserRecycleBin}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: true,
+       headerTitle: 'Удаленные объявления',  
+      }}/>
     </ProfileStack.Navigator>
   )
 }
@@ -235,24 +253,6 @@ const AppStack = () => {
       options={{//header:(props) => <HeaderComponent{...props}/>
        headerShown: true,
        headerTitle: 'Поиск по карте',  
-      }}/>
-
-      <Stack.Screen name='UserPostsPage' component={UserPostsPage}
-      options={{//header:(props) => <HeaderComponent{...props}/>
-       headerShown: true,
-       headerTitle: 'Мои объявления',  
-      }}/>
-
-      <Stack.Screen name='UserPostsClosed' component={UserPostsClosed}
-      options={{//header:(props) => <HeaderComponent{...props}/>
-       headerShown: true,
-       headerTitle: 'Закрытые объявления',  
-      }}/>
-
-      <Stack.Screen name='UserRecycleBin' component={UserRecycleBin}
-      options={{//header:(props) => <HeaderComponent{...props}/>
-       headerShown: true,
-       headerTitle: 'Удаленные объявления',  
       }}/>
           
       </Stack.Navigator>

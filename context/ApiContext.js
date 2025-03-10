@@ -81,6 +81,30 @@ export default function ApiProvider ({ children }){
         }
     }
 
+    const getUserPostsByStatus = async (user_id, status_int) =>{
+        const url = host + `api/posts/getUserPostsByStatus`
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body:JSON.stringify({
+                    user_id:user_id,
+                    post_status:status_int
+                })
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error getting posts: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const sendPost = async (data) => {
         const url = host + 'api/posts/newpost'
 
@@ -411,7 +435,7 @@ export default function ApiProvider ({ children }){
     return (
         <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
         getLogin, getUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms,
-        getPost,getManyPosts, getUserByID, sendPost, updatePost, updateStatus}}>
+        getPost,getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus}}>
             {children}
         </ApiContext.Provider>
     )
