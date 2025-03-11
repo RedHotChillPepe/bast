@@ -1,5 +1,5 @@
 import { ActivityIndicator, Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, {useEffect, useState, useLayoutEffect} from 'react'
+import React, {useEffect, useState, useLayoutEffect, useRef} from 'react'
 import houses from '../assets/testassets/houses.json'
 import { useNavigation } from '@react-navigation/native'
 import { useApi } from '../context/ApiContext.js'
@@ -113,6 +113,8 @@ const DynamicHousesPage = ({route}) => {
 
     const [queryObject, setQueryObject] = useState({})
 
+    const queryRef = useRef({})
+
     const [page, setPage] = useState(1)
 
     const handleCategoryPress = (category) => {
@@ -153,7 +155,7 @@ const DynamicHousesPage = ({route}) => {
         
         
         setQueryObject(query)
-        
+        queryRef.current = query
         
       }
     
@@ -236,7 +238,7 @@ const DynamicHousesPage = ({route}) => {
     headerShadowVisible: false, // Убирает тень и линию
     headerLeft: () => (
       <View style={{flexDirection: 'row'}}> 
-      <Pressable onPress={() => navigation.navigate('SearchMap')}>
+      <Pressable onPress={() => navigation.navigate('SearchMap', {query:queryRef.current})}>
         <Text style={{fontSize: 20, lineHeight: 25, color:"#007AFF", letterSpacing: -0.43, marginLeft: 20}}>Поиск по карте</Text>   
       </Pressable>
       </View>

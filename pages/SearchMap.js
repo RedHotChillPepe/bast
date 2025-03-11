@@ -5,16 +5,21 @@ import { Geocoder } from 'react-native-yamap';
 import { useApi } from '../context/ApiContext';
 
 export default function SearchMap ({ navigation, route }) {
-  const { getAllPosts} = useApi();
+  const { getAllPosts, getPaginatedPosts} = useApi();
+  const {query} = route.params
+
 
   const [posts, setPosts] = useState([])
   
   useEffect(() => {
     // FIXME Крайне неоптимальный код, срочно поменять
     const loadMarkers = async () => {
-      const tempHouses = await getAllPosts() // FIXME
-      if (await tempHouses[0].id != undefined) {
-        tempHouses.forEach(house => {
+      console.log(query);
+      
+      const tempHouses = query.length == 0 ?  await getAllPosts() : await getPaginatedPosts("undefined", query) // FIXME
+      
+      if (await tempHouses[0][0].id != undefined) {
+        tempHouses[0].forEach(house => {
           if (house.longitude != null || house.latitude != null) {
             setPosts((prevData) => [...prevData, {point:{lon:parseFloat(house.longitude), lat:parseFloat(house.latitude)}, id:house.id}])
           } else {
