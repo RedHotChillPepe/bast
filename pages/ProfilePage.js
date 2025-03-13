@@ -126,7 +126,7 @@ const ProfilePage = () => {
             <FontAwesome6 name="face-tired" size={56} color="black" />
             }  
 
-          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
+          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', {userObject: userr})}>
           <FontAwesome name="edit" size={24} color="#fff" />
           </Pressable>
         </View>
