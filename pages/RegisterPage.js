@@ -25,6 +25,7 @@ const RegisterPage = () => {
 
   const formatPhoneNumber = (text, previousText) => {
     if (!text) return "";
+    setIsPhoneLabelShown(text.length !== 18);
     if (previousText && previousText.length > text.length) return text;
     let cleaned = text.replace(/\D/g, "");
     if (cleaned.startsWith("7") || cleaned.startsWith("8")) {
@@ -47,6 +48,7 @@ const RegisterPage = () => {
       const match = cleaned.match(/7(\d{3})(\d{3})(\d{2})(\d{0,2})/);
       if (match) return `+7 (${match[1]}) ${match[2]}-${match[3]}-${match[4]}`;
     }
+
     return text;
   };
 
@@ -65,8 +67,7 @@ const RegisterPage = () => {
     }
 
     setPassword(text);
-    if (text.length > 0 && text.length < 6)
-      setErrorMessage("Пароль должен содержать минимум 6 символов");
+    setErrorMessage(text.length > 0 && text.length < 6 ? "Пароль должен содержать минимум 6 символов" : "");
 
     if (doublePass !== text) {
       setErrorMessageRetryPassword("Пароли не совпадают");
@@ -88,11 +89,23 @@ const RegisterPage = () => {
   const handleSubmit = async () => {
     const phonePattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/g;
 
-    if (errorMessage || errorMessageRetryPassword) return;
+    let isCorrect = (errorMessage.length == 0 && !isPhoneLabelShown && errorMessageRetryPassword.length == 0);
     if (!phonePattern.test(phoneNumber)) {
       setIsPhoneLabelShown(true);
-      return;
+      isCorrect = false;
     }
+
+    if (!password) {
+      setErrorMessage("Необходимо указать пароль");
+      isCorrect = false;
+    }
+
+    if (!doublePass) {
+      setErrorMessageRetryPassword("Необходимо повторить пароль");
+      isCorrect = false;
+    }
+
+    if (!isCorrect) return;
 
     const normalPhoneNumber = normalizePhoneNumber(phoneNumber);
 
@@ -130,7 +143,7 @@ const RegisterPage = () => {
       cleaned = cleaned.slice(0, 11);
     }
 
-    // Возвращаем в формате +79999999999
+    // Возвращаем в формате 89999999999
     return cleaned;
   };
 

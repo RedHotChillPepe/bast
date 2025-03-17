@@ -1,5 +1,5 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -29,11 +29,12 @@ const MainPage = ({ navigation }) => {
   const [houses, setHouses] = useState([]);
   const [villages, setVillages] = useState([]);
   const isFocused = useIsFocused();
-  const selectedList = useRef("houses"); // houses или villages
+  const [selectedList, setSelectedList] = useState("houses"); // houses или villages
   const [page, setPage] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVisibleModalBanner, setIsVisibleModalBanner] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
 
   // Исходный пул рекламы
   const [adPool] = useState([
@@ -129,12 +130,13 @@ const MainPage = ({ navigation }) => {
   useEffect(() => {
     const ads = computeAdsQueue(numAdsNeeded, adPool);
     setAdsQueue(ads);
-  }, [houses]);
+  }, [houses.length, villages.length, adPool]);
 
   useEffect(() => {
     const housesFetch = async () => {
       const tempHouses = await getPaginatedPosts(page);
       if (tempHouses[0][0].id !== undefined) {
+        setHouses([]);
         setHouses(tempHouses[0]);
         setIsLoaded(true);
       }
@@ -143,6 +145,7 @@ const MainPage = ({ navigation }) => {
     const villagesFetch = async () => {
       const villageData = await getAllVillages();
       if (villageData) {
+        setVillages([]);
         setVillages(villageData);
       }
     };
@@ -152,7 +155,7 @@ const MainPage = ({ navigation }) => {
   }, [getPaginatedPosts, getAllVillages, isFocused]);
 
   const getMoreData = async (var_page) => {
-    if (selectedList.current !== "villages") {
+    if (selectedList !== "villages" && hasMore) {
       const tempPage = var_page !== undefined ? var_page : page + 1;
       if (var_page === 1) {
         setHouses([]);
@@ -160,6 +163,10 @@ const MainPage = ({ navigation }) => {
       try {
         setPage(tempPage);
         const result = await getPaginatedPosts(tempPage);
+        if (result[0].length === 0) {
+          setHasMore(false);
+          return;
+        }
         if (houses.length === 0) {
           setHouses(result[0]);
         } else {
@@ -172,7 +179,8 @@ const MainPage = ({ navigation }) => {
   };
 
   const handleSearchButton = async (value) => {
-    selectedList.current = value;
+    setSelectedList(value);
+    setHasMore(true);
     getMoreData(1);
   };
 
@@ -210,13 +218,13 @@ const MainPage = ({ navigation }) => {
                 onPress={() => handleSearchButton(item.value)}
                 style={[
                   styles.searchButtonsContent,
-                  selectedList.current === item.value && styles.activeButton,
+                  selectedList === item.value && styles.activeButton,
                 ]}
               >
                 <Text
                   style={[
                     styles.searchButtonsText,
-                    selectedList.current === item.value && styles.activeButtonsText,
+                    selectedList === item.value && styles.activeButtonsText,
                   ]}
                 >
                   {item.text}
@@ -244,29 +252,30 @@ const MainPage = ({ navigation }) => {
       <StatusBar backgroundColor="#9DC0F6" barStyle="light-content" />
       {isLoaded ? (
         <FlatList
-          ListHeaderComponent={FlatListHeaderComponent}
+          ListHeaderComponent={() => FlatListHeaderComponent()}
           ListEmptyComponent={<ActivityIndicator size="large" color="#32322C" />}
-          data={selectedList.current === "villages" ? villages : houses}
-          extraData={selectedList.current}
+          data={selectedList === "villages" ? villages : houses}
+          extraData={selectedList}
           style={styles.scrollView}
           keyExtractor={(item, index) => `item-${item.id}-${index}`}
           ListFooterComponent={<View style={{ height: 256 }} />}
           initialNumToRender={3}
           getItemLayout={(data, index) => ({ length: 250, offset: 250 * index, index })}
           onEndReached={() => {
-            if (selectedList.current === "villages") return;
-            else {
-              if (houses.length === 0) getMoreData(1);
-              else getMoreData();
+            if (selectedList === "villages" || !hasMore) {
+              return;
+            } else {
+              houses.length === 0 ? getMoreData(1) : getMoreData();
             }
           }}
           onEndReachedThreshold={0.8}
           renderItem={({ item, index }) => (
-            <View key={`list-item-${item.id}-${index}`}>
-              {selectedList.current === "villages" ? (
+            <View>
+              {selectedList === "villages" && hasMore ? (
                 <VillageCard village={item} />
               ) : (
                 <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
+
               )}
               {((index + 1) % AD_FREQUENCY === 0) && adsQueue[Math.floor(index / AD_FREQUENCY)] && (
                 <Banner
@@ -312,27 +321,27 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   activeButton: {
-    // Можно добавить стили для активной кнопки\n  },
-    searchButtonsText: {
-      color: "#fff",
-      fontWeight: "600",
-      fontSize: 20,
-      lineHeight: 25,
-      letterSpacing: -0.43,
-      opacity: 0.6,
-    },
-    activeButtonsText: {
-      fontWeight: "600",
-      opacity: 1,
-    },
-    housesTitleText: {
-      fontSize: 24,
-      fontWeight: "700",
-      color: "#32322C",
-      marginLeft: 8,
-      marginTop: 32,
-    },
-  }
+    // backgroundColor: '#007AFF', // Изменение цвета для активной кнопки
+  },
+  searchButtonsText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 25,
+    letterSpacing: -0.43,
+    opacity: 0.6
+  },
+  activeButtonsText: {
+    fontWeight: '600',
+    opacity: 1
+  },
+  housesTitleText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#32322C',
+    marginLeft: 8,
+    marginTop: 32,
+  },
 });
 
 export default MainPage;

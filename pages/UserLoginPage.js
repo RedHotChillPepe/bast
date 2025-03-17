@@ -22,40 +22,42 @@ const UserLoginPage = () => {
     const handleSubmit = async () => {
         const phonePattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/g
 
+        let isCorrect = (errorMessage.length == 0);
         if (!phonePattern.test(phoneNumber)) {
-            console.log(phonePattern.test(phoneNumber));
-            console.log(phoneNumber);
             setIsPhoneLabelShown(true)
-            return;
+            isCorrect = false;
         }
 
-        // TODO: изменить пароли, т.к. они меньше 6 символов
-        if (errorMessage) return;
+        if (!password) {
+            setErrorMessage("Необходимо указать пароль");
+            isCorrect = false;
+        }
+
+        if (!isCorrect) return;
+        console.log(1);
 
         const normalPhoneNumber = normalizePhoneNumber(phoneNumber);
         console.log(normalPhoneNumber);
         setIsPhoneLabelShown(false)
-        if (phoneNumber != "" && password != "") {
-            const response = await getLogin(normalPhoneNumber, password)
-            const responseJson = JSON.parse([await response.text()])
-            console.log(await response);
+        const response = await getLogin(normalPhoneNumber, password)
+        const responseJson = JSON.parse([await response.text()])
+        console.log(await response);
 
-            if (await response.status == 200) {
-                console.log(responseJson);
+        if (await response.status == 200) {
+            console.log(responseJson);
 
-                if (await responseJson.result) {
-                    const authResp = await setAuth([{
-                        status: true,
-                        onboarded: false,
-                        phone: normalPhoneNumber,
-                        password: responseJson.hash,
-                        id: responseJson.id,
-                        usertype: responseJson.usertype
-                    }])
-                    return;
-                }
-                setIsAuthLabelShown(true)
+            if (await responseJson.result) {
+                const authResp = await setAuth([{
+                    status: true,
+                    onboarded: false,
+                    phone: normalPhoneNumber,
+                    password: responseJson.hash,
+                    id: responseJson.id,
+                    usertype: responseJson.usertype
+                }])
+                return;
             }
+            setIsAuthLabelShown(true)
         }
     }
 
@@ -88,7 +90,7 @@ const UserLoginPage = () => {
 
     const formatPhoneNumber = (text, previousText) => {
         if (!text) return "";
-
+        setIsPhoneLabelShown(text.length !== 18);
         // Если пользователь удаляет символы, не переформатируем (чтобы не «скакала» маска)
         if (previousText && previousText.length > text.length) return text;
 
