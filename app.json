@@ -29,26 +29,27 @@
     "plugins": [
       "expo-font",
       [
-      "expo-build-properties",{
-        "android":{
-          "minSdkVersion": 26,
-          "usesCleartextTraffic": true,
-          "composeOptions": {
-            "kotlinCompilerExtensionVersion": "1.5.15"
-          },
-          "kotlinOptions": {
-            "jvmTarget":"1.9.25"
+        "expo-build-properties", {
+          "android": {
+            "minSdkVersion": 26,
+            "usesCleartextTraffic": true,
+            "composeOptions": {
+              "kotlinCompilerExtensionVersion": "1.5.15"
+            },
+            "kotlinOptions": {
+              "jvmTarget": "1.9.25"
+            }
           }
         }
-      }],
+      ],
       "expo-secure-store",
       [
         "expo-splash-screen",
-      {
-        "backgroundColor": "#0077FF",
-        "image": "./assets/BastSplash.png",
-        "imageWidth": 200
-      }
+        {
+          "backgroundColor": "#0077FF",
+          "image": "./assets/BastSplash.png",
+          "imageWidth": 200
+        }
       ]
     ],
     "extra": {
