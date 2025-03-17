@@ -107,20 +107,18 @@ const DynamicHousesPage = ({route}) => {
     const [selectedSort, setSelectedSort] = useState({});
 
     const [selectedCategory, setSelectedCategory] = useState({})
+
     const [priceRange, setPriceRange] = useState([])
     const [areaRange, setAreaRange] = useState([])
     const [zeroRows, setZeroRows] = useState(false)
 
-    const [queryObject, setQueryObject] = useState({})
-
-    const queryRef = useRef({})
+    const queryObject = useRef({})
 
     const [page, setPage] = useState(1)
 
     const handleCategoryPress = (category) => {
       console.log('Выбрана категория:', category);
       setSelectedCategory(category)
-      handleFilterChoice()
     };
     
     const categoriesButton = ({ item }) => (
@@ -140,6 +138,7 @@ const DynamicHousesPage = ({route}) => {
       const isFiltersEmpty = Object.keys(selectedFilters).length == 0
       const isSortEmpty = Object.keys(selectedSort).length == 0
       const isRangeEmpty = Object.keys(priceRange).length == 0
+      
 
       if (!isCateroyEmpty || !isFiltersEmpty || !isSortEmpty || !isRangeEmpty) {
         console.log("Something Changed");
@@ -154,9 +153,16 @@ const DynamicHousesPage = ({route}) => {
         const query = {category, sort, LpriceRange, LareaRange, filters}
         
         
-        setQueryObject(query)
-        queryRef.current = query
+        queryObject.current = query
         
+        
+      } else {
+        setPage(1)
+        queryObject.current = {}
+      }
+
+      if (!isCateroyEmpty) {
+        handleFilterChoice()
       }
     
       return () => {
@@ -172,7 +178,7 @@ const DynamicHousesPage = ({route}) => {
       if (Object.keys(houses).length === 0) {
         const loadFromAPI = async () => {
           try {
-            const response = await getPaginatedPosts(page, queryObject);
+            const response = await getPaginatedPosts(page, queryObject.current);
             // Убедимся, что `response` является массивом
             if (response[1] == 0) {
               setHouses([])
@@ -191,9 +197,11 @@ const DynamicHousesPage = ({route}) => {
     }, []);
 
     const handleFilterChoice = async () => {
-      console.log("FilterChoice!");
+      console.log("FilterChoice! : ", queryObject.current);
       
-      const response = await getPaginatedPosts(page, queryObject)
+      
+      const response = await getPaginatedPosts(page, queryObject.current)
+
       setHouses(Array.isArray(response[0]) ? response[0] : []);
       if (response[1] == 0) {
         setZeroRows(true)
@@ -205,7 +213,7 @@ const DynamicHousesPage = ({route}) => {
       
       const nextPage = page + 1;
       try {
-        const response = await getPaginatedPosts(nextPage, queryObject);
+        const response = await getPaginatedPosts(nextPage, queryObject.current);
 
         setPage(nextPage);
         setHouses((prev) => [...prev, ...(response[0] || [])]);
@@ -220,8 +228,7 @@ const DynamicHousesPage = ({route}) => {
       setPriceRange([])
       setSelectedCategory({})
       setSelectedFilters({})
-      setQueryObject({})
-
+      queryObject.current = {}
       try {
         const response = await getPaginatedPosts(1);
 
@@ -238,7 +245,7 @@ const DynamicHousesPage = ({route}) => {
     headerShadowVisible: false, // Убирает тень и линию
     headerLeft: () => (
       <View style={{flexDirection: 'row'}}> 
-      <Pressable onPress={() => navigation.navigate('SearchMap', {query:queryRef.current})}>
+      <Pressable onPress={() => navigation.navigate('SearchMap', {query:queryObject.current})}>
         <Text style={{fontSize: 20, lineHeight: 25, color:"#007AFF", letterSpacing: -0.43, marginLeft: 20}}>Поиск по карте</Text>   
       </Pressable>
       </View>
