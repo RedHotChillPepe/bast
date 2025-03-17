@@ -5,10 +5,13 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 const { width } = Dimensions.get('window');
 
 const PriceRangeSlider = ({onSliderChange, priceRange}) => {
+
+  const handleSliderStop = () => {
+    onSliderChange(priceRange.current)
+  }
   
   const handleValuesChange = (values) => {
     priceRange.current = values
-    onSliderChange(priceRange.current)
   };
 
   return (
@@ -36,6 +39,7 @@ const PriceRangeSlider = ({onSliderChange, priceRange}) => {
         values={priceRange.current}
         sliderLength={width - 64} 
         onValuesChange={handleValuesChange}
+        onValuesChangeFinish={handleSliderStop}
         min={0} 
         max={100_000_000} 
         step={10000} 

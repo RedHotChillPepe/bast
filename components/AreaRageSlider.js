@@ -6,10 +6,12 @@ const { width } = Dimensions.get('window');
 
 const AreaRangeSlider = ({onSliderChange, areaRange}) => {
   
+  const handleSliderStop = () => {
+    onSliderChange(areaRange.current)
+  }
 
   const handleValuesChange = (values) => {
     areaRange.current = values
-    onSliderChange(areaRange.current)
   };
 
   return (
@@ -38,6 +40,7 @@ const AreaRangeSlider = ({onSliderChange, areaRange}) => {
         values={areaRange.current}
         sliderLength={width - 64} 
         onValuesChange={handleValuesChange}
+        onValuesChangeFinish={handleSliderStop}
         min={0} 
         max={1_000} 
         step={10} 
