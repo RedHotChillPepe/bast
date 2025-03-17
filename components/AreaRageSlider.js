@@ -17,24 +17,34 @@ const AreaRangeSlider = ({onSliderChange, areaRange}) => {
       <Text style={styles.header}>Площадь дома:</Text>
       <View style={styles.areaContainer}>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-        <Text style={styles.areaText}>От: </Text> <Text style={styles.valueText}>{areaRange.current[0].toLocaleString()} м2</Text>
+          <Text style={styles.areaText}>
+            От: 
+          </Text> 
+          <Text style={styles.valueText}>
+            {areaRange.current[0].toString()} м2
+          </Text>
         </View>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-        <Text style={styles.areaText}>До: </Text> <Text style={styles.valueText}>{areaRange.current[1].toLocaleString()} м2</Text>
+          <Text style={styles.areaText}>
+            До: 
+          </Text> 
+          <Text style={styles.valueText}>
+            {areaRange.current[1].toString()} м2
+          </Text>
         </View>
       </View>
 
       <MultiSlider
         values={areaRange.current}
-        sliderLength={width - 64} // Длина слайдера
+        sliderLength={width - 64} 
         onValuesChange={handleValuesChange}
-        min={0} // Минимальное значение
-        max={1_000} // Максимальное значение
-        step={10} // Шаг изменения
-        selectedStyle={{ backgroundColor: '#007AFF' }} // Стиль выделенного участка
-        unselectedStyle={{ backgroundColor: '#ddd' }} // Стиль невыделенного участка
-        trackStyle={{ height: 6 }} // Толщина трека
-        markerStyle={{ height: 24, width: 24, backgroundColor: '#007AFF' }} // Стиль ползунков
+        min={0} 
+        max={1_000} 
+        step={10} 
+        selectedStyle={{ backgroundColor: '#007AFF' }} 
+        unselectedStyle={{ backgroundColor: '#ddd' }} 
+        trackStyle={{ height: 6 }} 
+        markerStyle={{ height: 24, width: 24, backgroundColor: '#007AFF' }} 
       />
     </View>
   );

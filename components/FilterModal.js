@@ -51,7 +51,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onDismiss={onClose}>
       <View activeOpacity={1} style={styles.modalOverlay} onPressOut={onClose}>
-        <View >
+        <View>
             <View style={styles.modalContent}>
               <Text style={styles.modalHeader}>Параметры поиска</Text>
               <ScrollView contentContainerStyle={styles.groupList}>
