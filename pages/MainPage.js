@@ -1,5 +1,5 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, memo } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -154,35 +154,26 @@ const MainPage = ({ navigation }) => {
     villagesFetch();
   }, [getPaginatedPosts, getAllVillages, isFocused]);
 
-  const getMoreData = async (var_page) => {
+  const getMoreData = useCallback(async () => {
     if (selectedList !== "villages" && hasMore) {
-      const tempPage = var_page !== undefined ? var_page : page + 1;
-      if (var_page === 1) {
-        setHouses([]);
+      const nextPage = page + 1;
+      const newHouses = await getPaginatedPosts(nextPage);
+      if (newHouses[0].length === 0) {
+        setHasMore(false);
+        return;
       }
-      try {
-        setPage(tempPage);
-        const result = await getPaginatedPosts(tempPage);
-        if (result[0].length === 0) {
-          setHasMore(false);
-          return;
-        }
-        if (houses.length === 0) {
-          setHouses(result[0]);
-        } else {
-          setHouses((prev) => [...prev, ...result[0]]);
-        }
-      } catch (error) {
-        throw error;
-      }
+      setHouses((prev) => [...prev, ...newHouses[0]]);
+      setPage(nextPage);
     }
-  };
+  }, [page, selectedList, hasMore, getPaginatedPosts]);
 
-  const handleSearchButton = async (value) => {
+  const handleSearchButton = useCallback((value) => {
     setSelectedList(value);
     setHasMore(true);
-    getMoreData(1);
-  };
+    setPage(1);
+    setHouses([]);
+    getMoreData();
+  }, [getMoreData]);
 
   const SearchButtonsContent = [
     { text: "Для вас", value: "houses" },
@@ -247,6 +238,27 @@ const MainPage = ({ navigation }) => {
     setIsVisibleModalBanner(false);
   };
 
+  const MemoizedHouseCard = memo(HouseCard, (prevProps, nextProps) => prevProps.item.id === nextProps.item.id);
+  const MemoizedVillageCard = memo(VillageCard, (prevProps, nextProps) => prevProps.village.id === nextProps.village.id);
+  const MemoizedBanner = memo(Banner, (prevProps, nextProps) => prevProps.bannerData.id === nextProps.bannerData.id);
+
+  const renderItem = useCallback(({ item, index }) => (
+    <View>
+      {selectedList === "villages" ? (
+        <MemoizedVillageCard village={item} />
+      ) : (
+        <MemoizedHouseCard item={item} navigation={navigation} itemWidth={width - 32} />
+      )}
+      {(index + 1) % AD_FREQUENCY === 0 && adsQueue[Math.floor(index / AD_FREQUENCY)] && (
+        <MemoizedBanner
+          bannerData={adsQueue[Math.floor(index / AD_FREQUENCY)]}
+          openModal={() => openModal(adsQueue[Math.floor(index / AD_FREQUENCY)])}
+        />
+      )}
+
+    </View>
+  ), [selectedList, adsQueue]);
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#9DC0F6" barStyle="light-content" />
@@ -257,7 +269,7 @@ const MainPage = ({ navigation }) => {
           data={selectedList === "villages" ? villages : houses}
           extraData={selectedList}
           style={styles.scrollView}
-          keyExtractor={(item, index) => `item-${item.id}-${index}`}
+          keyExtractor={(item, index) => `item-${index}`}
           ListFooterComponent={<View style={{ height: 256 }} />}
           initialNumToRender={3}
           getItemLayout={(data, index) => ({ length: 250, offset: 250 * index, index })}
@@ -269,23 +281,7 @@ const MainPage = ({ navigation }) => {
             }
           }}
           onEndReachedThreshold={0.8}
-          renderItem={({ item, index }) => (
-            <View>
-              {selectedList === "villages" && hasMore ? (
-                <VillageCard village={item} />
-              ) : (
-                <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
-
-              )}
-              {((index + 1) % AD_FREQUENCY === 0) && adsQueue[Math.floor(index / AD_FREQUENCY)] && (
-                <Banner
-                  key={`banner-${adsQueue[Math.floor(index / AD_FREQUENCY)].id}-${index}`}
-                  bannerData={adsQueue[Math.floor(index / AD_FREQUENCY)]}
-                  openModal={() => openModal(adsQueue[Math.floor(index / AD_FREQUENCY)])}
-                />
-              )}
-            </View>
-          )}
+          renderItem={renderItem}
         />
       ) : (
         <ActivityIndicator size="large" color="#32322C" />

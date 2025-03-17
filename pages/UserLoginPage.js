@@ -41,7 +41,6 @@ const UserLoginPage = () => {
         const response = await getLogin(normalPhoneNumber, password)
         const responseJson = JSON.parse([await response.text()])
         console.log(await response);
-
         if (await response.status == 200) {
             console.log(responseJson);
 
@@ -56,7 +55,7 @@ const UserLoginPage = () => {
                 }])
                 return;
             }
-            setIsAuthLabelShown(true)
+            setIsAuthLabelShown(true);
         }
     }
 
