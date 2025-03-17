@@ -34,7 +34,6 @@ const UserLoginPage = () => {
         }
 
         if (!isCorrect) return;
-        console.log(1);
 
         const normalPhoneNumber = normalizePhoneNumber(phoneNumber);
         console.log(normalPhoneNumber);
