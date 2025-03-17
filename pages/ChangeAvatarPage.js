@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import AvatarModal from '../components/AvatarModal';
+import { useApi } from '../context/ApiContext';
 
 const { width } = Dimensions.get('window');
 
-const ChangeAvatarPage = ({route}) => {
+const ChangeAvatarPage = ({route, navigation}) => {
 
-  const {userObject} = route.params
+  const {updateUser} = useApi()
+
+  const {userObject, usertype} = route.params
   const [user, setUser] = useState({});
   const [avatar, setAvatar] = useState(null);
+  const imageObject = useRef()
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
+  const [surname, setSurname] = useState("")
+  const [name, setName] = useState("")
 
   useEffect(() => {
     const init = async () => {
@@ -23,11 +32,27 @@ const ChangeAvatarPage = ({route}) => {
     init();
   }, []);
 
-  const handleAvatarSelect = (newAvatarUri) => {
-    setAvatar(newAvatarUri);
+  const handleAvatarSelect = (newAvatarObject) => {
+    setAvatar(newAvatarObject.uri);
+    imageObject.current = newAvatarObject
     setModalVisible(false);
-    // Здесь можно добавить вызов API для сохранения нового аватара на сервере
   };
+
+  const handleSubmit = async () => {
+    const userObjectt = {
+      id: userObject.id,
+      usertype: usertype,
+      phoneNumber:phone === "" ? userObject.phone : phone,
+      name: name === "" ? userObject.name : name,
+      surname: surname === "" ? userObject.surname : surname,
+      email: email === "" ? userObject.email : email,
+      photo: imageObject.current.uri != undefined ? [{name: imageObject.current.filename, base64: imageObject.current.base64}] : [userObject.photo]
+    }
+
+    let result = await updateUser(userObjectt)
+
+    navigation.navigate("Profile")
+  }
 
   return (
     <View style={{flex:1}}>
@@ -62,9 +87,8 @@ const ChangeAvatarPage = ({route}) => {
           <TextInput
             style={styles.input}
             placeholder={user.name}
-        // secureTextEntry={true}
-        // value={password}
-        // onChangeText={(text) => setPassword(text)}
+            value={name}
+            onChangeText={(text) => setName(text)}
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
@@ -81,9 +105,8 @@ const ChangeAvatarPage = ({route}) => {
             <TextInput
               style={styles.input}
               placeholder={user.surname}
-            // secureTextEntry={true}
-            // value={password}
-            // onChangeText={(text) => setPassword(text)}
+              value={surname}
+              onChangeText={(text) => setSurname(text)}
               maxLength={20}
               placeholderTextColor='rgba(60,60,67, 0.6'
               fontSize={17}
@@ -99,9 +122,8 @@ const ChangeAvatarPage = ({route}) => {
           <TextInput
             style={styles.input}
             placeholder={user.email}
-        // secureTextEntry={true}
-        // value={password}
-        // onChangeText={(text) => setPassword(text)}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
@@ -116,9 +138,8 @@ const ChangeAvatarPage = ({route}) => {
           <TextInput
             style={styles.input}
             placeholder={user.phone}
-        // secureTextEntry={true}
-        // value={password}
-        // onChangeText={(text) => setPassword(text)}
+            value={phone}
+            onChangeText={(text) => setPhone(text)}
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
@@ -126,7 +147,7 @@ const ChangeAvatarPage = ({route}) => {
         </View>
         
         <View style={{paddingBottom:124}}>
-          <Pressable style={styles.button}>
+          <Pressable onPress={()=>{handleSubmit()}} style={styles.button}>
             <Text style={styles.buttonText}>Сохранить изменения</Text>
           </Pressable>
         </View>

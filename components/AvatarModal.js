@@ -16,12 +16,14 @@ const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       quality: 0.7,
+      allowsMultipleSelection:false,
+      base64:true
     });
 
-    if (!result.cancelled) {
-      setSelectedImage(result.uri);
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0]);
     }
   };
 

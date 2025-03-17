@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -28,9 +28,12 @@ const ProfilePage = () => {
 
   const [userr, setUser]=useState([])
 
+  const isFocused = useIsFocused()
+
   useEffect(() => {
     const init = async () => {
       const auth = JSON.parse(await getAuth())
+
       const user = await getUser(await auth[0].phone, "user")
       /* console.log(await user.text()); */
       
@@ -47,7 +50,7 @@ const ProfilePage = () => {
     return () => {
       
     }
-  }, [usertype, getAuth, getUser])
+  }, [usertype, getAuth, getUser, isFocused])
   
   
   
@@ -126,7 +129,7 @@ const ProfilePage = () => {
             <FontAwesome6 name="face-tired" size={56} color="black" />
             }  
 
-          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', {userObject: userr})}>
+          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', {userObject: userr, usertype:usertype})}>
           <FontAwesome name="edit" size={24} color="#fff" />
           </Pressable>
         </View>

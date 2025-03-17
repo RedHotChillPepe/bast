@@ -86,7 +86,7 @@ export default function CreateHousePostPage({navigation}) {
   const handleImagePicker = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes:ImagePicker.MediaTypeOptions.Images,
-      quality:0,
+      quality:0.7,
       base64:true
     })
     console.log(result);

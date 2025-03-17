@@ -335,6 +335,36 @@ export default function ApiProvider ({ children }){
         }
     }
 
+    const updateUser = async (userObject) => {
+        const url = host + `api/users/updateuser`
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userid: userObject.id,
+                    usertype:userObject.usertype,
+                    phoneNumber: userObject.phoneNumber,
+                    name: userObject.name,
+                    surname: userObject.surname,
+                    email: userObject.email,
+                    photo:userObject.photo
+                })
+            })
+            .then(response => {return response})
+            .catch(error => {
+                console.error("Error updating user: ", error);            
+            })
+        } catch (error) {
+            console.error(error);
+            
+        }
+    }
+
     const getUserByID = async (id, usertype) => {
         const url = host + `api/users/getuser/${usertype || "user"}/${id}`
 
@@ -434,7 +464,7 @@ export default function ApiProvider ({ children }){
 
     return (
         <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
-        getLogin, getUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms,
+        getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms,
         getPost,getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus}}>
             {children}
         </ApiContext.Provider>
