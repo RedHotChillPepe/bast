@@ -27,9 +27,11 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
         const updatedFilters = { ...prevFilters };
         delete updatedFilters[group.id];
         return updatedFilters;
+      } else {
+        // Иначе включаем фильтр
+        return { ...prevFilters, [group.id]: option.id };
       }
-      // Иначе включаем фильтр
-      return { ...prevFilters, [group.id]: option.id };
+      
     });
     console.log("filter:", group.id, option);
     
@@ -51,7 +53,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onDismiss={onClose}>
       <View activeOpacity={1} style={styles.modalOverlay} onPressOut={onClose}>
-        <View >
+        <View>
             <View style={styles.modalContent}>
               <Text style={styles.modalHeader}>Параметры поиска</Text>
               <ScrollView contentContainerStyle={styles.groupList}>
