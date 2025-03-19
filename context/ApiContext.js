@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
 import React, { createContext, useContext, useState } from 'react'
 
 
@@ -36,7 +36,8 @@ export default function ApiProvider ({ children }){
             {return [json.rows, json.rowCount]}
         )
         .catch(error => {
-            console.error("Error fetching files: ", error);            
+            console.error("Error fetching files: ", error);        
+            Alert.alert("Error", "Network Error")    
         })
     }
 
@@ -357,11 +358,12 @@ export default function ApiProvider ({ children }){
             })
             .then(response => {return response})
             .catch(error => {
-                console.error("Error updating user: ", error);            
+                console.error("Error updating user: ", error);
+                Alert.alert("Error", "Network Error")            
             })
         } catch (error) {
             console.error(error);
-            
+            Alert.alert("Error", "Network Error")
         }
     }
 

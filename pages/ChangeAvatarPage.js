@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native';
 import AvatarModal from '../components/AvatarModal';
 import { useApi } from '../context/ApiContext';
 
@@ -58,8 +58,11 @@ const ChangeAvatarPage = ({route, navigation}) => {
     }
 
     let result = await updateUser(userObjectt).then(navigation.navigate("Profile"))
-
-    
+    if (await result.status == 200) {
+      Alert.alert("Сообщение", "Изменения прошли успешно")
+    } else {
+      Alert.alert("Ошибка", `Код ошибки: ${result.status}`)
+    }
   }
 
   return (
@@ -143,19 +146,15 @@ const ChangeAvatarPage = ({route, navigation}) => {
             <Text style={styles.titleText}>Телефон:</Text>
           </View>
         
-          <TouchableOpacity>
-            <TextInput
+          <TextInput
             style={styles.input}
             placeholder={user.phone}
             value={phone}
-            editable={false}
             onChangeText={(text) => setPhone(text)}
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
             />
-          </TouchableOpacity>
-          
         </View>
         
         <View style={{paddingBottom:124}}>
