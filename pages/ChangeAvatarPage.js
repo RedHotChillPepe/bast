@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import AvatarModal from '../components/AvatarModal';
 import { useApi } from '../context/ApiContext';
 
@@ -33,12 +33,20 @@ const ChangeAvatarPage = ({route, navigation}) => {
   }, []);
 
   const handleAvatarSelect = (newAvatarObject) => {
+    console.log(newAvatarObject);
+    
     setAvatar(newAvatarObject.uri);
     imageObject.current = newAvatarObject
     setModalVisible(false);
   };
 
   const handleSubmit = async () => {
+    var photo = null
+    if (imageObject.current != undefined) {
+      photo = {filename: imageObject.current.filename, base64: imageObject.current.base64}
+    }
+
+
     const userObjectt = {
       id: userObject.id,
       usertype: usertype,
@@ -46,12 +54,12 @@ const ChangeAvatarPage = ({route, navigation}) => {
       name: name === "" ? userObject.name : name,
       surname: surname === "" ? userObject.surname : surname,
       email: email === "" ? userObject.email : email,
-      photo: imageObject.current.uri != undefined ? [{name: imageObject.current.filename, base64: imageObject.current.base64}] : [userObject.photo]
+      photo: photo
     }
 
-    let result = await updateUser(userObjectt)
+    let result = await updateUser(userObjectt).then(navigation.navigate("Profile"))
 
-    navigation.navigate("Profile")
+    
   }
 
   return (
@@ -60,7 +68,7 @@ const ChangeAvatarPage = ({route, navigation}) => {
       contentContainerStyle={[{flexGrow: 1}, styles.container]}>
         
         <View style={styles.avatarContainer}>
-          {avatar ? (
+        {avatar ? (
             <Image source={{ uri: avatar }} style={styles.avatarImage} />
           ) : (
             <Text>Нет аватара</Text>
@@ -135,15 +143,19 @@ const ChangeAvatarPage = ({route, navigation}) => {
             <Text style={styles.titleText}>Телефон:</Text>
           </View>
         
-          <TextInput
+          <TouchableOpacity>
+            <TextInput
             style={styles.input}
             placeholder={user.phone}
             value={phone}
+            editable={false}
             onChangeText={(text) => setPhone(text)}
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
             />
+          </TouchableOpacity>
+          
         </View>
         
         <View style={{paddingBottom:124}}>

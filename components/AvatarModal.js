@@ -40,7 +40,7 @@ const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalHeader}>Выберите новый аватар</Text>
           {selectedImage ? (
-            <Image source={{ uri: selectedImage }} style={styles.previewImage} />
+            <Image source={{ uri: selectedImage.uri }} style={styles.previewImage} />
           ) : (
             <View style={styles.previewPlaceholder}>
               <Text>Нет выбранного изображения</Text>
