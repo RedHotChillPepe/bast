@@ -42,12 +42,11 @@ import ProfileEmployeePageView from './pages/ProfileEmployeePageView.js';
 import { Geocoder } from 'react-native-yamap';
 import { YaMap } from 'react-native-yamap';
 import SearchMap from './pages/SearchMap.js';
-import { Button } from 'react-native-elements';
-import Feather from '@expo/vector-icons/Feather';
 import UserPostsPage from './pages/UserPostsPage.js';
 import ChangeAvatarPage from './pages/ChangeAvatarPage.js';
 import UserPostsClosed from './pages/UserPostsClosed.js';
 import UserRecycleBin from './pages/UserRecycleBin.js';
+import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
 
 
 
@@ -180,6 +179,11 @@ const StackProfile = () => {
       options={{//header:(props) => <HeaderComponent{...props}/>
        headerShown: true,
        headerTitle: 'Удаленные объявления',  
+      }}/>
+
+      <ProfileStack.Screen name='ConfirmPhone' component={ConfirmChangePhonePage}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: false, 
       }}/>
     </ProfileStack.Navigator>
   )

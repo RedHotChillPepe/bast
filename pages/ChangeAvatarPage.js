@@ -8,6 +8,7 @@ const { width } = Dimensions.get('window');
 const ChangeAvatarPage = ({route, navigation}) => {
 
   const {updateUser} = useApi()
+  
 
   const {userObject, usertype} = route.params
   const [user, setUser] = useState({});
@@ -42,10 +43,10 @@ const ChangeAvatarPage = ({route, navigation}) => {
 
   const handleSubmit = async () => {
     var photo = null
+
     if (imageObject.current != undefined) {
       photo = {filename: imageObject.current.filename, base64: imageObject.current.base64}
     }
-
 
     const userObjectt = {
       id: userObject.id,
@@ -57,11 +58,25 @@ const ChangeAvatarPage = ({route, navigation}) => {
       photo: photo
     }
 
-    let result = await updateUser(userObjectt).then(navigation.navigate("Profile"))
-    if (await result.status == 200) {
-      Alert.alert("Сообщение", "Изменения прошли успешно")
+    const sendAway = async () => {
+      let result = await updateUser(userObjectt).then(navigation.navigate("Profile"))
+
+
+
+      if (await result.status == 200) {
+        Alert.alert("Сообщение", "Изменения прошли успешно")
+      } else {
+        Alert.alert("Ошибка", `Код ошибки: ${result.status}`)
+      }
+    }
+
+    if (phone !== userObject.phone) {
+      navigation.navigate("ConfirmPhone", {
+        regData:{
+        phoneNumber: userObject.phone,
+        userObjectt: userObjectt}})
     } else {
-      Alert.alert("Ошибка", `Код ошибки: ${result.status}`)
+      await sendAway()
     }
   }
 

@@ -462,11 +462,38 @@ export default function ApiProvider ({ children }){
         }
         
     }
+
+    const changePhone = async (phone, userId, usertype) => {
+        const url = host + "api/sms/changephone"
+
+        try {
+            return fetch(url,{
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify([{
+                    phone:phone,
+                    userId:userId,
+                    usertype:usertype
+                }])
+            })
+            .then(response => {return  response})
+            .catch(error => {
+                console.error("Error: ", error);            
+            })
+        } catch (error) {
+            console.error("Error sending Sms: ", error);
+            
+        }
+        
+    }
     
 
     return (
         <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
-        getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms,
+        getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
         getPost,getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus}}>
             {children}
         </ApiContext.Provider>
