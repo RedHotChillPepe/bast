@@ -217,15 +217,6 @@ const StackProfile = () => {
           headerTitle: "Настройки",
         }}
       />
-      <ProfileStack.Screen
-        name="ChangeAvatarPage"
-        component={ChangeAvatarPage}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: true,
-          headerTitle: "Редактирование профиля",
-        }}
-      />
 
       <ProfileStack.Screen
         name="UserPostsPage"

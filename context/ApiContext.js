@@ -1,4 +1,3 @@
-
 import { Alert, StyleSheet, Text, View } from 'react-native'
 import React, { createContext, useContext, useState } from 'react'
 
@@ -19,28 +18,9 @@ export default function ApiProvider ({ children }){
             {return json.rows}
         )
         .catch(error => {
-            console.error("Error fetching files: ", error);            
-
-
-  const getPaginatedPosts = async (page, params) => {
-    const query =
-      new URLSearchParams(params) != "undefined" || params != undefined
-        ? new URLSearchParams(params)
-        : "";
-    console.log("paginated query: ", typeof query);
-
-    const url = host + `api/posts/page/${page}?` + query.toString();
-    console.log(url);
-
-    return fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        return [json.rows, json.rowCount];
-      })
-      .catch((error) => {
-        console.error("Error fetching files: ", error);
-      });
-  };
+            console.error("Error fetching files: ", error);
+        })
+    }
 
   const getManyPosts = async (data) => {
     const url = host + `api/posts/manyPosts`;
@@ -62,25 +42,26 @@ export default function ApiProvider ({ children }){
     } catch (error) {
       console.error(error);
     }
+  }
 
-
-    const getPaginatedPosts = async (page, params) => {
-        const query = new URLSearchParams(params) != "undefined" || params != undefined ? new URLSearchParams(params) : ""
-        console.log("paginated query: ", typeof(query));
+  const getPaginatedPosts = async (page, params) => {
+    const query = new URLSearchParams(params) != "undefined" || params != undefined ? new URLSearchParams(params) : ""
+    console.log("paginated query: ", typeof(query));
         
-        const url = host + `api/posts/page/${page}?`+ query.toString()
-        console.log(url);
+    const url = host + `api/posts/page/${page}?`+ query.toString()
+    console.log(url);
 
-        return fetch(url)
-        .then(response => response.json()
-        )
-        .then(json =>
-            {return [json.rows, json.rowCount]}
-        )
-        .catch(error => {
-            console.error("Error fetching files: ", error);        
-            Alert.alert("Error", "Network Error")    
-  };
+    return fetch(url)
+      .then(response => response.json()
+      )
+      .then(json =>
+          {return [json.rows, json.rowCount]}
+      )
+      .catch(error => {
+        console.error("Error fetching files: ", error);        
+        Alert.alert("Error", "Network Error")    
+      })
+    }
 
   const getPost = async (id) => {
     const url = host + `api/posts/${id}`;
@@ -380,6 +361,7 @@ export default function ApiProvider ({ children }){
     } catch (error) {
       console.error(error);
     }
+  }
 
     const updateUser = async (userObject) => {
         const url = host + `api/users/updateuser`
@@ -515,6 +497,7 @@ export default function ApiProvider ({ children }){
     } catch (error) {
       console.error("Error sending Sms: ", error);
     }
+  }
 
     const changePhone = async (phone, userId, usertype) => {
         const url = host + "api/sms/changephone"
@@ -538,12 +521,10 @@ export default function ApiProvider ({ children }){
             })
         } catch (error) {
             console.error("Error sending Sms: ", error);
-            
         }
         
     }
-    
-
+  
     return (
         <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
         getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
@@ -551,6 +532,8 @@ export default function ApiProvider ({ children }){
             {children}
         </ApiContext.Provider>
     )
-}
 
-export const useApi = () => useContext(ApiContext);
+  }
+
+
+export const useApi = () => useContext(ApiContext)
