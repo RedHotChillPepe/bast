@@ -1,136 +1,189 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native';
 import AvatarModal from '../components/AvatarModal';
+import { useApi } from '../context/ApiContext';
 
 const { width } = Dimensions.get('window');
 
-const ChangeAvatarPage = () => {
-  const { getAuth } = useAuth();
+const ChangeAvatarPage = ({route, navigation}) => {
+
+  const {updateUser} = useApi()
+  
+
+  const {userObject, usertype} = route.params
   const [user, setUser] = useState({});
   const [avatar, setAvatar] = useState(null);
+  const imageObject = useRef()
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
+  const [surname, setSurname] = useState("")
+  const [name, setName] = useState("")
 
   useEffect(() => {
     const init = async () => {
-      const auth = JSON.parse(await getAuth());
-      if (auth && auth.length > 0) {
-        setUser(auth[0]);
-        if (auth[0].photo) {
-          setAvatar(auth[0].photo);
-        }
+      
+      if (Object.keys(userObject).length != 0) {
+        setUser(userObject)
+        setAvatar(userObject.photo)
       }
+      
     };
     init();
   }, []);
 
-  const handleAvatarSelect = (newAvatarUri) => {
-    setAvatar(newAvatarUri);
+  const handleAvatarSelect = (newAvatarObject) => {
+    console.log(newAvatarObject);
+    
+    setAvatar(newAvatarObject.uri);
+    imageObject.current = newAvatarObject
     setModalVisible(false);
-    // Здесь можно добавить вызов API для сохранения нового аватара на сервере
   };
 
+  const handleSubmit = async () => {
+    var photo = null
+
+    if (imageObject.current != undefined) {
+      photo = {filename: imageObject.current.filename, base64: imageObject.current.base64}
+    }
+
+    const userObjectt = {
+      id: userObject.id,
+      usertype: usertype,
+      phoneNumber:phone === "" ? userObject.phone : phone,
+      name: name === "" ? userObject.name : name,
+      surname: surname === "" ? userObject.surname : surname,
+      email: email === "" ? userObject.email : email,
+      photo: photo
+    }
+
+    const sendAway = async () => {
+      let result = await updateUser(userObjectt).then(navigation.navigate("Profile"))
+
+
+
+      if (await result.status == 200) {
+        Alert.alert("Сообщение", "Изменения прошли успешно")
+      } else {
+        Alert.alert("Ошибка", `Код ошибки: ${result.status}`)
+      }
+    }
+
+    if (phone !== userObject.phone) {
+      navigation.navigate("ConfirmPhone", {
+        regData:{
+        phoneNumber: userObject.phone,
+        userObjectt: userObjectt}})
+    } else {
+      await sendAway()
+    }
+  }
+
   return (
+    <View style={{flex:1}}>
       <ScrollView
-      contentContainerStyle={styles.container}>
-      <View style={styles.avatarContainer}>
+      contentContainerStyle={[{flexGrow: 1}, styles.container]}>
+        
+        <View style={styles.avatarContainer}>
         {avatar ? (
-          <Image source={{ uri: avatar }} style={styles.avatarImage} />
-        ) : (
-          <Text>Нет аватара</Text>
-        )}
-      </View>
-      <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>Сменить аватар</Text>
-      </Pressable>
-      <AvatarModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onSelectAvatar={handleAvatarSelect}
-      />
+            <Image source={{ uri: avatar }} style={styles.avatarImage} />
+          ) : (
+            <Text>Нет аватара</Text>
+          )}
+        </View>
+        
+        <View style={{paddingBottom:32}}>
+          <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
+            <Text style={styles.buttonText}>Сменить аватар</Text>
+          </Pressable>
+        </View>
+        
+        <AvatarModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSelectAvatar={handleAvatarSelect}
+        />
 
-      <View style={{height: 32}} />
-
-
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Имя:</Text>
+        <View style={styles.block}>
+          <View style={styles.title}>
+            <Text style={styles.titleText}>Имя:</Text>
+          </View>
+        
+          <TextInput
+            style={styles.input}
+            placeholder={user.name}
+            value={name}
+            onChangeText={(text) => setName(text)}
+            maxLength={20}
+            placeholderTextColor='rgba(60,60,67, 0.6'
+            fontSize={17}
+            />
         </View>
       
-        <TextInput
-          style={styles.input}
-          placeholder="Имя"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
-    
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Фамилия:</Text>
-        </View>
-      
-        <TextInput
-          style={styles.input}
-          placeholder="Фамилия"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
+        {user.surname != undefined &&
+          
+          <View style={styles.block}>
+            <View style={styles.title}>
+              <Text style={styles.titleText}>Фамилия:</Text>
+            </View>
+          
+            <TextInput
+              style={styles.input}
+              placeholder={user.surname}
+              value={surname}
+              onChangeText={(text) => setSurname(text)}
+              maxLength={20}
+              placeholderTextColor='rgba(60,60,67, 0.6'
+              fontSize={17}
+              /> 
+            </View>
+        }
 
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Почта:</Text>
+        <View style={styles.block}>
+          <View style={styles.title}>
+            <Text style={styles.titleText}>Почта:</Text>
+          </View>
+        
+          <TextInput
+            style={styles.input}
+            placeholder={user.email}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            maxLength={20}
+            placeholderTextColor='rgba(60,60,67, 0.6'
+            fontSize={17}
+            />
         </View>
-      
-        <TextInput
-          style={styles.input}
-          placeholder="Почта"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
 
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Телефон:</Text>
+        <View style={styles.block}>
+          <View style={styles.title}>
+            <Text style={styles.titleText}>Телефон:</Text>
+          </View>
+        
+          <TextInput
+            style={styles.input}
+            placeholder={user.phone}
+            value={phone}
+            onChangeText={(text) => setPhone(text)}
+            maxLength={20}
+            placeholderTextColor='rgba(60,60,67, 0.6'
+            fontSize={17}
+            />
         </View>
-      
-        <TextInput
-          style={styles.input}
-          placeholder="Телефон"
-       // secureTextEntry={true}
-       // value={password}
-       // onChangeText={(text) => setPassword(text)}
-          maxLength={20}
-          placeholderTextColor='rgba(60,60,67, 0.6'
-          fontSize={17}
-          />
-      </View>
-    
-    <Pressable style={styles.button}>
-      <Text style={styles.buttonText}>Сохранить изменения</Text>
-    </Pressable>
-    <View style={{height: 128}} />
-    </ScrollView>
+        
+        <View style={{paddingBottom:124}}>
+          <Pressable onPress={()=>{handleSubmit()}} style={styles.button}>
+            <Text style={styles.buttonText}>Сохранить изменения</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+  </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     paddingTop: 16,
     paddingTop: 16,

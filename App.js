@@ -1,53 +1,54 @@
-import { useEffect } from "react";
-import { View, Text, Pressable, Platform } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MainPage from "./pages/MainPage";
-import ProfilePage from "./pages/ProfilePage";
-import SearchPage from "./pages/SearchPage";
-import FavouritesPage from "./pages/FavouritesPage";
-import ChatsPage from "./pages/ChatsPage";
-import RegisterPage from "./pages/RegisterPage";
-import OnboardingPage from "./pages/OnboardingPage";
-import AuthProvider from "./context/AuthContext";
-import { useAuth } from "./context/AuthContext";
-import LoginPage from "./pages/LoginPage";
-import DynamicHousesPage from "./pages/DynamicHousesPage";
-import DynamicHousePostPage from "./pages/DynamicHousePostPage";
-import ApiProvider from "./context/ApiContext";
-import HeaderComponent from "./components/HeaderComponent";
-import { useFonts } from "expo-font";
-import PersonalData from "./pages/PersonalDataPage.js";
-import UserLoginPage from "./pages/UserLoginPage.js";
-import ConfirmationPage from "./pages/ConfirmationPage.js";
-import CreateHousePostPage from "./pages/CreateHousePostPage.js";
-import NotExistPage from "./pages/NotExistPage.js";
-import Fontisto from "@expo/vector-icons/Fontisto";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Entypo from "@expo/vector-icons/Entypo";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import EditHousePostPage from "./pages/EditHousePostPage.js";
-import * as SplashScreen from "expo-splash-screen";
-import MortgageCalculator from "./pages/MortgageCalculator.js";
-import Error404 from "./pages/Error404.js";
-import Error403 from "./pages/Error403.js";
-import Error500 from "./pages/Error500.js";
-import Error503 from "./pages/Error503.js";
-import DynamicStoriesPage from "./pages/DynamicStoriesPage.js";
-import ProfilePageView from "./pages/ProfilePageView.js";
-import SettingsPage from "./pages/SettingsPage.js";
-import ProfileCompanyPageView from "./pages/ProfileCompanyPageView.js";
-import ProfileEmployeePageView from "./pages/ProfileEmployeePageView.js";
-import { Geocoder } from "react-native-yamap";
-import { YaMap } from "react-native-yamap";
-import SearchMap from "./pages/SearchMap.js";
-import { Button } from "react-native-elements";
-import Feather from "@expo/vector-icons/Feather";
-import UserPostsPage from "./pages/UserPostsPage.js";
-import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
-import UserPostsClosed from "./pages/UserPostsClosed.js";
-import UserRecycleBin from "./pages/UserRecycleBin.js";
+
+import { useEffect } from 'react';
+import { View, Text, Pressable, Platform } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import MainPage from './pages/MainPage';
+import ProfilePage from './pages/ProfilePage';
+import SearchPage from './pages/SearchPage';
+import FavouritesPage from './pages/FavouritesPage';
+import ChatsPage from './pages/ChatsPage';
+import RegisterPage from './pages/RegisterPage';
+import OnboardingPage from './pages/OnboardingPage';
+import AuthProvider from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
+import LoginPage from './pages/LoginPage';
+import DynamicHousesPage from './pages/DynamicHousesPage';
+import DynamicHousePostPage from './pages/DynamicHousePostPage';
+import ApiProvider from './context/ApiContext';
+import HeaderComponent from './components/HeaderComponent';
+import { useFonts } from 'expo-font';
+import PersonalData from './pages/PersonalDataPage.js'
+import UserLoginPage from './pages/UserLoginPage.js';
+import ConfirmationPage from './pages/ConfirmationPage.js';
+import CreateHousePostPage from './pages/CreateHousePostPage.js';
+import NotExistPage from './pages/NotExistPage.js';
+import Fontisto from '@expo/vector-icons/Fontisto';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Entypo from '@expo/vector-icons/Entypo';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import EditHousePostPage from './pages/EditHousePostPage.js';
+import * as SplashScreen from 'expo-splash-screen';
+import MortgageCalculator from './pages/MortgageCalculator.js';
+import Error404 from './pages/Error404.js';
+import Error403 from './pages/Error403.js';
+import Error500 from './pages/Error500.js';
+import Error503 from './pages/Error503.js';
+import DynamicStoriesPage from './pages/DynamicStoriesPage.js';
+import ProfilePageView from './pages/ProfilePageView.js'; 
+import SettingsPage from './pages/SettingsPage.js';
+import ProfileCompanyPageView from './pages/ProfileCompanyPageView.js';
+import ProfileEmployeePageView from './pages/ProfileEmployeePageView.js';
+import { Geocoder } from 'react-native-yamap';
+import { YaMap } from 'react-native-yamap';
+import SearchMap from './pages/SearchMap.js';
+import UserPostsPage from './pages/UserPostsPage.js';
+import ChangeAvatarPage from './pages/ChangeAvatarPage.js';
+import UserPostsClosed from './pages/UserPostsClosed.js';
+import UserRecycleBin from './pages/UserRecycleBin.js';
+import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
+
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -217,14 +218,6 @@ const StackProfile = () => {
         }}
       />
       <ProfileStack.Screen
-        name="MortgageCalculator"
-        component={MortgageCalculator}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
-      <ProfileStack.Screen
         name="ChangeAvatarPage"
         component={ChangeAvatarPage}
         options={{
@@ -263,6 +256,22 @@ const StackProfile = () => {
           headerTitle: "Удаленные объявления",
         }}
       />
+
+      <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false  
+          }}/>
+
+      <ProfileStack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: true,  
+          headerTitle: 'Редактирование профиля'
+       }}/>
+
+      <ProfileStack.Screen name='ConfirmPhone' component={ConfirmChangePhonePage}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: false, 
+      }}/>
     </ProfileStack.Navigator>
   );
 };
