@@ -1,25 +1,40 @@
-import React from 'react';
-import { View, Text, FlatList, Pressable, Image, StyleSheet, Dimensions } from 'react-native';
-import Octicons from '@expo/vector-icons/Octicons';
-import FastImage from 'react-native-fast-image'
+import Octicons from "@expo/vector-icons/Octicons";
+import React from "react";
+import { Dimensions, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-const { width } = Dimensions.get('window');
+/* TODO: т.к. не могу сделать билд, то использую нативный компонет */
+import FastImage from "react-native-fast-image";
+
+const { width } = Dimensions.get("window");
 
 const HouseCard = ({ item, navigation, itemWidth }) => {
   if (!item) return null;
 
   return (
-    <Pressable onPress={() => navigation.navigate("House", { houseId: item.id })}>
-      <View style={[styles.houseItem, {width: itemWidth}]}>
+    <Pressable
+      onPress={() => navigation.navigate("House", { houseId: item.id })}
+    >
+      <View style={[styles.houseItem, { width: itemWidth }]}>
         <View style={styles.houseImageView}>
-          <FastImage style={[styles.houseImage]} source={{ uri: item.photos[0] }} />
+          {/* TODO: т.к. не могу сделать билд, то использую нативный компонет */}
+          {/* <Image style={styles.houseImage} source={{ uri: item.photos[0] }} /> */}
+          <FastImage
+            style={[styles.houseImage]}
+            source={{ uri: item.photos[0] }}
+          />
         </View>
         <View>
           <View style={styles.priceRow}>
             <Text style={styles.houseItemText}>
-              {item.price != null & item.price != undefined && item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+              {(item.price != null) & (item.price != undefined) &&
+                item.price
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}{" "}
+              ₽
             </Text>
-            <Text style={styles.pricePerSquare}>{Math.floor(item.price / item.house_area)}₽/м²</Text>
+            <Text style={styles.pricePerSquare}>
+              {Math.floor(item.price / item.house_area)}₽/м²
+            </Text>
           </View>
           <View style={styles.detailsRow}>
             <Text style={styles.detailsText}>{item.bedrooms}-комн </Text>
@@ -28,7 +43,9 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
             <Octicons name="dot-fill" size={12} color="black" />
             <Text style={styles.detailsText}> {item.num_floors} эт</Text>
           </View>
-          <Text style={styles.addressText}>{item.city}, {item.full_address}</Text>
+          <Text style={styles.addressText}>
+            {item.city}, {item.full_address}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -38,34 +55,34 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
 const styles = StyleSheet.create({
   houseItem: {
     borderRadius: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     marginTop: 12,
-    alignSelf: 'center',
+    alignSelf: "center",
     // borderColor: '#54545630',
     // borderWidth: 1,
   },
   houseImageView: {
-    height: 180
+    height: 180,
   },
   houseImage: {
     flex: 1,
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   houseItemText: {
-    color: '#32322C',
+    color: "#32322C",
     fontSize: 20,
     lineHeight: 25,
     letterSpacing: -0.45,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 16,
     marginLeft: 12,
   },
   priceRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
   pricePerSquare: {
     fontSize: 15,
@@ -73,19 +90,19 @@ const styles = StyleSheet.create({
     letterSpacing: -0.23,
     opacity: 0.6,
     marginLeft: 12,
-    fontWeight: '400',
+    fontWeight: "400",
   },
   detailsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 4,
     marginLeft: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   detailsText: {
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.45,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   addressText: {
     fontSize: 15,
@@ -93,7 +110,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.23,
     opacity: 0.6,
     marginLeft: 12,
-    fontWeight: '400',
+    fontWeight: "400",
     marginTop: 12,
     marginBottom: 12,
   },
