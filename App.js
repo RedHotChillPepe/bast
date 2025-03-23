@@ -48,6 +48,7 @@ import UserPostsPage from "./pages/UserPostsPage.js";
 import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
 import UserPostsClosed from "./pages/UserPostsClosed.js";
 import UserRecycleBin from "./pages/UserRecycleBin.js";
+import ToastProvider from "./context/ToastProvider";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -58,9 +59,9 @@ const TopStack = createNativeStackNavigator();
 const SearchStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// TODO: При запуске возникает ошибка: TypeError: Cannot read property 'init' of null
-YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
+process.env.NODE_ENV !== "development" && YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
 Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
+
 
 // Все доступные ошибки
 const Errors = () => {
@@ -615,7 +616,9 @@ export default function App() {
     <ApiProvider>
       <AuthProvider>
         <NavigationContainer>
-          <AppInit />
+          <ToastProvider>
+            <AppInit />
+          </ToastProvider>
         </NavigationContainer>
       </AuthProvider>
     </ApiProvider>

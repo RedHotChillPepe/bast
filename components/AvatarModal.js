@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useToast } from "../context/ToastProvider";
 
 const { width } = Dimensions.get('window');
 
 const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const showToast = useToast();
 
   const handlePickImage = async () => {
     // Запрашиваем разрешение на доступ к галерее
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      alert("Доступ к галерее обязателен!");
+      showToast("Доступ к галерее обязателен!", "warn");
       return;
     }
 

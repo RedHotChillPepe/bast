@@ -111,6 +111,14 @@ export default function ApiProvider({ children }) {
   const sendPost = async (data) => {
     const url = host + "api/posts/newpost";
 
+    // Функция для извлечения числового значения из объекта (если нужно)
+    const getNumericValue = (field) => {
+      if (field && typeof field === 'object') {
+        return Number(field.value);
+      }
+      return field;
+    };
+
     try {
       return fetch(url, {
         method: "POST",
@@ -118,52 +126,45 @@ export default function ApiProvider({ children }) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([
-          {
-            name: data.title == "" ? null : data.title,
-            house_type: data.houseType == "" ? null : data.houseType,
-            walls_lb: data.wallMaterial == "" ? null : data.wallMaterial,
-            walls_part:
-              data.partitionMaterial == "" ? null : data.partitionMaterial,
-            price: data.price == "" ? null : data.price,
-            house_area: data.area == "" ? null : data.area,
-            num_floors: data.floors == "" ? null : data.floors,
-            bedrooms: data.rooms == "" ? null : data.rooms,
-            full_address: data.location == "" ? null : data.location,
-            city: data.settlement == "" ? null : data.settlement,
-            plot_area: data.plotSize == "" ? null : data.plotSize,
-            text: data.description == "" ? null : data.description,
-            roof: data.roof == "" ? null : data.roof,
-            base: data.basement == "" ? null : data.basement,
-            /* landArea: '', */
-            kad_number: data.kadastr == "" ? null : data.kadastr,
-            house_status:
-              data.houseCondition == "" ? null : data.houseCondition,
-            year_built:
-              data.constructionYear == "" ? null : data.constructionYear,
-            gas: data.gas == "" ? null : data.gas,
-            water: data.water == "" ? null : data.water,
-            sewage: data.sewerege == "" ? null : data.sewerege,
-            electricity_bill: data.electricity == "" ? null : data.electricity,
-            heating: data.heating == "" ? null : data.heating,
-            photos: data.photos,
-            poster_id: data.poster_id,
-            latitude: data.lat == "" ? null : data.lat,
-            longitude: data.lon == "" ? null : data.lon,
-            usertype: data.usertype, // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
-          },
-        ]),
+        body: JSON.stringify([{
+          name: data.title === "" ? null : data.title,
+          house_type: data.houseType === "" ? null : (typeof data.houseType === 'object' ? data.houseType.value : data.houseType),
+          walls_lb: data.wallMaterial === "" ? null : (typeof data.wallMaterial === 'object' ? data.wallMaterial.value : data.wallMaterial),
+          walls_part: data.partitionMaterial === "" ? null : (typeof data.partitionMaterial === 'object' ? data.partitionMaterial.value : data.partitionMaterial),
+          price: data.price === "" ? null : data.price,
+          house_area: data.area === "" ? null : getNumericValue(data.area),
+          num_floors: data.floors === "" ? null : getNumericValue(data.floors),
+          bedrooms: data.rooms === "" ? null : getNumericValue(data.rooms),
+          full_address: data.location === "" ? null : data.location,
+          city: data.settlement === "" ? null : data.settlement,
+          plot_area: data.plotSize === "" ? null : getNumericValue(data.plotSize),
+          text: data.description === "" ? null : data.description,
+          roof: data.roof === "" ? null : (typeof data.roof === 'object' ? data.roof.value : data.roof),
+          base: data.basement === "" ? null : (typeof data.basement === 'object' ? data.basement.value : data.basement),
+          kad_number: data.kadastr === "" ? null : data.kadastr,
+          house_status: data.houseCondition === "" ? null : data.houseCondition,
+          year_built: data.constructionYear === "" ? null : getNumericValue(data.constructionYear),
+          gas: data.gas === "" ? null : data.gas,
+          water: data.water === "" ? null : data.water,
+          sewage: data.sewerege === "" ? null : data.sewerege,
+          electricity_bill: data.electricity === "" ? null : data.electricity,
+          heating: data.heating === "" ? null : data.heating,
+          photos: data.photos,
+          poster_id: data.poster_id,
+          latitude: data.lat === "" ? null : data.lat,
+          longitude: data.lon === "" ? null : data.lon,
+          usertype: data.usertype,
+        }]),
       })
-        .then((response) => {
-          return response;
-        })
+        .then((response) => response)
         .catch((error) => {
-          console.error("Error getting user: ", error);
+          console.error("Error executing query ", error);
         });
     } catch (error) {
       console.error(error);
     }
   };
+
 
   const updatePost = async (data, id) => {
     const url = host + "api/posts/updatepost";

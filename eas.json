@@ -10,11 +10,15 @@
     },
     "preview": {
       "distribution": "internal",
-      "env": {"EXPO_PUBLIC_API_HOST":"https://bast-backend-urdx.onrender.com/"}
+      "env": {
+        "EXPO_PUBLIC_API_HOST": "https://bast-backend-urdx.onrender.com/"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "env": {"EXPO_PUBLIC_API_HOST":"https://bast-backend-urdx.onrender.com/"}
+      "env": {
+        "EXPO_PUBLIC_API_HOST": "https://bast-backend-urdx.onrender.com/"
+      }
     }
   },
   "submit": {

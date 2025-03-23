@@ -2,7 +2,6 @@ import Octicons from "@expo/vector-icons/Octicons";
 import React from "react";
 import { Dimensions, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-/* TODO: т.к. не могу сделать билд, то использую нативный компонет */
 import FastImage from "react-native-fast-image";
 
 const { width } = Dimensions.get("window");
@@ -16,12 +15,14 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
     >
       <View style={[styles.houseItem, { width: itemWidth }]}>
         <View style={styles.houseImageView}>
-          {/* TODO: т.к. не могу сделать билд, то использую нативный компонет */}
-          {/* <Image style={styles.houseImage} source={{ uri: item.photos[0] }} /> */}
-          <FastImage
-            style={[styles.houseImage]}
-            source={{ uri: item.photos[0] }}
-          />
+          {process.env.NODE_ENV == "development" ? (
+            <Image style={styles.houseImage} source={{ uri: item.photos[0] }} />
+          ) : (
+            <FastImage
+              style={[styles.houseImage]}
+              source={{ uri: item.photos[0] }}
+            />
+          )}
         </View>
         <View>
           <View style={styles.priceRow}>
