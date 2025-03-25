@@ -22,7 +22,6 @@ import PersonalData from "./pages/PersonalDataPage.js";
 import UserLoginPage from "./pages/UserLoginPage.js";
 import ConfirmationPage from "./pages/ConfirmationPage.js";
 import CreateHousePostPage from "./pages/CreateHousePostPage.js";
-import NotExistPage from "./pages/NotExistPage.js";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -30,10 +29,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import EditHousePostPage from "./pages/EditHousePostPage.js";
 import * as SplashScreen from "expo-splash-screen";
 import MortgageCalculator from "./pages/MortgageCalculator.js";
-import Error404 from "./pages/Error404.js";
-import Error403 from "./pages/Error403.js";
-import Error500 from "./pages/Error500.js";
-import Error503 from "./pages/Error503.js";
+import ErrorScreen from "./pages/ErrorScreen.js";
 import DynamicStoriesPage from "./pages/DynamicStoriesPage.js";
 import ProfilePageView from "./pages/ProfilePageView.js";
 import SettingsPage from "./pages/SettingsPage.js";
@@ -61,59 +57,6 @@ const Tab = createBottomTabNavigator();
 
 process.env.NODE_ENV !== "development" && YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
 Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
-
-
-// Все доступные ошибки
-const Errors = () => {
-  return (
-    <ErrorStack.Navigator>
-      <ErrorStack.Screen
-        name="Error404"
-        component={Error404}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
-
-      <ErrorStack.Screen
-        name="Error403"
-        component={Error403}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
-
-      <ErrorStack.Screen
-        name="Error500"
-        component={Error500}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
-
-      <ErrorStack.Screen
-        name="Error503"
-        component={Error503}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
-
-      <ErrorStack.Screen
-        name="NotExistPage"
-        component={NotExistPage}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
-    </ErrorStack.Navigator>
-  );
-};
 
 const SearchPostsStack = () => {
   return (
@@ -284,17 +227,47 @@ const AppStack = () => {
         name="House"
         component={DynamicHousePostPage}
         options={({ navigation }) => ({
-          headerShown: true,
-          headerTitle: "",
-          headerLeft: () => (
-            <Pressable
-              onPress={() => navigation.goBack()}
-              style={{ flexDirection: "row", alignItems: "center" }}
-            >
-              <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
-            </Pressable>
-          ),
+          // headerShown: true,
+          headerShown: false,
+          // headerTitle: "",
+          // headerLeft: () => (
+          //   <Pressable
+          //     onPress={() => navigation.goBack()}
+          //     style={{ flexDirection: "row", alignItems: "center" }}
+          //   >
+          //     <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+          //   </Pressable>
+          // ),
         })}
+      />
+
+      <Stack.Screen
+        name="UserPostsClosed"
+        component={UserPostsClosed}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: true,
+          headerTitle: "Закрытые объявления",
+        }}
+      />
+      <Stack.Screen
+        name="UserRecycleBin"
+        component={UserRecycleBin}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: true,
+          headerTitle: "Удаленные объявления",
+        }}
+      />
+
+      <Stack.Screen
+        name="UserPostsPage"
+        component={UserPostsPage}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: true,
+          headerTitle: "Мои объявления",
+        }}
       />
       <Stack.Screen
         name="CreateHousePostPage"
@@ -424,7 +397,7 @@ const AppTabs = () => {
       />
       <Tab.Screen
         name="Чаты"
-        component={NotExistPage}
+        component={ErrorScreen}
         options={{
           headerShown: false,
           tabBarShowLabel: true,
@@ -555,8 +528,8 @@ const AppTopStack = () => {
         }}
       />
       <TopStack.Screen
-        name="Errors"
-        component={Errors}
+        name="Error"
+        component={ErrorScreen}
         options={{
           //header:(props) => <HeaderComponent{...props}/>
           headerShown: false,
@@ -577,6 +550,9 @@ const AppInit = () => {
     Inter400: require("./assets/fonts/Inter_18pt-Regular.ttf"),
     Inter500: require("./assets/fonts/Inter_18pt-Medium.ttf"),
     Inter700: require("./assets/fonts/Inter_18pt-Bold.ttf"),
+    Sora400: require('./assets/fonts/Sora-Regular.ttf'),
+    Sora500: require('./assets/fonts/Sora-Medium.ttf'),
+    Sora700: require('./assets/fonts/Sora-Bold.ttf'),
   });
 
   if (loaded) {

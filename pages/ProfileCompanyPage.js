@@ -18,82 +18,82 @@ const ProfileCompanyPage = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const {getUser} =useApi()
-    
-      const [userr, setUser]=useState([])
-    
-      useEffect(() => {
-        const init = async () => {
-          const auth = JSON.parse(await getAuth())
-          const user = await getUser(auth[0].phone, "company")
-          /* console.log(await user.text()); */
-          
-          
-          const userJson = JSON.parse(await user.text())
-          if (userJson.result != false) {
-            setUser(await userJson[1])
-          }
-          
-          
-        }
-        init()
-      
-        return () => {
-          
-        }
-      }, [])
+  const { getUser } = useApi()
+
+  const [userr, setUser] = useState([])
+
+  useEffect(() => {
+    const init = async () => {
+      const auth = JSON.parse(await getAuth())
+      const user = await getUser(auth[0].phone, "company")
+      /* console.log(await user.text()); */
+
+
+      const userJson = JSON.parse(await user.text())
+      if (userJson.result != false) {
+        setUser(await userJson[1])
+      }
+
+
+    }
+    init()
+
+    return () => {
+
+    }
+  }, [])
 
   // Массив данных для списков
   const sections = [
     {
       title: 'Команда',
       data: [
-        { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
     {
       title: 'Команда',
       data: [
-        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Клиенты', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Клиенты', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
     {
       title: 'Документы',
       data: [
-        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation:['Errors',{screen:"UserPostsPage"}] },
-        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation:['UserPostsClosed'] },
-        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation:['UserRecycleBin'] },
-        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsClosed'] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserRecycleBin'] },
+        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор', navigation:['MortgageCalculator'] },
-        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор', navigation: ['MortgageCalculator'] },
+        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
     {
       title: 'Настрйоки',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Настройки', navigation:['SettingsPage'] },
-        ],
+        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Настройки', navigation: ['SettingsPage'] },
+      ],
     },
   ];
 
-  const renderItem = ( item, index ) => (
+  const renderItem = (item, index) => (
     <Pressable key={index} style={styles.listItem}
       onPress={() => navigation.navigate(item.navigation[0], item.navigation[1])}>
       <View style={styles.listItemContent}>
@@ -105,15 +105,15 @@ const ProfileCompanyPage = () => {
   );
 
   return (
-    <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
+    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
       <View style={styles.nameBlock}>
         <View style={{ flexDirection: 'row' }}>
-           {
+          {
             Object.keys(userr).length != 0 && userr.photo != undefined
-            ?
-            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={56} height={56} source={{uri:userr.photo}}/>
-            :
-            <FontAwesome6 name="face-tired" size={56} color="black" />
+              ?
+              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={56} height={56} source={{ uri: userr.photo }} />
+              :
+              <FontAwesome6 name="face-tired" size={56} color="black" />
           }
           <View style={{ marginLeft: 16 }}>
             <Text style={styles.name}>{userr.name != undefined ? userr.name : "Company Name"}</Text>
@@ -122,37 +122,37 @@ const ProfileCompanyPage = () => {
         </View>
         <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
           <FontAwesome name="edit" size={24} color="#fff" />
-          </Pressable>
+        </Pressable>
       </View>
 
-    <ScrollView contentContainerStyle={styles.container}>
-      {sections.map((section, index) => (
-        <View style={styles.itemBlock} key={index}>
-          {/* <FlatList
+      <ScrollView contentContainerStyle={styles.container}>
+        {sections.map((section, index) => (
+          <View style={styles.itemBlock} key={index}>
+            {/* <FlatList
             data={section.data}
             renderItem={renderItem}
             keyExtractor={(item, idx) => idx.toString()}
           /> */}
 
-          {
-            section.data.map((item, index) => 
-              renderItem(item, index)
-            )
-          }
-        </View>
-      ))}
+            {
+              section.data.map((item, index) =>
+                renderItem(item, index)
+              )
+            }
+          </View>
+        ))}
 
-      <Pressable onPress={logout} style={styles.logoutButton}>
-        <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
-        <Ionicons name="exit-outline" size={24} color="#fff" />
-      </Pressable>
+        <Pressable onPress={logout} style={styles.logoutButton}>
+          <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
+          <Ionicons name="exit-outline" size={24} color="#fff" />
+        </Pressable>
 
-{/*       <View style={styles.buttonsRow}>
+        {/*       <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
         <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View> */}
-      {/* <View style={styles.buttonsRow}>
+        {/* <View style={styles.buttonsRow}>
         <Button title="Компания внеш" onPress={() => navigation.navigate('ProfileCompanyPageView')} />
       </View>
 
@@ -163,9 +163,9 @@ const ProfileCompanyPage = () => {
         <Button title="500" onPress={() => navigation.navigate('Error500')} />
         <Button title="503" onPress={() => navigation.navigate('Error503')} />
       </View> */}
-    </ScrollView>
+      </ScrollView>
     </View>
- 
+
   );
 };
 
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     paddingBottom: 64
   },
   nameBlock: {
-    alignSelf:'center',
+    alignSelf: 'center',
     flexDirection: 'row',
     width: width - 32,
     marginTop: 32,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     flexDirection: 'row',
-    alignItems:'flex-start',
+    alignItems: 'flex-start',
     alignSelf: 'flex-start',
     marginLeft: 16,
     marginTop: 32,

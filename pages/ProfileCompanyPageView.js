@@ -16,13 +16,13 @@ const { width } = Dimensions.get('window');
 
 
 
-const ProfileCompanyPageView = ({route, navigation}) => {
-  const {CompanyId} = route.params
+const ProfileCompanyPageView = ({ route, navigation }) => {
+  const { CompanyId } = route.params
   const { getUserByID } = useApi();
 
-  const [userr, setUser]=useState([])
+  const [userr, setUser] = useState([])
 
-  
+
 
   useEffect(() => {
     const init = async () => {
@@ -30,92 +30,96 @@ const ProfileCompanyPageView = ({route, navigation}) => {
       const resultJson = JSON.parse(await result.text())
 
       console.log(resultJson);
-      
+
       setUser(resultJson[0])
     }
     init()
-  
+
     return () => {
-      
+
     }
   }, [getUserByID])
-  
 
 
 
 
-      return (
-        <ScrollView contentContainerStyle={styles.container}>
 
-          <View style={{flexDirection:'row', alignSelf:'flex-start', marginTop: 32, width: width -32, alignSelf:'center', justifyContent:'space-between'}} >
-            {
-              Object.keys(userr).length != 0
-              ?
-              <View>
-                <Text style={styles.name}>{userr.name}</Text>
-                <Text style={styles.email}>Надежная компания</Text>
-                <Text style={styles.email}>На сайте с 2025 года</Text>
-                {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text>
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+
+      <View style={{ flexDirection: 'row', alignSelf: 'flex-start', marginTop: 32, width: width - 32, alignSelf: 'center', justifyContent: 'space-between' }} >
+        {
+          Object.keys(userr).length != 0
+            ?
+            <View>
+              <Text style={styles.name}>{userr.name}</Text>
+              <Text style={styles.email}>Надежная компания</Text>
+              <Text style={styles.email}>На сайте с 2025 года</Text>
+              {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text>
                 <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text> */}
-              </View>        
-              :
-              <ActivityIndicator size="large" color="#32322C" />
-            }
-
-            {
-              Object.keys(userr).length != 0
-              ?
-              <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={80} height={80} source={{uri:userr.photo}}/>
-              :
-              <FontAwesome6 name="face-tired" size={56} color="black" />
-            }
-          </View>
-
-          <View style={styles.itemBlock}>
-            <View style={styles.listItem}>
-            <AntDesign name="check" size={17} color="black" />
-            <Text style={styles.itemText}>Телефон подтвержден</Text>
             </View>
-          </View>
-          <View style={styles.itemBlock}>
-            <View style={styles.listItem}>
-            <AntDesign name="check" size={17} color="black" />
-            <Text style={styles.itemText}>Почта подтверждена</Text>
-            </View>
-          </View>
+            :
+            <ActivityIndicator size="large" color="#32322C" />
+        }
 
-          <Pressable style={{backgroundColor: '#d6d6d6',
-                             width: width - 32,
-                             paddingVertical: 16, 
-                             borderRadius: 12,
-                             marginTop: 24,
-                             alignItems: 'center',
-                             alignSelf:'center'}} 
-                      onPress={()=>{navigation.navigate('Errors',{screen:"NotExistPage"})}}>
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-              Написать
-            </Text>
-          </Pressable>
+        {
+          Object.keys(userr).length != 0
+            ?
+            <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={80} height={80} source={{ uri: userr.photo }} />
+            :
+            <FontAwesome6 name="face-tired" size={56} color="black" />
+        }
+      </View>
+
+      <View style={styles.itemBlock}>
+        <View style={styles.listItem}>
+          <AntDesign name="check" size={17} color="black" />
+          <Text style={styles.itemText}>Телефон подтвержден</Text>
+        </View>
+      </View>
+      <View style={styles.itemBlock}>
+        <View style={styles.listItem}>
+          <AntDesign name="check" size={17} color="black" />
+          <Text style={styles.itemText}>Почта подтверждена</Text>
+        </View>
+      </View>
+
+      <Pressable style={{
+        backgroundColor: '#d6d6d6',
+        width: width - 32,
+        paddingVertical: 16,
+        borderRadius: 12,
+        marginTop: 24,
+        alignItems: 'center',
+        alignSelf: 'center'
+      }}
+        onPress={() => { navigation.navigate('Error', { errorCode: 503 }) }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+          Написать
+        </Text>
+      </Pressable>
 
 
-          <Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>
-            Объявления
-          </Text>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: 'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16 }}>
+        Объявления
+      </Text>
 
-          <Pressable style={{backgroundColor: '#d6d6d6', padding: 16, 
-            borderRadius: 12, marginTop: 24, flexDirection: 'row', 
-            alignItems: 'center', alignSelf:'flex-start'}} onPress={()=>{navigation.navigate('Errors',{screen:"NotExistPage"})}}>
+      <Pressable style={{
+        backgroundColor: '#d6d6d6', padding: 16,
+        borderRadius: 12, marginTop: 24, flexDirection: 'row',
+        alignItems: 'center', alignSelf: 'flex-start'
+      }} onPress={() => { navigation.navigate('Error', { errorCode: 503 }) }}>
 
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-              Посмотреть
-            </Text>
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+          Посмотреть
+        </Text>
 
-          </Pressable>
+      </Pressable>
 
-        </ScrollView>
-      );
+    </ScrollView>
+  );
 
-  
+
 };
 
 export default ProfileCompanyPageView;

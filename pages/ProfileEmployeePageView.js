@@ -15,63 +15,63 @@ const ProfileEmployeePageView = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
 
-  const {getUser} =useApi()
+  const { getUser } = useApi()
 
-   const { getAllPosts, getAllVillages } = useApi();
-     const [houses, setHouses] = useState([]);
-      const [selectedList, setSelectedList] = useState('houses');
-  
-    const [userr, setUser]=useState([])
+  const { getAllPosts, getAllVillages } = useApi();
+  const [houses, setHouses] = useState([]);
+  const [selectedList, setSelectedList] = useState('houses');
 
-        useEffect(() => {
-          const housesFetch = async () => {
-            const tempHouses = await getAllPosts();
-            if (tempHouses) {
-              const tempSetHouses = [];
-              const tempSetNewHouses = [];
-              tempHouses.forEach((house) => {
-                if (house.newbuild) {
-                  tempSetNewHouses.push(house);
-                } else {
-                  tempSetHouses.push(house);
-                }
-              });
-              setHouses(tempSetHouses);
-              setNewHouses(tempSetNewHouses);
-            }
-          };
-      
-          const villagesFetch = async () => {
-            const villageData = await getAllVillages();
-            if (villageData) {
-              setVillages(villageData);
-            }
-          };
-      
-          housesFetch();
-          villagesFetch();
-        }, []);
-  
-    useEffect(() => {
-      const init = async () => {
-        const auth = JSON.parse(await getAuth())
-        const user = await getUser(await auth[0].phone, "realtor")
-        /* console.log(await user.text()); */
-        
-        const userJson = JSON.parse(await user.text())
-        console.log(await userJson[1]); 
-        if (userJson.result != false) {
-          setUser(await userJson[1])
-        }
-        
-        
+  const [userr, setUser] = useState([])
+
+  useEffect(() => {
+    const housesFetch = async () => {
+      const tempHouses = await getAllPosts();
+      if (tempHouses) {
+        const tempSetHouses = [];
+        const tempSetNewHouses = [];
+        tempHouses.forEach((house) => {
+          if (house.newbuild) {
+            tempSetNewHouses.push(house);
+          } else {
+            tempSetHouses.push(house);
+          }
+        });
+        setHouses(tempSetHouses);
+        setNewHouses(tempSetNewHouses);
       }
-      init()
-    
-      return () => {
-        
+    };
+
+    const villagesFetch = async () => {
+      const villageData = await getAllVillages();
+      if (villageData) {
+        setVillages(villageData);
       }
-    }, [])
+    };
+
+    housesFetch();
+    villagesFetch();
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      const auth = JSON.parse(await getAuth())
+      const user = await getUser(await auth[0].phone, "realtor")
+      /* console.log(await user.text()); */
+
+      const userJson = JSON.parse(await user.text())
+      console.log(await userJson[1]);
+      if (userJson.result != false) {
+        setUser(await userJson[1])
+      }
+
+
+    }
+    init()
+
+    return () => {
+
+    }
+  }, [])
 
   // Массив данных для списков
   const sections = [
@@ -123,7 +123,7 @@ const ProfileEmployeePageView = () => {
     },
   ];
 
-  const renderItem = ( item, index ) => (
+  const renderItem = (item, index) => (
     <Pressable key={index} style={styles.listItem}>
       <View style={styles.listItemContent}>
         {item.icon}
@@ -139,12 +139,12 @@ const ProfileEmployeePageView = () => {
         <View style={{ flexDirection: 'row' }}>
           {
             Object.keys(userr).length != 0 && userr.photo != undefined
-            ?
-            <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={56} height={56} source={{uri:userr.photo}}/>
-            :
-            <FontAwesome6 name="face-tired" size={56} color="black" />
+              ?
+              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={56} height={56} source={{ uri: userr.photo }} />
+              :
+              <FontAwesome6 name="face-tired" size={56} color="black" />
           }
-          <View style={{ marginLeft: 16, width:'60%' }}>
+          <View style={{ marginLeft: 16, width: '60%' }}>
             <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
@@ -152,31 +152,31 @@ const ProfileEmployeePageView = () => {
         <Ionicons name="settings-outline" size={32} color="black" />
       </View>
 
-      <Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>Объявления</Text>
-      <HouseCard data={houses} navigation={navigation} itemWidth={width -32} />
+      <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: 'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16 }}>Объявления</Text>
+      <HouseCard data={houses} navigation={navigation} itemWidth={width - 32} />
 
- 
 
-  
+
+
 
       <Pressable onPress={logout} style={styles.logoutButton}>
         <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
         <Ionicons name="exit-outline" size={24} color="grey" />
       </Pressable>
 
-    {/* <View style={styles.buttonsRow}>
+      {/* <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
         <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View> */}
 
-      
+
       <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
-        <Button title="404" onPress={() => navigation.navigate('Error404')} />
-        <Button title="403" onPress={() => navigation.navigate('Error403')} />
-        <Button title="500" onPress={() => navigation.navigate('Error500')} />
-        <Button title="503" onPress={() => navigation.navigate('Error503')} />
+        <Button title="404" onPress={() => navigation.navigate('Error', { errorCode: 404 })} />
+        <Button title="403" onPress={() => navigation.navigate('Error', { errorCode: 403 })} />
+        <Button title="500" onPress={() => navigation.navigate('Error', { errorCode: 500 })} />
+        <Button title="503" onPress={() => navigation.navigate('Error', { errorCode: 503 })} />
       </View>
     </ScrollView>
   );

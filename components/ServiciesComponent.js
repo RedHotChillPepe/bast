@@ -12,29 +12,29 @@ const ServicesComponent = () => {
     {
       text: 'Все сервисы',
       subtext: 'Наши юристы позаботятся о вашей безопасности',
-      navigation:['Errors',{screen:"NotExistPage"}]
+      navigation: ['Error', { errorCode: 503 }]
     },
     {
       text: 'Продать дом',
       subtext: 'Наши юристы позаботятся о вашей безопасности',
-      navigation:['Errors',{screen:"NotExistPage"}]
+      navigation: ['Error', { errorCode: 503 }]
     },
     {
       text: 'Оценка',
       subtext: 'Бесплатно узнайте рыночную стоимость',
-      navigation:['Errors',{screen:"NotExistPage"}]
+      navigation: ['Error', { errorCode: 503 }]
     },
     {
       text: 'Ипотечный калькулятор',
       subtext: 'Подберите удобный ежемесячный платеж',
-      navigation:['MortgageCalculator']
+      navigation: ['MortgageCalculator']
     },
   ];
 
   return (
-    <ScrollView 
-      horizontal={true} 
-      showsHorizontalScrollIndicator={false} 
+    <ScrollView
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.functionCards}>
       {ServicesContent.map((item, index) => (
         <Pressable
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.43,
-    fontWeight:'400',
+    fontWeight: '400',
     color: '#14080E',
   },
 });

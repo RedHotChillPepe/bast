@@ -19,9 +19,12 @@ import ServicesComponent from "../components/ServiciesComponent";
 import VillageCard from "../components/VillageCard";
 import { useApi } from "../context/ApiContext";
 import AdvertisementModalPage from "../pages/AdvertisementModalPage";
+import DynamicHousePostPage from "./DynamicHousePostPage";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
+
+import Modal from "../components/Modal"
 
 const AD_FREQUENCY = 10;
 const MainPage = ({ navigation }) => {
@@ -141,7 +144,6 @@ const MainPage = ({ navigation }) => {
         setIsLoaded(true);
       }
     };
-
     const villagesFetch = async () => {
       const villageData = await getAllVillages();
       if (villageData) {
@@ -242,26 +244,51 @@ const MainPage = ({ navigation }) => {
   const MemoizedVillageCard = memo(VillageCard, (prevProps, nextProps) => prevProps.village.id === nextProps.village.id);
   const MemoizedBanner = memo(Banner, (prevProps, nextProps) => prevProps.bannerData.id === nextProps.bannerData.id);
 
+  const [isModalShow, setIsModalShow] = useState(false);
+  const [selectedPost, setSelectedPost] = useState();
+
+  const handleSelected = (post) => {
+    if (!post) return;
+    setSelectedPost(post);
+    setIsModalShow(true);
+  }
+
   const renderItem = useCallback(({ item, index }) => (
     <View>
-      {selectedList === "villages" ? (
-        <MemoizedVillageCard village={item} />
-      ) : (
-        <MemoizedHouseCard item={item} navigation={navigation} itemWidth={width - 32} />
-      )}
+      <Pressable onPress={() => handleSelected(item)}>
+        {selectedList === "villages" ? (
+          <MemoizedVillageCard village={item} />
+        ) : (
+          <MemoizedHouseCard
+            item={item}
+            navigation={navigation}
+            isModal={true}
+            handleSelected={handleSelected}
+            itemWidth={width - 32} />
+        )}
+      </Pressable>
       {(index + 1) % AD_FREQUENCY === 0 && adsQueue[Math.floor(index / AD_FREQUENCY)] && (
         <MemoizedBanner
           bannerData={adsQueue[Math.floor(index / AD_FREQUENCY)]}
           openModal={() => openModal(adsQueue[Math.floor(index / AD_FREQUENCY)])}
         />
       )}
-
     </View>
   ), [selectedList, adsQueue]);
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#9DC0F6" barStyle="light-content" />
+      {console.log(selectedPost)}
+      {selectedPost &&
+        <Modal isVisible={isModalShow} onClose={() => setIsModalShow(false)}>
+          {selectedList === "villages" ? (
+            <VillageCard village={selectedPost} />
+          ) : (
+            <DynamicHousePostPage navigation={navigation} route={{ houseId: selectedPost, isModal: true, setIsModalShow: setIsModalShow }} />
+          )}
+        </Modal>
+      }
       {isLoaded ? (
         <FlatList
           ListHeaderComponent={() => FlatListHeaderComponent()}

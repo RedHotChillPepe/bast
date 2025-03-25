@@ -6,12 +6,12 @@ import FastImage from "react-native-fast-image";
 
 const { width } = Dimensions.get("window");
 
-const HouseCard = ({ item, navigation, itemWidth }) => {
+const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelected }) => {
   if (!item) return null;
 
   return (
     <Pressable
-      onPress={() => navigation.navigate("House", { houseId: item.id })}
+      onPress={() => !isModal ? navigation.navigate("House", { houseId: item.id }) : handleSelected(item.id)}
     >
       <View style={[styles.houseItem, { width: itemWidth }]}>
         <View style={styles.houseImageView}>
@@ -49,7 +49,7 @@ const HouseCard = ({ item, navigation, itemWidth }) => {
           </Text>
         </View>
       </View>
-    </Pressable>
+    </Pressable >
   );
 };
 

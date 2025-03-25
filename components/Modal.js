@@ -80,7 +80,7 @@ export default function CustomModal({ isVisible, onClose, children }) {
     if (!visible) return null;
 
     return (
-        <Modal style={styles.overlay}>
+        <View style={styles.overlay}>
             <Pressable style={styles.backdrop} onPress={closeModal} />
             <Animated.View
                 style={[
@@ -96,7 +96,7 @@ export default function CustomModal({ isVisible, onClose, children }) {
                 </View>
                 {children}
             </Animated.View>
-        </Modal>
+        </View>
     );
 }
 
@@ -108,10 +108,10 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         flex: 1,
+        backgroundColor: "rgba(0,0,0,0.2) "
     },
     backdrop: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.3)',
     },
     modalContainer: {
         position: 'absolute',
@@ -129,12 +129,12 @@ const styles = StyleSheet.create({
     handleContainer: {
         alignItems: 'center',
         paddingVertical: 8,
-        backgroundColor: 'transparent',
+        backgroundColor: '#F2F2F7',
     },
     handle: {
         width: 40,
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#ccc',
+        backgroundColor: '#808080',
     },
 });

@@ -149,8 +149,8 @@ export default MortgageCalculator;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    marginTop: 32,
+    backgroundColor: '#E5E5EA',
+    marginTop: 16,
   },
   scrollContainer: {
     padding: 16,

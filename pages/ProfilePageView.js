@@ -16,81 +16,80 @@ const { width } = Dimensions.get('window');
 
 
 
-const ProfilePageView = ({route, navigation}) => {
-  const {posterId} = route.params
+const ProfilePageView = ({ route, navigation }) => {
+  const { posterId } = route.params
   const { getUserByID } = useApi();
-  const [userr, setUser]=useState([])
+  const [userr, setUser] = useState([])
   
-
   useEffect(() => {
     const init = async () => {
-    const result = await getUserByID(posterId, "user")
-    const resultJson = JSON.parse(await result.text())
-    console.log(resultJson);
-        
-    setUser(resultJson[0])
+      const result = await getUserByID(posterId, "user")
+      const resultJson = JSON.parse(await result.text())
+      console.log(resultJson);
+
+      setUser(resultJson[0])
     }
     init()
     return () => {
-        
+
     }
   }, [getUserByID])
 
 
 
 
-return (
-  <ScrollView contentContainerStyle={styles.container}>
-    <View style={{ width: width, flexDirection:'row', alignSelf:'flex-start', marginTop: 16, marginBottom: 16, alignItems:'flex-start', justifyContent:'space-between', paddingHorizontal: 16}} >        
-      {
-        Object.keys(userr).length != 0
-        ?
-        <View>
-          <Text style={styles.name}>{userr.name} {userr.surname}</Text>
-          {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text> */}
-          {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text> */}
-          <Text style={{fontSize: 16, color:'#858585'}}>На сайте с мая 2024</Text>
-        </View>   
-        :
-        <ActivityIndicator size="large" color="#32322C" />
-      }
-            
-      {
-        Object.keys(userr).length != 0
-        ?
-        <Image style={{overflow:'hidden',  borderRadius: 150 / 2}} width={80} height={80} source={{uri:userr.photo}}/>
-        :
-        <FontAwesome6 name="face-tired" size={56} color="black" />
-      }
-    </View>
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={{ width: width, flexDirection: 'row', alignSelf: 'flex-start', marginTop: 16, marginBottom: 16, alignItems: 'flex-start', justifyContent: 'space-between', paddingHorizontal: 16 }} >
+        {
+          Object.keys(userr).length != 0
+            ?
+            <View>
+              <Text style={styles.name}>{userr.name} {userr.surname}</Text>
+              {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text> */}
+              {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text> */}
+              <Text style={{ fontSize: 16, color: '#858585' }}>На сайте с мая 2024</Text>
+            </View>
+            :
+            <ActivityIndicator size="large" color="#32322C" />
+        }
 
-    <View style={styles.itemBlock}>
-      <View style={styles.listItem}>
-        <AntDesign name="check" size={17} color="black" />
-        <Text style={styles.itemText}>Телефон подтвержден</Text>
+        {
+          Object.keys(userr).length != 0
+            ?
+            <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={80} height={80} source={{ uri: userr.photo }} />
+            :
+            <FontAwesome6 name="face-tired" size={56} color="black" />
+        }
       </View>
-    </View>
-    <View style={styles.itemBlock}>
-      <View style={styles.listItem}>
-        <AntDesign name="check" size={17} color="black" />
-        <Text style={styles.itemText}>Почта подтверждена</Text>
+
+      <View style={styles.itemBlock}>
+        <View style={styles.listItem}>
+          <AntDesign name="check" size={17} color="black" />
+          <Text style={styles.itemText}>Телефон подтвержден</Text>
+        </View>
+      </View>
+      <View style={styles.itemBlock}>
+        <View style={styles.listItem}>
+          <AntDesign name="check" size={17} color="black" />
+          <Text style={styles.itemText}>Почта подтверждена</Text>
         </View>
       </View>
 
-    <Pressable style={{backgroundColor: '#d6d6d6', width: width - 32, padding: 16, borderRadius: 20, marginTop: 24, alignItems: 'center'}}>
-      <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-        Написать
+      <Pressable style={{ backgroundColor: '#d6d6d6', width: width - 32, padding: 16, borderRadius: 20, marginTop: 24, alignItems: 'center' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+          Написать
+        </Text>
+      </Pressable>
+
+
+      <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: 'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16 }}>
+        Объявления
       </Text>
-    </Pressable>
+    </ScrollView>
+  );
 
 
-    <Text style={{fontSize: 24, fontWeight:'bold', alignSelf:'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16}}>
-      Объявления
-    </Text>
-  </ScrollView>
-      );
-
-  
 };
 
 export default ProfilePageView;

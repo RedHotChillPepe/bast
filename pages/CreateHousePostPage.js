@@ -118,7 +118,6 @@ export default function CreateHousePostPage({ navigation }) {
 
   const [page, setPage] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
   const inputListLocation = [
     { text: "Населённый пункт*", placeholder: "Название населённого пункта", valueName: "settlement" },
     { text: "Адрес*", placeholder: "Улица, Дом", valueName: "location" },
@@ -333,8 +332,8 @@ export default function CreateHousePostPage({ navigation }) {
       { label: "Скважина", value: "Скважина" },
     ],
     gas: [
-      { label: "Подключен", value: "Подключен" },
-      { label: "Не подключен", value: "Не подключен" },
+      { label: "Подключен", value: "true" },
+      { label: "Не подключен", value: "false" },
     ],
     heating: [
       { label: "Газовый котел", value: "Газовый котел" },
@@ -419,11 +418,11 @@ export default function CreateHousePostPage({ navigation }) {
   // formData.price || !formData.settlement || !formData.location
   const requiredFieldsByPage = {
     0: ['photos'],
-    1: ['settlement', 'location', 'kadastr'],
-    2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
-    3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
-    4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
-    5: ['description', 'price'],
+    // 1: ['settlement', 'location', 'kadastr'],
+    // 2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
+    // 3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
+    // 4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
+    // 5: ['description', 'price'],
   };
 
   const isPageValid = () => {

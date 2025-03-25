@@ -21,75 +21,75 @@ const { width } = Dimensions.get('window');
 const ProfilePage = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
-  const {getUser} =useApi()
+  const { getUser } = useApi()
   const insets = useSafeAreaInsets();
 
-  const [usertype, setUsertype] = useState(1) 
+  const [usertype, setUsertype] = useState(1)
 
-  const [userr, setUser]=useState([])
+  const [userr, setUser] = useState([])
 
   useEffect(() => {
     const init = async () => {
       const auth = JSON.parse(await getAuth())
       const user = await getUser(await auth[0].phone, "user")
       /* console.log(await user.text()); */
-      
-      const userJson = JSON.parse(await user.text()) 
+
+      const userJson = JSON.parse(await user.text())
       if (userJson.result != false) {
         setUser(await userJson[1])
       }
-      
+
       setUsertype(await auth[0].usertype)
-      
+
     }
     init()
-  
+
     return () => {
-      
+
     }
   }, [usertype, getAuth, getUser])
-  
-  
-  
+
+
+
 
   // Массив данных для списков
   const sections = [
     {
       title: 'Основные',
       data: [
-        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
     {
       title: 'Мои действия',
       data: [
-        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation:['Favourites'] },
-        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation:['UserPostsPage', {user_id: userr.id}] },
-        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation:['UserPostsClosed', {user_id: userr.id}] },
-        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation:['UserRecycleBin', {user_id: userr.id}] },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation: ['Favourites'] },
+        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: userr.id }] },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsClosed', { user_id: userr.id }] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserRecycleBin', { user_id: userr.id }] },
+        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор', navigation:['MortgageCalculator'] },
-        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр', navigation:['Errors',{screen:"NotExistPage"}] },
-        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении', navigation:['Errors',{screen:"NotExistPage"}] },
+        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор', navigation: ['MortgageCalculator'] },
+        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении', navigation: ['Error', { errorCode: 503 }] },
       ],
     },
 
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation:['SettingsPage'] },
+        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage'] },
       ],
     },
 
-    
+
   ];
 
   const renderItem = (item, index, sectionData) => (
@@ -107,66 +107,66 @@ const ProfilePage = () => {
 
   switch (usertype) {
     case 2:
-      return <ProfileCompanyPage/>;
+      return <ProfileCompanyPage />;
     case 3:
-      return <ProfileRealtorPage/>;
+      return <ProfileRealtorPage />;
     default:
       return (
-       <View style={{flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
-         <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.nameBlock}>  
-          <View style={{flexDirection:'row', width: width -32, justifyContent:'space-between' }}>
-            <View style={{height: 17, width: 16}} />
+        <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
+          <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.nameBlock}>
+              <View style={{ flexDirection: 'row', width: width - 32, justifyContent: 'space-between' }}>
+                <View style={{ height: 17, width: 16 }} />
 
-            {
-            Object.keys(userr).length != 0 && userr.photo != undefined
-            ?
-            <Image style={{overflow:'hidden',  borderRadius: 150 / 2, alignSelf:'center'}} width={100} height={100} source={{uri:userr.photo}}/>
-            :
-            <FontAwesome6 name="face-tired" size={56} color="black" />
-            }  
+                {
+                  Object.keys(userr).length != 0 && userr.photo != undefined
+                    ?
+                    <Image style={{ overflow: 'hidden', borderRadius: 150 / 2, alignSelf: 'center' }} width={100} height={100} source={{ uri: userr.photo }} />
+                    :
+                    <FontAwesome6 name="face-tired" size={56} color="black" />
+                }
 
-          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
-          <FontAwesome name="edit" size={24} color="#fff" />
-          </Pressable>
-        </View>
-    
-        <View style={{ flexDirection: 'row' }}>
+                <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
+                  <FontAwesome name="edit" size={24} color="#fff" />
+                </Pressable>
+              </View>
 
-          <View style={{ alignItems:'center' }}>
-            <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
-            <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
-            <Text style={styles.email}>{userr.phone != undefined ? userr.phone : "+ 7 (xxx) xxx xx xx"}</Text>
-          </View>
-        </View>
+              <View style={{ flexDirection: 'row' }}>
 
-      </View>
-       
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
+                  <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
+                  <Text style={styles.email}>{userr.phone != undefined ? userr.phone : "+ 7 (xxx) xxx xx xx"}</Text>
+                </View>
+              </View>
 
-    
-          {sections.map((section, index) => (
+            </View>
+
+
+
+            {sections.map((section, index) => (
               <View style={styles.itemBlock} key={index}>
                 {section.data.map((item, idx) => renderItem(item, idx, section.data))}
               </View>
             ))
-          }
-    
-          <Pressable onPress={logout} style={styles.logoutButton}>
-            <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
-            <Ionicons name="exit-outline" size={24} color="#fff" />
-          </Pressable>
+            }
 
-          <Pressable onPress={()=>{navigation.navigate("ProfileCompanyPageView", {CompanyId:1})}} style={styles.logoutButton}>
-            <Text style={[styles.itemText, styles.logoutText]}>Профиль компании</Text>
-            <Ionicons name="exit-outline" size={24} color="#fff" />
-          </Pressable>
-          <View style={{height: 128}} />
-        </ScrollView>
+            <Pressable onPress={logout} style={styles.logoutButton}>
+              <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
+              <Ionicons name="exit-outline" size={24} color="#fff" />
+            </Pressable>
+
+            <Pressable onPress={() => { navigation.navigate("ProfileCompanyPageView", { CompanyId: 1 }) }} style={styles.logoutButton}>
+              <Text style={[styles.itemText, styles.logoutText]}>Профиль компании</Text>
+              <Ionicons name="exit-outline" size={24} color="#fff" />
+            </Pressable>
+            <View style={{ height: 128 }} />
+          </ScrollView>
         </View>
       );
   }
 
-  
+
 };
 
 export default ProfilePage;
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 11,
     paddingBottom: 11,
-    
+
   },
   listItemContent: {
     flexDirection: 'row',
