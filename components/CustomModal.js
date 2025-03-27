@@ -5,15 +5,13 @@ import {
     PanResponder,
     Pressable,
     StyleSheet,
-    View,
-    Modal
+    View
 } from 'react-native';
 
 const { height } = Dimensions.get('window');
 
-export default function CustomModal({ isVisible, onClose, children }) {
+export default function CustomModal({ isVisible, onClose, children, customHeight = "100%" }) {
     const translateY = useRef(new Animated.Value(height)).current;
-
     const [visible, setVisible] = useState(isVisible);
 
     const panResponder = useRef(
@@ -87,11 +85,11 @@ export default function CustomModal({ isVisible, onClose, children }) {
                     styles.modalContainer,
                     {
                         transform: [{ translateY }],
+                        height: customHeight
                     },
                 ]}
-                {...panResponder.panHandlers}
             >
-                <View style={styles.handleContainer}>
+                <View style={styles.handleContainer} {...panResponder.panHandlers}>
                     <View style={styles.handle} />
                 </View>
                 {children}
@@ -108,7 +106,7 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.2) "
+        backgroundColor: "rgba(0,0,0,0.2)"
     },
     backdrop: {
         flex: 1,
@@ -118,14 +116,12 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        height: '100%',
         zIndex: 888,
         backgroundColor: '#fff',
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
         overflow: 'hidden',
     },
-
     handleContainer: {
         alignItems: 'center',
         paddingVertical: 8,

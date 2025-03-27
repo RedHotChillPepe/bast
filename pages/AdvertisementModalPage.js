@@ -1,8 +1,8 @@
 import React from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Button from '../components/Button';
-import CustomModal from '../components/Modal';
+import CustomModal from '../components/CustomModal';
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -21,7 +21,7 @@ const AdvertisementModalPage = (props) => {
     };
 
     return (
-        <CustomModal isVisible={isVisible} onClose={closeModal}>
+        <Modal visible={isVisible} animationType='slide'>
             <View style={styles.container}>
                 <View style={{ flex: 1 }}>
                     <Pressable style={styles.headerContainer} onPress={closeModal}>
@@ -42,7 +42,7 @@ const AdvertisementModalPage = (props) => {
                     <Button buttonHandle={() => console.log("заявка!")} title="Оставить заявку" />
                 </View>
             </View>
-        </CustomModal >
+        </Modal >
     );
 };
 

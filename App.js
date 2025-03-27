@@ -1,62 +1,55 @@
-import { useEffect } from "react";
-import { View, Text, Pressable, Platform } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Entypo from "@expo/vector-icons/Entypo";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Fontisto from "@expo/vector-icons/Fontisto";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MainPage from "./pages/MainPage";
-import ProfilePage from "./pages/ProfilePage";
-import SearchPage from "./pages/SearchPage";
-import FavouritesPage from "./pages/FavouritesPage";
-import ChatsPage from "./pages/ChatsPage";
-import RegisterPage from "./pages/RegisterPage";
-import OnboardingPage from "./pages/OnboardingPage";
-import AuthProvider from "./context/AuthContext";
-import { useAuth } from "./context/AuthContext";
-import LoginPage from "./pages/LoginPage";
-import DynamicHousesPage from "./pages/DynamicHousesPage";
-import DynamicHousePostPage from "./pages/DynamicHousePostPage";
-import ApiProvider from "./context/ApiContext";
-import HeaderComponent from "./components/HeaderComponent";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
-import PersonalData from "./pages/PersonalDataPage.js";
-import UserLoginPage from "./pages/UserLoginPage.js";
+import * as Linking from 'expo-linking';
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { Platform, Pressable, Text } from "react-native";
+import { Geocoder, YaMap } from "react-native-yamap";
+import HeaderComponent from "./components/HeaderComponent";
+import ApiProvider from "./context/ApiContext";
+import AuthProvider, { useAuth } from "./context/AuthContext";
+import ToastProvider from "./context/ToastProvider";
+import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
 import ConfirmationPage from "./pages/ConfirmationPage.js";
 import CreateHousePostPage from "./pages/CreateHousePostPage.js";
-import Fontisto from "@expo/vector-icons/Fontisto";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Entypo from "@expo/vector-icons/Entypo";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import EditHousePostPage from "./pages/EditHousePostPage.js";
-import * as SplashScreen from "expo-splash-screen";
-import MortgageCalculator from "./pages/MortgageCalculator.js";
-import ErrorScreen from "./pages/ErrorScreen.js";
+import DynamicHousePostPage from "./pages/DynamicHousePostPage";
+import DynamicHousesPage from "./pages/DynamicHousesPage";
 import DynamicStoriesPage from "./pages/DynamicStoriesPage.js";
-import ProfilePageView from "./pages/ProfilePageView.js";
-import SettingsPage from "./pages/SettingsPage.js";
+import EditHousePostPage from "./pages/EditHousePostPage.js";
+import ErrorScreen from "./pages/ErrorScreen.js";
+import FavouritesPage from "./pages/FavouritesPage";
+import LoginPage from "./pages/LoginPage";
+import MainPage from "./pages/MainPage";
+import MortgageCalculator from "./pages/MortgageCalculator.js";
+import PersonalData from "./pages/PersonalDataPage.js";
 import ProfileCompanyPageView from "./pages/ProfileCompanyPageView.js";
 import ProfileEmployeePageView from "./pages/ProfileEmployeePageView.js";
-import { Geocoder } from "react-native-yamap";
-import { YaMap } from "react-native-yamap";
+import ProfilePage from "./pages/ProfilePage";
+import ProfilePageView from "./pages/ProfilePageView.js";
+import RegisterPage from "./pages/RegisterPage";
 import SearchMap from "./pages/SearchMap.js";
-import { Button } from "react-native-elements";
-import Feather from "@expo/vector-icons/Feather";
-import UserPostsPage from "./pages/UserPostsPage.js";
-import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
+import SettingsPage from "./pages/SettingsPage.js";
+import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsClosed from "./pages/UserPostsClosed.js";
+import UserPostsPage from "./pages/UserPostsPage.js";
 import UserRecycleBin from "./pages/UserRecycleBin.js";
-import ToastProvider from "./context/ToastProvider";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const OnboardingStack = createNativeStackNavigator();
-const ErrorStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const TopStack = createNativeStackNavigator();
 const SearchStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 process.env.NODE_ENV !== "development" && YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
-Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
+Geocoder.init("c37de2be-5430-4b50-9157-4e5278fbdd7e");
 
 const SearchPostsStack = () => {
   return (
@@ -78,7 +71,7 @@ const SearchPostsStack = () => {
         name="House"
         component={DynamicHousePostPage}
         options={({ navigation }) => ({
-          headerShown: true,
+          headerShown: false,
           headerTitle: "",
           ...(Platform.OS === "ios" && {
             headerLeft: () => (
@@ -562,6 +555,7 @@ const AppInit = () => {
     if (!isAuth) {
       return <AppAuthStack />;
     }
+
     /* // Проверка проведён ли пользователь через "онбординг"
     if (!isOnboarded) {
       return (
@@ -570,12 +564,53 @@ const AppInit = () => {
         </OnboardingStack.Navigator>
       )
     } */
+
     if (/* isOnboarded &&  */ isAuth) {
-      return <AppTopStack />;
+      return (<>
+        <DeepLinkHandler />
+        <AppTopStack />
+      </>)
     }
   }
 };
 ///
+
+const DeepLinkHandler = () => {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    // Функция для обработки deep link
+    const handleDeepLink = ({ url }) => {
+      if (url) {
+        const parsedUrl = Linking.parse(url);
+        console.log('Получена ссылка:', parsedUrl);
+        if (!parsedUrl.path) return;
+        // Проверяем путь и параметры ссылки
+        if (parsedUrl.path.includes('share/post') && parsedUrl.queryParams.id) {
+          // Навигация на экран House с параметром houseId
+          navigation.navigate('House', { houseId: parsedUrl.queryParams.id, timestamp: Date.now() });
+        }
+      }
+    };
+
+    // Подписка на события ссылок, когда приложение уже открыто
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+
+    // Проверка начальной ссылки при запуске приложения
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleDeepLink({ url });
+      }
+    }).catch((err) => console.error('Ошибка при получении начальной ссылки:', err));
+
+    // Очистка подписки при размонтировании компонента
+    return () => {
+      subscription.remove();
+    };
+  }, [navigation]);
+
+  return null;
+};
 
 // Корневой (Root) компонент
 export default function App() {
@@ -588,14 +623,38 @@ export default function App() {
   //   }
   // }, []);
 
+  const linking = {
+    prefixes: [
+      // 'https://bast-backend-urdx.onrender.com', // ваш домен для продакшна на Android
+      "http://192.168.1.48:3000/",
+      Linking.createURL(''), // для разработки (exp://)
+      // 'myapp://' // дополнительный префикс (если нужен)
+    ],
+    config: {
+      screens: {
+        Tabs: {
+          screens: {
+            Home: {
+              screens: {
+                House: 'post/:houseId', // Маршрут для экрана House с параметром id
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
+
+
   return (
     <ApiProvider>
       <AuthProvider>
-        <NavigationContainer>
-          <ToastProvider>
+        <ToastProvider>
+          <NavigationContainer linking={linking} >
             <AppInit />
-          </ToastProvider>
-        </NavigationContainer>
+          </NavigationContainer>
+        </ToastProvider>
       </AuthProvider>
     </ApiProvider>
   );

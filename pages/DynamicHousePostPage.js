@@ -3,16 +3,17 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Octicons from '@expo/vector-icons/Octicons';
 import * as Clipboard from 'expo-clipboard';
+import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   Image,
-  Linking,
   Modal,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -25,10 +26,11 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from "../context/ToastProvider";
 import MortgageCalculator from './MortgageCalculator';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function DynamicHousePostPage({ navigation, route }) {
   const houseId = route.houseId || route.params.houseId;
+  const timestamp = route.params?.timestamp || 0;
   const isModal = route.isModal || false;
   const { getPost, getIsOwner, getUserByID, updateStatus } = useApi();
   const { getAuth } = useAuth();
@@ -115,7 +117,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
     fetchData();
     checkUser();
     checkFavorite();
-  }, [houseId]);
+  }, [houseId, timestamp]);
 
   const toggleFavorite = async () => {
     const favs = JSON.parse(await SecureStore.getItemAsync("favs")) || [];
@@ -195,31 +197,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
     { label: "Дополнительно", value: postData.additions },
   ];
 
-  // Обновление кнопки в хедере
-  useEffect(() => {
-    !isModal &&
-      navigation.setOptions({
-        headerRight: () => (
-          <View style={{ flexDirection: 'row' }}>
-            {!isOwner &&
-              <Pressable onPress={toggleFavorite} style={{ marginRight: 16 }}>
-                <MaterialIcons
-                  name={isFavorite ? 'favorite' : 'favorite-border'}
-                  size={27}
-                  color={isFavorite ? 'red' : '#007AFF'}
-                />
-              </Pressable>
-            }
-            {isOwner && (
-              <Pressable onPress={() => navigation.navigate("EditHousePostPage", postData)}>
-                <Feather name="edit" size={22} color="#007AFF" />
-              </Pressable>
-            )}
-          </View>
-        ),
-      });
-  }, [navigation, isFavorite, isOwner, postData]);
-
   // Кнопки внизу в зависимости от статуса объявления
   const renderActionButtons = () => {
     // Статусы:
@@ -230,8 +207,8 @@ export default function DynamicHousePostPage({ navigation, route }) {
         return (
           <View
             style={{
-              flexDirection: 'row', width: width, justifyContent: 'space-between', paddingHorizontal: 16, alignItems: "center", marginBottom: 16,
-              position: "absolute", bottom: isModal ? "9%" : 0
+              flexDirection: 'row', width: width, justifyContent: 'space-between',
+              paddingHorizontal: 16, alignItems: "flex-end", marginTop: 32
             }
             }>
             <Pressable
@@ -250,7 +227,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
         );
       } else if (postData.status === 3 || postData.status === -1) {
         return (
-          <View style={{ width: width - 32, alignItems: 'center', marginBottom: 16, marginLeft: 16 }}>
+          <View style={{ width: width - 32, alignItems: 'center', marginTop: 32 }}>
             <Pressable
               style={[styles.button, { backgroundColor: '#007AFF', paddingVertical: 8 }]}
               onPress={() => setShowRestoreConfirm(true)}
@@ -260,9 +237,8 @@ export default function DynamicHousePostPage({ navigation, route }) {
           </View>
         );
       }
-
       return (
-        <TouchableOpacity onPress={() => handleCallButton()} style={[styles.button, { marginBottom: 16, marginLeft: 16 }]}>
+        <TouchableOpacity onPress={() => handleCallButton()} style={[styles.button, { marginTop: 32, }]}>
           <Text style={styles.buttonText}>Позвонить</Text>
         </TouchableOpacity >
       );
@@ -285,7 +261,11 @@ export default function DynamicHousePostPage({ navigation, route }) {
 
     if (!text) return;
 
-    return <Text style={{ textAlign: "center", fontSize: 16, fontWeight: "600", color: "#2C88EC", fontFamily: "Sora700" }}>
+    return <Text
+      style={{
+        textAlign: "center", fontSize: 16, fontWeight: "600",
+        color: "#2C88EC", fontFamily: "Sora700", paddingLeft: !isOwner ? 24 : 0
+      }}>
       {text}
     </Text>
   }
@@ -524,7 +504,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
     confirmText = 'Подтвердить',
     cancelText = 'Отмена',
   }) => {
-    console.log(message);
     return (
       <Modal
         visible={visible}
@@ -558,31 +537,82 @@ export default function DynamicHousePostPage({ navigation, route }) {
     );
   }
 
-  const renderHeader = () => {
-    return <View style={{
-      flexDirection: "row", justifyContent: "space-between", width: width, alignItems: "center",
-      paddingBottom: 8, backgroundColor: "#F2F2F7", paddingHorizontal: 17, paddingTop: isModal ? 0 : 8
-    }}>
-      <Pressable
-        onPress={() => isModal ? route.setIsModalShow(false) : navigation.goBack()}
-      >
-        <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+  const sharePost = async () => {
+    try {
+      const { name, full_address, city, price, photos, text } = postData;
+      const url = `http://192.168.1.48:3000/share/post?id=${houseId}`;
+
+      // Проверяем, что значения заполнены
+      const postName = name ? name : 'Объявление';
+      const address = full_address ? `📍 Адрес: ${full_address}, ${city}` : `🏙 Город: ${city}`;
+      const priceInfo = price ? `💰 Цена: ${price} руб.` : '';
+      const description = text ? text : 'Описание отсутствует';
+
+      const message = `
+        🏡 ${postName}
+        ${address}
+        ${priceInfo}
+        📄 Описание: ${description}
+        🔗 Посмотри это объявление: ${url}
+      `;
+      
+      const shareOptions = {
+        message,
+      };
+
+      await Share.share(shareOptions);
+    } catch (error) {
+      showToast('Ошибка при попытке поделиться объявлением', "error")
+      console.error('Ошибка при попытке поделиться объявлением', error);
+    }
+  };
+
+  const renderBackButton = () => (
+    <Pressable onPress={() => isModal ? route.setIsModalShow(false) : navigation.goBack()}>
+      <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
+    </Pressable>
+  );
+
+  const renderEditAndFavoriteButtons = () => (
+    <View style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}>
+      <Pressable onPress={() => navigation.navigate("EditHousePostPage", postData)}>
+        <Feather name="edit" size={24} color="#007AFF" />
       </Pressable>
-      {renderPostStatus()}
-      {isOwner ? (
-        <Pressable onPress={() => navigation.navigate("EditHousePostPage", postData)}>
-          <Feather name="edit" size={24} color="#007AFF" />
+      {postData.status == 1 &&
+        <Pressable Pressable onPress={sharePost}>
+          <MaterialIcons name="share" size={24} color="#007Aff" />
         </Pressable>
-      ) : (
-        <Pressable onPress={toggleFavorite}>
-          <MaterialIcons
-            name={isFavorite ? 'favorite' : 'favorite-border'}
-            size={24}
-            color={isFavorite ? 'red' : '#007AFF'}
-          />
-        </Pressable>)}
+      }
+    </View >
+  );
+
+  const renderFavoriteAndShareButtons = () => (
+    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end", columnGap: 4 }}>
+      <Pressable onPress={toggleFavorite}>
+        <MaterialIcons
+          name={isFavorite ? 'favorite' : 'favorite-border'}
+          size={24}
+          color={isFavorite ? 'red' : '#007AFF'}
+        />
+      </Pressable>
+      <Pressable onPress={sharePost}>
+        <MaterialIcons name="share" size={24} color="#007Aff" />
+      </Pressable>
     </View>
-  }
+  );
+
+  const renderHeader = () => {
+    return (
+      <View style={{
+        flexDirection: "row", justifyContent: "space-between", width: width, alignItems: "center",
+        paddingBottom: 8, backgroundColor: "#F2F2F7", paddingHorizontal: 17, paddingTop: isModal ? 0 : 12
+      }}>
+        {renderBackButton()}
+        {renderPostStatus()}
+        {isOwner ? renderEditAndFavoriteButtons() : (postData.status == 1 && renderFavoriteAndShareButtons())}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -591,21 +621,27 @@ export default function DynamicHousePostPage({ navigation, route }) {
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled={true}
         scrollEnabled={!isInteractingWithMap}>
+        {/* <Button
+          title="Test Link"
+          onPress={() => {
+            const url = `http://192.168.1.48:3000/share/post?id=${houseId}`;
+            console.log('Test URL:', url);
+            Linking.openURL(url);
+          }}
+        /> */}
         {renderHeader()}
         <ImageCarousel postData={postData} />
         {renderPriceBlock()}
         {renderHouseSpecs()}
+        {renderActionButtons()}
         {renderMap()}
         {renderBlockSeller()}
         {renderBlockDescription()}
         {renderAboutHouse()}
         {renderServicesBlock()}
         <MortgageCalculator price={postData.price} />
-
         <View style={{ height: 134 }} />
       </ScrollView>
-
-      {renderActionButtons()}
       {renderModal()}
     </View>
   );
@@ -615,6 +651,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E5E5EA',
+    height: height - 120
   },
   scrollContainer: {
     alignItems: 'center',

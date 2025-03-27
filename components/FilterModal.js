@@ -1,25 +1,22 @@
 import React, { useRef } from 'react';
 import {
-  Text,
-  View,
-  StyleSheet,
-  Pressable,
-  Modal,
-  ScrollView,
   Dimensions,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
-import PriceRangeSlider from './PriceRageSlider';
-import AreaRangeSlider from './AreaRageSlider';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import RangeSlider from './RangeSlider';
+
 
 const { width, height } = Dimensions.get('window');
 
 const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, filterGroups, setPriceRange, setAreaRange, handleFilterChoice }) => {
   const priceRange = useRef([1_000_000, 50_000_000]);
   const areaRange = useRef([0, 1_000])
-  
+
   const handleOptionPress = (group, option) => {
     setSelectedFilters((prevFilters) => {
       if (prevFilters[group.id] === option.id) {
@@ -32,18 +29,18 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
       return { ...prevFilters, [group.id]: option.id };
     });
     console.log("filter:", group.id, option);
-    
+
   };
 
-  const handlePriceRange = (range)=> {
+  const handlePriceRange = (range) => {
     setPriceRange(range)
   }
 
-  const handleAreaRange = (range)=> {
+  const handleAreaRange = (range) => {
     setAreaRange(range)
   }
 
-  const handleApplyPress = ()=>{
+  const handleApplyPress = () => {
     handleFilterChoice()
     onClose()
   }
@@ -52,45 +49,62 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onDismiss={onClose}>
       <View activeOpacity={1} style={styles.modalOverlay} onPressOut={onClose}>
         <View >
-            <View style={styles.modalContent}>
-              <Text style={styles.modalHeader}>Параметры поиска</Text>
-              <ScrollView contentContainerStyle={styles.groupList}>
-                <PriceRangeSlider priceRange={priceRange} onSliderChange={handlePriceRange}/>
-                <View style={{height: 24}} />
-                <AreaRangeSlider areaRange={areaRange} onSliderChange={handleAreaRange}/>
-                <View style={{height: 32}} />
-                {filterGroups.map((group) => (
-                  <View key={group.id} style={styles.groupContainer}>
-                    <Text style={styles.groupHeader}>{group.title}</Text>
-                    <View style={styles.optionsContainer}>
-                      {group.options.map((option) => (
-                        <Pressable
-                          key={option.id}
+          <View style={styles.modalContent}>
+            <Text style={styles.modalHeader}>Параметры поиска</Text>
+            <ScrollView contentContainerStyle={styles.groupList}>
+              <RangeSlider
+                rangeRef={priceRange}
+                onSliderChange={handlePriceRange}
+                title="Цена:"
+                unit="₽"
+                min={0}
+                max={100000000}
+                step={1000}
+                sliderLength={width - 64}
+              />
+              <View style={{ height: 24 }} />
+              <RangeSlider
+                title="Площадь дома:"
+                unit="м²"
+                rangeRef={areaRange}
+                min={0}
+                max={1000}
+                step={10}
+                onValuesChange={handleAreaRange}
+              />
+              <View style={{ height: 32 }} />
+              {filterGroups.map((group) => (
+                <View key={group.id} style={styles.groupContainer}>
+                  <Text style={styles.groupHeader}>{group.title}</Text>
+                  <View style={styles.optionsContainer}>
+                    {group.options.map((option) => (
+                      <Pressable
+                        key={option.id}
+                        style={[
+                          styles.filterButton,
+                          selectedFilters[group.id] === option.id && styles.selectedFilterButton,
+                        ]}
+                        onPress={() => handleOptionPress(group, option)}
+                      >
+                        <Text
                           style={[
-                            styles.filterButton,
-                            selectedFilters[group.id] === option.id && styles.selectedFilterButton,
+                            styles.filterButtonText,
+                            selectedFilters[group.id] === option.id && styles.selectedFilterButtonText,
                           ]}
-                          onPress={() => handleOptionPress(group, option)}
                         >
-                          <Text
-                            style={[
-                              styles.filterButtonText,
-                              selectedFilters[group.id] === option.id && styles.selectedFilterButtonText,
-                            ]}
-                          >
-                            {option.label}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </View>
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    ))}
                   </View>
-                ))}
-              </ScrollView>
-              <Pressable style={styles.closeButton} onPress={()=>handleApplyPress()}>
-                <Text style={styles.closeButtonText}>Применить</Text>
-              </Pressable>
-            </View>
-          
+                </View>
+              ))}
+            </ScrollView>
+            <Pressable style={styles.closeButton} onPress={() => handleApplyPress()}>
+              <Text style={styles.closeButtonText}>Применить</Text>
+            </Pressable>
+          </View>
+
         </View>
       </View>
     </Modal>
@@ -127,12 +141,12 @@ const styles = StyleSheet.create({
 
   },
   groupList: {
-    
+
     alignItems: 'flex-start',
     paddingLeft: 16,
   },
   groupContainer: {
-  
+
     marginBottom: 24,
   },
   groupHeader: {
@@ -144,8 +158,8 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     flexDirection: 'row',
-    flexWrap:'wrap'
-    
+    flexWrap: 'wrap'
+
   },
   filterButton: {
     paddingVertical: 7,

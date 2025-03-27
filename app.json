@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "bast",
+    "scheme": "myapp",
     "slug": "bast",
     "version": "1.0.0",
     "newArchEnabled": true,
@@ -14,12 +15,28 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bastithouses.app"
+      "bundleIdentifier": "com.bastithouses.app",
+      "associatedDomains": ["applinks:192.168.1.48"]
+      // "associatedDomains": ["applinks:bast-backend-urdx.onrender.com"]
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/BastLogo.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "intentFilters": [
+          {
+            "action": "VIEW",
+            "data": [
+              {
+                "scheme": "http",
+                "host": "192.168.1.48:3000",
+                // "host": "bast-backend-urdx.onrender.com",
+                "pathPrefix": "/post"
+              }
+            ],
+            "category": ["BROWSABLE", "DEFAULT"]
+          }
+        ]
       },
       "package": "com.bastithouses.app"
     },
@@ -29,7 +46,8 @@
     "plugins": [
       "expo-font",
       [
-        "expo-build-properties", {
+        "expo-build-properties",
+        {
           "android": {
             "minSdkVersion": 26,
             "usesCleartextTraffic": true,

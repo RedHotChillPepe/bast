@@ -385,7 +385,6 @@ export default function ApiProvider({ children }) {
 
   const getIsOwner = async (phone, password, postid) => {
     const url = host + "api/users/getisowner";
-
     try {
       return fetch(url, {
         method: "POST",
@@ -397,7 +396,7 @@ export default function ApiProvider({ children }) {
           {
             phone: phone,
             password: password,
-            post_id: postid,
+            post_id: Number(postid),
           },
         ]),
       })

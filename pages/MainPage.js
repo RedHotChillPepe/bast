@@ -20,24 +20,25 @@ import VillageCard from "../components/VillageCard";
 import { useApi } from "../context/ApiContext";
 import AdvertisementModalPage from "../pages/AdvertisementModalPage";
 import DynamicHousePostPage from "./DynamicHousePostPage";
+import CustomModal from "../components/CustomModal";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 
-import Modal from "../components/Modal"
-
 const AD_FREQUENCY = 10;
+
 const MainPage = ({ navigation }) => {
   const { getPaginatedPosts, getAllVillages } = useApi();
   const [houses, setHouses] = useState([]);
   const [villages, setVillages] = useState([]);
   const isFocused = useIsFocused();
-  const [selectedList, setSelectedList] = useState("houses"); // houses или villages
+  const [selectedList, setSelectedList] = useState("houses"); // "houses" или "villages"
   const [page, setPage] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVisibleModalBanner, setIsVisibleModalBanner] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   // Исходный пул рекламы
   const [adPool] = useState([
@@ -57,7 +58,7 @@ const MainPage = ({ navigation }) => {
       description:
         "Не упустите шанс стать владельцем земли на выгодных условиях!",
       imageSrc:
-        "https://s3-alpha-sig.figma.com/img/0f0c/f69e/74d1f38d30cbc4995662ef3ccd25d296?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=QJQuiMCZ29DphL3wkufcx4JopTBKi8zrzn7Xo6DnbosE-eyEhmHZJxGzEBuwfnJZnO5gNcQulCXTULCwb4H1T9I5ua2DPVVftVAnxLqNU8nHMmPbVRM8NdMgl0bCFrqgqtXHo7VlHTlL5viM9nvIIrWgT5bOYLc7zJtRcky3603yY~3eeD6b7ypZ5TltI~xLRAanBq-8JMGAQ6S8nxDokus~docKjzCd2DwVnhzO2orpl8Ik-o7dD6eGtV1Oq5r-C~78MVl~aLfNLPV5LGqAD71D2d4rcL7LoL5OzTBWXTh0UnbWT-69jvNz1WdT061bs6b3SKBzLc6nf3y1~W06JA__",
+        "https://s3-alpha-sig.figma.com/img/0f0c/f69e/74d1f38d30cbc4995662ef3ccd25d296?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=QJQuiMCZ29DphL3wkufcx4JopTBKi8zrzn7Xo6DnbosE-eyEhmHZJxGzEBuwfnJZnO5gNcQulCXTULCwb4H1T9I5ua2DPVVftVAnxLqNU8nHMmPbVRM8NdMgl0bCFrqgqtXHo7VlHTlL5viM9nvIIrWgT5bOYLc7zJtRcky360 withdrawn 3yY~3eeD6b7ypZ5TltI~xLRAanBq-8JMGAQ6S8nxDokus~docKjzCd2DwVnhzO2orpl8Ik-o7dD6eGtV1Oq5r-C~78MVl~aLfNLPV5LGqAD71D2d4rcL7LoL5OzTBWXTh0UnbWT-69jvNz1WdT061bs6b3SKBzLc6nf3y1~W06JA__",
       durationDate: "2025-03-30",
       weight: 4,
     },
@@ -93,10 +94,10 @@ const MainPage = ({ navigation }) => {
     },
   ]);
 
-  // Вычисляем количество рекламных блоков, которые понадобятся
+  // Вычисляем количество рекламных блоков
   const numAdsNeeded = Math.floor(houses.length / AD_FREQUENCY);
 
-  // Вычисляем очередь реклам (без изменения состояния внутри цикла)
+  // Формируем очередь рекламы
   const computeAdsQueue = (numAds, pool) => {
     let available = [...pool];
     let last = null;
@@ -116,7 +117,8 @@ const MainPage = ({ navigation }) => {
         }
       });
       if (weighted.length === 0) break;
-      let selected = null; let attempts = 0;
+      let selected = null;
+      let attempts = 0;
       do {
         selected = weighted[Math.floor(Math.random() * weighted.length)];
         attempts++;
@@ -125,15 +127,20 @@ const MainPage = ({ navigation }) => {
       last = selected;
       available = available.filter((ad) => ad.id !== selected.id);
       result.push(selected);
-    } return result;
+    }
+    return result;
   };
 
   const [adsQueue, setAdsQueue] = useState([]);
+  const [prevNumAdsNeeded, setPrevNumAdsNeeded] = useState(0);
 
   useEffect(() => {
-    const ads = computeAdsQueue(numAdsNeeded, adPool);
-    setAdsQueue(ads);
-  }, [houses.length, villages.length, adPool]);
+    if (numAdsNeeded > prevNumAdsNeeded) {
+      const newAds = computeAdsQueue(numAdsNeeded - prevNumAdsNeeded, adPool);
+      setAdsQueue((prev) => [...prev, ...newAds]);
+      setPrevNumAdsNeeded(numAdsNeeded);
+    }
+  }, [numAdsNeeded, adPool]);
 
   useEffect(() => {
     const housesFetch = async () => {
@@ -156,26 +163,33 @@ const MainPage = ({ navigation }) => {
     villagesFetch();
   }, [getPaginatedPosts, getAllVillages, isFocused]);
 
-  const getMoreData = useCallback(async () => {
-    if (selectedList !== "villages" && hasMore) {
+  const fetchMoreData = useCallback(async () => {
+    if (selectedList !== "villages" && hasMore && !isFetchingMore) {
+      setIsFetchingMore(true);
       const nextPage = page + 1;
       const newHouses = await getPaginatedPosts(nextPage);
       if (newHouses[0].length === 0) {
         setHasMore(false);
-        return;
+      } else {
+        setHouses((prev) => [...prev, ...newHouses[0]]);
+        setPage(nextPage);
       }
-      setHouses((prev) => [...prev, ...newHouses[0]]);
-      setPage(nextPage);
+      setIsFetchingMore(false);
     }
-  }, [page, selectedList, hasMore, getPaginatedPosts]);
+  }, [page, selectedList, hasMore, isFetchingMore, getPaginatedPosts]);
 
-  const handleSearchButton = useCallback((value) => {
-    setSelectedList(value);
-    setHasMore(true);
-    setPage(1);
-    setHouses([]);
-    getMoreData();
-  }, [getMoreData]);
+  const handleSearchButton = useCallback(
+    (value) => {
+      setSelectedList(value);
+      // TODO: загрулшка, что бы убрать загрузка вилл
+      setHasMore(value !== "villages");
+      // setHasMore(true);
+      setPage(1);
+      setHouses([]);
+      fetchMoreData();
+    },
+    [fetchMoreData]
+  );
 
   const SearchButtonsContent = [
     { text: "Для вас", value: "houses" },
@@ -191,14 +205,20 @@ const MainPage = ({ navigation }) => {
           <View style={{ height: 16 }} />
           <View
             flexDirection="row"
-            style={{ width: width - 32, alignItems: "center", alignSelf: "center" }}
+            style={{
+              width: width - 32,
+              alignItems: "center",
+              alignSelf: "center",
+            }}
           >
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity onPress={() => navigation.navigate("Поиск")}>
                 <HouseSearchButton readOnly={true} />
               </TouchableOpacity>
               <View style={{ width: 16 }} />
-              <TouchableOpacity onPress={() => navigation.navigate("CreateHousePostPage")}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("CreateHousePostPage")}
+              >
                 <AddPostButton />
               </TouchableOpacity>
             </View>
@@ -251,61 +271,87 @@ const MainPage = ({ navigation }) => {
     if (!post) return;
     setSelectedPost(post);
     setIsModalShow(true);
-  }
+  };
 
-  const renderItem = useCallback(({ item, index }) => (
-    <View>
-      <Pressable onPress={() => handleSelected(item)}>
-        {selectedList === "villages" ? (
-          <MemoizedVillageCard village={item} />
-        ) : (
-          <MemoizedHouseCard
-            item={item}
-            navigation={navigation}
-            isModal={true}
-            handleSelected={handleSelected}
-            itemWidth={width - 32} />
-        )}
-      </Pressable>
-      {(index + 1) % AD_FREQUENCY === 0 && adsQueue[Math.floor(index / AD_FREQUENCY)] && (
-        <MemoizedBanner
-          bannerData={adsQueue[Math.floor(index / AD_FREQUENCY)]}
-          openModal={() => openModal(adsQueue[Math.floor(index / AD_FREQUENCY)])}
-        />
-      )}
-    </View>
-  ), [selectedList, adsQueue]);
+  const renderItem = useCallback(
+    ({ item, index }) => (
+      <View>
+        <Pressable onPress={() => handleSelected(item)}>
+          {selectedList === "villages" ? (
+            <MemoizedVillageCard village={item} />
+          ) : (
+            <MemoizedHouseCard
+              item={item}
+              navigation={navigation}
+              isModal={true}
+              handleSelected={handleSelected}
+              itemWidth={width - 32}
+            />
+          )}
+        </Pressable>
+        {(index + 1) % AD_FREQUENCY === 0 &&
+          adsQueue[Math.floor(index / AD_FREQUENCY)] && (
+            <MemoizedBanner
+              bannerData={adsQueue[Math.floor(index / AD_FREQUENCY)]}
+              openModal={() =>
+                openModal(adsQueue[Math.floor(index / AD_FREQUENCY)])
+              }
+            />
+          )}
+      </View>
+    ),
+    [selectedList, adsQueue]
+  );
+
+  const ListFooter = () => {
+    if (!hasMore) return <Text style={styles.noMoreText}>Больше нет постов для загрузки</Text>;
+    return <View style={{ marginVertical: 16, height: 136 }}><ActivityIndicator size="large" color="#32322C" /></View>;
+  };
+
+  const h = 180; // Высота карточки дома
+  const a = 200; // Высота рекламы
+
+  const getItemLayout = (data, index) => {
+    const length = (index + 1) % AD_FREQUENCY === 0 ? h + a : h;
+    const offset = index * h + Math.floor(index / AD_FREQUENCY) * a;
+    return { length, offset, index };
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#9DC0F6" barStyle="light-content" />
-      {console.log(selectedPost)}
-      {selectedPost &&
-        <Modal isVisible={isModalShow} onClose={() => setIsModalShow(false)}>
+      {selectedPost && (
+        <CustomModal
+          isVisible={isModalShow}
+          onClose={() => setIsModalShow(false)}
+        >
           {selectedList === "villages" ? (
             <VillageCard village={selectedPost} />
           ) : (
-            <DynamicHousePostPage navigation={navigation} route={{ houseId: selectedPost, isModal: true, setIsModalShow: setIsModalShow }} />
+            <DynamicHousePostPage
+              navigation={navigation}
+              route={{
+                houseId: selectedPost,
+                isModal: true,
+                setIsModalShow: setIsModalShow,
+              }}
+            />
           )}
-        </Modal>
-      }
+        </CustomModal>
+      )}
       {isLoaded ? (
         <FlatList
           ListHeaderComponent={() => FlatListHeaderComponent()}
-          ListEmptyComponent={<ActivityIndicator size="large" color="#32322C" />}
           data={selectedList === "villages" ? villages : houses}
           extraData={selectedList}
           style={styles.scrollView}
           keyExtractor={(item, index) => `item-${index}`}
-          ListFooterComponent={<View style={{ height: 256 }} />}
+          ListFooterComponent={ListFooter}
           initialNumToRender={3}
-          getItemLayout={(data, index) => ({ length: 250, offset: 250 * index, index })}
+          getItemLayout={getItemLayout}
           onEndReached={() => {
-            if (selectedList === "villages" || !hasMore) {
-              return;
-            } else {
-              houses.length === 0 ? getMoreData(1) : getMoreData();
-            }
+            if (selectedList !== "villages" && hasMore && !isFetchingMore)
+              fetchMoreData();
           }}
           onEndReachedThreshold={0.8}
           renderItem={renderItem}
@@ -344,26 +390,33 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   activeButton: {
-    // backgroundColor: '#007AFF', // Изменение цвета для активной кнопки
+    // backgroundColor: '#007AFF', // Раскомментируйте для активной кнопки
   },
   searchButtonsText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 20,
     lineHeight: 25,
     letterSpacing: -0.43,
-    opacity: 0.6
+    opacity: 0.6,
   },
   activeButtonsText: {
-    fontWeight: '600',
-    opacity: 1
+    fontWeight: "600",
+    opacity: 1,
   },
   housesTitleText: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#32322C',
+    fontWeight: "700",
+    color: "#32322C",
     marginLeft: 8,
     marginTop: 32,
+  },
+  noMoreText: {
+    textAlign: "center",
+    marginVertical: 16,
+    fontSize: 16,
+    color: "#32322C",
+    height: 126
   },
 });
 
