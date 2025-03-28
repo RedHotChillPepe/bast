@@ -24,9 +24,11 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
         const updatedFilters = { ...prevFilters };
         delete updatedFilters[group.id];
         return updatedFilters;
+      } else {
+        // Иначе включаем фильтр
+        return { ...prevFilters, [group.id]: option.id };
       }
-      // Иначе включаем фильтр
-      return { ...prevFilters, [group.id]: option.id };
+      
     });
     console.log("filter:", group.id, option);
 
