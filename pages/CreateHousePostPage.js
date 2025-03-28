@@ -66,9 +66,33 @@ export default function CreateHousePostPage({ navigation }) {
   const { sendPost } = useApi()
 
   const handleInputChange = (field, value) => {
-    const newValue = value && typeof value === 'object' && 'value' in value ? value.value : value;
-    setFormData((prevData) => ({ ...prevData, [field]: newValue }));
+    setFormData((prevData)=> ({ ...prevData, [field]: value }));
   };
+
+  const handlePickerSelect = (field, value) => {
+    console.log(field, value);
+    
+    setFormData((prevData) => ({ ...prevData, [field]: value }));
+  };
+
+  const handleImagePicker = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes:ImagePicker.MediaTypeOptions.Images,
+      quality:0,
+      base64:true
+    })
+    console.log(result);
+
+    var tempPhotos = formData.photos
+    tempPhotos.push({filename:result.assets[0].fileName, 
+      base64:result.assets[0].base64})
+
+    //console.log(tempPhotos);
+    
+    setFormData((prevData) => ({...prevData, photos:tempPhotos}))
+  }
+
+  
 
   const handleSubmit = async () => {
     if (!formData.price || !formData.settlement || !formData.location) {

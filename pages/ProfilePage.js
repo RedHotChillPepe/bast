@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -26,11 +26,12 @@ const ProfilePage = () => {
 
   const [usertype, setUsertype] = useState(1)
 
-  const [userr, setUser] = useState([])
+  const [userr, setUser]=useState([])
 
   useEffect(() => {
     const init = async () => {
       const auth = JSON.parse(await getAuth())
+
       const user = await getUser(await auth[0].phone, "user")
       /* console.log(await user.text()); */
 
@@ -48,9 +49,9 @@ const ProfilePage = () => {
 
     }
   }, [usertype, getAuth, getUser])
-
-
-
+  
+  
+  
 
   // Массив данных для списков
   const sections = [
@@ -85,7 +86,7 @@ const ProfilePage = () => {
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage'] },
+        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation:['SettingsPage'] },
       ],
     },
 
@@ -126,12 +127,12 @@ const ProfilePage = () => {
                     <FontAwesome6 name="face-tired" size={56} color="black" />
                 }
 
-                <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
-                  <FontAwesome name="edit" size={24} color="#fff" />
-                </Pressable>
-              </View>
-
-              <View style={{ flexDirection: 'row' }}>
+          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
+          <FontAwesome name="edit" size={24} color="#fff" />
+          </Pressable>
+        </View>
+    
+        <View style={{ flexDirection: 'row' }}>
 
                 <View style={{ alignItems: 'center' }}>
                   <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
