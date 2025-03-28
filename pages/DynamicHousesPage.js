@@ -111,14 +111,9 @@ const DynamicHousesPage = ({ route }) => {
   const [areaRange, setAreaRange] = useState([])
   const [zeroRows, setZeroRows] = useState(false)
 
-    const queryObject = useRef({})
+  const queryObject = useRef({})
 
   const [page, setPage] = useState(1)
-
-  const handleCategoryPress = (category) => {
-    console.log('Выбрана категория:', category);
-    setSelectedCategory(category)
-  };
 
   const categoriesButton = ({ item }) => (
     <Pressable
@@ -128,19 +123,11 @@ const DynamicHousesPage = ({ route }) => {
       <Text style={styles.categoriesText}>{item.label}</Text>
     </Pressable>
   );
-    const handleCategoryPress = (category) => {
-      console.log('Выбрана категория:', category);
-      setSelectedCategory(category)
-    };
-    
-    const categoriesButton = ({ item }) => (
-      <Pressable
-        style={styles.categoriesButton}
-        onPress={() => handleCategoryPress(item)}
-      >
-        <Text style={styles.categoriesText}>{item.label}</Text>
-      </Pressable>
-    );
+
+  const handleCategoryPress = (category) => {
+    console.log('Выбрана категория:', category);
+    setSelectedCategory(category)
+  };
 
   // Создание объединённого query для поиска
   useEffect(() => {
@@ -161,70 +148,70 @@ const DynamicHousesPage = ({ route }) => {
       const LpriceRange = JSON.stringify({ low: priceRange[0], high: priceRange[1] })
       const LareaRange = JSON.stringify({ low: areaRange[0], high: areaRange[1] })
 
-        const query = {category, sort, LpriceRange, LareaRange, filters}
-        
-        
-        queryObject.current = query
-        
-        
-      } else {
-        setPage(1)
-        queryObject.current = {}
-      }
+      const query = { category, sort, LpriceRange, LareaRange, filters }
 
-      if (!isCateroyEmpty) {
-        handleFilterChoice()
-      }
-    
-      return () => {
-        
-      }
-    }, [selectedCategory, selectedFilters, selectedSort, priceRange, areaRange])
-    
 
-    useEffect(() => {
-      console.log("Second UseEffect!");
-      
-      // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
-      if (Object.keys(houses).length === 0) {
-        const loadFromAPI = async () => {
-          try {
-            const response = await getPaginatedPosts(page, queryObject.current);
-            // Убедимся, что `response` является массивом
-            if (response[1] == 0) {
-              setHouses([])
-              setZeroRows(true)
-            } else {
-              setHouses(Array.isArray(response[0]) ? response[0] : []);
-            }
-            
-          } catch (error) {
-            console.error("Error fetching posts:", error);
-            setHouses([]); // Устанавливаем пустой массив при ошибке
-          }
-        };
-        loadFromAPI();
-      }
-    }, []);
+      queryObject.current = query
 
-    const handleFilterChoice = async () => {
-      console.log("FilterChoice! : ", queryObject.current);
-      
-      
-      const response = await getPaginatedPosts(page, queryObject.current)
 
-      setHouses(Array.isArray(response[0]) ? response[0] : []);
-      if (response[1] == 0) {
-        setZeroRows(true)
-      }
+    } else {
+      setPage(1)
+      queryObject.current = {}
     }
 
-    const loadMoreData = async () => {
-      console.log("Loading new page!");
-      
-      const nextPage = page + 1;
-      try {
-        const response = await getPaginatedPosts(nextPage, queryObject.current);
+    if (!isCateroyEmpty) {
+      handleFilterChoice()
+    }
+
+    return () => {
+
+    }
+  }, [selectedCategory, selectedFilters, selectedSort, priceRange, areaRange])
+
+
+  useEffect(() => {
+    console.log("Second UseEffect!");
+
+    // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
+    if (Object.keys(houses).length === 0) {
+      const loadFromAPI = async () => {
+        try {
+          const response = await getPaginatedPosts(page, queryObject.current);
+          // Убедимся, что `response` является массивом
+          if (response[1] == 0) {
+            setHouses([])
+            setZeroRows(true)
+          } else {
+            setHouses(Array.isArray(response[0]) ? response[0] : []);
+          }
+
+        } catch (error) {
+          console.error("Error fetching posts:", error);
+          setHouses([]); // Устанавливаем пустой массив при ошибке
+        }
+      };
+      loadFromAPI();
+    }
+  }, []);
+
+  const handleFilterChoice = async () => {
+    console.log("FilterChoice! : ", queryObject.current);
+
+
+    const response = await getPaginatedPosts(page, queryObject.current)
+
+    setHouses(Array.isArray(response[0]) ? response[0] : []);
+    if (response[1] == 0) {
+      setZeroRows(true)
+    }
+  }
+
+  const loadMoreData = async () => {
+    console.log("Loading new page!");
+
+    const nextPage = page + 1;
+    try {
+      const response = await getPaginatedPosts(nextPage, queryObject.current);
 
       setPage(nextPage);
       setHouses((prev) => [...prev, ...(response[0] || [])]);
@@ -234,35 +221,35 @@ const DynamicHousesPage = ({ route }) => {
     }
   };
 
-    const clearFilters = async () => {
-      setAreaRange([])
-      setPriceRange([])
-      setSelectedCategory({})
-      setSelectedFilters({})
-      queryObject.current = {}
-      try {
-        const response = await getPaginatedPosts(1);
+  const clearFilters = async () => {
+    setAreaRange([])
+    setPriceRange([])
+    setSelectedCategory({})
+    setSelectedFilters({})
+    queryObject.current = {}
+    try {
+      const response = await getPaginatedPosts(1);
 
-        setHouses(Array.isArray(response[0]) ? response[0] : []);
-      } catch (error) {
-        if (error) {
-          throw(error)
-        }
+      setHouses(Array.isArray(response[0]) ? response[0] : []);
+    } catch (error) {
+      if (error) {
+        throw (error)
       }
     }
- // Обновление кнопки в хедере
- useLayoutEffect(() => {
-  navigation.setOptions({
-    headerShadowVisible: false, // Убирает тень и линию
-    headerLeft: () => (
-      <View style={{flexDirection: 'row'}}> 
-      <Pressable onPress={() => navigation.navigate('SearchMap', {query:queryObject.current})}>
-        <Text style={{fontSize: 20, lineHeight: 25, color:"#007AFF", letterSpacing: -0.43, marginLeft: 20}}>Поиск по карте</Text>   
-      </Pressable>
-      </View>
-    ),
-    headerRight: () => (
-      <View style={{flexDirection: 'row', marginRight: 20}}> 
+  }
+  // Обновление кнопки в хедере
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShadowVisible: false, // Убирает тень и линию
+      headerLeft: () => (
+        <View style={{ flexDirection: 'row' }}>
+          <Pressable onPress={() => navigation.navigate('SearchMap', { query: queryObject.current })}>
+            <Text style={{ fontSize: 20, lineHeight: 25, color: "#007AFF", letterSpacing: -0.43, marginLeft: 20 }}>Поиск по карте</Text>
+          </Pressable>
+        </View>
+      ),
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', marginRight: 20 }}>
 
           <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
             <MaterialIcons name="sort" size={24} color="#007AFF" />
