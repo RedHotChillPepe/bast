@@ -341,6 +341,34 @@ export default function ApiProvider ({ children }){
     }
   };
 
+  const updateUserStatus = async (userId, usertype, newStatus) => {
+    const url = host + `api/users/updateuserstatus`
+
+    try {
+      return fetch(url, {
+        method:'POST',
+        headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          usertype: usertype,
+          newStatus: newStatus
+        })
+      })
+      .then(response => {return response})
+      .catch(error => {
+        console.error("Error updating user: ", error);
+        Alert.alert("Error", "Network Error")            
+      })
+    } catch (error) {
+      if (error) {
+        console.error(error);
+      }
+    }
+  }
+
   const getCompanyByName = async (companyName) => {
     const url = host + `api/users/getcompany/${companyName}`;
 
@@ -528,7 +556,7 @@ export default function ApiProvider ({ children }){
     return (
         <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
         getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
-        getPost,getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus}}>
+        getPost,getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus, updateUserStatus}}>
             {children}
         </ApiContext.Provider>
     )

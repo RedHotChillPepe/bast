@@ -8,8 +8,16 @@ import { Button } from 'react-native-elements';
 
 const { width } = Dimensions.get('window');
 
-const SettingsPage = () => {
+const SettingsPage = ({navigation, route}) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const {userObject, usertype} = route.params
+
+  const userObjectt = {
+    id: userObject.id,
+    usertype: usertype,
+    phoneNumber: userObject.phone,
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,13 +64,15 @@ const SettingsPage = () => {
           </View>
 
           <View style={{display:"flex", flexDirection:"row"}}>
-            <Pressable style={styles.buttonSuccess}>
+            <Pressable onPress={()=>setIsModalVisible(false)} style={styles.buttonSuccess}>
               <Text>
                 Нет
               </Text>
             </Pressable>
 
-            <Pressable style={styles.buttonDanger}>
+            <Pressable onPress={()=>navigation.navigate("ConfirmDeletion",{
+              regData:{
+              userObjectt: userObjectt}} )} style={styles.buttonDanger}>
               <Text>
                 Да
               </Text>
