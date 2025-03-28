@@ -48,6 +48,7 @@ import ChangeAvatarPage from './pages/ChangeAvatarPage.js';
 import UserPostsClosed from './pages/UserPostsClosed.js';
 import UserRecycleBin from './pages/UserRecycleBin.js';
 import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
+import ConfirmDeleteProfilePage from './pages/ConfirmDeleteProfilePage.js';
 
 
 const Stack = createNativeStackNavigator();
@@ -260,6 +261,11 @@ const StackProfile = () => {
        }}/>
 
       <ProfileStack.Screen name='ConfirmPhone' component={ConfirmChangePhonePage}
+      options={{//header:(props) => <HeaderComponent{...props}/>
+       headerShown: false, 
+      }}/>
+
+      <ProfileStack.Screen name='ConfirmDeletion' component={ConfirmDeleteProfilePage}
       options={{//header:(props) => <HeaderComponent{...props}/>
        headerShown: false, 
       }}/>

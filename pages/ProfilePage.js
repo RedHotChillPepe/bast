@@ -88,7 +88,7 @@ const ProfilePage = () => {
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation:['SettingsPage'] },
+        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation:['SettingsPage', {userObject: userr, usertype:usertype}] },
       ],
     },
 
