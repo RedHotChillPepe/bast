@@ -21,7 +21,7 @@ export default function HeaderComponent() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const {getCompanyByName} = useApi()
+  const { getCompanyByName } = useApi()
 
   // Состояние для модального окна поиска
   const [modalVisible, setModalVisible] = useState(false);
@@ -36,24 +36,24 @@ export default function HeaderComponent() {
 
   const handleSubmit = async () => {
 
-    
+
 
     if (String(searchQuery).length != 0) {
-      
+
       const result = await getCompanyByName(searchQuery)
       const resultJson = JSON.parse(await result.text())
 
-      
+
       setResults(resultJson[1])
 
     }
 
-    
+
   }
 
   // Рендер одного элемента результата поиска
   const renderResult = ({ item }) => (
-    <Pressable style={styles.resultItem} onPress={() => {navigation.navigate("ProfileCompanyPageView", {CompanyId: item.id})}}>
+    <Pressable style={styles.resultItem} onPress={() => { navigation.navigate("ProfileCompanyPageView", { CompanyId: item.id }) }}>
       <Text style={styles.resultText}>{item.name}</Text>
     </Pressable>
   );
@@ -71,8 +71,8 @@ export default function HeaderComponent() {
           <Text style={styles.headerText}>БАСТ Недвижимость</Text>
           <Octicons
             name="search"
-            size={24}
-            color="#fff"
+            size={28}
+            color="#2C88EC"
             onPress={() => setModalVisible(true)}
           />
         </View>
@@ -87,9 +87,9 @@ export default function HeaderComponent() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-          <Pressable onPress={() => setModalVisible(false)}>
-            <Text style={styles.modalTitle}>Назад</Text>
-          </Pressable>
+            <Pressable onPress={() => setModalVisible(false)}>
+              <Text style={styles.modalTitle}>Назад</Text>
+            </Pressable>
             <TextInput
               placeholder="Введите название организации..."
               value={searchQuery}
@@ -97,8 +97,8 @@ export default function HeaderComponent() {
               style={styles.searchInput}
               autoFocus={true}
             />
-            
-            <Pressable onPress={()=>{handleSubmit()}} style={{backgroundColor:'grey', color:'white', width:100, height:30}}>
+
+            <Pressable onPress={() => { handleSubmit() }} style={{ backgroundColor: 'grey', color: 'white', width: 100, height: 30 }}>
               <Text>Поиск</Text>
             </Pressable>
 
@@ -108,7 +108,7 @@ export default function HeaderComponent() {
               renderItem={renderResult}
               style={styles.resultsList}
               ListEmptyComponent={
-              <Text style={styles.noResultsText}>Нет результатов</Text>
+                <Text style={styles.noResultsText}>Нет результатов</Text>
               }
             />
 
@@ -121,7 +121,7 @@ export default function HeaderComponent() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: '#9DC0F6',
+    backgroundColor: '#E5E5EA',
     // paddingBottom: 8,
     // borderBottomWidth: 1,
     // borderBottomColor: '#ddd',
@@ -136,8 +136,9 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 28,
     lineHeight: 34,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: '600',
+    color: '#3E3E3E',
+    fontFamily: "Sora700"
   },
   modalOverlay: {
     position: 'absolute',

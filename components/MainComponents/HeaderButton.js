@@ -1,19 +1,22 @@
 import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const { width } = Dimensions.get('window');
-
-const HouseSearchButton = (props) => {
+const HeaderButton = (props) => {
+    const { title, handleButton } = props;
     return (
-        <View style={styles.searchContainer}>
-            <AntDesign name="home" size={20} color="#2C88EC" />
-            <Text style={styles.headline}>Добавить объявление</Text>
-        </View>
+        <TouchableOpacity
+            onPress={handleButton}
+        >
+            <View style={styles.searchContainer}>
+                <AntDesign name="home" size={20} color="#2C88EC" />
+                <Text style={styles.headline}>{title}</Text>
+            </View>
+        </TouchableOpacity>
     )
 }
 
-export default HouseSearchButton
+export default HeaderButton
 
 const styles = StyleSheet.create({
     searchContainer: {

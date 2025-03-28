@@ -1,5 +1,5 @@
 import { ActivityIndicator, Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, {useEffect, useState, useLayoutEffect, useRef} from 'react'
+import React, { useEffect, useState, useLayoutEffect, useRef } from 'react'
 import houses from '../assets/testassets/houses.json'
 import { useNavigation } from '@react-navigation/native'
 import { useApi } from '../context/ApiContext.js'
@@ -15,7 +15,7 @@ import TextInputSearch from '../components/TextInputSearch';
 
 const { width } = Dimensions.get('window');
 
- const categories = [
+const categories = [
   { id: '1', label: 'Все' },
   { id: '2', label: 'до 2 млн Р' },
   { id: '3', label: 'до 4 млн Р' },
@@ -91,238 +91,238 @@ const filterGroups = [
 
 ];
 
-const DynamicHousesPage = ({route}) => {
+const DynamicHousesPage = ({ route }) => {
 
-    const navigation = useNavigation()
+  const navigation = useNavigation()
 
-    const [selectedList, setSelectedList] = useState('organization');
+  const [selectedList, setSelectedList] = useState('organization');
 
-    const [houses, setHouses] = useState([])
-    const { getPaginatedPosts } = useApi()
+  const [houses, setHouses] = useState([])
+  const { getPaginatedPosts } = useApi()
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedFilters, setSelectedFilters] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState({});
 
-    const [sortModalVisible, setSortModalVisible] = useState(false);
-    const [selectedSort, setSelectedSort] = useState({});
+  const [sortModalVisible, setSortModalVisible] = useState(false);
+  const [selectedSort, setSelectedSort] = useState({});
 
-    const [selectedCategory, setSelectedCategory] = useState({})
-    const [priceRange, setPriceRange] = useState([])
-    const [areaRange, setAreaRange] = useState([])
-    const [zeroRows, setZeroRows] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState({})
+  const [priceRange, setPriceRange] = useState([])
+  const [areaRange, setAreaRange] = useState([])
+  const [zeroRows, setZeroRows] = useState(false)
 
-    const [queryObject, setQueryObject] = useState({})
+  const [queryObject, setQueryObject] = useState({})
 
-    const queryRef = useRef({})
+  const queryRef = useRef({})
 
-    const [page, setPage] = useState(1)
+  const [page, setPage] = useState(1)
 
-    const handleCategoryPress = (category) => {
-      console.log('Выбрана категория:', category);
-      setSelectedCategory(category)
-      handleFilterChoice()
-    };
-    
-    const categoriesButton = ({ item }) => (
-      <Pressable
-        style={styles.categoriesButton}
-        onPress={() => handleCategoryPress(item)}
-      >
-        <Text style={styles.categoriesText}>{item.label}</Text>
-      </Pressable>
-    );
+  const handleCategoryPress = (category) => {
+    console.log('Выбрана категория:', category);
+    setSelectedCategory(category)
+    handleFilterChoice()
+  };
 
-    // Создание объединённого query для поиска
-    useEffect(() => {
-      console.log("First UseEffect!");
-      
-      const isCateroyEmpty = Object.keys(selectedCategory).length == 0
-      const isFiltersEmpty = Object.keys(selectedFilters).length == 0
-      const isSortEmpty = Object.keys(selectedSort).length == 0
-      const isRangeEmpty = Object.keys(priceRange).length == 0
+  const categoriesButton = ({ item }) => (
+    <Pressable
+      style={styles.categoriesButton}
+      onPress={() => handleCategoryPress(item)}
+    >
+      <Text style={styles.categoriesText}>{item.label}</Text>
+    </Pressable>
+  );
 
-      if (!isCateroyEmpty || !isFiltersEmpty || !isSortEmpty || !isRangeEmpty) {
-        console.log("Something Changed");
-        setPage(1)
+  // Создание объединённого query для поиска
+  useEffect(() => {
+    console.log("First UseEffect!");
 
-        const category = selectedCategory.id
-        const sort = selectedSort.id
-        const filters = JSON.stringify(selectedFilters)
-        const LpriceRange = JSON.stringify({low:priceRange[0], high:priceRange[1]}) 
-        const LareaRange = JSON.stringify({low:areaRange[0],high:areaRange[1]})
+    const isCateroyEmpty = Object.keys(selectedCategory).length == 0
+    const isFiltersEmpty = Object.keys(selectedFilters).length == 0
+    const isSortEmpty = Object.keys(selectedSort).length == 0
+    const isRangeEmpty = Object.keys(priceRange).length == 0
 
-        const query = {category, sort, LpriceRange, LareaRange, filters}
-        
-        
-        setQueryObject(query)
-        queryRef.current = query
-        
-      }
-    
-      return () => {
-        
-      }
-    }, [selectedCategory, selectedFilters, selectedSort, priceRange, areaRange])
-    
+    if (!isCateroyEmpty || !isFiltersEmpty || !isSortEmpty || !isRangeEmpty) {
+      console.log("Something Changed");
+      setPage(1)
 
-    useEffect(() => {
-      console.log("Second UseEffect!");
-      
-      // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
-      if (Object.keys(houses).length === 0) {
-        const loadFromAPI = async () => {
-          try {
-            const response = await getPaginatedPosts(page, queryObject);
-            // Убедимся, что `response` является массивом
-            if (response[1] == 0) {
-              setHouses([])
-              setZeroRows(true)
-            } else {
-              setHouses(Array.isArray(response[0]) ? response[0] : []);
-            }
-            
-          } catch (error) {
-            console.error("Error fetching posts:", error);
-            setHouses([]); // Устанавливаем пустой массив при ошибке
+      const category = selectedCategory.id
+      const sort = selectedSort.id
+      const filters = JSON.stringify(selectedFilters)
+      const LpriceRange = JSON.stringify({ low: priceRange[0], high: priceRange[1] })
+      const LareaRange = JSON.stringify({ low: areaRange[0], high: areaRange[1] })
+
+      const query = { category, sort, LpriceRange, LareaRange, filters }
+
+
+      setQueryObject(query)
+      queryRef.current = query
+
+    }
+
+    return () => {
+
+    }
+  }, [selectedCategory, selectedFilters, selectedSort, priceRange, areaRange])
+
+
+  useEffect(() => {
+    console.log("Second UseEffect!");
+
+    // Проверяем, что массив `houses` пуст, чтобы загрузить данные только один раз
+    if (Object.keys(houses).length === 0) {
+      const loadFromAPI = async () => {
+        try {
+          const response = await getPaginatedPosts(page, queryObject);
+          // Убедимся, что `response` является массивом
+          if (response[1] == 0) {
+            setHouses([])
+            setZeroRows(true)
+          } else {
+            setHouses(Array.isArray(response[0]) ? response[0] : []);
           }
-        };
-        loadFromAPI();
-      }
-    }, []);
 
-    const handleFilterChoice = async () => {
-      console.log("FilterChoice!");
-      
-      const response = await getPaginatedPosts(page, queryObject)
-      setHouses(Array.isArray(response[0]) ? response[0] : []);
-      if (response[1] == 0) {
-        setZeroRows(true)
-      }
-    }
-
-    const loadMoreData = async () => {
-      console.log("Loading new page!");
-      
-      const nextPage = page + 1;
-      try {
-        const response = await getPaginatedPosts(nextPage, queryObject);
-
-        setPage(nextPage);
-        setHouses((prev) => [...prev, ...(response[0] || [])]);
-        
-      } catch (error) {
-        console.error('Error loading more data:', error);
-      }
-    };
-
-    const clearFilters = async () => {
-      setAreaRange([])
-      setPriceRange([])
-      setSelectedCategory({})
-      setSelectedFilters({})
-      setQueryObject({})
-
-      try {
-        const response = await getPaginatedPosts(1);
-
-        setHouses(Array.isArray(response[0]) ? response[0] : []);
-      } catch (error) {
-        if (error) {
-          throw(error)
+        } catch (error) {
+          console.error("Error fetching posts:", error);
+          setHouses([]); // Устанавливаем пустой массив при ошибке
         }
+      };
+      loadFromAPI();
+    }
+  }, []);
+
+  const handleFilterChoice = async () => {
+    console.log("FilterChoice!");
+
+    const response = await getPaginatedPosts(page, queryObject)
+    setHouses(Array.isArray(response[0]) ? response[0] : []);
+    if (response[1] == 0) {
+      setZeroRows(true)
+    }
+  }
+
+  const loadMoreData = async () => {
+    console.log("Loading new page!");
+
+    const nextPage = page + 1;
+    try {
+      const response = await getPaginatedPosts(nextPage, queryObject);
+
+      setPage(nextPage);
+      setHouses((prev) => [...prev, ...(response[0] || [])]);
+
+    } catch (error) {
+      console.error('Error loading more data:', error);
+    }
+  };
+
+  const clearFilters = async () => {
+    setAreaRange([])
+    setPriceRange([])
+    setSelectedCategory({})
+    setSelectedFilters({})
+    setQueryObject({})
+
+    try {
+      const response = await getPaginatedPosts(1);
+
+      setHouses(Array.isArray(response[0]) ? response[0] : []);
+    } catch (error) {
+      if (error) {
+        throw (error)
       }
     }
- // Обновление кнопки в хедере
- useLayoutEffect(() => {
-  navigation.setOptions({
-    headerShadowVisible: false, // Убирает тень и линию
-    headerLeft: () => (
-      <View style={{flexDirection: 'row'}}> 
-      <Pressable onPress={() => navigation.navigate('SearchMap', {query:queryRef.current})}>
-        <Text style={{fontSize: 20, lineHeight: 25, color:"#007AFF", letterSpacing: -0.43, marginLeft: 20}}>Поиск по карте</Text>   
-      </Pressable>
-      </View>
-    ),
-    headerRight: () => (
-      <View style={{flexDirection: 'row', marginRight: 20}}> 
+  }
+  // Обновление кнопки в хедере
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShadowVisible: false, // Убирает тень и линию
+      headerLeft: () => (
+        <View style={{ flexDirection: 'row' }}>
+          <Pressable onPress={() => navigation.navigate('SearchMap', { query: queryRef.current })}>
+            <Text style={{ fontSize: 20, lineHeight: 25, color: "#007AFF", letterSpacing: -0.43, marginLeft: 20 }}>Поиск по карте</Text>
+          </Pressable>
+        </View>
+      ),
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', marginRight: 20 }}>
 
           <Pressable style={styles.searchButton} onPress={() => setSortModalVisible(true)}>
             <MaterialIcons name="sort" size={24} color="#007AFF" />
-          </Pressable> 
+          </Pressable>
           <Pressable style={styles.searchButton} onPress={() => setModalVisible(true)}>
             <AntDesign name="filter" size={24} color="#007AFF" />
           </Pressable>
-      </View>
-    ),
-  });
-}, [navigation])
-    
+        </View>
+      ),
+    });
+  }, [navigation])
+
   return (
     <View style={styles.container}>
-      <View style={{height: 8}} />
-    
-
-          {/* Категории */}
-          <View style={styles.categoriesContainer}>
-          <Pressable style={{backgroundColor:'#007AFF', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8, alignSelf: 'flex-start', marginLeft: 12}} onPress={()=>{clearFilters()}}>
-            <Text style={{color: '#fff', fontSize: 12, lineHeight: 18 }}>Сбросить</Text>
-          </Pressable>
-            <FlatList
-              data={categories}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}  
-              renderItem={categoriesButton}
-            />
-          </View>
+      <View style={{ height: 8 }} />
 
 
-        
-        <View style={styles.housesView}>
-              
-            {houses.length ? (
-              <FlatList
-              data={houses}
-              renderItem={({ item }) => (
-                <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
-              )}
-              keyExtractor={(item) => item.id.toString()}
-              onEndReached={loadMoreData}
-              onEndReachedThreshold={0.5}
-              showsVerticalScrollIndicator={false}
-              ListFooterComponent={<View style={{ height: 128 }} />}
-              />
-              ) : zeroRows 
-                ? 
-                <Text>Не нашлось объявления которое подходит под Ваш запрос :(</Text>
-                :
-                <ActivityIndicator size="large" color="#32322C" />
-            }
-        
-            
-        </View>
-        
-
-          {/* Модальное окно */}
-        <FilterModal
-          visible={modalVisible}
-          onClose={() => setModalVisible(false)}
-          selectedFilters={selectedFilters}
-          setSelectedFilters={setSelectedFilters}
-          filterGroups={filterGroups}
-          setPriceRange={setPriceRange}
-          setAreaRange={setAreaRange}
-          handleFilterChoice={handleFilterChoice}
+      {/* Категории */}
+      <View style={styles.categoriesContainer}>
+        <Pressable style={{ backgroundColor: '#007AFF', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8, alignSelf: 'flex-start', marginLeft: 12 }} onPress={() => { clearFilters() }}>
+          <Text style={{ color: '#fff', fontSize: 12, lineHeight: 18 }}>Сбросить</Text>
+        </Pressable>
+        <FlatList
+          data={categories}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={categoriesButton}
         />
+      </View>
 
-          {/* Модальное окно сортировки */}
-        <SortModal
-          visible={sortModalVisible}
-          onClose={() => setSortModalVisible(false)}
-          selectedSort={selectedSort}
-          setSelectedSort={setSelectedSort}
-          handleFilterChoice={handleFilterChoice}
-        />
+
+
+      <View style={styles.housesView}>
+
+        {houses.length ? (
+          <FlatList
+            data={houses}
+            renderItem={({ item }) => (
+              <HouseCard item={item} navigation={navigation} itemWidth={width - 32} />
+            )}
+            keyExtractor={(item, index) => `item${item.id}-${index}`}
+            onEndReached={loadMoreData}
+            onEndReachedThreshold={0.5}
+            showsVerticalScrollIndicator={false}
+            ListFooterComponent={<View style={{ height: 128 }} />}
+          />
+        ) : zeroRows
+          ?
+          <Text>Не нашлось объявления которое подходит под Ваш запрос :(</Text>
+          :
+          <ActivityIndicator size="large" color="#32322C" />
+        }
+
+
+      </View>
+
+
+      {/* Модальное окно */}
+      <FilterModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        selectedFilters={selectedFilters}
+        setSelectedFilters={setSelectedFilters}
+        filterGroups={filterGroups}
+        setPriceRange={setPriceRange}
+        setAreaRange={setAreaRange}
+        handleFilterChoice={handleFilterChoice}
+      />
+
+      {/* Модальное окно сортировки */}
+      <SortModal
+        visible={sortModalVisible}
+        onClose={() => setSortModalVisible(false)}
+        selectedSort={selectedSort}
+        setSelectedSort={setSelectedSort}
+        handleFilterChoice={handleFilterChoice}
+      />
 
     </View>
   )
@@ -332,50 +332,50 @@ export default DynamicHousesPage
 
 const styles = StyleSheet.create({
 
-  
-  container:{
-    flex:1,
-    backgroundColor:'#fff',
-    alignItems:'center'
+
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center'
   },
 
   filterContainer: {
     flexDirection: 'row',
-    width: width-32,
-    justifyContent:'space-between',
+    width: width - 32,
+    justifyContent: 'space-between',
     alignSelf: 'center',
     marginBottom: 16,
 
   },
-        
-  housesView:{
+
+  housesView: {
     backgroundColor: '#F2F2F7',
     width: width,
-    alignItems:'center',
+    alignItems: 'center',
   },
 
-  searchButton:{
+  searchButton: {
     flexDirection: 'row',
-    alignItems:'center',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 8,
   },
 
-  searchButtonText:{
-    color:'#007AFF',
+  searchButtonText: {
+    color: '#007AFF',
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.43,
     fontWeight: '500',
     marginLeft: 8
-},
+  },
 
-  categoriesContainer:{
+  categoriesContainer: {
     flexDirection: 'row',
     marginBottom: 8
   },
 
-  categoriesButton:{
+  categoriesButton: {
     borderWidth: 1,
     borderColor: '#007AFF',
     paddingHorizontal: 8,
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     alignItems: 'center',
-// Цвет неактивной вкладки
+    // Цвет неактивной вкладки
   },
   activeTab: {
     backgroundColor: '#616161', // Цвет активной вкладки

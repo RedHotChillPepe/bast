@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable, Dimensions, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -53,30 +53,27 @@ const ServicesComponent = () => {
 
 const styles = StyleSheet.create({
   functionCards: {
-    paddingLeft: 16,
+    width: width,
+    paddingHorizontal: 16,
     flexDirection: 'row', // Ряд
     alignItems: 'center', // Выравнивание по центру
+    gap: 8,
   },
   functionCard: {
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    marginRight: 16, // Отступ между карточками
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingLeft: 12,
-    paddingRight: 12,
-    borderColor: '#54545630',
-    borderWidth: 1,
+    borderRadius: 12,
+    backgroundColor: '#F2F2F7',
+    padding: 12,
   },
   functionCardView: {
     flex: 1,
   },
   functionCardText: {
-    fontSize: 17,
-    lineHeight: 22,
+    fontSize: 14,
+    fontFamily: "Sora400",
+    lineHeight: 17.7,
     letterSpacing: -0.43,
     fontWeight: '400',
-    color: '#14080E',
+    color: '#3E3E3E',
   },
 });
 

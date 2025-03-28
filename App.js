@@ -1,12 +1,12 @@
-import Entypo from "@expo/vector-icons/Entypo";
+import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Fontisto from "@expo/vector-icons/Fontisto";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
 import * as Linking from 'expo-linking';
+import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { Platform, Pressable, Text } from "react-native";
@@ -352,16 +352,38 @@ const AppStack = () => {
 
 const AppTabs = () => {
   return (
-    <Tab.Navigator initialRouteName="Home" backBehavior="history">
+    <Tab.Navigator
+      initialRouteName="Home"
+      backBehavior="history"
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: "#F2F2F7",     // Цвет фона
+          paddingHorizontal: 12,       // Горизонтальные отступы
+          paddingTop: 12,               // Отступ сверху
+          height: 60,
+          borderTopStartRadius: 12,
+          borderTopEndRadius: 12,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          lineHeight: 12.6,
+          fontFamily: "Sora400",
+          letterSpacing: -0.3,
+          fontWeight: "400",
+        },
+        tabBarActiveTintColor: "#2C88EC",  // Цвет иконки и текста, если вкладка активна
+        tabBarInactiveTintColor: "#808080", // Цвет, если вкладка не активна}
+      }}
+    >
       <Tab.Screen
-        name="Поиск"
-        component={SearchPostsStack}
+        name="Home"
+        component={AppStack}
         options={{
           headerShown: false,
-          headerTitle: " ", // текст заголовка скрыт
           tabBarShowLabel: true,
+          tabBarLabel: "Главная",
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="search" size={24} color="black" />
+            <AntDesign name="home" size={size} color={color} />
           ),
         }}
       />
@@ -370,21 +392,22 @@ const AppTabs = () => {
         component={FavouritesPage}
         options={{
           headerShown: true,
-          headerTitle: "Избранное",
           tabBarShowLabel: true,
+          tabBarLabel: "Избранное",
           tabBarIcon: ({ color, size }) => (
-            <Fontisto name="favorite" size={24} color="black" />
+            <FontAwesome name="heart-o" size={size} color={color} />
           ),
         }}
       />
       <Tab.Screen
-        name="Home"
-        component={AppStack}
+        name="Поиск"
+        component={SearchPostsStack}
         options={{
           headerShown: false,
+          headerTitle: " ", // текст заголовка скрыт
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="home" size={24} color="black" />
+            <AntDesign name="search1" size={size} color={color} />
           ),
         }}
       />
@@ -395,7 +418,7 @@ const AppTabs = () => {
           headerShown: false,
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size }) => (
-            <Entypo name="chat" size={24} color="black" />
+            <Ionicons name="chatbubble-outline" size={size} color={color} />
           ),
         }}
       />
@@ -406,11 +429,11 @@ const AppTabs = () => {
           headerShown: false,
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="account-box" size={24} color="black" />
+            <Feather name="user" size={size} color={color} />
           ),
         }}
       />
-    </Tab.Navigator>
+    </Tab.Navigator >
   );
 };
 
@@ -535,6 +558,8 @@ const AppTopStack = () => {
 // Условный рендер в зависимости от того авторизирован ли пользователь или нет
 const AppInit = () => {
   const { isAuth, isOnboarded } = useAuth();
+
+  setBackgroundColorAsync("#F2F2F7");
 
   const [loaded, error] = useFonts({
     Montserrat400: require("./assets/fonts/Inter_18pt-Regular.ttf"),
