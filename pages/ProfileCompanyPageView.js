@@ -1,16 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image, ActivityIndicator } from 'react-native';
-import { useAuth } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useApi } from '../context/ApiContext';
-import ProfileBuilderPage from './ProfileCompanyPage.js';
-import ProfileRealtorPage from './ProfileEmployeePage.js';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import HouseCard from '../components/HouseCard.js';
 
 const { width } = Dimensions.get('window');
 

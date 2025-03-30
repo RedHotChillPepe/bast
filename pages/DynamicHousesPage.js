@@ -1,16 +1,12 @@
-import { ActivityIndicator, Dimensions, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState, useLayoutEffect, useRef } from 'react'
-import houses from '../assets/testassets/houses.json'
+import AntDesign from '@expo/vector-icons/AntDesign'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
-import { useApi } from '../context/ApiContext.js'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Image } from 'react-native'
-import HouseCard from '../components/HouseCard.js'
-import AntDesign from '@expo/vector-icons/AntDesign';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ActivityIndicator, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import FilterModal from '../components/FilterModal.js'
+import HouseCard from '../components/HouseCard.js'
 import SortModal from '../components/SortModal.js'
-import TextInputSearch from '../components/TextInputSearch';
+import { useApi } from '../context/ApiContext.js'
 
 
 const { width } = Dimensions.get('window');
@@ -39,7 +35,7 @@ const filterGroups = [
     options: [
       { id: '21', label: 'Кирпич' },
       { id: '22', label: 'Газоблок' },
-      { id: '23', label: 'Пенеблок' },
+      { id: '23', label: 'Пеноблок' },
       { id: '24', label: 'Брус' },
       { id: '25', label: 'Доска' },
       { id: '26', label: 'Каркасный' },
@@ -117,28 +113,28 @@ const DynamicHousesPage = ({ route }) => {
 
   const categoriesButton = ({ item }) => (
     <Pressable
-      style={styles.categoriesButton}
+      style={selectedCategory == item ? styles.activeTab : styles.categoriesButton}
       onPress={() => handleCategoryPress(item)}
     >
-      <Text style={styles.categoriesText}>{item.label}</Text>
+      <Text style={selectedCategory == item ? styles.activeTabText : styles.categoriesText}>{item.label}</Text>
     </Pressable>
   );
 
   const handleCategoryPress = (category) => {
     console.log('Выбрана категория:', category);
-    setSelectedCategory(category)
+    setSelectedCategory(category);
   };
 
   // Создание объединённого query для поиска
   useEffect(() => {
     console.log("First UseEffect!");
 
-    const isCateroyEmpty = Object.keys(selectedCategory).length == 0
+    const isCategoryEmpty = Object.keys(selectedCategory).length == 0
     const isFiltersEmpty = Object.keys(selectedFilters).length == 0
     const isSortEmpty = Object.keys(selectedSort).length == 0
     const isRangeEmpty = Object.keys(priceRange).length == 0
 
-    if (!isCateroyEmpty || !isFiltersEmpty || !isSortEmpty || !isRangeEmpty) {
+    if (!isCategoryEmpty || !isFiltersEmpty || !isSortEmpty || !isRangeEmpty) {
       console.log("Something Changed");
       setPage(1)
 
@@ -159,7 +155,7 @@ const DynamicHousesPage = ({ route }) => {
       queryObject.current = {}
     }
 
-    if (!isCateroyEmpty) {
+    if (!isCategoryEmpty) {
       handleFilterChoice()
     }
 
@@ -410,14 +406,23 @@ const styles = StyleSheet.create({
     // Цвет неактивной вкладки
   },
   activeTab: {
-    backgroundColor: '#616161', // Цвет активной вкладки
+    backgroundColor: '#007AFF', // Цвет активной вкладки
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginLeft: 12
   },
   tabText: {
     fontSize: 16,
     color: '#FFFFFF',
   },
   activeTabText: {
+    fontSize: 12,
+    lineHeight: 16,
     fontWeight: 'bold',
+    color: "#fff"
   },
   mapButton: {
     paddingVertical: 8,

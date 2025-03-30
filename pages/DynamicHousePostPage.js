@@ -51,7 +51,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const [isInteractingWithMap, setIsInteractingWithMap] = useState(false);
 
   const mapRef = useRef(null);
-
+// TODO: "исправить line-height у цены"
   // Получение данных объявления и пользователя
   useEffect(() => {
     const fetchData = async () => {

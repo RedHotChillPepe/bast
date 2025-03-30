@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, ScrollView, Pressable, TouchableOpacity, Image, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import TextInputComponent from '../components/TextInputComponent';
-import ModalPickerComponent from '../components/ModalPickerComponent';
 import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from 'react';
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ModalPickerComponent from '../components/ModalPickerComponent';
+import TextInputComponent from '../components/TextInputComponent';
 import { useApi } from '../context/ApiContext';
 
 const { width, height } = Dimensions.get('window');
 
-export default function EditHousePostPage({route}) {
-  const {additions, base, bedrooms, city, electricity_bill,
+export default function EditHousePostPage({ route }) {
+  const { additions, base, bedrooms, city, electricity_bill,
     full_address, gas, heating, house_area, house_status,
     house_type, id, kad_number, latitude, longitude,
     name, newbuild, num_floors, photos, plot_area,
@@ -40,7 +40,7 @@ export default function EditHousePostPage({route}) {
     sewerege: sewage,
     electricity: electricity_bill,
     heating: heating,
-    photos:photos
+    photos: photos
   });
 
   const [houseTypeModalVisible, setHouseTypeModalVisible] = useState(false);
@@ -53,35 +53,37 @@ export default function EditHousePostPage({route}) {
   const [electricityModalVisible, setElectricityModalVisible] = useState(false);
   const [heatingModalVisible, setHeatingModalVisible] = useState(false);
 
-  const {updatePost} = useApi()
+  const { updatePost } = useApi()
 
-  
+
 
   const handleInputChange = (field, value) => {
-    setFormData((prevData)=> ({ ...prevData, [field]: value }));
+    setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handlePickerSelect = (field, value) => {
     console.log(field, value);
-    
+
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleImagePicker = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes:ImagePicker.MediaTypeOptions.Images,
-      quality:0,
-      base64:true
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0,
+      base64: true
     })
     console.log(result);
 
     var tempPhotos = formData.photos
-    tempPhotos.push({filename:result.assets[0].fileName, 
-      base64:result.assets[0].base64})
+    tempPhotos.push({
+      filename: result.assets[0].fileName,
+      base64: result.assets[0].base64
+    })
 
     //console.log(tempPhotos);
-    
-    setFormData((prevData) => ({...prevData, photos:tempPhotos}))
+
+    setFormData((prevData) => ({ ...prevData, photos: tempPhotos }))
   }
 
 
@@ -93,118 +95,118 @@ export default function EditHousePostPage({route}) {
     let result = await updatePost(formData, id)
 
     console.log(await result);
-    
+
 
     // console.log('Данные объявления:', formData);
   };
 
-  const inputListLocation=[
-    {text:"Населённый пункт", placeholder:"Название Населённого Пункта", valueName:"settlement"},
-    {text:"Населённый пункт", placeholder:"Улица, Дом", valueName:"location"},
-    {text:"Кадастровые номер", placeholder:"Кадастровый Номер", valueName:"kadastr"},
+  const inputListLocation = [
+    { text: "Населённый пункт", placeholder: "Название Населённого Пункта", valueName: "settlement" },
+    { text: "Населённый пункт", placeholder: "Улица, Дом", valueName: "location" },
+    { text: "Кадастровые номер", placeholder: "Кадастровый Номер", valueName: "kadastr" },
   ]
 
   const inputListHouseinfo = [
-    {keyboardType:"numeric", text:"Этажи *", placeholder:"Количество этажей", valueName:"floors",},
-    {keyboardType:"numeric", text:"Комнаты *", placeholder:"Количество комнат", valueName:"rooms",},
-    {keyboardType:"numeric", text:"Площадь *", placeholder:"Жилплощадь (м²)", valueName:"area",},
-    {keyboardType:"numeric", text:"Площадь Участка", placeholder:"Площадь участка (сот.)", valueName:"plotSize",},
+    { keyboardType: "numeric", text: "Этажи *", placeholder: "Количество этажей", valueName: "floors", },
+    { keyboardType: "numeric", text: "Комнаты *", placeholder: "Количество комнат", valueName: "rooms", },
+    { keyboardType: "numeric", text: "Площадь *", placeholder: "Жилплощадь (м²)", valueName: "area", },
+    { keyboardType: "numeric", text: "Площадь Участка", placeholder: "Площадь участка (сот.)", valueName: "plotSize", },
   ]
 
   const inputListConstruction = [
-    {text:"Кровля", placeholder:"Тип кровли", valueName:"roof",},
-    {text:"Фундамент", placeholder:"Тип фундамента", valueName:"basement",},
+    { text: "Кровля", placeholder: "Тип кровли", valueName: "roof", },
+    { text: "Фундамент", placeholder: "Тип фундамента", valueName: "basement", },
   ]
 
   const listModalPicker = [
     // Модальное окно для типа дома
     {
-      visible:houseTypeModalVisible, onRequestClose: setHouseTypeModalVisible, headerText:"Выберите тип дома", 
-      valueName:"houseType",
-      pickerData:[
-        {label:"ИЖС",value:"ИЖС"},
-        {label:"неИЖС",value:"неИЖС"}
+      visible: houseTypeModalVisible, onRequestClose: setHouseTypeModalVisible, headerText: "Выберите тип дома",
+      valueName: "houseType",
+      pickerData: [
+        { label: "ИЖС", value: "ИЖС" },
+        { label: "неИЖС", value: "неИЖС" }
       ]
     },
     // Модальное окно для материала несущих стен
     {
-      visible:wallMaterialModalVisible, onRequestClose: setWallMaterialModalVisible, headerText:"Выберите материал несущих стен",
-      valueName:"wallMaterial",
-      pickerData:[
-        {label:"Кирпич",value:"Кирпич"},
-        {label:"Газоблок",value:"Газоблок"},
-        {label:"Пеноблок",value:"Пеноблок"},
-        {label:"Брус",value:"Брус"},
-        {label:"Доска",value:"Доска"},
-        {label:"Каркасный",value:"Каркасный"},
+      visible: wallMaterialModalVisible, onRequestClose: setWallMaterialModalVisible, headerText: "Выберите материал несущих стен",
+      valueName: "wallMaterial",
+      pickerData: [
+        { label: "Кирпич", value: "Кирпич" },
+        { label: "Газоблок", value: "Газоблок" },
+        { label: "Пеноблок", value: "Пеноблок" },
+        { label: "Брус", value: "Брус" },
+        { label: "Доска", value: "Доска" },
+        { label: "Каркасный", value: "Каркасный" },
       ]
     },
     // Модальное окно для материала перегородок 
     {
-      visible:partitionMaterialModalVisible, onRequestClose: setPartitionMaterialModalVisible, headerText:"Выберите материал перегородок",
-      valueName:"partitionMaterial",
-      pickerData:[
-        {label:"Дерево",value:"Дерево"},
-        {label:"Гипсокартон",value:"Гипсокартон"},
-        {label:"Газобетон",value:"Газобетон"},
-        {label:"Керамзитоблоки",value:"Керамзитоблоки"},
-        {label:"Кирпич",value:"Кирпич"},
+      visible: partitionMaterialModalVisible, onRequestClose: setPartitionMaterialModalVisible, headerText: "Выберите материал перегородок",
+      valueName: "partitionMaterial",
+      pickerData: [
+        { label: "Дерево", value: "Дерево" },
+        { label: "Гипсокартон", value: "Гипсокартон" },
+        { label: "Газобетон", value: "Газобетон" },
+        { label: "Керамзитоблоки", value: "Керамзитоблоки" },
+        { label: "Кирпич", value: "Кирпич" },
       ]
     },
     // Модальное окно для состояние дома
     {
-      visible:houseConditionModalVisible, onRequestClose: setHouseConditionModalVisible, headerText:"Состояние дома",
-      valueName:"houseCondition",
-      pickerData:[
-        {label:"Требует Ремонта",value:"Требует Ремонта"},
-        {label:"Не Требует Ремонта",value:"Не Требует Ремонта"},
+      visible: houseConditionModalVisible, onRequestClose: setHouseConditionModalVisible, headerText: "Состояние дома",
+      valueName: "houseCondition",
+      pickerData: [
+        { label: "Требует Ремонта", value: "Требует Ремонта" },
+        { label: "Не Требует Ремонта", value: "Не Требует Ремонта" },
       ]
     },
     // Модальное окно для Газа
     {
-      visible:gasModalVisible, onRequestClose: setGasModalVisible, headerText:"Проведен газ?",
-      valueName:"gas",
-      pickerData:[
-        {label:"Да",value:"Да"},
-        {label:"Нет",value:"Нет"},
+      visible: gasModalVisible, onRequestClose: setGasModalVisible, headerText: "Проведен газ?",
+      valueName: "gas",
+      pickerData: [
+        { label: "Да", value: "Да" },
+        { label: "Нет", value: "Нет" },
       ]
     },
     // Модальное окно для Электричества
     {
-      visible:electricityModalVisible, onRequestClose: setElectricityModalVisible, headerText:"Льготный тариф на электричество?",
-      valueName:"electricity",
-      pickerData:[
-        {label:"Да",value:"Да"},
-        {label:"Нет",value:"Нет"},
+      visible: electricityModalVisible, onRequestClose: setElectricityModalVisible, headerText: "Льготный тариф на электричество?",
+      valueName: "electricity",
+      pickerData: [
+        { label: "Да", value: "Да" },
+        { label: "Нет", value: "Нет" },
       ]
     },
     // Модальное окно для Водопровода
     {
-      visible:waterModalVisible, onRequestClose: setWaterModalVisible, headerText:"Поключение водопровода",
-      valueName:"water",
-      pickerData:[
-        {label:"Центральное водоснабжение",value:"Центральное водоснабжение"},
-        {label:"Скважина",value:"Скважина"},
+      visible: waterModalVisible, onRequestClose: setWaterModalVisible, headerText: "Поключение водопровода",
+      valueName: "water",
+      pickerData: [
+        { label: "Центральное водоснабжение", value: "Центральное водоснабжение" },
+        { label: "Скважина", value: "Скважина" },
       ]
     },
     // Модальное окно для Канализации
     {
-      visible:seweregeModalVisible, onRequestClose: setSeweregeModalVisible, headerText:"Канализация", valueName:"sewerege",
-      pickerData:[
-        {label:"Центральная канализация",value:"Центральная канализация"},
-        {label:"Септик",value:"Септик"},
-        {label:"Нет",value:"Нет"},
+      visible: seweregeModalVisible, onRequestClose: setSeweregeModalVisible, headerText: "Канализация", valueName: "sewerege",
+      pickerData: [
+        { label: "Центральная канализация", value: "Центральная канализация" },
+        { label: "Септик", value: "Септик" },
+        { label: "Нет", value: "Нет" },
       ]
     },
     // Модальное окно для Отопления
     {
-      visible:heatingModalVisible, onRequestClose: setHeatingModalVisible, headerText:"Отопление",
-      valueName:"heating",
-      pickerData:[
-        {label:"Газовый котел",value:"Газовый котел"},
-        {label:"Электрический котел",value:"Электрический котел"},
-        {label:"Печь",value:"Печь"},
-        {label:"Нет",value:"Нет"},
+      visible: heatingModalVisible, onRequestClose: setHeatingModalVisible, headerText: "Отопление",
+      valueName: "heating",
+      pickerData: [
+        { label: "Газовый котел", value: "Газовый котел" },
+        { label: "Электрический котел", value: "Электрический котел" },
+        { label: "Печь", value: "Печь" },
+        { label: "Нет", value: "Нет" },
       ]
     },
 
@@ -220,10 +222,10 @@ export default function EditHousePostPage({route}) {
         {
           inputListLocation.map((item, index) => {
             return (
-            <TextInputComponent key={index} viewStyle={styles.row} textStyle={styles.label}
-            text={item.text} inputStyle={styles.input} placeholder={item.placeholder}
-            value={formData[item.valueName]} handleInputChange={handleInputChange} valueName={item.valueName}
-            />)
+              <TextInputComponent key={index} viewStyle={styles.row} textStyle={styles.label}
+                text={item.text} inputStyle={styles.input} placeholder={item.placeholder}
+                value={formData[item.valueName]} handleInputChange={handleInputChange} valueName={item.valueName}
+              />)
           })
         }
 
@@ -242,11 +244,11 @@ export default function EditHousePostPage({route}) {
         {
           inputListHouseinfo.map((item, index) => {
             return (
-            <TextInputComponent key={index} keyboardType={item.keyboardType} viewStyle={styles.row} 
-            textStyle={styles.label} text={item.text} inputStyle={styles.input} 
-            placeholder={item.placeholder} value={formData[item.valueName]}
-            handleInputChange={handleInputChange} valueName={item.valueName}
-            />)
+              <TextInputComponent key={index} keyboardType={item.keyboardType} viewStyle={styles.row}
+                textStyle={styles.label} text={item.text} inputStyle={styles.input}
+                placeholder={item.placeholder} value={formData[item.valueName]}
+                handleInputChange={handleInputChange} valueName={item.valueName}
+              />)
           })
         }
 
@@ -258,11 +260,11 @@ export default function EditHousePostPage({route}) {
           </TouchableOpacity>
         </View>
 
-        
+
         {/* В будущем заменить на DatePicker!!!! */}
         <TextInputComponent keyboardType={"numeric"} viewStyle={styles.row} textStyle={styles.label}
-        text={"Год Постройки"} inputStyle={styles.input} placeholder={"Год Постройки"}
-        value={formData.constructionYear} handleInputChange={handleInputChange} valueName={"constructionYear"}
+          text={"Год Постройки"} inputStyle={styles.input} placeholder={"Год Постройки"}
+          value={formData.constructionYear} handleInputChange={handleInputChange} valueName={"constructionYear"}
         />
 
 
@@ -287,10 +289,10 @@ export default function EditHousePostPage({route}) {
         {
           inputListConstruction.map((item, index) => {
             return (
-            <TextInputComponent key={index} viewStyle={styles.row} textStyle={styles.label}
-            text={item.text} inputStyle={styles.input} placeholder={item.placeholder}
-            value={formData[item.valueName]} handleInputChange={handleInputChange} valueName={item.valueName}
-            />)
+              <TextInputComponent key={index} viewStyle={styles.row} textStyle={styles.label}
+                text={item.text} inputStyle={styles.input} placeholder={item.placeholder}
+                value={formData[item.valueName]} handleInputChange={handleInputChange} valueName={item.valueName}
+              />)
           })
         }
 
@@ -338,51 +340,54 @@ export default function EditHousePostPage({route}) {
         </View>
 
         <TextInputComponent keyboardType={"numeric"} viewStyle={styles.row} textStyle={styles.label}
-        text={"Цена (обязательно)"} inputStyle={styles.input} placeholder={"Цена (руб)"}
-        value={formData.price} handleInputChange={handleInputChange} valueName={"price"}
+          text={"Цена (обязательно)"} inputStyle={styles.input} placeholder={"Цена (руб)"}
+          value={formData.price} handleInputChange={handleInputChange} valueName={"price"}
         />
 
         <TextInputComponent viewStyle={styles.row} textStyle={styles.label}
-        text={"Описание"} inputStyle={[styles.input, { height: 120 }]} placeholder={"Описание дома"}
-        value={formData.description} handleInputChange={handleInputChange} valueName={"description"}
+          text={"Описание"} inputStyle={[styles.input, { height: 120 }]} placeholder={"Описание дома"}
+          value={formData.description} handleInputChange={handleInputChange} valueName={"description"}
         />
 
         <Text style={styles.header2}>Фото</Text>
 
 
-        
+
         <View style={styles.photoContainer}>
           {formData.photos.length === 0 ? (
             <View style={styles.inputPhoto}>
-              <Pressable style={{backgroundColor:'black',
-                            width: width*0.65,
-                            height: height*0.055,
-                            borderRadius: 16,
-                            alignItems:'center',
-                            justifyContent:'center',
-                            marginVertical: 8}}
-                    onPress={() => handleImagePicker()}>
-                 <Text style={{color:'white'}}>Добавить фотографии</Text>
-               </Pressable>
+              <Pressable style={{
+                backgroundColor: 'black',
+                width: width * 0.65,
+                height: height * 0.055,
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginVertical: 8
+              }}
+                onPress={() => handleImagePicker()}>
+                <Text style={{ color: 'white' }}>Добавить фотографии</Text>
+              </Pressable>
             </View>
           ) : (
             <View style={styles.inputPhoto2}>
               {formData.photos.map((photo, index) => (
                 <Image key={index} source={{ uri: photo.base64 == undefined ? `${photo}` : `data:image/jpeg;base64,${photo.base64}` }} style={styles.thumbnail} />
-                
+
               ))}
-              <Pressable style={{backgroundColor:'black',
-                            width: (width-32-8*4)/3,
-                            height: (width-32-8*4)/3,
-                            borderRadius: 16,
-                            marginTop: 8,
-                            marginLeft: 8,
-                            alignItems:'center',
-                            justifyContent:'center',
-                            }}
-                    onPress={() => handleImagePicker()}>
-                 <Text style={{color:'white'}}>Добавить фотографии</Text>
-               </Pressable>
+              <Pressable style={{
+                backgroundColor: 'black',
+                width: (width - 32 - 8 * 4) / 3,
+                height: (width - 32 - 8 * 4) / 3,
+                borderRadius: 16,
+                marginTop: 8,
+                marginLeft: 8,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+                onPress={() => handleImagePicker()}>
+                <Text style={{ color: 'white' }}>Добавить фотографии</Text>
+              </Pressable>
             </View>
           )}
 
@@ -397,14 +402,14 @@ export default function EditHousePostPage({route}) {
           listModalPicker.map((item, index) => {
             return (
               <ModalPickerComponent
-              key={index}
-              visible={item.visible}
-              onRequestClose={item.onRequestClose}
-              headerText={item.headerText}
-              pickerSelectedValue={formData[item.valueName]}
-              handlePickerSelect={handlePickerSelect}
-              valueName={item.valueName}
-              pickerData={item.pickerData}/>
+                key={index}
+                visible={item.visible}
+                onRequestClose={item.onRequestClose}
+                headerText={item.headerText}
+                pickerSelectedValue={formData[item.valueName]}
+                handlePickerSelect={handlePickerSelect}
+                valueName={item.valueName}
+                pickerData={item.pickerData} />
             )
           })
         }
@@ -433,7 +438,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 24,
     marginTop: 32,
-    textAlign:'left',
+    textAlign: 'left',
   },
   row: {
     marginBottom: 16,
@@ -458,11 +463,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 8,
     justifyContent: 'center',
-    alignItems:'center'
+    alignItems: 'center'
   },
   inputPhoto2: {
-    flexDirection:'row',
-    flexWrap:'wrap',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
@@ -474,7 +479,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 20,
-    
+
   },
   buttonText: {
     color: 'grey',
@@ -485,17 +490,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginTop: 8,
-    justifyContent:'space-between'
+    justifyContent: 'space-between'
 
   },
   thumbnail: {
-    width: (width-32-8*4)/3,
-    height: (width-32-8*4)/3,
+    width: (width - 32 - 8 * 4) / 3,
+    height: (width - 32 - 8 * 4) / 3,
     borderRadius: 16,
     marginLeft: 8,
     marginTop: 8
 
-  
+
   },
-  
+
 });

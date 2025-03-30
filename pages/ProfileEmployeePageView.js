@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View, Dimensions, Pressable, ScrollView, FlatList, Image } from 'react-native';
-import { useAuth } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { useApi } from '../context/ApiContext';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome6';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Button, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import HouseCard from '../components/HouseCard.js';
+import { useApi } from '../context/ApiContext';
+import { useAuth } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 

@@ -1,18 +1,17 @@
+import Octicons from '@expo/vector-icons/Octicons';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
   Dimensions,
+  FlatList,
   Modal,
+  Pressable,
+  StyleSheet,
+  Text,
   TextInput,
-  FlatList
+  View
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import Octicons from '@expo/vector-icons/Octicons';
 import { useApi } from '../context/ApiContext';
 
 const { width } = Dimensions.get('window');

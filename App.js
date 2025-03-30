@@ -1,53 +1,46 @@
-import { useEffect } from "react";
-import { View, Text, Pressable, Platform } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MainPage from "./pages/MainPage";
-import ProfilePage from "./pages/ProfilePage";
-import SearchPage from "./pages/SearchPage";
-import FavouritesPage from "./pages/FavouritesPage";
-import ChatsPage from "./pages/ChatsPage";
-import RegisterPage from "./pages/RegisterPage";
-import OnboardingPage from "./pages/OnboardingPage";
-import AuthProvider from "./context/AuthContext";
-import { useAuth } from "./context/AuthContext";
-import LoginPage from "./pages/LoginPage";
-import DynamicHousesPage from "./pages/DynamicHousesPage";
-import DynamicHousePostPage from "./pages/DynamicHousePostPage";
-import ApiProvider from "./context/ApiContext";
-import HeaderComponent from "./components/HeaderComponent";
 import { useFonts } from "expo-font";
-import PersonalData from "./pages/PersonalDataPage.js";
-import UserLoginPage from "./pages/UserLoginPage.js";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect } from "react";
+import { Linking, Platform, Pressable, Text } from "react-native";
+import { Geocoder, YaMap } from "react-native-yamap";
+import HeaderComponent from "./components/HeaderComponent";
+import ApiProvider from "./context/ApiContext";
+import AuthProvider, { useAuth } from "./context/AuthContext";
+import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
 import ConfirmationPage from "./pages/ConfirmationPage.js";
 import CreateHousePostPage from "./pages/CreateHousePostPage.js";
-import NotExistPage from "./pages/NotExistPage.js";
-import Fontisto from "@expo/vector-icons/Fontisto";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Entypo from "@expo/vector-icons/Entypo";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import EditHousePostPage from "./pages/EditHousePostPage.js";
-import * as SplashScreen from "expo-splash-screen";
-import MortgageCalculator from "./pages/MortgageCalculator.js";
-import Error404 from "./pages/Error404.js";
-import Error403 from "./pages/Error403.js";
-import Error500 from "./pages/Error500.js";
-import Error503 from "./pages/Error503.js";
+import DynamicHousePostPage from "./pages/DynamicHousePostPage";
+import DynamicHousesPage from "./pages/DynamicHousesPage";
 import DynamicStoriesPage from "./pages/DynamicStoriesPage.js";
-import ProfilePageView from "./pages/ProfilePageView.js";
-import SettingsPage from "./pages/SettingsPage.js";
+import EditHousePostPage from "./pages/EditHousePostPage.js";
+import FavouritesPage from "./pages/FavouritesPage";
+import LoginPage from "./pages/LoginPage";
+import MainPage from "./pages/MainPage";
+import MortgageCalculator from "./pages/MortgageCalculator.js";
+import PersonalData from "./pages/PersonalDataPage.js";
 import ProfileCompanyPageView from "./pages/ProfileCompanyPageView.js";
 import ProfileEmployeePageView from "./pages/ProfileEmployeePageView.js";
-import { Geocoder } from "react-native-yamap";
-import { YaMap } from "react-native-yamap";
+import ProfilePage from "./pages/ProfilePage";
+import ProfilePageView from "./pages/ProfilePageView.js";
+import RegisterPage from "./pages/RegisterPage";
 import SearchMap from "./pages/SearchMap.js";
-import { Button } from "react-native-elements";
-import Feather from "@expo/vector-icons/Feather";
-import UserPostsPage from "./pages/UserPostsPage.js";
-import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
+import SettingsPage from "./pages/SettingsPage.js";
+import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsClosed from "./pages/UserPostsClosed.js";
+import UserPostsPage from "./pages/UserPostsPage.js";
 import UserRecycleBin from "./pages/UserRecycleBin.js";
+import ToastProvider from "./context/ToastProvider";
+import { setBackgroundColorAsync } from "expo-navigation-bar";
+import ErrorScreen from "./pages/ErrorScreen"
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
+import ConfirmDeleteProfilePage from './pages/ConfirmDeleteProfilePage';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -195,24 +188,24 @@ const StackProfile = () => {
 
       <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
         options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false  
-          }}/>
+          headerShown: false
+        }} />
 
       <ProfileStack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
         options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: true,  
+          headerShown: true,
           headerTitle: 'Редактирование профиля'
-       }}/>
+        }} />
 
       <ProfileStack.Screen name='ConfirmPhone' component={ConfirmChangePhonePage}
-      options={{//header:(props) => <HeaderComponent{...props}/>
-       headerShown: false, 
-      }}/>
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }} />
 
       <ProfileStack.Screen name='ConfirmDeletion' component={ConfirmDeleteProfilePage}
-      options={{//header:(props) => <HeaderComponent{...props}/>
-       headerShown: false, 
-      }}/>
+        options={{//header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }} />
     </ProfileStack.Navigator>
   );
 };
@@ -604,51 +597,53 @@ const AppInit = () => {
     } */
 
     if (/* isOnboarded &&  */ isAuth) {
-      return (<>
-        <DeepLinkHandler />
+      return <React.Fragment>
+        {/* TODO: вернуть */}
+        {/* <DeepLinkHandler /> */}
         <AppTopStack />
-      </>)
+      </React.Fragment>
     }
   }
 };
 ///
+// TODO: вернуть
+// const DeepLinkHandler = () => {
+//   const navigation = useNavigation();
 
-const DeepLinkHandler = () => {
-  const navigation = useNavigation();
+//   useEffect(() => {
+//     // Функция для обработки deep link
+//     const handleDeepLink = ({ url }) => {
+//       if (url) {
+//         const parsedUrl = Linking.parse(url);
+//         console.log('Получена ссылка:', parsedUrl);
+//         if (!parsedUrl.path) return;
+//         // Проверяем путь и параметры ссылки
+//         if (parsedUrl.path.includes('share/post') && parsedUrl.queryParams.id) {
+//           // Навигация на экран House с параметром houseId
+//           navigation.navigate('House', { houseId: parsedUrl.queryParams.id, timestamp: Date.now() });
+//         }
+//       }
+//     };
 
-  useEffect(() => {
-    // Функция для обработки deep link
-    const handleDeepLink = ({ url }) => {
-      if (url) {
-        const parsedUrl = Linking.parse(url);
-        console.log('Получена ссылка:', parsedUrl);
-        if (!parsedUrl.path) return;
-        // Проверяем путь и параметры ссылки
-        if (parsedUrl.path.includes('share/post') && parsedUrl.queryParams.id) {
-          // Навигация на экран House с параметром houseId
-          navigation.navigate('House', { houseId: parsedUrl.queryParams.id, timestamp: Date.now() });
-        }
-      }
-    };
+//     // Подписка на события ссылок, когда приложение уже открыто
+//     const subscription = Linking.addEventListener('url', handleDeepLink);
 
-    // Подписка на события ссылок, когда приложение уже открыто
-    const subscription = Linking.addEventListener('url', handleDeepLink);
+//     // TODO: проверять env, развернуть сервер, для прода указывать myapp(м.б. другое)
+//     // Проверка начальной ссылки при запуске приложения
+//     Linking.getInitialURL().then((url) => {
+//       if (url) {
+//         handleDeepLink({ url });
+//       }
+//     }).catch((err) => console.error('Ошибка при получении начальной ссылки:', err));
 
-    // Проверка начальной ссылки при запуске приложения
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        handleDeepLink({ url });
-      }
-    }).catch((err) => console.error('Ошибка при получении начальной ссылки:', err));
+//     // Очистка подписки при размонтировании компонента
+//     return () => {
+//       subscription.remove();
+//     };
+//   }, [navigation]);
 
-    // Очистка подписки при размонтировании компонента
-    return () => {
-      subscription.remove();
-    };
-  }, [navigation]);
-
-  return null;
-};
+//   return null;
+// };
 
 // Корневой (Root) компонент
 export default function App() {
@@ -661,35 +656,38 @@ export default function App() {
   //   }
   // }, []);
 
-  const linking = {
-    prefixes: [
-      // 'https://bast-backend-urdx.onrender.com', // ваш домен для продакшна на Android
-      "http://192.168.1.48:3000/",
-      Linking.createURL(''), // для разработки (exp://)
-      // 'myapp://' // дополнительный префикс (если нужен)
-    ],
-    config: {
-      screens: {
-        Tabs: {
-          screens: {
-            Home: {
-              screens: {
-                House: 'post/:houseId', // Маршрут для экрана House с параметром id
-              },
-            },
-          },
-        },
-      },
-    },
-  };
+  // TODO: вернуть
+  // const linking = {
+  //   prefixes: [
+  //     // 'https://bast-backend-urdx.onrender.com', // ваш домен для продакшна на Android
+  //     "http://192.168.1.48:3000/",
+  //     Linking.createURL(''), // для разработки (exp://)
+  //     // 'myapp://' // дополнительный префикс (если нужен)
+  //   ],
+  //   config: {
+  //     screens: {
+  //       Tabs: {
+  //         screens: {
+  //           Home: {
+  //             screens: {
+  //               House: 'post/:houseId', // Маршрут для экрана House с параметром id
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // };
 
 
+            // TODO: вернуть
+          {/* <NavigationContainer linking={linking} > */}
 
   return (
     <ApiProvider>
       <AuthProvider>
         <ToastProvider>
-          <NavigationContainer linking={linking} >
+          <NavigationContainer>
             <AppInit />
           </NavigationContainer>
         </ToastProvider>

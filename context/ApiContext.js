@@ -1,26 +1,25 @@
-import { Alert, StyleSheet, Text, View } from 'react-native'
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext } from 'react'
+import { Alert } from 'react-native'
 
 
 const ApiContext = createContext()
 const host = process.env.EXPO_PUBLIC_API_HOST
 
-export default function ApiProvider ({ children }){
+export default function ApiProvider({ children }) {
 
-    const getAllPosts = async () =>{
-        const url = host + "api/posts/all"
-        console.log(url);
+  const getAllPosts = async () => {
+    const url = host + "api/posts/all"
+    console.log(url);
 
-        return fetch(url)
-        .then(response => response.json()
-        )
-        .then(json =>
-            {return json.rows}
-        )
-        .catch(error => {
-            console.error("Error fetching files: ", error);
-        })
-    }
+    return fetch(url)
+      .then(response => response.json()
+      )
+      .then(json => { return json.rows }
+      )
+      .catch(error => {
+        console.error("Error fetching files: ", error);
+      })
+  }
 
   const getManyPosts = async (data) => {
     const url = host + `api/posts/manyPosts`;
@@ -46,22 +45,21 @@ export default function ApiProvider ({ children }){
 
   const getPaginatedPosts = async (page, params) => {
     const query = new URLSearchParams(params) != "undefined" || params != undefined ? new URLSearchParams(params) : ""
-    console.log("paginated query: ", typeof(query));
-        
-    const url = host + `api/posts/page/${page}?`+ query.toString()
+    console.log("paginated query: ", typeof (query));
+
+    const url = host + `api/posts/page/${page}?` + query.toString()
     console.log(url);
 
     return fetch(url)
       .then(response => response.json()
       )
-      .then(json =>
-          {return [json.rows, json.rowCount]}
+      .then(json => { return [json.rows, json.rowCount] }
       )
       .catch(error => {
-        console.error("Error fetching files: ", error);        
-        Alert.alert("Error", "Network Error")    
+        console.error("Error fetching files: ", error);
+        Alert.alert("Error", "Network Error")
       })
-    }
+  }
 
   const getPost = async (id) => {
     const url = host + `api/posts/${id}`;
@@ -347,10 +345,10 @@ export default function ApiProvider ({ children }){
 
     try {
       return fetch(url, {
-        method:'POST',
+        method: 'POST',
         headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId: userId,
@@ -358,11 +356,11 @@ export default function ApiProvider ({ children }){
           newStatus: newStatus
         })
       })
-      .then(response => {return response})
-      .catch(error => {
-        console.error("Error updating user: ", error);
-        Alert.alert("Error", "Network Error")            
-      })
+        .then(response => { return response })
+        .catch(error => {
+          console.error("Error updating user: ", error);
+          Alert.alert("Error", "Network Error")
+        })
     } catch (error) {
       if (error) {
         console.error(error);
@@ -392,55 +390,55 @@ export default function ApiProvider ({ children }){
     }
   }
 
-    const updateUser = async (userObject) => {
-        const url = host + `api/users/updateuser`
+  const updateUser = async (userObject) => {
+    const url = host + `api/users/updateuser`
 
-        try {
-            return fetch(url,{
-                method:'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userid: userObject.id,
-                    usertype:userObject.usertype,
-                    phoneNumber: userObject.phoneNumber,
-                    name: userObject.name,
-                    surname: userObject.surname,
-                    email: userObject.email,
-                    photo:userObject.photo
-                })
-            })
-            .then(response => {return response})
-            .catch(error => {
-                console.error("Error updating user: ", error);
-                Alert.alert("Error", "Network Error")            
-            })
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "Network Error")
-        }
+    try {
+      return fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userid: userObject.id,
+          usertype: userObject.usertype,
+          phoneNumber: userObject.phoneNumber,
+          name: userObject.name,
+          surname: userObject.surname,
+          email: userObject.email,
+          photo: userObject.photo
+        })
+      })
+        .then(response => { return response })
+        .catch(error => {
+          console.error("Error updating user: ", error);
+          Alert.alert("Error", "Network Error")
+        })
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Network Error")
     }
+  }
 
-    const getUserByID = async (id, usertype) => {
-        const url = host + `api/users/getuser/${usertype || "user"}/${id}`
+  const getUserByID = async (id, usertype) => {
+    const url = host + `api/users/getuser/${usertype || "user"}/${id}`
 
-        try {
-            return fetch(url,{
-                method:'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => {return  response})
-            .catch(error => {
-                console.error("Error getting user: ", error);            
-            })
-        } catch (error) {
-            console.error(error);
+    try {
+      return fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         }
+      })
+        .then(response => { return response })
+        .catch(error => {
+          console.error("Error getting user: ", error);
+        })
+    } catch (error) {
+      console.error(error);
+    }
 
   };
 
@@ -527,41 +525,43 @@ export default function ApiProvider ({ children }){
     }
   }
 
-    const changePhone = async (phone, userId, usertype) => {
-        const url = host + "api/sms/changephone"
+  const changePhone = async (phone, userId, usertype) => {
+    const url = host + "api/sms/changephone"
 
-        try {
-            return fetch(url,{
-                method:'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify([{
-                    phone:phone,
-                    userId:userId,
-                    usertype:usertype
-                }])
-            })
-            .then(response => {return  response})
-            .catch(error => {
-                console.error("Error: ", error);            
-            })
-        } catch (error) {
-            console.error("Error sending Sms: ", error);
-        }
-        
+    try {
+      return fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([{
+          phone: phone,
+          userId: userId,
+          usertype: usertype
+        }])
+      })
+        .then(response => { return response })
+        .catch(error => {
+          console.error("Error: ", error);
+        })
+    } catch (error) {
+      console.error("Error sending Sms: ", error);
     }
-  
-    return (
-        <ApiContext.Provider value={{getAllPosts, getPaginatedPosts, getAllVillages, 
-        getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
-        getPost,getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus, updateUserStatus}}>
-            {children}
-        </ApiContext.Provider>
-    )
 
   }
+
+  return (
+    <ApiContext.Provider value={{
+      getAllPosts, getPaginatedPosts, getAllVillages,
+      getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
+      getPost, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus, updateUserStatus
+    }}>
+      {children}
+    </ApiContext.Provider>
+  )
+
+}
 
 
 export const useApi = () => useContext(ApiContext)

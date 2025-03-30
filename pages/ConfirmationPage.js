@@ -1,7 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useApi } from '../context/ApiContext';
 
 export default function ConfirmationPage({ navigation, route }) {
@@ -11,9 +9,9 @@ export default function ConfirmationPage({ navigation, route }) {
   const [isShowSend, setIsShowSend] = useState(true)
   const [isCodeLabelShow, setIsCodeLabelShow] = useState(false)
 
-  const {sendSms, verifySms}=useApi()
+  const { sendSms, verifySms } = useApi()
 
-  const {regData} = route.params
+  const { regData } = route.params
 
 
   const handleInputChange = (text, index) => {
@@ -33,26 +31,26 @@ export default function ConfirmationPage({ navigation, route }) {
   const handleConfirm = async () => {
     const confirmationCode = code.join('');
     console.log("Confirmation code:", confirmationCode);
-    
+
     const result = await verifySms(regData.phoneNumber, confirmationCode)
     const resultJson = JSON.parse([await result.text()])
     console.log(result);
 
     console.log(await resultJson);
-    
-    
+
+
     if (await result.status == 200) {
       console.log(await resultJson);
-      
+
       if (await resultJson.result) {
-        navigation.navigate("PersonalData", {regData})
+        navigation.navigate("PersonalData", { regData })
       } else {
         setIsCodeLabelShow(true)
       }
     }
   };
 
-  const handleSendCall = async ()=>{
+  const handleSendCall = async () => {
     const result = await sendSms(regData.phoneNumber)
     if (await result.status == 200) {
       setIsShowSend(false)
@@ -62,7 +60,7 @@ export default function ConfirmationPage({ navigation, route }) {
   }
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
@@ -92,32 +90,32 @@ export default function ConfirmationPage({ navigation, route }) {
 
       {
         isShowSend
-        ?
-        <View>
-          <Pressable style={styles.button} onPress={handleSendCall}>
-            <Text style={styles.buttonText}>
-              Отправить Код
-            </Text>
-          </Pressable>
-        </View>
-        :
-        <View>
-          <Pressable style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]} 
-          onPress={handleConfirm} 
-          disabled={code.includes('')}>
-            <Text style={styles.buttonText}>Подтвердить Код</Text>
-          </Pressable>
-          
-        </View>
+          ?
+          <View>
+            <Pressable style={styles.button} onPress={handleSendCall}>
+              <Text style={styles.buttonText}>
+                Отправить Код
+              </Text>
+            </Pressable>
+          </View>
+          :
+          <View>
+            <Pressable style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]}
+              onPress={handleConfirm}
+              disabled={code.includes('')}>
+              <Text style={styles.buttonText}>Подтвердить Код</Text>
+            </Pressable>
+
+          </View>
       }
 
-      
+
 
 
       {/* временная кнопка для перехода на главную страницу */}
       <Pressable>
         <Text>
-            
+
         </Text>
       </Pressable>
     </KeyboardAvoidingView>
@@ -163,7 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 8,
   },
-  inputLabel:{
-    color:"red"
+  inputLabel: {
+    color: "red"
   }
 });

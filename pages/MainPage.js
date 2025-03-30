@@ -490,9 +490,9 @@ const MainPage = ({ navigation }) => {
                 isModal={true}
                 handleSelected={handleSelected}
                 itemWidth={width - 32}
-                />
-                </View>
-            }
+              />
+            </View>
+          }
         </Pressable>
         {(index + 1) % AD_FREQUENCY === 0 &&
           adsQueue[Math.floor(index / AD_FREQUENCY)] && (
@@ -512,7 +512,7 @@ const MainPage = ({ navigation }) => {
 
   const ListFooter = () => {
     if (!hasMore) return <Text style={styles.noMoreText}>Больше нет постов для загрузки</Text>;
-    return <View style={{ marginVertical: 16, height: 147 }}><ActivityIndicator size="large" color="#32322C" /></View>;
+    return <View style={{ marginVertical: 16, height: 176 }}><ActivityIndicator size="large" color="#32322C" /></View>;
   };
 
   // Функция, которая вызывается при измерении HouseCard
@@ -648,7 +648,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     fontSize: 16,
     color: "#32322C",
-    height: 136
+    height: 160
   },
 });
 

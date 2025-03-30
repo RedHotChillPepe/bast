@@ -12,7 +12,7 @@ import {
 
 const { width } = Dimensions.get('window');
 
-const MortgageCalculator = ({ price }) => {
+const MortgageCalculator = ({ price = 1000000 }) => {
   // Инициализируем поля калькулятора
   const [propertyPrice, setPropertyPrice] = useState('');
   const [downPayment, setDownPayment] = useState('');
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E5E5EA',
-    marginTop: 16,
+    paddingTop: 16,
   },
   scrollContainer: {
     padding: 16,

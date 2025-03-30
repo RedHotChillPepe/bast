@@ -28,7 +28,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
         // Иначе включаем фильтр
         return { ...prevFilters, [group.id]: option.id };
       }
-      
+
     });
     console.log("filter:", group.id, option);
 

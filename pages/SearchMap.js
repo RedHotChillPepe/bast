@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Geocoder, Marker, YaMap } from "react-native-yamap";
-import HouseCard from "../components/HouseCard";
 import CustomModal from "../components/CustomModal";
+import HouseCard from "../components/HouseCard";
 import { useApi } from "../context/ApiContext";
 import DynamicHousePostPage from "./DynamicHousePostPage";
 
