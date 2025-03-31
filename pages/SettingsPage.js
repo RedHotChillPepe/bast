@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Dimensions, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomModal from '../components/Modal';
+import CustomModal from '../components/CustomModal';
 import { Button } from 'react-native-elements';
 
 
