@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-  Text,
-  View,
-  StyleSheet,
-  Pressable,
-  Modal,
   Dimensions,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -24,10 +24,10 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort, handleFilt
   const handleSortPress = (option) => {
     setSelectedSort(option);
     console.log("sort: ", option);
-    
+
   };
 
-  const handleApplyPress = ()=>{
+  const handleApplyPress = () => {
     handleFilterChoice()
     onClose()
   }
@@ -58,15 +58,15 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort, handleFilt
                   </Text>
                 </Pressable>
               ))}
-              <Pressable style={styles.closeButton} onPress={()=>handleApplyPress()}>
+              <Pressable style={styles.closeButton} onPress={() => handleApplyPress()}>
                 <Text style={styles.closeButtonText}>Применить</Text>
               </Pressable>
             </View>
           </TouchableWithoutFeedback>
-          
+
         </View>
       </TouchableOpacity>
-      
+
     </Modal>
   );
 };

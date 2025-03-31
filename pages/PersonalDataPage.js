@@ -1,96 +1,96 @@
-import { Button, StyleSheet, Text, TextInput, View, Dimensions, Pressable  } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
-import { useApi } from '../context/ApiContext'
 import DateTimePicker from "@react-native-community/datetimepicker"
+import { useNavigation } from '@react-navigation/native'
+import React, { useRef, useState } from 'react'
+import { Dimensions, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { useApi } from '../context/ApiContext'
+import { useAuth } from '../context/AuthContext'
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
-const PersonalDataPage = ({route}) => {
-    const { getAuth, setAuth , setCheckAuthB } = useAuth()
-    const {postRegister} = useApi()
-    const navigation = useNavigation()
+const PersonalDataPage = ({ route }) => {
+  const { getAuth, setAuth, setCheckAuthB } = useAuth()
+  const { postRegister } = useApi()
+  const navigation = useNavigation()
 
-    const {regData} = route.params
+  const { regData } = route.params
 
-    const [inputName, setInputName] = useState('')
-    const [inputSurname, setInputsurname] = useState('')
-    const [inputFathername, setInputFathername] = useState('')
-    const [inputBirthdate, setInputBirthdate] = useState(new Date())
-    const currentDate = useRef(inputBirthdate)
+  const [inputName, setInputName] = useState('')
+  const [inputSurname, setInputsurname] = useState('')
+  const [inputFathername, setInputFathername] = useState('')
+  const [inputBirthdate, setInputBirthdate] = useState(new Date())
+  const currentDate = useRef(inputBirthdate)
 
-    const [showDatePicker, setShowDatePicker] = useState(false)
-    const [showDateLabel, setShowDateLabel] = useState(false)
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showDateLabel, setShowDateLabel] = useState(false)
 
 
-    function calculateAge(birthday) { // принимает Date объект
-      var ageDifMs = Date.now() - birthday.getTime();
-      var ageDate = new Date(ageDifMs); 
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
+  function calculateAge(birthday) { // принимает Date объект
+    var ageDifMs = Date.now() - birthday.getTime();
+    var ageDate = new Date(ageDifMs);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  }
+
+  const handlePost = async (skip) => {
+
+    const sendRegister = async () => {
+      try {
+        var tempData = {
+          phoneNumber: regData.phoneNumber,
+          password: regData.password,
+          name: inputName,
+          surname: inputSurname,
+          fathername: inputFathername,
+          birthdate: inputBirthdate == currentDate.current || calculateAge(inputBirthdate) < 18 ? "" : inputBirthdate,
+        }
+        const response = await postRegister(tempData)
+        if (response.status == "200") {
+          await setAuth([{
+            status: true,
+            onboarded: false,
+            phone: regData.phoneNumber,
+            password: await response.text(),
+            usertype: 1 // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
+          }])
+          setCheckAuthB(true)
+
+        }
+      } catch (error) {
+        console.error("Error sending register info:", error);
+      }
     }
 
-    const handlePost = async (skip) => {
-
-      const sendRegister = async () => {
-        try {
-          var tempData = {
-            phoneNumber:regData.phoneNumber,
-            password:regData.password,
-            name:inputName,
-            surname:inputSurname,
-            fathername:inputFathername,
-            birthdate:inputBirthdate == currentDate.current || calculateAge(inputBirthdate) < 18 ? "":inputBirthdate,
-          } 
-          const response = await postRegister(tempData)
-          if (response.status == "200") {
-            await setAuth([{
-              status:true,
-              onboarded:false,
-              phone:regData.phoneNumber,
-              password:await response.text(),
-              usertype:1 // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
-            }])
-            setCheckAuthB(true)
-            
-          }
-        } catch (error) {
-          console.error("Error sending register info:", error);
-        }
-      }
-
-      if (!skip) {
-        if (calculateAge(inputBirthdate) < 18) {
-          setShowDateLabel(true)
-        } else {
-          await sendRegister()
-        }
+    if (!skip) {
+      if (calculateAge(inputBirthdate) < 18) {
+        setShowDateLabel(true)
       } else {
         await sendRegister()
       }
-      
+    } else {
+      await sendRegister()
     }
 
-    
+  }
 
-    const onDateSelect = (event, selectedDate) =>{
-      const currentDate = selectedDate
-      setShowDatePicker(false)
-      console.log(selectedDate);
-      setInputBirthdate(currentDate)
-      
-    }
-    
+
+
+  const onDateSelect = (event, selectedDate) => {
+    const currentDate = selectedDate
+    setShowDatePicker(false)
+    console.log(selectedDate);
+    setInputBirthdate(currentDate)
+
+  }
+
 
   return (
     <SafeAreaView style={{
       flex: 1,
-      justifyContent:'center',
-      alignItems:'center'
+      justifyContent: 'center',
+      alignItems: 'center'
     }}>
 
-      <View style={{marginBottom: 48}}>
+      <View style={{ marginBottom: 48 }}>
         <Text style={styles.h1}>
           Персональные данные
         </Text>
@@ -135,22 +135,22 @@ const PersonalDataPage = ({route}) => {
         </View>
         <Pressable onPress={() => setShowDatePicker(true)}>
           <TextInput
-          style={styles.input}
-          placeholder={inputBirthdate.getDate().toString()+ "." 
-            + inputBirthdate.getMonth().toString() + "." 
-            + inputBirthdate.getFullYear().toString()}
-          editable={false}
+            style={styles.input}
+            placeholder={inputBirthdate.getDate().toString() + "."
+              + inputBirthdate.getMonth().toString() + "."
+              + inputBirthdate.getFullYear().toString()}
+            editable={false}
           />
         </Pressable>
-        
+
 
         {
           showDatePicker
           &&
           <DateTimePicker
-          value={inputBirthdate}
-          mode='date'
-          onChange={onDateSelect}/>
+            value={inputBirthdate}
+            mode='date'
+            onChange={onDateSelect} />
         }
 
         {
@@ -162,24 +162,28 @@ const PersonalDataPage = ({route}) => {
         }
       </View>
 
-      <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-        <Pressable style={{paddingVertical: 8, 
-        paddingHorizontal: 16, borderRadius: 12, 
-        marginTop: 44}} 
-        onPress={() => handlePost(true)}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Pressable style={{
+          paddingVertical: 8,
+          paddingHorizontal: 16, borderRadius: 12,
+          marginTop: 44
+        }}
+          onPress={() => handlePost(true)}>
 
-          <Text style={{fontSize: 20, color:'black'}}>
+          <Text style={{ fontSize: 20, color: 'black' }}>
             Пропустить
           </Text>
 
         </Pressable>
 
-        <Pressable style={{backgroundColor: 'black', 
-        paddingVertical: 8, paddingHorizontal: 16, 
-        borderRadius: 12, marginTop: 44}} 
-        onPress={() => handlePost(false)}>
+        <Pressable style={{
+          backgroundColor: 'black',
+          paddingVertical: 8, paddingHorizontal: 16,
+          borderRadius: 12, marginTop: 44
+        }}
+          onPress={() => handlePost(false)}>
 
-          <Text style={{fontSize: 20, color:'white'}}>
+          <Text style={{ fontSize: 20, color: 'white' }}>
             Подтвердить
           </Text>
 
@@ -196,7 +200,7 @@ export default PersonalDataPage
 const styles = StyleSheet.create({
   block: {
     paddingHorizontal: 32,
-    width: width, 
+    width: width,
   },
 
   h1: {
@@ -205,11 +209,11 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    marginBottom:4
+    marginBottom: 4
   },
 
   titleText: {
-    fontSize:18,
+    fontSize: 18,
     fontWeight: '500',
   },
 
@@ -220,7 +224,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 8,
   },
-  inputLabel:{
-    color:"red"
+  inputLabel: {
+    color: "red"
   }
 })

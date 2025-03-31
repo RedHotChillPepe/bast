@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from 'react';
+import { Dimensions, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useToast } from "../context/ToastProvider";
 
 const { width } = Dimensions.get('window');
@@ -20,8 +20,8 @@ const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: 'images',
       quality: 0.7,
-      allowsMultipleSelection:false,
-      base64:true
+      allowsMultipleSelection: false,
+      base64: true
     });
 
     if (!result.canceled) {

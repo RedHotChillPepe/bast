@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Text, View, StyleSheet, Pressable, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useApi } from '../context/ApiContext';
-import { useAuth } from '../context/AuthContext';
 
 export default function ConfirmDeleteProfilePage({ navigation, route }) {
   const [code, setCode] = useState(['', '', '', '']);
@@ -10,9 +9,9 @@ export default function ConfirmDeleteProfilePage({ navigation, route }) {
   const [isShowSend, setIsShowSend] = useState(true)
   const [isCodeLabelShow, setIsCodeLabelShow] = useState(false)
 
-  const {changePhone, updateUserStatus, verifySms}=useApi()
+  const { changePhone, updateUserStatus, verifySms } = useApi()
 
-  const {regData} = route.params
+  const { regData } = route.params
 
 
   const handleInputChange = (text, index) => {
@@ -32,28 +31,28 @@ export default function ConfirmDeleteProfilePage({ navigation, route }) {
   const handleConfirm = async () => {
     const confirmationCode = code.join('');
     console.log("Confirmation code:", confirmationCode);
-    
+
     const result = await verifySms(regData.userObjectt.phoneNumber, confirmationCode)
     const resultJson = JSON.parse([await result.text()])
     console.log(result);
 
     console.log(await resultJson);
-    
-    
+
+
     if (await result.status == 200) {
       console.log(await resultJson);
-      
+
       if (await resultJson.result) {
 
         let result = await updateUserStatus(regData.userObjectt.id, regData.userObjectt.usertype, 2)
-        .then(navigation.navigate("Profile"))
-        
-        
+          .then(navigation.navigate("Profile"))
+
+
 
         if (await result.status == 200) {
-            Alert.alert("Сообщение", "Запрос успешен. Профиль будет удалён в течении 72 часов")
+          Alert.alert("Сообщение", "Запрос успешен. Профиль будет удалён в течении 72 часов")
         } else {
-            Alert.alert("Ошибка", `Код ошибки: ${result.status}`)
+          Alert.alert("Ошибка", `Код ошибки: ${result.status}`)
         }
 
       } else {
@@ -62,11 +61,11 @@ export default function ConfirmDeleteProfilePage({ navigation, route }) {
     }
   };
 
-  const handleSendCall = async ()=>{
+  const handleSendCall = async () => {
 
     const result = await changePhone(regData.userObjectt.phoneNumber, regData.userObjectt.id, regData.userObjectt.usertype)
     console.log(result);
-    
+
     if (await result.status == 200) {
       setIsShowSend(false)
     }
@@ -75,7 +74,7 @@ export default function ConfirmDeleteProfilePage({ navigation, route }) {
   }
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
@@ -105,32 +104,32 @@ export default function ConfirmDeleteProfilePage({ navigation, route }) {
 
       {
         isShowSend
-        ?
-        <View>
-          <Pressable style={styles.button} onPress={handleSendCall}>
-            <Text style={styles.buttonText}>
-              Отправить Код
-            </Text>
-          </Pressable>
-        </View>
-        :
-        <View>
-          <Pressable style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]} 
-          onPress={handleConfirm} 
-          disabled={code.includes('')}>
-            <Text style={styles.buttonText}>Подтвердить Код</Text>
-          </Pressable>
-          
-        </View>
+          ?
+          <View>
+            <Pressable style={styles.button} onPress={handleSendCall}>
+              <Text style={styles.buttonText}>
+                Отправить Код
+              </Text>
+            </Pressable>
+          </View>
+          :
+          <View>
+            <Pressable style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]}
+              onPress={handleConfirm}
+              disabled={code.includes('')}>
+              <Text style={styles.buttonText}>Подтвердить Код</Text>
+            </Pressable>
+
+          </View>
       }
 
-      
+
 
 
       {/* временная кнопка для перехода на главную страницу */}
       <Pressable>
         <Text>
-            
+
         </Text>
       </Pressable>
     </KeyboardAvoidingView>
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 8,
   },
-  inputLabel:{
-    color:"red"
+  inputLabel: {
+    color: "red"
   }
 });

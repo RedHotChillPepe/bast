@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 const TextInputComponent = (props) => {
   return (

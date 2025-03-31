@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import React, { useState } from 'react';
+import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 

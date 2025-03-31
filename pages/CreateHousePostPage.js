@@ -66,33 +66,35 @@ export default function CreateHousePostPage({ navigation }) {
   const { sendPost } = useApi()
 
   const handleInputChange = (field, value) => {
-    setFormData((prevData)=> ({ ...prevData, [field]: value }));
+    setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handlePickerSelect = (field, value) => {
     console.log(field, value);
-    
+
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleImagePicker = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes:ImagePicker.MediaTypeOptions.Images,
-      quality:0,
-      base64:true
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0,
+      base64: true
     })
     console.log(result);
 
     var tempPhotos = formData.photos
-    tempPhotos.push({filename:result.assets[0].fileName, 
-      base64:result.assets[0].base64})
+    tempPhotos.push({
+      filename: result.assets[0].fileName,
+      base64: result.assets[0].base64
+    })
 
     //console.log(tempPhotos);
-    
-    setFormData((prevData) => ({...prevData, photos:tempPhotos}))
+
+    setFormData((prevData) => ({ ...prevData, photos: tempPhotos }))
   }
 
-  
+
 
   const handleSubmit = async () => {
     if (!formData.price || !formData.settlement || !formData.location) {
@@ -442,11 +444,11 @@ export default function CreateHousePostPage({ navigation }) {
   // formData.price || !formData.settlement || !formData.location
   const requiredFieldsByPage = {
     0: ['photos'],
-    // 1: ['settlement', 'location', 'kadastr'],
-    // 2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
-    // 3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
-    // 4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
-    // 5: ['description', 'price'],
+    1: ['settlement', 'location', 'kadastr'],
+    2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
+    3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
+    4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
+    5: ['description', 'price'],
   };
 
   const isPageValid = () => {
@@ -638,8 +640,5 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginLeft: 8,
     marginTop: 8
-
-
   },
-
 });

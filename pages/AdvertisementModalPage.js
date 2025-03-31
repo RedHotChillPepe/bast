@@ -1,8 +1,7 @@
-import React from 'react';
-import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import React from 'react';
+import { Dimensions, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import Button from '../components/Button';
-import CustomModal from '../components/CustomModal';
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");

@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native';
+import { Alert, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import AvatarModal from '../components/AvatarModal';
 import { useApi } from '../context/ApiContext';
 
 const { width } = Dimensions.get('window');
 
-const ChangeAvatarPage = ({route, navigation}) => {
+const ChangeAvatarPage = ({ route, navigation }) => {
 
-  const {updateUser} = useApi()
-  
+  const { updateUser } = useApi()
 
-  const {userObject, usertype} = route.params
+
+  const { userObject, usertype } = route.params
   const [user, setUser] = useState({});
   const [avatar, setAvatar] = useState(null);
   const imageObject = useRef()
@@ -23,19 +23,19 @@ const ChangeAvatarPage = ({route, navigation}) => {
 
   useEffect(() => {
     const init = async () => {
-      
+
       if (Object.keys(userObject).length != 0) {
         setUser(userObject)
         setAvatar(userObject.photo)
       }
-      
+
     };
     init();
   }, []);
 
   const handleAvatarSelect = (newAvatarObject) => {
     console.log(newAvatarObject);
-    
+
     setAvatar(newAvatarObject.uri);
     imageObject.current = newAvatarObject
     setModalVisible(false);
@@ -45,13 +45,13 @@ const ChangeAvatarPage = ({route, navigation}) => {
     var photo = null
 
     if (imageObject.current != undefined) {
-      photo = {filename: imageObject.current.filename, base64: imageObject.current.base64}
+      photo = { filename: imageObject.current.filename, base64: imageObject.current.base64 }
     }
 
     const userObjectt = {
       id: userObject.id,
       usertype: usertype,
-      phoneNumber:phone === "" ? userObject.phone : phone,
+      phoneNumber: phone === "" ? userObject.phone : phone,
       name: name === "" ? userObject.name : name,
       surname: surname === "" ? userObject.surname : surname,
       email: email === "" ? userObject.email : email,
@@ -72,33 +72,35 @@ const ChangeAvatarPage = ({route, navigation}) => {
 
     if (phone !== userObject.phone) {
       navigation.navigate("ConfirmPhone", {
-        regData:{
-        phoneNumber: userObject.phone,
-        userObjectt: userObjectt}})
+        regData: {
+          phoneNumber: userObject.phone,
+          userObjectt: userObjectt
+        }
+      })
     } else {
       await sendAway()
     }
   }
 
   return (
-    <View style={{flex:1}}>
+    <View style={{ flex: 1 }}>
       <ScrollView
-      contentContainerStyle={[{flexGrow: 1}, styles.container]}>
-        
+        contentContainerStyle={[{ flexGrow: 1 }, styles.container]}>
+
         <View style={styles.avatarContainer}>
-        {avatar ? (
+          {avatar ? (
             <Image source={{ uri: avatar }} style={styles.avatarImage} />
           ) : (
             <Text>Нет аватара</Text>
           )}
         </View>
-        
-        <View style={{paddingBottom:32}}>
+
+        <View style={{ paddingBottom: 32 }}>
           <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
             <Text style={styles.buttonText}>Сменить аватар</Text>
           </Pressable>
         </View>
-        
+
         <AvatarModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
@@ -109,7 +111,7 @@ const ChangeAvatarPage = ({route, navigation}) => {
           <View style={styles.title}>
             <Text style={styles.titleText}>Имя:</Text>
           </View>
-        
+
           <TextInput
             style={styles.input}
             placeholder={user.name}
@@ -118,16 +120,16 @@ const ChangeAvatarPage = ({route, navigation}) => {
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
-            />
+          />
         </View>
-      
+
         {user.surname != undefined &&
-          
+
           <View style={styles.block}>
             <View style={styles.title}>
               <Text style={styles.titleText}>Фамилия:</Text>
             </View>
-          
+
             <TextInput
               style={styles.input}
               placeholder={user.surname}
@@ -136,15 +138,15 @@ const ChangeAvatarPage = ({route, navigation}) => {
               maxLength={20}
               placeholderTextColor='rgba(60,60,67, 0.6'
               fontSize={17}
-              /> 
-            </View>
+            />
+          </View>
         }
 
         <View style={styles.block}>
           <View style={styles.title}>
             <Text style={styles.titleText}>Почта:</Text>
           </View>
-        
+
           <TextInput
             style={styles.input}
             placeholder={user.email}
@@ -153,14 +155,14 @@ const ChangeAvatarPage = ({route, navigation}) => {
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
-            />
+          />
         </View>
 
         <View style={styles.block}>
           <View style={styles.title}>
             <Text style={styles.titleText}>Телефон:</Text>
           </View>
-        
+
           <TextInput
             style={styles.input}
             placeholder={user.phone}
@@ -169,16 +171,16 @@ const ChangeAvatarPage = ({route, navigation}) => {
             maxLength={20}
             placeholderTextColor='rgba(60,60,67, 0.6'
             fontSize={17}
-            />
+          />
         </View>
-        
-        <View style={{paddingBottom:124}}>
-          <Pressable onPress={()=>{handleSubmit()}} style={styles.button}>
+
+        <View style={{ paddingBottom: 124 }}>
+          <Pressable onPress={() => { handleSubmit() }} style={styles.button}>
             <Text style={styles.buttonText}>Сохранить изменения</Text>
           </Pressable>
         </View>
       </ScrollView>
-  </View>
+    </View>
   );
 };
 
@@ -215,16 +217,16 @@ const styles = StyleSheet.create({
   },
 
   block: {
-    width: width - 72, 
+    width: width - 72,
     marginBottom: 12
   },
 
   title: {
-    marginBottom:8
+    marginBottom: 8
   },
 
   titleText: {
-    fontSize:20,
+    fontSize: 20,
     lineHeight: 25,
     letterSpacing: -0.45,
     fontWeight: '500',
@@ -240,16 +242,16 @@ const styles = StyleSheet.create({
   },
 
   block: {
-    width: width - 72, 
+    width: width - 72,
     marginBottom: 12
   },
 
   title: {
-    marginBottom:8
+    marginBottom: 8
   },
 
   titleText: {
-    fontSize:20,
+    fontSize: 20,
     lineHeight: 25,
     letterSpacing: -0.45,
     fontWeight: '500',
