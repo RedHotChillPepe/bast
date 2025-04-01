@@ -1,15 +1,15 @@
-import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const HeaderButton = (props) => {
-    const { title, handleButton } = props;
+    const { title, handleButton, icon } = props;
     return (
         <TouchableOpacity
+            style={{ flex: 1 }}
             onPress={handleButton}
         >
             <View style={styles.searchContainer}>
-                <AntDesign name="home" size={20} color="#2C88EC" />
+                {icon}
                 <Text style={styles.headline}>{title}</Text>
             </View>
         </TouchableOpacity>

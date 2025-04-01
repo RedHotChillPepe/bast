@@ -12,17 +12,17 @@ const ServicesComponent = () => {
     {
       text: 'Все сервисы',
       subtext: 'Наши юристы позаботятся о вашей безопасности',
-      navigation: ['Error', { errorCode: 503 }]
+      navigation: ['Error', { errorCode: 2004 }]
     },
     {
       text: 'Продать дом',
       subtext: 'Наши юристы позаботятся о вашей безопасности',
-      navigation: ['Error', { errorCode: 503 }]
+      navigation: ['Error', { errorCode: 2004 }]
     },
     {
       text: 'Оценка',
       subtext: 'Бесплатно узнайте рыночную стоимость',
-      navigation: ['Error', { errorCode: 503 }]
+      navigation: ['Error', { errorCode: 2004 }]
     },
     {
       text: 'Ипотечный калькулятор',
@@ -53,19 +53,20 @@ const ServicesComponent = () => {
 
 const styles = StyleSheet.create({
   functionCards: {
-    width: width,
-    paddingHorizontal: 16,
-    flexDirection: 'row', // Ряд
-    alignItems: 'center', // Выравнивание по центру
+    // paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   functionCard: {
     borderRadius: 12,
     backgroundColor: '#F2F2F7',
     padding: 12,
+    minWidth: 120, // Фиксированная минимальная ширина
+    height: 60, // Фиксированная высота для единообразия
   },
   functionCardView: {
-    flex: 1,
+    // height: '100%',
   },
   functionCardText: {
     fontSize: 14,

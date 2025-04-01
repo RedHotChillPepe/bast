@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Dimensions, KeyboardAvoidingView, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Alert, Animated, Dimensions, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Geocoder } from 'react-native-yamap';
 import { useApi } from '../context/ApiContext';
@@ -69,33 +69,6 @@ export default function CreateHousePostPage({ navigation }) {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
-  const handlePickerSelect = (field, value) => {
-    console.log(field, value);
-
-    setFormData((prevData) => ({ ...prevData, [field]: value }));
-  };
-
-  const handleImagePicker = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0,
-      base64: true
-    })
-    console.log(result);
-
-    var tempPhotos = formData.photos
-    tempPhotos.push({
-      filename: result.assets[0].fileName,
-      base64: result.assets[0].base64
-    })
-
-    //console.log(tempPhotos);
-
-    setFormData((prevData) => ({ ...prevData, photos: tempPhotos }))
-  }
-
-
-
   const handleSubmit = async () => {
     if (!formData.price || !formData.settlement || !formData.location) {
       showToast('Пожалуйста, заполните все обязательные поля.', "warn");
@@ -110,7 +83,7 @@ export default function CreateHousePostPage({ navigation }) {
       // Получаем результат геокодирования
       const geoResult = await Geocoder.addressToGeo(addressString);
 
-      if (!geoResult || geoResult.lat == null || geoResult.lon == null) {
+      if (!geoResult?.lat || !geoResult?.lon) {
         showToast('Ошибка, неправильный адрес', "error");
         setPage(1);
         setIsButtonDisabled(false);
@@ -171,15 +144,15 @@ export default function CreateHousePostPage({ navigation }) {
 
   const currentYear = new Date().getFullYear();
   const constructionYear = Array.from({ length: currentYear - 1949 }, (_, i) => {
-    const year = 1950 + i;
+    const year = currentYear - i;
     return { label: `${year}`, value: `${year}` };
   });
 
   const inputListHouseinfo = [
-    { keyboardType: "numeric", text: "Тип дома", placeholder: "Выберите тип дома", valueName: "houseType", },
-    { keyboardType: "numeric", text: "Год постройки", placeholder: "2000", valueName: "constructionYear", },
-    { keyboardType: "numeric", text: "Этажи", placeholder: "Количество этажей", valueName: "floors", },
-    { keyboardType: "numeric", text: "Комнаты", placeholder: "Количество комнат", valueName: "rooms", },
+    { keyboardType: "numeric", text: "Тип дома", placeholder: "Выберите тип дома", valueName: "houseType", type: "select" },
+    { keyboardType: "numeric", text: "Год постройки", placeholder: "2000", valueName: "constructionYear", type: "select" },
+    { keyboardType: "numeric", text: "Этажи", placeholder: "Количество этажей", valueName: "floors", type: "select" },
+    { keyboardType: "numeric", text: "Комнаты", placeholder: "Количество комнат", valueName: "rooms", type: "select" },
     { keyboardType: "numeric", text: "Площадь", placeholder: "Жилплощадь (м²)", valueName: "area", },
     { keyboardType: "numeric", text: "Площадь Участка", placeholder: "Площадь участка (сот.)", valueName: "plotSize", },
   ]
@@ -255,7 +228,7 @@ export default function CreateHousePostPage({ navigation }) {
                 value={formData[item.valueName]}
                 valueName={item.valueName}
                 handleInputChange={handleInputChange}
-                type="select"
+                type={item.type}
               />
             </View>
           ))}
@@ -270,7 +243,7 @@ export default function CreateHousePostPage({ navigation }) {
                   value={formData[item.valueName]}
                   valueName={item.valueName}
                   handleInputChange={handleInputChange}
-                  type="select"
+                  type={item.type}
                 />
               ))}
             </View>
@@ -456,7 +429,7 @@ export default function CreateHousePostPage({ navigation }) {
     if (isButtonDisabled) return false;
 
     const requiredFields = requiredFieldsByPage[page] || [];
-    for (let field of requiredFields) {
+    for (const field of requiredFields) {
       const value = formData[field];
       if (Array.isArray(value)) {
         if (value.length === 0) return false;
@@ -511,24 +484,19 @@ export default function CreateHousePostPage({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={"#fff"} barStyle={'dark-content'} />
       <Text style={styles.header}>Создание объявление</Text>
-      <KeyboardAvoidingView>
-        <Animated.View style={{ transform: [{ translateX }] }}>
-          {getPage()}
-        </Animated.View>
-      </KeyboardAvoidingView>
+      <Animated.View style={{ transform: [{ translateX }] }}>
+        {getPage()}
+      </Animated.View>
       <View style={styles.container__button}>
-        <View style={styles.container__button}>
-          <Pressable
-            disabled={!isPageValid()}
-            onPress={page === 5 ? handleSubmit : handlePageTransition}
-            style={!isPageValid() ? styles.buttonDisabled : styles.button}
-          >
-            <Text style={!isPageValid() ? styles.buttonDisabledText : styles.buttonText}>
-              {page === 5 ? "Создать объявление" : "Далее"}
-            </Text>
-          </Pressable>
-        </View>
-
+        <Pressable
+          disabled={!isPageValid()}
+          onPress={page === 5 ? handleSubmit : handlePageTransition}
+          style={isPageValid() ? styles.button : styles.buttonDisabled}
+        >
+          <Text style={isPageValid() ? styles.buttonText : styles.buttonDisabledText}>
+            {page === 5 ? "Создать объявление" : "Далее"}
+          </Text>
+        </Pressable>
       </View>
     </SafeAreaView >
   )

@@ -109,7 +109,7 @@ export default function SearchMap({ navigation, route }) {
           route={{
             houseId: selectedPost,
             isModal: true,
-            setIsModalShow: setIsModalShow,
+            setIsModalShow,
           }}
         />
       </CustomModal>

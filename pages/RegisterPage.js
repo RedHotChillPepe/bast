@@ -28,11 +28,7 @@ const RegisterPage = () => {
     setIsPhoneLabelShown(text.length !== 18);
     if (previousText && previousText.length > text.length) return text;
     let cleaned = text.replace(/\D/g, "");
-    if (cleaned.startsWith("7") || cleaned.startsWith("8")) {
-      cleaned = "7" + cleaned.slice(1);
-    } else {
-      cleaned = "7" + cleaned;
-    }
+    cleaned = cleaned.startsWith("7") || cleaned.startsWith("8") ? `7${cleaned.slice(1)}` : `7${cleaned}`;
     cleaned = cleaned.slice(0, 11);
     if (cleaned.length <= 1) {
       return "+7";

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 const OnboardingPage = () => {
   const { setOnboard, logout } = useAuth()
-  async function localSetOboard(params) {
+  async function localSetOnboard(params) {
     await setOnboard(params)
   }
 
@@ -12,7 +12,7 @@ const OnboardingPage = () => {
     <View>
       <Text>OnboardingPage</Text>
       <View style={{ width: 100 }}>
-        <Button title='Onboard' onPress={() => localSetOboard(true)} />
+        <Button title='Onboard' onPress={() => localSetOnboard(true)} />
         <Button title='Logout' onPress={() => logout()} />
       </View>
     </View>

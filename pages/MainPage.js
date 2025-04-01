@@ -19,9 +19,9 @@ import VillageCard from "../components/VillageCard";
 import { useApi } from "../context/ApiContext";
 import AdvertisementModalPage from "../pages/AdvertisementModalPage";
 import DynamicHousePostPage from "./DynamicHousePostPage";
+import { AntDesign, Octicons } from "@expo/vector-icons";
 
-const { width } = Dimensions.get("window");
-const { height } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const AD_FREQUENCY = 10;
 
@@ -30,13 +30,13 @@ const MainPage = ({ navigation }) => {
   const [houses, setHouses] = useState([]);
   const [villages, setVillages] = useState([]);
   const [builders, setBuilders] = useState([]);
-  const isFocused = useIsFocused();
   const [selectedList, setSelectedList] = useState("houses"); // "houses" или "villages"
+  const isFocused = useIsFocused();
   const [page, setPage] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [isVisibleModalBanner, setIsVisibleModalBanner] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
   // Значения высоты, которые измерятся динамически
   const [houseHeight, setHouseHeight] = useState(180); // значение по умолчанию
   const [adHeight, setAdHeight] = useState(200); // значение по умолчанию
@@ -104,7 +104,7 @@ const MainPage = ({ navigation }) => {
       publishTime: new Date(Date.now() - 3 * 24 * 3600 * 1000).getTime(), // 3 дня назад
       impressions: 0,
       decayRate: 0.01,  // Уменьшено для реалистичного затухания
-      cooldown: 300000, // 5 минут для частого тестирования
+      cooldown: 300_000, // 5 минут для частого тестирования
       campaignType: 'premium'
     },
     {
@@ -119,7 +119,7 @@ const MainPage = ({ navigation }) => {
       publishTime: new Date(Date.now() - 24 * 3600 * 1000).getTime(), // 1 день назад
       impressions: 0,
       decayRate: 0.005,
-      cooldown: 600000, // 10 минут
+      cooldown: 600_000, // 10 минут
       campaignType: 'vip'
     },
     {
@@ -134,7 +134,7 @@ const MainPage = ({ navigation }) => {
       publishTime: new Date(Date.now() - 48 * 3600 * 1000).getTime(), // 2 дня назад
       impressions: 0,
       decayRate: 0.02,
-      cooldown: 180000, // 3 минуты
+      cooldown: 180_000, // 3 минуты
       campaignType: 'standard'
     },
     {
@@ -149,7 +149,7 @@ const MainPage = ({ navigation }) => {
       publishTime: new Date(Date.now() - 6 * 3600 * 1000).getTime(), // 6 часов назад
       impressions: 0,
       decayRate: 0.015,
-      cooldown: 240000, // 4 минуты
+      cooldown: 240_000, // 4 минуты
       campaignType: 'standard'
     },
     {
@@ -164,7 +164,7 @@ const MainPage = ({ navigation }) => {
       publishTime: new Date(Date.now() - 12 * 3600 * 1000).getTime(), // 12 часов назад
       impressions: 0,
       decayRate: 0.008,
-      cooldown: 900000, // 3 часа
+      cooldown: 900_000, // 3 часа
       campaignType: 'vip'
     }
   ]);
@@ -235,7 +235,7 @@ const MainPage = ({ navigation }) => {
           isExpired,
           isInCooldown,
           cooldownRemaining: isInCooldown
-            ? ((ad.cooldown - (now - ad.lastShown)) / 1000).toFixed(0) + 's'
+            ? `${((ad.cooldown - (now - ad.lastShown)) / 1000).toFixed(0)}s`
             : 'none'
         });
 
@@ -321,18 +321,17 @@ const MainPage = ({ navigation }) => {
   useEffect(() => {
     const housesFetch = async () => {
       const tempHouses = await getPaginatedPosts(page);
-      if (tempHouses[0][0].id !== undefined) {
-        setHouses([]);
-        setHouses(tempHouses[0]);
-        setIsLoaded(true);
+      if (tempHouses[0][0].id === undefined) {
+        return;
       }
+      setHouses([]);
+      setHouses(tempHouses[0]);
+      setIsLoaded(true);
     };
     const villagesFetch = async () => {
       const villageData = await getAllVillages();
-      if (villageData) {
-        setVillages([]);
-        setVillages(villageData);
-      }
+      if (!villageData) return;
+      setVillages(villageData); // Используем spread для создания нового массива
     };
 
     const buildersFetch = async () => {
@@ -381,7 +380,9 @@ const MainPage = ({ navigation }) => {
     return (
       <View>
         <View style={styles.content}>
-          <ServicesComponent />
+          <View style={{ width: width - 32, marginLeft: 16 }}>
+            <ServicesComponent />
+          </View>
           <View style={{ height: 8 }} />
           <View
             flexDirection="row"
@@ -389,11 +390,12 @@ const MainPage = ({ navigation }) => {
               width: width - 32,
               alignItems: "center",
               alignSelf: "center",
-              columnGap: 8
+              columnGap: 8,
+              justifyContent: "space-between"
             }}
           >
-            <HeaderButton title="Поиск дома" handleButton={() => navigation.navigate("Поиск")} />
-            <HeaderButton title="Добавить объявление" handleButton={() => navigation.navigate("CreateHousePostPage")} />
+            <HeaderButton icon={<AntDesign name="home" size={20} color="#2C88EC" />} title="Добавить объявление" handleButton={() => navigation.navigate("CreateHousePostPage")} />
+            <HeaderButton icon={<Octicons name="search" size={20} color="#2C88EC" />} title="Поиск дома" handleButton={() => navigation.navigate("Поиск")} />
           </View>
           <View style={{ height: 24 }} />
           <View style={styles.searchButtonsView}>
@@ -437,7 +439,6 @@ const MainPage = ({ navigation }) => {
   const MemoizedBanner = memo(
     (props) => {
       const { bannerData, openModal } = props;
-
       // Логирование показа баннера
       useEffect(() => {
         console.log('[AD-LOG] Banner displayed', {
@@ -482,7 +483,7 @@ const MainPage = ({ navigation }) => {
           {selectedList === "villages" &&
             <MemoizedVillageCard village={item} />
           }
-          {(selectedList === "houses" || "newHouses") &&
+          {(selectedList === "houses" || selectedList === "newHouses") &&
             <View onLayout={onHouseLayout}>
               <MemoizedHouseCard
                 item={item}
@@ -555,7 +556,7 @@ const MainPage = ({ navigation }) => {
               route={{
                 houseId: selectedPost,
                 isModal: true,
-                setIsModalShow: setIsModalShow,
+                setIsModalShow,
               }}
             />
           )}

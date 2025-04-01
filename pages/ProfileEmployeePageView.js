@@ -175,7 +175,7 @@ const ProfileEmployeePageView = () => {
         <Button title="404" onPress={() => navigation.navigate('Error', { errorCode: 404 })} />
         <Button title="403" onPress={() => navigation.navigate('Error', { errorCode: 403 })} />
         <Button title="500" onPress={() => navigation.navigate('Error', { errorCode: 500 })} />
-        <Button title="503" onPress={() => navigation.navigate('Error', { errorCode: 503 })} />
+        <Button title="503" onPress={() => navigation.navigate('Error', { errorCode: 2004 })} />
       </View>
     </ScrollView>
   );

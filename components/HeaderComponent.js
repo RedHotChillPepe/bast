@@ -61,13 +61,7 @@ export default function HeaderComponent() {
     <>
       <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
         <View style={styles.headerContent}>
-          {/* <Ionicons
-            name="menu"
-            size={32}
-            color="#9DC0F6"
-            onPress={() => navigation.openDrawer()} // пример открытия бокового меню
-          /> */}
-          <Text style={styles.headerText}>БАСТ Недвижимость</Text>
+          <Text style={styles.headerText}>БАСТ</Text>
           <Octicons
             name="search"
             size={28}

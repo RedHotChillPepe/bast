@@ -1,87 +1,192 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, Image, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import CheckCircle from "../assets/svg/CheckCircle.js";
+import CheckHouse from "../assets/svg/CheckHouse.js";
+import Star from "../assets/svg/Star";
+import StarOutline from "../assets/svg/StarOutline";
+import CustomModal from '../components/CustomModal.js';
+import HouseCard from '../components/HouseCard.js';
 import { useApi } from '../context/ApiContext';
+import DynamicHousePostPage from './DynamicHousePostPage.js';
 
-const { width } = Dimensions.get('window');
-
-
+const { width, height } = Dimensions.get('window');
 
 const ProfilePageView = ({ route, navigation }) => {
   const { posterId } = route.params
+  const isCompany = route.params.isCompany || false;
   const { getUserByID } = useApi();
   const [userr, setUser] = useState([])
+  const [selectedList, setSelectedList] = useState("active");
+  const { getUserPostsByStatus } = useApi();
+  const isFocused = useIsFocused();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isModalShow, setIsModalShow] = useState(false);
+  const [selectedPost, setSelectedPost] = useState();
+
+  const [activePost, setActivePost] = useState([]);
+  const [closedPost, setClosedPost] = useState([]);
+
+  const getPostData = async (userId, status) => {
+    const tempHouses = await getUserPostsByStatus(userId, status);
+    const tempHousesJson = JSON.parse(await tempHouses.text());
+    return Object.keys(tempHousesJson.rows).length == 0 ? [] : tempHousesJson.rows;
+  }
 
   useEffect(() => {
     const init = async () => {
-      const result = await getUserByID(posterId, "user")
+      // TODO: сделать универсальной
+      const result = await getUserByID(posterId, isCompany ? "company" : "user")
       const resultJson = JSON.parse(await result.text())
-      console.log(resultJson);
-
       setUser(resultJson[0])
+      // TODO: сделать вывод что документы проверены или нет
+      setActivePost(await getPostData(resultJson[0].id, 1));
+      setClosedPost(await getPostData(resultJson[0].id, 3));
+      setIsLoaded(true);
     }
     init()
-    return () => {
+  }, [getUserByID, isFocused])
 
-    }
-  }, [getUserByID])
+  const handleSelected = (post) => {
+    if (!post) return;
+    setSelectedPost(post);
+    setIsModalShow(true);
+  };
 
+  const listProperties = [
+    { icon: CheckCircle(), title: "Телефон подтвержден", id: 1 },
+    { icon: CheckHouse(), title: "Продано 5 объектов недвижимости", id: 2 },
+    { icon: CheckCircle(), title: "Документы проверены", id: 3 },
+  ]
 
+  const renderProperties = () => {
+    return <View style={styles.itemContainer}>
+      {listProperties.map((item) => (
+        <View key={`property-${item.id}`} style={styles.itemBlock}>
+          <View style={styles.listItem}>
+            {item.icon}
+            <Text style={styles.itemText}>{item.title}</Text>
+          </View>
+        </View>))}
+    </View>
+  }
 
+  const listSelectProperties = [
+    { title: "Активные", value: "active", id: 1 },
+    { title: "Закрытые", value: "closed", id: 2 },
+  ]
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={{ width: width, flexDirection: 'row', alignSelf: 'flex-start', marginTop: 16, marginBottom: 16, alignItems: 'flex-start', justifyContent: 'space-between', paddingHorizontal: 16 }} >
-        {
-          Object.keys(userr).length != 0
-            ?
-            <View>
-              <Text style={styles.name}>{userr.name} {userr.surname}</Text>
-              {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.email}</Text> */}
-              {/* <Text style={[styles.name, {fontSize:18, color:'grey'}]}>{userr.phone}</Text> */}
-              <Text style={{ fontSize: 16, color: '#858585' }}>На сайте с мая 2024</Text>
-            </View>
-            :
-            <ActivityIndicator size="large" color="#32322C" />
-        }
-
-        {
-          Object.keys(userr).length != 0
-            ?
-            <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={80} height={80} source={{ uri: userr.photo }} />
-            :
-            <FontAwesome6 name="face-tired" size={56} color="black" />
-        }
+  const renderSelectors = () => {
+    return (
+      <View style={styles.searchButtonsView}>
+        {listSelectProperties.map((item) => (
+          <Pressable
+            key={`postsSelector-${item.id}`}
+            onPress={() => setSelectedList(item.value)}
+            style={[selectedList === item.value && styles.activeButton, styles.searchButtonsContent]}>
+            <Text style={[selectedList === item.value ? styles.activeButtonsText : styles.searchButtonsText]}>{item.title}</Text>
+          </Pressable>
+        ))}
       </View>
-
-      <View style={styles.itemBlock}>
-        <View style={styles.listItem}>
-          <AntDesign name="check" size={17} color="black" />
-          <Text style={styles.itemText}>Телефон подтвержден</Text>
+    )
+  }
+// TODO: добавить проверку, что открыл другой пользователь, а не этот же
+  const ListHeader = () => {
+    return (
+      <View>
+        <View style={{
+          width, flexDirection: 'row', alignSelf: 'flex-start', marginVertical: 16,
+          alignItems: 'flex-start', justifyContent: 'space-between', paddingHorizontal: 16
+        }} >
+          {
+            Object.keys(userr).length == 0
+              ?
+              <ActivityIndicator size="large" color="#32322C" />
+              :
+              <View style={{ rowGap: 4 }}>
+                <Text style={styles.name}>{userr.name} {userr.surname}</Text>
+                <View style={{ flexDirection: "row", columnGap: 8 }}>
+                  <Text style={{ fontSize: 14, color: '#000', fontFamily: "Sora700", fontWeight: 600, lineHeight: 17.6, letterSpacing: -0.42 }}>4,0</Text>
+                  <View style={{ flexDirection: "row", columnGap: 4, alignItems: "center" }}>
+                    <Star />
+                    <Star />
+                    <Star />
+                    <Star />
+                    <StarOutline />
+                  </View>
+                </View>
+                <Text style={{ fontSize: 12, color: '#808080', fontFamily: "Sora500", fontWeight: 400, lineHeight: 15, letterSpacing: -0.36 }}>1 подписчик, 1 подписка</Text>
+                <Text style={{ fontSize: 12, color: '#808080', fontFamily: "Sora500", fontWeight: 400, lineHeight: 15, letterSpacing: -0.36 }}>На сайте с мая 2024</Text>
+              </View>
+          }
+{/* TODO: перекрасить navbar */}
+          {
+            Object.keys(userr).length === 0
+              ?
+              <FontAwesome6 name="face-tired" size={85} color="black" />
+              :
+              // TODO: проверять, что фото прогрузилось
+              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={80} height={80} source={{ uri: userr.photo }} />
+            // <Image style={{ overflow: 'hidden', borderRadius: 100 }} width={85} height={85} source={{ uri: "https://s3-alpha-sig.figma.com/img/c142/04c5/bad6f6e3f1a41d5d0962f534a877b279?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=QgEtDMMpy~t4NPkf9gyMEvgTj-qye8Mpf-W1G~mK4nJ~SxuhGkf5ZWLyPT7e7ByDbEnhNFQe1DHbnaipuNRsqeMu7NXX~tPIhOAJ-ynT6UnEbH9egIyU2PMmYtZDaMckJjEOQljsK~TFCaYMvhfHbFXouHv~Sh~AYEYtUg6rwJSaG285mv83VXeU-HmB1oK6f~k5FLCG4ZtI-~LnKBrXBoHYIXJNftIjZC8NvkiIlqJc2f-75oNWWmUHvDEBDFbEearxN71ZJXdhk8DxJRXWr0YjQ7SdBvzTuT~F1OIFtfCTXr-yaBD8E176aablV8~XZBg51qGocV0OLXpwpb0mRA__" }} />
+          }
         </View>
+
+        <Pressable style={{ backgroundColor: "#2C88EC66", padding: 12, borderRadius: 12, alignSelf: "flex-start", marginHorizontal: 16 }}>
+          <Text style={{ color: "#F2F2F7", fontSize: 16, fontFamily: "Sora700", fontWeight: 600, lineHeight: 20, letterSpacing: -0.48, textAlign: "center" }}>
+            Подписаться
+          </Text>
+        </Pressable>
+
+        {renderProperties()}
+
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>
+            Написать
+          </Text>
+        </Pressable>
+
+        {renderSelectors()}
       </View>
-      <View style={styles.itemBlock}>
-        <View style={styles.listItem}>
-          <AntDesign name="check" size={17} color="black" />
-          <Text style={styles.itemText}>Почта подтверждена</Text>
-        </View>
-      </View>
+    )
+  }
 
-      <Pressable style={{ backgroundColor: '#d6d6d6', width: width - 32, padding: 16, borderRadius: 20, marginTop: 24, alignItems: 'center' }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-          Написать
-        </Text>
-      </Pressable>
-
-
-      <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: 'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16 }}>
-        Объявления
-      </Text>
-    </ScrollView>
-  );
-
-
+  return (<View style={styles.container}>
+    <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
+    <FlatList
+      ListHeaderComponent={ListHeader}
+      data={selectedList == "active" ? activePost : closedPost}
+      renderItem={({ item }) => (
+        <HouseCard
+          item={item}
+          navigation={navigation}
+          isModal={true}
+          handleSelected={handleSelected}
+          itemWidth={width - 32}
+        />
+      )}
+      ListFooterComponent={isLoaded ?
+        <View height={104}><Text style={{ textAlign: "center", marginVertical: 16 }}>Постов больше нет</Text></View> :
+        <ActivityIndicator size="large" style={{ marginTop: 16 }} color="#32322C" />}
+      keyExtractor={(item) => item.id.toString()}
+      showsVerticalScrollIndicator={false}
+    />
+    {selectedPost && (
+      <CustomModal
+        isVisible={isModalShow}
+        onClose={() => setIsModalShow(false)}
+      >
+        <DynamicHousePostPage
+          navigation={navigation}
+          route={{
+            houseId: selectedPost,
+            isModal: true,
+            setIsModalShow,
+          }}
+        />
+      </CustomModal>
+    )}
+  </View>)
 };
 
 export default ProfilePageView;
@@ -89,61 +194,100 @@ export default ProfilePageView;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#efefef',
+    backgroundColor: '#E5E5EA',
+    height: '100%',
   },
   nameBlock: {
     flexDirection: 'row',
-    width: width - 32,
     marginTop: 32,
     marginBottom: 24,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
+  itemContainer: {
+    rowGap: 4,
+    marginTop: 16,
+    marginHorizontal: 16,
+  },
   itemBlock: {
     width: width - 32,
-    backgroundColor: '#d6d6d6',
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    marginTop: 8,
+    backgroundColor: '#F2F2F7',
+    padding: 8,
+    borderRadius: 12,
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 8,
-  },
-  listItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   itemText: {
-    fontSize: 17,
-    color: '#14080E',
-    marginLeft: 12,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
-    marginLeft: 16,
-    marginTop: 32,
-  },
-  logoutText: {
-    color: 'grey',
-    marginRight: 8,
-  },
-  buttonsRow: {
-    flexDirection: 'row',
-    marginVertical: 8,
+    fontSize: 14,
+    color: '#000',
+    marginLeft: 10,
+    fontFamily: "Sora400",
+    fontWeight: 400,
+    lineHeight: 17.6,
+    letterSpacing: -0.42
   },
   name: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#14080E',
+    fontSize: 20,
+    letterSpacing: -0.6,
+    fontWeight: 600,
+    color: '#3E3E3E',
+    fontFamily: "Sora700",
+    lineHeight: 20,
   },
-  email: {
-    fontSize: 18,
-    color: '#858585',
+  button: {
+    padding: 12,
+    marginTop: 16,
+    marginBottom: 32,
+    marginHorizontal: 16,
+    alignSelf: "stretch",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+    backgroundColor: "#2C88EC",
+  },
+  buttonText: {
+    fontWeight: 600,
+    fontFamily: "Sora500",
+    fontSize: 16,
+    lineHeight: 20,
+    color: "#F2F2F7",
+  },
+  searchButtonsView: {
+    flexDirection: "row",
+    width: width - 32,
+    borderRadius: 16,
+    padding: 4,
+    backgroundColor: "#F2F2F7",
+    alignItems: "center",
+    alignSelf: "stretch",
+    justifyContent: "space-between",
+    marginLeft: 16,
+  },
+  searchButtonsContent: {
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    flex: 1
+  },
+  activeButton: {
+    backgroundColor: '#2C88EC',
+    borderRadius: 12,
+  },
+  searchButtonsText: {
+    color: "#808080",
+    fontWeight: "400",
+    fontSize: 14,
+    lineHeight: 17.6,
+    letterSpacing: -0.43,
+    fontFamily: "Sora400"
+  },
+  activeButtonsText: {
+    fontWeight: "600",
+    color: "#F2F2F7",
+    fontFamily: "Sora700",
+    fontSize: 14,
   },
 });
 

@@ -41,7 +41,11 @@ const UserRecycleBin = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {!isEmpty ?
+      {isEmpty ?
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.noFavsText}>У вас нет удалённых объявлений</Text>
+        </View>
+        :
         <View style={styles.housesView}>
           <FlatList
             data={houses}
@@ -58,10 +62,6 @@ const UserRecycleBin = ({ route }) => {
             showsVerticalScrollIndicator={false}
           />
         </View>
-        :
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={styles.noFavsText}>У вас нет удалённых объявлений</Text>
-        </View>
       }
     </View>
   )
@@ -72,7 +72,7 @@ export default UserRecycleBin
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: height,
+    height,
     backgroundColor: '#F2F2F7',
     alignItems: 'center',
   },

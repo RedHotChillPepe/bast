@@ -1,10 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 const InputProperty = (props) => {
     const { placeholder, title, type, valueName, value, options, handleInputChange, keyboardType } = props;
-
     const renderInput = () => {
         switch (type) {
             case 'select':
@@ -54,8 +53,10 @@ const InputProperty = (props) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{title}</Text>
-            {renderInput()}
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <Text style={styles.title}>{title}</Text>
+                {renderInput()}
+            </KeyboardAvoidingView>
         </View>
     );
 };

@@ -25,6 +25,10 @@ import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from "../context/ToastProvider";
 import MortgageCalculator from './MortgageCalculator';
+import CustomModal from "../components/CustomModal"
+import ProfilePageView from './ProfilePageView';
+import BackIcon from "../assets/svg/ChevronLeft"
+import ShareIcon from "../assets/svg/Share"
 
 const { width, height } = Dimensions.get('window');
 
@@ -49,9 +53,10 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [isInteractingWithMap, setIsInteractingWithMap] = useState(false);
+  const [showModalSeller, setShowNodalSeller] = useState(false);
 
   const mapRef = useRef(null);
-// TODO: "исправить line-height у цены"
+  // TODO: "исправить line-height у цены"
   // Получение данных объявления и пользователя
   useEffect(() => {
     const fetchData = async () => {
@@ -323,7 +328,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
   };
 
   const renderMap = () => {
-    return <View style={styles.adressView}>
+    return <View style={styles.addressView}>
       <View style={{ borderRadius: 16, width: width, alignSelf: 'center' }}>
         {isGeoLoaded ? (
           process.env.NODE_ENV !== "development" ? (
@@ -342,7 +347,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
         )}
       </View>
       <View>
-        <Text style={styles.adressText}>
+        <Text style={styles.addressText}>
           {postData.city}, {postData.full_address}
         </Text>
       </View>
@@ -353,7 +358,8 @@ export default function DynamicHousePostPage({ navigation, route }) {
     return <View style={{ marginTop: 32, alignSelf: 'flex-start', marginLeft: 16 }}>
       <Text style={styles.infoTitle}>Продавец</Text>
       {Object.keys(ownerUser).length !== 0 && (
-        <Pressable onPress={() => navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}>
+        // <Pressable onPress={() => navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}>
+        <Pressable onPress={() => setShowNodalSeller(true)}>
           <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F2F2F7', width: width - 32, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 12 }}>
             {ownerUser[0].photo ? (
               <Image
@@ -416,10 +422,10 @@ export default function DynamicHousePostPage({ navigation, route }) {
   }
 
   const servicesList = [
-    { title: 'Страхование', route: 'Error', params: { errorCode: 503 } },
-    { title: 'Оценка недвижимости', route: 'Error', params: { errorCode: 503 } },
-    { title: 'Trade-in', route: 'Error', params: { errorCode: 503 } },
-    { title: 'Дизайн интерьера', route: 'Error', params: { errorCode: 503 } },
+    { title: 'Страхование', route: 'Error', params: { errorCode: 2004 } },
+    { title: 'Оценка недвижимости', route: 'Error', params: { errorCode: 2004 } },
+    { title: 'Trade-in', route: 'Error', params: { errorCode: 2004 } },
+    { title: 'Дизайн интерьера', route: 'Error', params: { errorCode: 2004 } },
   ];
 
   const renderServicesBlock = () => {
@@ -555,7 +561,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
         📄 Описание: ${description}
         🔗 Посмотри это объявление: ${url}
       `;
-      
+
       const shareOptions = {
         message,
       };
@@ -642,6 +648,11 @@ export default function DynamicHousePostPage({ navigation, route }) {
         <MortgageCalculator price={postData.price} />
         <View style={{ height: 134 }} />
       </ScrollView>
+
+      <CustomModal isVisible={showModalSeller} onClose={() => setShowNodalSeller(false)} buttonLeft={<BackIcon />} buttonRight={<ShareIcon />}>
+        <ProfilePageView route={{ params: { posterId: ownerUser[0]?.id } }} />
+      </CustomModal>
+
       {renderModal()}
     </View>
   );
@@ -714,18 +725,18 @@ const styles = StyleSheet.create({
     letterSpacing: -0.23,
     color: "#808080",
   },
-  adressView: {
+  addressView: {
     width: width - 32,
     marginTop: 24,
     alignSelf: 'center'
   },
-  adressTitle: {
+  addressTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: 'green',
     marginBottom: 4
   },
-  adressText: {
+  addressText: {
     marginTop: 8,
     fontSize: 17,
     lineHeight: 20,
@@ -883,7 +894,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   map: {
-    width: width,
+    width,
     height: width * 0.6,
   },
 });

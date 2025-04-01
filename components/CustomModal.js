@@ -2,15 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     Animated,
     Dimensions,
+    Modal,
     PanResponder,
     Pressable,
     StyleSheet,
+    Text,
     View
 } from 'react-native';
 
 const { height } = Dimensions.get('window');
 
-export default function CustomModal({ isVisible, onClose, children, customHeight = "100%" }) {
+// TODO: Сделать на весь экран
+export default function CustomModal({ isVisible, onClose, buttonLeft, buttonRight, children, customHeight = "100%" }) {
     const translateY = useRef(new Animated.Value(height)).current;
     const [visible, setVisible] = useState(isVisible);
 
@@ -63,7 +66,7 @@ export default function CustomModal({ isVisible, onClose, children, customHeight
             useNativeDriver: false,
         }).start(() => {
             setVisible(false);
-            onClose && onClose();
+            onClose?.();
         });
     };
 
@@ -78,23 +81,33 @@ export default function CustomModal({ isVisible, onClose, children, customHeight
     if (!visible) return null;
 
     return (
-        <View style={styles.overlay}>
-            <Pressable style={styles.backdrop} onPress={closeModal} />
-            <Animated.View
-                style={[
-                    styles.modalContainer,
-                    {
-                        transform: [{ translateY }],
-                        height: customHeight
-                    },
-                ]}
-            >
-                <View style={styles.handleContainer} {...panResponder.panHandlers}>
-                    <View style={styles.handle} />
-                </View>
-                {children}
-            </Animated.View>
-        </View>
+        <Modal transparent={true}>
+            <View style={styles.overlay}>
+                <Pressable style={styles.backdrop} onPress={closeModal} />
+                <Animated.View
+                    style={[
+                        styles.modalContainer,
+                        {
+                            transform: [{ translateY }],
+                            height: customHeight
+                        },
+                    ]}
+                >
+                    <View style={styles.handleContainer} {...panResponder.panHandlers}>
+                        <View style={styles.handleItem}>
+                            {buttonLeft}
+                        </View>
+                        <View style={[styles.handleItem, { justifyContent: "center" }]}>
+                            <View style={styles.handle} />
+                        </View>
+                        <View style={[styles.handleItem, { justifyContent: "flex-end" }]}>
+                            {buttonRight}
+                        </View>
+                    </View>
+                    {children}
+                </Animated.View>
+            </View>
+        </Modal>
     );
 }
 
@@ -124,8 +137,15 @@ const styles = StyleSheet.create({
     },
     handleContainer: {
         alignItems: 'center',
-        paddingVertical: 8,
+        flexDirection: "row",
+        justifyContent: 'center',
+        padding: 16,
         backgroundColor: '#F2F2F7',
+        // borderBottomWidth: 1,
+    },
+    handleItem: {
+        flex: 1,
+        flexDirection: "row",
     },
     handle: {
         width: 40,

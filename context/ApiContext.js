@@ -84,7 +84,7 @@ export default function ApiProvider({ children }) {
   };
 
   const getUserPostsByStatus = async (user_id, status_int) => {
-    const url = host + `api/posts/getUserPostsByStatus`;
+    const url = `${host}api/posts/getUserPostsByStatus`;
 
     try {
       return fetch(url, {

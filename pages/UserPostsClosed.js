@@ -41,7 +41,11 @@ const UserPostsClosed = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {!isEmpty ? (
+      {isEmpty ? <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.noFavsText}>У вас нет закрытых объявлений</Text>
+        </View>
+        :
+        (
         <View style={styles.housesView}>
           <FlatList
             data={houses}
@@ -59,10 +63,6 @@ const UserPostsClosed = ({ route }) => {
           />
         </View>
       )
-        :
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={styles.noFavsText}>У вас нет закрытых объявлений</Text>
-        </View>
       }
     </View>
   )

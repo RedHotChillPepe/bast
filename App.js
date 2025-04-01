@@ -1,3 +1,4 @@
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -5,20 +6,25 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
+import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { Linking, Platform, Pressable, Text } from "react-native";
+import { Platform, Pressable, Text } from "react-native";
 import { Geocoder, YaMap } from "react-native-yamap";
 import HeaderComponent from "./components/HeaderComponent";
 import ApiProvider from "./context/ApiContext";
 import AuthProvider, { useAuth } from "./context/AuthContext";
+import ToastProvider from "./context/ToastProvider";
 import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
+import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
+import ConfirmDeleteProfilePage from './pages/ConfirmDeleteProfilePage';
 import ConfirmationPage from "./pages/ConfirmationPage.js";
 import CreateHousePostPage from "./pages/CreateHousePostPage.js";
 import DynamicHousePostPage from "./pages/DynamicHousePostPage";
 import DynamicHousesPage from "./pages/DynamicHousesPage";
 import DynamicStoriesPage from "./pages/DynamicStoriesPage.js";
 import EditHousePostPage from "./pages/EditHousePostPage.js";
+import ErrorScreen from "./pages/ErrorScreen";
 import FavouritesPage from "./pages/FavouritesPage";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
@@ -35,12 +41,6 @@ import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsClosed from "./pages/UserPostsClosed.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
 import UserRecycleBin from "./pages/UserRecycleBin.js";
-import ToastProvider from "./context/ToastProvider";
-import { setBackgroundColorAsync } from "expo-navigation-bar";
-import ErrorScreen from "./pages/ErrorScreen"
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
-import ConfirmDeleteProfilePage from './pages/ConfirmDeleteProfilePage';
 
 
 const Stack = createNativeStackNavigator();
@@ -400,6 +400,7 @@ const AppTabs = () => {
         options={{
           headerShown: true,
           tabBarShowLabel: true,
+          headerTitle: "Избранное",
           tabBarLabel: "Избранное",
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="heart-o" size={size} color={color} />
@@ -420,7 +421,6 @@ const AppTabs = () => {
       />
       <Tab.Screen
         name="Чаты"
-        component={ErrorScreen}
         options={{
           headerShown: false,
           tabBarShowLabel: true,
@@ -428,7 +428,9 @@ const AppTabs = () => {
             <Ionicons name="chatbubble-outline" size={size} color={color} />
           ),
         }}
-      />
+      >
+        {() => <ErrorScreen route={{ params: { errorCode: 2004 } }} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Профиль"
         component={StackProfile}
@@ -567,8 +569,7 @@ const AppInit = () => {
   const { isAuth, isOnboarded } = useAuth();
 
   setBackgroundColorAsync("#F2F2F7");
-
-  const [loaded, error] = useFonts({
+  const [loaded] = useFonts({
     Montserrat400: require("./assets/fonts/Inter_18pt-Regular.ttf"),
     Montserrat500: require("./assets/fonts/Inter_18pt-Medium.ttf"),
     Montserrat700: require("./assets/fonts/Montserrat-Bold.ttf"),
@@ -580,30 +581,32 @@ const AppInit = () => {
     Sora700: require('./assets/fonts/Sora-Bold.ttf'),
   });
 
-  if (loaded) {
-    SplashScreen.hide();
+  if (!loaded) {
+    return;c
+  }
 
-    // Проверка зарегистрирован ли пользователь
-    if (!isAuth) {
-      return <AppAuthStack />;
-    }
+  SplashScreen.hide();
 
-    /* // Проверка проведён ли пользователь через "онбординг"
-    if (!isOnboarded) {
-      return (
-        <OnboardingStack.Navigator initialRouteName='Onboarding'>
-          <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
-        </OnboardingStack.Navigator>
-      )
-    } */
+  // Проверка зарегистрирован ли пользователь
+  if (!isAuth) {
+    return <AppAuthStack />;
+  }
 
-    if (/* isOnboarded &&  */ isAuth) {
-      return <React.Fragment>
-        {/* TODO: вернуть */}
-        {/* <DeepLinkHandler /> */}
-        <AppTopStack />
-      </React.Fragment>
-    }
+  /* // Проверка проведён ли пользователь через "онбординг"
+  if (!isOnboarded) {
+    return (
+      <OnboardingStack.Navigator initialRouteName='Onboarding'>
+        <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
+      </OnboardingStack.Navigator>
+    )
+  } */
+
+  if (/* isOnboarded &&  */ isAuth) {
+    return <React.Fragment>
+      {/* TODO: вернуть */}
+      {/* <DeepLinkHandler /> */}
+      <AppTopStack />
+    </React.Fragment>
   }
 };
 ///
@@ -679,10 +682,8 @@ export default function App() {
   //     },
   //   },
   // };
-
-
-            // TODO: вернуть
-          {/* <NavigationContainer linking={linking} > */}
+  // TODO: вернуть
+  {/* <NavigationContainer linking={linking} > */ }
 
   return (
     <ApiProvider>

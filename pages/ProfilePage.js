@@ -30,10 +30,9 @@ const ProfilePage = () => {
       const auth = JSON.parse(await getAuth())
 
       const user = await getUser(await auth[0].phone, "user")
-      /* console.log(await user.text()); */
 
       const userJson = JSON.parse(await user.text())
-      if (userJson.result != false) {
+      if (userJson[0].result) {
         setUser(await userJson[1])
       }
 
@@ -55,35 +54,35 @@ const ProfilePage = () => {
     {
       title: 'Основные',
       data: [
-        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {
       title: 'Мои действия',
       data: [
         { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation: ['Favourites'] },
-        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: userr.id }] },
         { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsClosed', { user_id: userr.id }] },
         { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserRecycleBin', { user_id: userr.id }] },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления', navigation: ['Error', { errorCode: 503 }] },
-        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор', navigation: ['MortgageCalculator'] },
-        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр', navigation: ['Error', { errorCode: 503 }] },
-        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
 
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage', {userObject: userr, usertype:usertype}] },
+        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage', { userObject: userr, usertype: usertype }] },
       ],
     },
 
@@ -134,7 +133,9 @@ const ProfilePage = () => {
                 <View style={{ alignItems: 'center' }}>
                   <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
                   <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
-                  <Text style={styles.email}>{userr.phone != undefined ? userr.phone : "+ 7 (xxx) xxx xx xx"}</Text>
+                  <Text style={styles.email}>
+                    {userr.phone != undefined ? userr.phone.replace(/^(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})$/, '+7 ($2) $3-$4-$5') : "+ 7 (xxx) xxx xx xx"}
+                  </Text>
                 </View>
               </View>
 

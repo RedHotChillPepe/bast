@@ -21,7 +21,8 @@ const ErrorScreen = ({ route }) => {
             case 503:
                 message = "Извините, запрашиваемый ресурс временно недоступен. Пожалуйста, попробуйте снова позже.";
                 break;
-            default:
+            case 2004:
+                message = "Извините, запрашиваемый ресурс появится позже.";
                 break;
         }
         return <Text style={styles.message}>{message}</Text>;
@@ -29,7 +30,7 @@ const ErrorScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            {errorCode !== 0 && <Text style={{ fontSize: 40, fontWeight: 600, textAlign: 'center' }}>{errorCode}</Text>}
+            {errorCode !== 0 && errorCode !== 2004 && <Text style={{ fontSize: 40, fontWeight: 600, textAlign: 'center' }}>{errorCode}</Text>}
             <Text style={{ fontSize: 24, fontWeight: 600, textAlign: 'center' }}>{renderMessage()}</Text>
             <View>
                 <Pressable style={{

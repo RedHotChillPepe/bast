@@ -46,41 +46,41 @@ const ProfileCompanyPage = () => {
     {
       title: 'Команда',
       data: [
-        { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания', navigation: ['Error', { errorCode: 503 }] },
-        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда', navigation: ['Error', { errorCode: 503 }] },
-        { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {
       title: 'Команда',
       data: [
-        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Клиенты', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Клиенты', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {
       title: 'Документы',
       data: [
-        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Документы', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {
       title: 'Мои действия',
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsClosed'] },
         { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserRecycleBin'] },
-        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Error', { errorCode: 503 }] },
-        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления', navigation: ['Error', { errorCode: 503 }] },
-        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="notifications-outline" size={17} color="black" />, label: 'Уведомления', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <Ionicons name="chatbox-outline" size={17} color="black" />, label: 'Чат с поддержкой', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <Ionicons name="calculator-outline" size={17} color="black" />, label: 'Ипотечный калькулятор', navigation: ['MortgageCalculator'] },
-        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation: ['Error', { errorCode: 503 }] },
-        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation: ['Error', { errorCode: 503 }] },
+        { icon: <Ionicons name="help-buoy-outline" size={17} color="black" />, label: 'Справочный центр', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <Ionicons name="help-circle-outline" size={17} color="black" />, label: 'О приложении', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {
