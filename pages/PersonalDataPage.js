@@ -5,6 +5,7 @@ import { Dimensions, Pressable, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useApi } from '../context/ApiContext'
 import { useAuth } from '../context/AuthContext'
+import { useLogger } from "../context/LoggerContext"
 
 const { width } = Dimensions.get('window');
 
@@ -24,6 +25,7 @@ const PersonalDataPage = ({ route }) => {
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [showDateLabel, setShowDateLabel] = useState(false)
 
+  const { logError } = useLogger();
 
   function calculateAge(birthday) { // принимает Date объект
     var ageDifMs = Date.now() - birthday.getTime();
@@ -56,7 +58,7 @@ const PersonalDataPage = ({ route }) => {
 
         }
       } catch (error) {
-        console.error("Error sending register info:", error);
+        logError(navigation.getState().routes[0].name, error, { tempData, handleName: "sendRegister" });
       }
     }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Dimensions, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
-import { Geocoder, YaMap } from 'react-native-yamap';
+import { Geocoder, Marker, YaMap } from 'react-native-yamap';
 import CustomModal from '../components/CustomModal';
 import HouseCard from '../components/HouseCard';
 import ImageCarousel from '../components/ImageCarousel';
@@ -9,6 +9,7 @@ import DynamicHousePostPage from './DynamicHousePostPage';
 import ChevronLeft from './../assets/svg/ChevronLeft';
 import ShareIcon from './../assets/svg/Share';
 import { useToast } from "../context/ToastProvider";
+import { useLogger } from '../context/LoggerContext';
 
 const { width, height } = Dimensions.get("window");
 
@@ -27,7 +28,9 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
     const isModal = route.isModal || false;
     const mapRef = useRef(null);
 
+    const { logError } = useLogger();
     const { getVillage } = useApi();
+
     // Получение данных объявления и пользователя
     useEffect(() => {
         if (!villageId) return;
@@ -68,7 +71,7 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
                 setClosedPost(await getPostDataByStatus(response.houses, 3));
             })
             .catch(err => {
-                console.error("DynamicVillagePage:", err);
+                logError(navigation.getState().routes[0].name, err, { villageId, handleName: "fetchVillage" });
             });
     }
 
@@ -102,7 +105,6 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
         );
     };
 
-    // TODO 
     const sharePost = async () => {
         try {
             const { name, full_address, description, class_name } = villageData;
@@ -126,8 +128,8 @@ ${priceInfo}
 
             await Share.share(shareOptions);
         } catch (error) {
+            logError(navigation.getState().routes[0].name, error, { villageData, handleName: "sharePost" });
             showToast('Ошибка при попытке поделиться объявлением', "error")
-            console.error('Ошибка при попытке поделиться объявлением', error);
         }
     };
 

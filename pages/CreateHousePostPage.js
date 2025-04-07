@@ -10,6 +10,7 @@ import InputProperty from '../components/PostComponents/InputProperty';
 
 import { useToast } from "../context/ToastProvider";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useLogger } from '../context/LoggerContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ export default function CreateHousePostPage({ navigation }) {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const { logError } = useLogger();
   const [formData, setFormData] = useState({
     title: '',
     houseType: '',
@@ -116,7 +118,7 @@ export default function CreateHousePostPage({ navigation }) {
         ]
       );
     } catch (error) {
-      console.error(error);
+      logError(navigation.getState().routes[0].name, error, { formData, handleName: "handleSubmit" });
       showToast(`Произошла ошибка: ${error.message}`, "error");
       setIsLoading(false);
       setIsButtonDisabled(false);
@@ -424,12 +426,12 @@ export default function CreateHousePostPage({ navigation }) {
 
   // formData.price || !formData.settlement || !formData.location
   const requiredFieldsByPage = {
-    // 0: ['photos'],
-    // 1: ['settlement', 'location', 'kadastr'],
-    // 2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
-    // 3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
-    // 4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
-    // 5: ['description', 'price'],
+    0: ['photos'],
+    1: ['settlement', 'location', 'kadastr'],
+    2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
+    3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
+    4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
+    5: ['description', 'price'],
   };
 
   const isPageValid = () => {

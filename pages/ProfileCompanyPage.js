@@ -67,8 +67,8 @@ const ProfileCompanyPage = () => {
       title: 'Мои действия',
       data: [
         { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation: ['Error', { errorCode: 2004 }] },
-        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsClosed'] },
-        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserRecycleBin'] },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 3 }] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: userr.id, status: -1 }] },
         { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
       ],

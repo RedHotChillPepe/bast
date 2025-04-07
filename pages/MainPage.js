@@ -326,6 +326,7 @@ const MainPage = ({ navigation }) => {
         return;
       }
       setHouses([]);
+
       setHouses(tempHouses[0]);
       setIsLoaded(true);
     };

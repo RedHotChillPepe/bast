@@ -20,15 +20,16 @@ import {
   View
 } from 'react-native';
 import { Geocoder, Marker, YaMap } from 'react-native-yamap';
+import BackIcon from "../assets/svg/ChevronLeft";
+import ShareIcon from "../assets/svg/Share";
+import CustomModal from "../components/CustomModal";
 import ImageCarousel from '../components/ImageCarousel';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from "../context/ToastProvider";
 import MortgageCalculator from './MortgageCalculator';
-import CustomModal from "../components/CustomModal"
 import ProfilePageView from './ProfilePageView';
-import BackIcon from "../assets/svg/ChevronLeft"
-import ShareIcon from "../assets/svg/Share"
+import { useLogger } from '../context/LoggerContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -54,6 +55,9 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [isInteractingWithMap, setIsInteractingWithMap] = useState(false);
   const [showModalSeller, setShowNodalSeller] = useState(false);
+
+  const { logError } = useLogger();
+
 
   const mapRef = useRef(null);
   // Получение данных объявления и пользователя
@@ -153,16 +157,20 @@ export default function DynamicHousePostPage({ navigation, route }) {
       await updateStatus({ post_id, post_status });
     } catch (error) {
       showToast(error.message, "error");
-      console.error("Ошибка изменения статуса:", error);
+      logError(navigation.getState().routes[0].name, error, { postData, handleName: "changeStatus" });
     }
   };
 
   const confirmClose = async () => {
-    await changeStatus({ post_id: houseId, post_status: 3 });
-    setPostData(prev => ({ ...prev, status: 3 }));
-    setShowCloseConfirm(false);
-    showToast("Ваше объявление закрыто", "success");
-    navigation.navigate("UserPostsClosed", { user_id: ownerUser[0]?.id });
+    try {
+      await changeStatus({ post_id: houseId, post_status: 3 });
+      setPostData(prev => ({ ...prev, status: 3 }));
+      setShowCloseConfirm(false);
+      showToast("Ваше объявление закрыто", "success");
+      navigation.navigate("UserPostsPage", { user_id: ownerUser[0]?.id, status: 3 });
+    } catch (error) {
+      logError(navigation.getState().routes[0].name, error, { postData, handleName: "confirmClose" });
+    }
   };
 
   const confirmDelete = async () => {
@@ -170,7 +178,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
     setPostData(prev => ({ ...prev, status: -1 }));
     setShowDeleteConfirm(false);
     showToast("Ваше объявление удалено!", "success");
-    navigation.navigate("UserRecycleBin", { user_id: ownerUser[0]?.id });
+    navigation.navigate("UserPostsPage", { user_id: ownerUser[0]?.id, status: -1 });
   };
 
   const confirmRestore = async () => {
@@ -335,7 +343,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
         {isGeoLoaded ? (
           process.env.NODE_ENV !== "development" ? (
             <View onTouchStart={() => setIsInteractingWithMap(true)} onTouchEnd={() => setIsInteractingWithMap(false)}>
-              {/* FIXME: не правильно отображается */}
               <YaMap
                 ref={mapRef}
                 style={styles.map}
@@ -568,7 +575,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
       try {
         await Share.share(shareOptions);
       } catch (error) {
-        console.error("Ошибка при попытке поделиться:", error);
+        logError(navigation.getState().routes[0].name, error, { options, handleName: "sharePost profile" });
       }
       return
     }
@@ -592,11 +599,10 @@ ${priceInfo}
       const shareOptions = {
         message,
       };
-
       await Share.share(shareOptions);
     } catch (error) {
       showToast('Ошибка при попытке поделиться объявлением', "error")
-      console.error('Ошибка при попытке поделиться объявлением', error);
+      logError(navigation.getState().routes[0].name, error, { postData, handleName: "sharePost post" });
     }
   };
 

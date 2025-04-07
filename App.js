@@ -15,6 +15,7 @@ import { Geocoder, YaMap } from "react-native-yamap";
 import HeaderComponent from "./components/HeaderComponent";
 import ApiProvider from "./context/ApiContext";
 import AuthProvider, { useAuth } from "./context/AuthContext";
+import { LoggerProvider } from './context/LoggerContext';
 import ToastProvider from "./context/ToastProvider";
 import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
 import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
@@ -24,6 +25,7 @@ import CreateHousePostPage from "./pages/CreateHousePostPage.js";
 import DynamicHousePostPage from "./pages/DynamicHousePostPage";
 import DynamicHousesPage from "./pages/DynamicHousesPage";
 import DynamicStoriesPage from "./pages/DynamicStoriesPage.js";
+import { DynamicVillagePostPage } from "./pages/DynamicVillagePostPage";
 import EditHousePostPage from "./pages/EditHousePostPage.js";
 import ErrorScreen from "./pages/ErrorScreen";
 import FavouritesPage from "./pages/FavouritesPage";
@@ -39,11 +41,7 @@ import RegisterPage from "./pages/RegisterPage";
 import SearchMap from "./pages/SearchMap.js";
 import SettingsPage from "./pages/SettingsPage.js";
 import UserLoginPage from "./pages/UserLoginPage.js";
-import UserPostsClosed from "./pages/UserPostsClosed.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
-import UserRecycleBin from "./pages/UserRecycleBin.js";
-import { DynamicVillagePostPage } from "./pages/DynamicVillagePostPage";
-
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -55,6 +53,8 @@ const Tab = createBottomTabNavigator();
 
 process.env.NODE_ENV !== "development" && YaMap.init(process.env.EXPO_PUBLIC_YAMAP_API_KEY)
 Geocoder.init(process.env.EXPO_PUBLIC_GEOCODER_API_KEY);
+// YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
+// Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
 
 const SearchPostsStack = () => {
   return (
@@ -169,26 +169,6 @@ const StackProfile = () => {
         }}
       />
 
-      <ProfileStack.Screen
-        name="UserPostsClosed"
-        component={UserPostsClosed}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: true,
-          headerTitle: "Закрытые объявления",
-        }}
-      />
-
-      <ProfileStack.Screen
-        name="UserRecycleBin"
-        component={UserRecycleBin}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: true,
-          headerTitle: "Удаленные объявления",
-        }}
-      />
-
       <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false
@@ -248,25 +228,6 @@ const AppStack = () => {
         options={({ navigation }) => ({
           headerShown: false,
         })}
-      />
-
-      <Stack.Screen
-        name="UserPostsClosed"
-        component={UserPostsClosed}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: true,
-          headerTitle: "Закрытые объявления",
-        }}
-      />
-      <Stack.Screen
-        name="UserRecycleBin"
-        component={UserRecycleBin}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: true,
-          headerTitle: "Удаленные объявления",
-        }}
       />
 
       <Stack.Screen
@@ -694,14 +655,15 @@ const DeepLinkHandler = () => {
 
 // Корневой (Root) компонент
 export default function App() {
-  // useEffect(() => {
-  //   if (YaMap && typeof YaMap.init === 'function') {
-  //     YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
-  //     YaMap.setLocale('ru_RU'); // Устанавливаем русский язык
-  //   } else {
-  //     console.error("Yamap не инициализирован");
-  //   }
-  // }, []);
+  process.env.NODE_ENV !== "development" &&
+    useEffect(() => {
+      if (YaMap && typeof YaMap.init === 'function') {
+        YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
+        // YaMap.setLocale('ru_RU'); // Устанавливаем русский язык
+      } else {
+        console.error("Yamap не инициализирован");
+      }
+    }, []);
 
   const linking = {
     prefixes: [
@@ -736,9 +698,11 @@ export default function App() {
     <ApiProvider>
       <AuthProvider>
         <ToastProvider>
-          <NavigationContainer linking={linking} >
-            <AppInit />
-          </NavigationContainer>
+          <LoggerProvider>
+            <NavigationContainer linking={linking} >
+              <AppInit />
+            </NavigationContainer>
+          </LoggerProvider>
         </ToastProvider>
       </AuthProvider>
     </ApiProvider>

@@ -3,6 +3,7 @@ import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, 
 import AvatarModal from '../components/AvatarModal';
 import { useApi } from '../context/ApiContext';
 import { useToast } from '../context/ToastProvider';
+import { useLogger } from '../context/LoggerContext';
 
 const { width } = Dimensions.get('window');
 
@@ -28,6 +29,7 @@ const ChangeAvatarPage = ({ route, navigation }) => {
   const [isChanged, setIsChanged] = useState(false);
 
   const showToast = useToast();
+  const { logError } = useLogger();
 
   useEffect(() => {
     const init = async () => {
@@ -145,20 +147,30 @@ const ChangeAvatarPage = ({ route, navigation }) => {
   const handleSubmit = async () => {
     if (!isCorrect || !isChanged) return;
 
-    const photo = imageObject.current ? { filename: imageObject.current.filename, base64: imageObject.current.base64 } : null;
+    const photo = imageObject.current
+      ? { filename: imageObject.current.filename, base64: imageObject.current.base64 }
+      : null;
 
-    const newUserData = {
+    // Изначально формируем объект с данными пользователя
+    let newUserData = {
       id: userObject.id,
       usertype,
       phoneNumber: phone === "" ? userObject.phone : normalizePhoneNumber(phone),
       name: name === "" ? userObject.name : name,
       surname: surname === "" ? userObject.surname : surname,
       email: email === "" ? userObject.email : email,
-      photo
+      photo,
     };
 
     try {
       const result = await updateUser(newUserData);
+      const resultData = result.json ? await result.json() : result;
+
+      // Если сервер вернул обновлённое фото, обновляем объект newUserData
+      if (resultData.photo) {
+        newUserData = { ...newUserData, photo: resultData.photo };
+      }
+
       if (result.status === 200) {
         showToast("Изменения прошли успешно");
         navigation.navigate("Profile", { updatedUser: newUserData });
@@ -166,6 +178,7 @@ const ChangeAvatarPage = ({ route, navigation }) => {
         showToast(`Код ошибки: ${result.status}`, "error");
       }
     } catch (error) {
+      logError(navigation.getState().routes[0].name, error, { newUserData, handleName: "handleSubmit" });
       showToast("Не удалось сохранить изменения.", "error");
     }
   };

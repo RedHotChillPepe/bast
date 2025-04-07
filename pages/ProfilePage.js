@@ -58,10 +58,11 @@ const ProfilePage = ({ route }) => {
       data: [
         { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation: ['Favourites'] },
         { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
-        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: userr.id }] },
-        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsClosed', { user_id: userr.id }] },
-        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserRecycleBin', { user_id: userr.id }] },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 1 }] },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 3 }] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: userr.id, status: -1 }] },
+        { icon: <Ionicons name="alert-circle-outline" size={20} color="black" />, label: 'Объявления на модерации', navigation: ['UserPostsPage', { user_id: userr.id, status: 0 }] },
+        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риелторы', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
     {

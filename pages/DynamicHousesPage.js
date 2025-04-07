@@ -7,6 +7,7 @@ import FilterModal from '../components/FilterModal.js'
 import HouseCard from '../components/HouseCard.js'
 import SortModal from '../components/SortModal.js'
 import { useApi } from '../context/ApiContext.js'
+import { useLogger } from '../context/LoggerContext.js'
 
 
 const { width } = Dimensions.get('window');
@@ -111,6 +112,8 @@ const DynamicHousesPage = ({ route }) => {
 
   const [page, setPage] = useState(1)
 
+  const { logError } = useLogger();
+
   const categoriesButton = ({ item }) => (
     <Pressable
       style={selectedCategory == item ? styles.activeTab : styles.categoriesButton}
@@ -182,7 +185,7 @@ const DynamicHousesPage = ({ route }) => {
           }
 
         } catch (error) {
-          console.error("Error fetching posts:", error);
+          logError(navigation.getState().routes[0].name, error, { queryObject, page, handleName: "Error fetching posts" });
           setHouses([]); // Устанавливаем пустой массив при ошибке
         }
       };
@@ -213,7 +216,7 @@ const DynamicHousesPage = ({ route }) => {
       setHouses((prev) => [...prev, ...(response[0] || [])]);
 
     } catch (error) {
-      console.error('Error loading more data:', error);
+      logError(navigation.getState().routes[0].name, error, { queryObject, nextPage, handleName: "Error loading more data" });
     }
   };
 
@@ -228,6 +231,7 @@ const DynamicHousesPage = ({ route }) => {
 
       setHouses(Array.isArray(response[0]) ? response[0] : []);
     } catch (error) {
+      logError(navigation.getState().routes[0].name, error, { houses, handleName: "clearFilters" });
       if (error) {
         throw (error)
       }

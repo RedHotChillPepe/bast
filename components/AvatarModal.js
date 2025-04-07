@@ -11,7 +11,7 @@ const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
 
   const handlePickImage = async () => {
     // Запрашиваем разрешение на доступ к галерее
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       showToast("Доступ к галерее обязателен!", "warn");
       return;
