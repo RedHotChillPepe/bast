@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 16,
     gap: 8,
   },
   functionCard: {

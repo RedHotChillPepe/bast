@@ -2,6 +2,7 @@ import React from "react";
 import {
   Dimensions,
   Image,
+  Pressable,
   StyleSheet,
   Text,
   View
@@ -9,25 +10,27 @@ import {
 
 const { width } = Dimensions.get("window");
 
-const VillageCard = ({ village }) => {
+const VillageCard = ({ village, navigation, isModal = false, handleSelected }) => {
   return (
-    <View style={styles.housesView}>
-      <View style={styles.houseItem}>
-        <View style={styles.houseImageView}>
-          <Image
-            style={styles.houseImage}
-            width={100}
-            height={100}
-            source={{ uri: village.photos[0] }}
-          />
-        </View>
-        <View>
-          <Text style={styles.houseName}>{village.name}</Text>
-          <Text style={styles.housePrice}>от 1 200 000 ₽</Text>
-          <Text style={styles.houseLocation}>г. Ижевск, Октябрьский район</Text>
+    <Pressable onPress={() => isModal ? handleSelected(village.id) : navigation.navigate("Village", { villageId: village.id })}>
+      <View style={styles.housesView}>
+        <View style={styles.houseItem}>
+          <View style={styles.houseImageView}>
+            <Image
+              style={styles.houseImage}
+              width={100}
+              height={100}
+              source={{ uri: village.photos[0] }}
+            />
+          </View>
+          <View>
+            <Text style={styles.houseName}>{village.name}</Text>
+            <Text style={styles.housePrice}>от 1 200 000 ₽</Text>
+            <Text style={styles.houseLocation}>г. Ижевск, Октябрьский район</Text>
+          </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 

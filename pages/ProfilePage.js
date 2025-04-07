@@ -13,9 +13,7 @@ import ProfileRealtorPage from './ProfileEmployeePage.js';
 
 const { width } = Dimensions.get('window');
 
-
-
-const ProfilePage = () => {
+const ProfilePage = ({ route }) => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
   const { getUser } = useApi()
@@ -28,25 +26,23 @@ const ProfilePage = () => {
   useEffect(() => {
     const init = async () => {
       const auth = JSON.parse(await getAuth())
-
       const user = await getUser(await auth[0].phone, "user")
-
       const userJson = JSON.parse(await user.text())
-      if (userJson[0].result) {
-        setUser(await userJson[1])
-      }
-
+      if (userJson[0].result) setUser(await userJson[1])
       setUsertype(await auth[0].usertype)
-
     }
     init()
-
-    return () => {
-
-    }
   }, [usertype, getAuth, getUser])
 
-
+  useEffect(() => {
+    if (route.params?.updatedUser) {
+      setUser((prevUser) => ({
+        ...prevUser,
+        ...route.params.updatedUser,
+        photo: route.params.updatedUser.photo !== null ? route.params.updatedUser.photo : prevUser.photo,
+      }));
+    }
+  }, [route.params?.updatedUser]);
 
 
   // Массив данных для списков

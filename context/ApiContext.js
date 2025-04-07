@@ -83,6 +83,29 @@ export default function ApiProvider({ children }) {
     }
   };
 
+  const getVillage = async (id) => {
+    const url = `${host}api/posts/village/${id}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`${data.message}`);
+      }
+
+
+      if (data.success) {
+        return data.data; // Возвращаем данные о поселке
+      }
+
+      throw new Error(data.message || 'Неизвестная ошибка');
+
+    } catch (error) {
+      console.error(error.message);
+      throw error; // Передаем ошибку дальше для обработки
+    }
+  };
+
   const getUserPostsByStatus = async (user_id, status_int) => {
     const url = `${host}api/posts/getUserPostsByStatus`;
 
@@ -555,7 +578,7 @@ export default function ApiProvider({ children }) {
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
       getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
-      getPost, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus, updateUserStatus
+      getPost, getVillage, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus, updateUserStatus
     }}>
       {children}
     </ApiContext.Provider>

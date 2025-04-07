@@ -11,9 +11,7 @@ import {
 } from 'react-native';
 
 const { height } = Dimensions.get('window');
-
-// TODO: Сделать на весь экран
-export default function CustomModal({ isVisible, onClose, buttonLeft, buttonRight, children, customHeight = "100%" }) {
+export default function CustomModal({ isVisible, onClose, buttonLeft, buttonRight, children, customHeight = "100%", title }) {
     const translateY = useRef(new Animated.Value(height)).current;
     const [visible, setVisible] = useState(isVisible);
 
@@ -95,10 +93,12 @@ export default function CustomModal({ isVisible, onClose, buttonLeft, buttonRigh
                 >
                     <View style={styles.handleContainer} {...panResponder.panHandlers}>
                         <View style={styles.handleItem}>
-                            {buttonLeft}
+                            <Pressable onPress={closeModal}>{buttonLeft}</Pressable>
                         </View>
                         <View style={[styles.handleItem, { justifyContent: "center" }]}>
-                            <View style={styles.handle} />
+                            {title ? <Text>{title}</Text> :
+                                <View style={styles.handle} />
+                            }
                         </View>
                         <View style={[styles.handleItem, { justifyContent: "flex-end" }]}>
                             {buttonRight}

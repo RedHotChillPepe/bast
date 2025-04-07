@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Dimensions, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Animated, Dimensions, Modal, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Geocoder } from 'react-native-yamap';
 import { useApi } from '../context/ApiContext';
@@ -9,6 +9,7 @@ import InputImage from '../components/PostComponents/InputImage';
 import InputProperty from '../components/PostComponents/InputProperty';
 
 import { useToast } from "../context/ToastProvider";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const { width, height } = Dimensions.get('window');
 
@@ -19,6 +20,8 @@ export default function CreateHousePostPage({ navigation }) {
 
   const userId = useRef()
   const usertype = useRef()
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -76,20 +79,22 @@ export default function CreateHousePostPage({ navigation }) {
       return;
     }
 
+    setIsLoading(true);
     setIsButtonDisabled(true);
-    const addressString = formData.settlement + " " + formData.location;
+    const addressString = `${formData.settlement} ${formData.location}`;
 
     try {
       // Получаем результат геокодирования
+      console.log(1);
       const geoResult = await Geocoder.addressToGeo(addressString);
 
       if (!geoResult?.lat || !geoResult?.lon) {
         showToast('Ошибка, неправильный адрес', "error");
         setPage(1);
+        setIsLoading(false);
         setIsButtonDisabled(false);
         return;
       }
-
       const { lat, lon } = geoResult;
       const antiStaleFormData = { ...formData, lat, lon, usertype: usertype.current };
 
@@ -103,6 +108,7 @@ export default function CreateHousePostPage({ navigation }) {
           {
             text: "OK",
             onPress: () => {
+              setIsLoading(false);
               setIsButtonDisabled(false);
               navigation.navigate("House", { houseId: resultJson[0].id });
             }
@@ -111,6 +117,8 @@ export default function CreateHousePostPage({ navigation }) {
       );
     } catch (error) {
       console.error(error);
+      showToast(`Произошла ошибка: ${error.message}`, "error");
+      setIsLoading(false);
       setIsButtonDisabled(false);
     }
   };
@@ -416,12 +424,12 @@ export default function CreateHousePostPage({ navigation }) {
 
   // formData.price || !formData.settlement || !formData.location
   const requiredFieldsByPage = {
-    0: ['photos'],
-    1: ['settlement', 'location', 'kadastr'],
-    2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
-    3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
-    4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
-    5: ['description', 'price'],
+    // 0: ['photos'],
+    // 1: ['settlement', 'location', 'kadastr'],
+    // 2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
+    // 3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
+    // 4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
+    // 5: ['description', 'price'],
   };
 
   const isPageValid = () => {
@@ -481,24 +489,38 @@ export default function CreateHousePostPage({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1 }}
+      extraScrollHeight={100}
+      // enableOnAndroid={true}
+      keyboardShouldPersistTaps="handled"
+    >
       <StatusBar backgroundColor={"#fff"} barStyle={'dark-content'} />
-      <Text style={styles.header}>Создание объявление</Text>
-      <Animated.View style={{ transform: [{ translateX }] }}>
-        {getPage()}
-      </Animated.View>
-      <View style={styles.container__button}>
-        <Pressable
-          disabled={!isPageValid()}
-          onPress={page === 5 ? handleSubmit : handlePageTransition}
-          style={isPageValid() ? styles.button : styles.buttonDisabled}
-        >
-          <Text style={isPageValid() ? styles.buttonText : styles.buttonDisabledText}>
-            {page === 5 ? "Создать объявление" : "Далее"}
-          </Text>
-        </Pressable>
+      <View style={{ justifyContent: "space-between", alignItems: "center", flex: 1 }}>
+        <Text style={styles.header}>Создание объявление</Text>
+        <Animated.View style={{ transform: [{ translateX }] }}>
+          {getPage()}
+        </Animated.View>
+        <View style={styles.container__button}>
+          <Pressable
+            disabled={!isPageValid()}
+            onPress={page === 5 ? handleSubmit : handlePageTransition}
+            style={isPageValid() ? styles.button : styles.buttonDisabled}
+          >
+            <Text style={isPageValid() ? styles.buttonText : styles.buttonDisabledText}>
+              {page === 5 ? "Создать объявление" : "Далее"}
+            </Text>
+          </Pressable>
+        </View>
       </View>
-    </SafeAreaView >
+      <Modal animationType='fade' visible={isLoading}>
+        <View style={{ rowGap: 16, flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size={50} color={"#2C88EC"} />
+          <Text style={{ fontSize: 16, fontFamily: "Sora500" }}>Объявление создается</Text>
+        </View>
+      </Modal>
+    </KeyboardAwareScrollView>
   )
 }
 
@@ -506,8 +528,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   formContainer: {
     paddingHorizontal: 16,

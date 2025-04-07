@@ -1,3 +1,4 @@
+import { AntDesign, Octicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -19,7 +20,7 @@ import VillageCard from "../components/VillageCard";
 import { useApi } from "../context/ApiContext";
 import AdvertisementModalPage from "../pages/AdvertisementModalPage";
 import DynamicHousePostPage from "./DynamicHousePostPage";
-import { AntDesign, Octicons } from "@expo/vector-icons";
+import { DynamicVillagePostPage } from './DynamicVillagePostPage';
 
 const { width, height } = Dimensions.get("window");
 
@@ -373,14 +374,38 @@ const MainPage = ({ navigation }) => {
     { text: "Все", value: "houses" },
     { text: "Дома", value: "newHouses" },
     { text: "Поселки", value: "villages" },
-    { text: "Застройщики", value: "builders" },
+    // { text: "Застройщики", value: "builders" },
   ];
+
+  const renderSearchButtonsContent = () => {
+    return (<View style={styles.searchButtonsView}>
+      {SearchButtonsContent.map((item, index) => (
+        <Pressable
+          key={index}
+          onPress={() => handleSearchButton(item.value)}
+          style={[
+            styles.searchButtonsContent,
+            selectedList === item.value && styles.activeButton,
+          ]}
+        >
+          <Text
+            style={[
+              styles.searchButtonsText,
+              selectedList === item.value && styles.activeButtonsText,
+            ]}
+          >
+            {item.text}
+          </Text>
+        </Pressable>
+      ))}
+    </View>);
+  }
 
   const FlatListHeaderComponent = () => {
     return (
       <View>
         <View style={styles.content}>
-          <View style={{ width: width - 32, marginLeft: 16 }}>
+          <View>
             <ServicesComponent />
           </View>
           <View style={{ height: 8 }} />
@@ -398,27 +423,7 @@ const MainPage = ({ navigation }) => {
             <HeaderButton icon={<Octicons name="search" size={20} color="#2C88EC" />} title="Поиск дома" handleButton={() => navigation.navigate("Поиск")} />
           </View>
           <View style={{ height: 24 }} />
-          <View style={styles.searchButtonsView}>
-            {SearchButtonsContent.map((item, index) => (
-              <Pressable
-                key={index}
-                onPress={() => handleSearchButton(item.value)}
-                style={[
-                  styles.searchButtonsContent,
-                  selectedList === item.value && styles.activeButton,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.searchButtonsText,
-                    selectedList === item.value && styles.activeButtonsText,
-                  ]}
-                >
-                  {item.text}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+          {renderSearchButtonsContent()}
         </View>
       </View>
     );
@@ -479,22 +484,25 @@ const MainPage = ({ navigation }) => {
   const renderItem = useCallback(
     ({ item, index }) => (
       <View>
-        <Pressable onPress={() => handleSelected(item)}>
-          {selectedList === "villages" &&
-            <MemoizedVillageCard village={item} />
-          }
-          {(selectedList === "houses" || selectedList === "newHouses") &&
-            <View onLayout={onHouseLayout}>
-              <MemoizedHouseCard
-                item={item}
-                navigation={navigation}
-                isModal={true}
-                handleSelected={handleSelected}
-                itemWidth={width - 32}
-              />
-            </View>
-          }
-        </Pressable>
+        {selectedList === "villages" &&
+          <MemoizedVillageCard
+            isModal={true}
+            navigation={navigation}
+            village={item}
+            handleSelected={handleSelected}
+          />
+        }
+        {(selectedList === "houses" || selectedList === "newHouses") &&
+          <View onLayout={onHouseLayout}>
+            <MemoizedHouseCard
+              item={item}
+              navigation={navigation}
+              isModal={true}
+              handleSelected={handleSelected}
+              itemWidth={width - 32}
+            />
+          </View>
+        }
         {(index + 1) % AD_FREQUENCY === 0 &&
           adsQueue[Math.floor(index / AD_FREQUENCY)] && (
             <View onLayout={onAdLayout}>
@@ -540,6 +548,9 @@ const MainPage = ({ navigation }) => {
     return { length: itemHeight, offset, index };
   };
 
+  // TODO: удалить после разработки
+  // return <Modal animationType="slide" isVisible={(true)}><TeamPage title={"Команда «А»"} /></Modal>;
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
@@ -549,7 +560,14 @@ const MainPage = ({ navigation }) => {
           onClose={() => setIsModalShow(false)}
         >
           {selectedList === "villages" ? (
-            <VillageCard village={selectedPost} />
+            // <VillageCard village={selectedPost} />
+            <DynamicVillagePostPage
+              navigation={navigation}
+              route={{
+                villageId: selectedPost,
+                isModal: true,
+                setIsModalShow,
+              }} />
           ) : (
             <DynamicHousePostPage
               navigation={navigation}
@@ -593,7 +611,7 @@ const MainPage = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: height,
+    height,
     alignItems: "center",
     backgroundColor: "#E5E5EA",
   },
@@ -616,6 +634,7 @@ const styles = StyleSheet.create({
   },
   searchButtonsContent: {
     alignItems: "center",
+    flex: 1,
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
@@ -629,7 +648,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 17.6,
     letterSpacing: -0.43,
-    fontFamily: "Sora400"
+    fontFamily: "Sora400",
   },
   activeButtonsText: {
     fontWeight: "600",

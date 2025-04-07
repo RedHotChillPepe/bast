@@ -56,7 +56,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const [showModalSeller, setShowNodalSeller] = useState(false);
 
   const mapRef = useRef(null);
-  // TODO: "исправить line-height у цены"
   // Получение данных объявления и пользователя
   useEffect(() => {
     const fetchData = async () => {
@@ -103,6 +102,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
     const checkUser = async () => {
       if (houseId) {
         const auth = JSON.parse(await getAuth());
+        console.log(auth);
         if (auth[0].password) {
           setIsLoggedIn(true);
           const result = await getIsOwner(auth[0].phone, auth[0].password, houseId);
@@ -242,12 +242,13 @@ export default function DynamicHousePostPage({ navigation, route }) {
           </View>
         );
       }
-      return (
-        <TouchableOpacity onPress={() => handleCallButton()} style={[styles.button, { marginTop: 32, }]}>
-          <Text style={styles.buttonText}>Позвонить</Text>
-        </TouchableOpacity >
-      );
     }
+
+    return (
+      <TouchableOpacity onPress={() => handleCallButton()} style={[styles.button, { marginTop: 32, }]}>
+        <Text style={styles.buttonText}>Позвонить</Text>
+      </TouchableOpacity >
+    );
   };
 
   const renderPostStatus = () => {
@@ -269,7 +270,8 @@ export default function DynamicHousePostPage({ navigation, route }) {
     return <Text
       style={{
         textAlign: "center", fontSize: 16, fontWeight: "600",
-        color: "#2C88EC", fontFamily: "Sora700", paddingLeft: !isOwner ? 24 : 0
+        color: "#2C88EC", fontFamily: "Sora700", paddingLeft: isOwner ? 0 : postData.status == 1 && 24,
+        paddingRight: isOwner ? 0 : postData.status !== 1 && 26
       }}>
       {text}
     </Text>
@@ -333,6 +335,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
         {isGeoLoaded ? (
           process.env.NODE_ENV !== "development" ? (
             <View onTouchStart={() => setIsInteractingWithMap(true)} onTouchEnd={() => setIsInteractingWithMap(false)}>
+              {/* FIXME: не правильно отображается */}
               <YaMap
                 ref={mapRef}
                 style={styles.map}
@@ -543,23 +546,47 @@ export default function DynamicHousePostPage({ navigation, route }) {
     );
   }
 
-  const sharePost = async () => {
-    try {
-      const { name, full_address, city, price, photos, text } = postData;
-      const url = `http://192.168.1.48:3000/share/post?id=${houseId}`;
+  const sharePost = async (options) => {
+    if (options?.type === 'profile') {
+      const user = options.user;
+      const url = `${process.env.EXPO_PUBLIC_API_HOST}share/${options.type}/${options.id}`;
+      const message = `
+🔹 Профиль пользователя 🔹
+        
+👤 Имя: ${user.name} ${user.surname}
+📞 Телефон: ${user.phone}
+📧 Email: ${user.email}
+📝 Постов: ${user.posts?.length ?? 0}
+                
+Загляни и узнай больше: ${url}
+      `.trim();
 
-      // Проверяем, что значения заполнены
+      const shareOptions = {
+        message,
+      };
+
+      try {
+        await Share.share(shareOptions);
+      } catch (error) {
+        console.error("Ошибка при попытке поделиться:", error);
+      }
+      return
+    }
+
+    try {
+      const { name, full_address, city, price, text } = postData;
+      const url = `${process.env.EXPO_PUBLIC_API_HOST}share/post/${houseId}`;
       const postName = name ? name : 'Объявление';
       const address = full_address ? `📍 Адрес: ${full_address}, ${city}` : `🏙 Город: ${city}`;
       const priceInfo = price ? `💰 Цена: ${price} руб.` : '';
       const description = text ? text : 'Описание отсутствует';
 
       const message = `
-        🏡 ${postName}
-        ${address}
-        ${priceInfo}
-        📄 Описание: ${description}
-        🔗 Посмотри это объявление: ${url}
+🏡 ${postName}
+${address}
+${priceInfo}
+📄 Описание: ${description}
+🔗 Посмотри это объявление: ${url}
       `;
 
       const shareOptions = {
@@ -573,8 +600,23 @@ export default function DynamicHousePostPage({ navigation, route }) {
     }
   };
 
+  const handleBack = () => {
+    if (isModal) {
+      route.setIsModalShow(false);
+      return
+    }
+
+    const canGoBack = navigation.canGoBack();
+    if (canGoBack) {
+      navigation.goBack();
+      return
+    };
+
+    navigation.navigate("Main");
+  }
+
   const renderBackButton = () => (
-    <Pressable onPress={() => isModal ? route.setIsModalShow(false) : navigation.goBack()}>
+    <Pressable onPress={handleBack}>
       <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
     </Pressable>
   );
@@ -610,13 +652,31 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const renderHeader = () => {
     return (
       <View style={{
-        flexDirection: "row", justifyContent: "space-between", width: width, alignItems: "center",
-        paddingBottom: 8, backgroundColor: "#F2F2F7", paddingHorizontal: 17, paddingTop: isModal ? 0 : 12
+        flexDirection: "row", justifyContent: "space-between", width, alignItems: "center",
+        paddingBottom: 8, backgroundColor: "#F2F2F7", paddingHorizontal: 17, paddingTop: isModal ? 0 : 42
       }}>
         {renderBackButton()}
         {renderPostStatus()}
-        {isOwner ? renderEditAndFavoriteButtons() : (postData.status == 1 && renderFavoriteAndShareButtons())}
+        {isOwner ? renderEditAndFavoriteButtons() : (postData.status == 1 ? renderFavoriteAndShareButtons() : <View></View>)}
       </View>
+    );
+  };
+
+  const shareProfile = () => {
+    const user = ownerUser[0];
+
+    if (!user) return null;
+
+    const options = {
+      type: 'profile',
+      id: user.id,
+      user, // передаём весь объект пользователя
+    };
+
+    return (
+      <Pressable onPress={() => sharePost(options)}>
+        <ShareIcon />
+      </Pressable>
     );
   };
 
@@ -630,7 +690,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
         {/* <Button
           title="Test Link"
           onPress={() => {
-            const url = `http://192.168.1.48:3000/share/post?id=${houseId}`;
+            const url = `$${process.env.EXPO_PUBLIC_API_HOST}/share/post?id=${houseId}`;
             console.log('Test URL:', url);
             Linking.openURL(url);
           }}
@@ -649,7 +709,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
         <View style={{ height: 134 }} />
       </ScrollView>
 
-      <CustomModal isVisible={showModalSeller} onClose={() => setShowNodalSeller(false)} buttonLeft={<BackIcon />} buttonRight={<ShareIcon />}>
+      <CustomModal isVisible={showModalSeller} onClose={() => setShowNodalSeller(false)} buttonLeft={<BackIcon />} buttonRight={shareProfile()}>
         <ProfilePageView route={{ params: { posterId: ownerUser[0]?.id } }} />
       </CustomModal>
 
@@ -693,7 +753,7 @@ const styles = StyleSheet.create({
   priceMeter: {
     fontSize: 15,
     fontWeight: "400",
-    lineHeight: 15,
+    lineHeight: 17,
     letterSpacing: -0.43,
     fontStyle: "normal",
     fontFamily: "Sora400",
@@ -713,7 +773,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#3E3E3E",
     letterSpacing: -0.43,
-    lineHeight: 17,
+    lineHeight: 20,
     fontWeight: "600",
     fontFamily: "Sora700",
   },
@@ -729,12 +789,6 @@ const styles = StyleSheet.create({
     width: width - 32,
     marginTop: 24,
     alignSelf: 'center'
-  },
-  addressTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: 'green',
-    marginBottom: 4
   },
   addressText: {
     marginTop: 8,
@@ -835,7 +889,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.43,
     fontWeight: "400",
     fontFamily: "Sora700",
-    lineHeight: 25,
   },
   closeButton: {
     marginTop: 16,

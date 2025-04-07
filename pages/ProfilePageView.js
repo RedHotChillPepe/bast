@@ -15,6 +15,7 @@ const { width, height } = Dimensions.get('window');
 
 const ProfilePageView = ({ route, navigation }) => {
   const { posterId } = route.params
+  const timestamp = route.params?.timestamp || 0;
   const isCompany = route.params.isCompany || false;
   const { getUserByID } = useApi();
   const [userr, setUser] = useState([])
@@ -46,7 +47,7 @@ const ProfilePageView = ({ route, navigation }) => {
       setIsLoaded(true);
     }
     init()
-  }, [getUserByID, isFocused])
+  }, [getUserByID, isFocused, timestamp])
 
   const handleSelected = (post) => {
     if (!post) return;
@@ -126,9 +127,7 @@ const ProfilePageView = ({ route, navigation }) => {
               ?
               <FontAwesome6 name="face-tired" size={85} color="black" />
               :
-              // TODO: проверять, что фото прогрузилось
               <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={80} height={80} source={{ uri: userr.photo }} />
-            // <Image style={{ overflow: 'hidden', borderRadius: 100 }} width={85} height={85} source={{ uri: "https://s3-alpha-sig.figma.com/img/c142/04c5/bad6f6e3f1a41d5d0962f534a877b279?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=QgEtDMMpy~t4NPkf9gyMEvgTj-qye8Mpf-W1G~mK4nJ~SxuhGkf5ZWLyPT7e7ByDbEnhNFQe1DHbnaipuNRsqeMu7NXX~tPIhOAJ-ynT6UnEbH9egIyU2PMmYtZDaMckJjEOQljsK~TFCaYMvhfHbFXouHv~Sh~AYEYtUg6rwJSaG285mv83VXeU-HmB1oK6f~k5FLCG4ZtI-~LnKBrXBoHYIXJNftIjZC8NvkiIlqJc2f-75oNWWmUHvDEBDFbEearxN71ZJXdhk8DxJRXWr0YjQ7SdBvzTuT~F1OIFtfCTXr-yaBD8E176aablV8~XZBg51qGocV0OLXpwpb0mRA__" }} />
           }
         </View>
 

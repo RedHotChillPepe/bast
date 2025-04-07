@@ -16,8 +16,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bastithouses.app",
-      "associatedDomains": ["applinks:192.168.1.48"]
-      // "associatedDomains": ["applinks:bast-backend-urdx.onrender.com"]
+      "associatedDomains": [
+        "applinks:win-e5oqtj6uhak.tailb0dc72.ts.net",
+        "applinks:win-e5oqtj6uhak.tailb0dc72.ts.net"
+      ],
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -28,13 +33,19 @@
             "action": "VIEW",
             "data": [
               {
-                "scheme": "http",
-                "host": "192.168.1.48:3000",
-                // "host": "bast-backend-urdx.onrender.com",
-                "pathPrefix": "/post"
-              }
+                "scheme": "https",
+                "host": "https://win-e5oqtj6uhak.tailb0dc72.ts.net/",
+                "pathPrefix": "/share/*"
+              },
+              {
+              "scheme": "myapp",
+              "host": "*"
+            }
             ],
-            "category": ["BROWSABLE", "DEFAULT"]
+            "category": [
+              "BROWSABLE",
+              "DEFAULT"
+            ]
           }
         ]
       },
@@ -72,7 +83,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "4a708a15-6b0d-4efb-9264-acd92d195d02"
+        "projectId": "a60250af-82aa-413f-814e-365a2d573c3a"
       }
     }
   }

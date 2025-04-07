@@ -27,7 +27,7 @@ const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelecte
   return (
     <Pressable
       style={{ width: itemWidth + 32 }}
-      onPress={() => !isModal ? navigation.navigate("House", { houseId: item.id }) : handleSelected(item.id)}
+      onPress={() => isModal ? handleSelected(item.id) : navigation.navigate("House", { houseId: item.id })}
     >
       <View style={[styles.houseItem, { width: itemWidth }]}>
         <View style={styles.houseImageView}>

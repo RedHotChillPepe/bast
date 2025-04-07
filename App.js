@@ -3,9 +3,10 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
+import * as Linking from 'expo-linking';
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
@@ -41,6 +42,7 @@ import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsClosed from "./pages/UserPostsClosed.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
 import UserRecycleBin from "./pages/UserRecycleBin.js";
+import { DynamicVillagePostPage } from "./pages/DynamicVillagePostPage";
 
 
 const Stack = createNativeStackNavigator();
@@ -51,8 +53,8 @@ const TopStack = createNativeStackNavigator();
 const SearchStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-process.env.NODE_ENV !== "development" && YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c')
-Geocoder.init("c37de2be-5430-4b50-9157-4e5278fbdd7e");
+process.env.NODE_ENV !== "development" && YaMap.init(process.env.EXPO_PUBLIC_YAMAP_API_KEY)
+Geocoder.init(process.env.EXPO_PUBLIC_GEOCODER_API_KEY);
 
 const SearchPostsStack = () => {
   return (
@@ -240,6 +242,13 @@ const AppStack = () => {
           // ),
         })}
       />
+      <Stack.Screen
+        name="Village"
+        component={DynamicVillagePostPage}
+        options={({ navigation }) => ({
+          headerShown: false,
+        })}
+      />
 
       <Stack.Screen
         name="UserPostsClosed"
@@ -340,7 +349,7 @@ const AppStack = () => {
         options={{
           //header:(props) => <HeaderComponent{...props}/>
           headerShown: true,
-          headerTitle: "Риэлтор",
+          headerTitle: "Риелтор",
         }}
       />
 
@@ -582,7 +591,7 @@ const AppInit = () => {
   });
 
   if (!loaded) {
-    return;c
+    return;
   }
 
   SplashScreen.hide();
@@ -596,100 +605,138 @@ const AppInit = () => {
   if (!isOnboarded) {
     return (
       <OnboardingStack.Navigator initialRouteName='Onboarding'>
-        <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
+      <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
       </OnboardingStack.Navigator>
-    )
-  } */
+      )
+    } */
 
   if (/* isOnboarded &&  */ isAuth) {
     return <React.Fragment>
-      {/* TODO: вернуть */}
-      {/* <DeepLinkHandler /> */}
+      <DeepLinkHandler />
       <AppTopStack />
     </React.Fragment>
   }
 };
 ///
-// TODO: вернуть
-// const DeepLinkHandler = () => {
-//   const navigation = useNavigation();
+const DeepLinkHandler = () => {
+  const navigation = useNavigation();
+  const [isReady, setIsReady] = React.useState(false);
+  const [initialUrl, setInitialUrl] = React.useState(null);
 
-//   useEffect(() => {
-//     // Функция для обработки deep link
-//     const handleDeepLink = ({ url }) => {
-//       if (url) {
-//         const parsedUrl = Linking.parse(url);
-//         console.log('Получена ссылка:', parsedUrl);
-//         if (!parsedUrl.path) return;
-//         // Проверяем путь и параметры ссылки
-//         if (parsedUrl.path.includes('share/post') && parsedUrl.queryParams.id) {
-//           // Навигация на экран House с параметром houseId
-//           navigation.navigate('House', { houseId: parsedUrl.queryParams.id, timestamp: Date.now() });
-//         }
-//       }
-//     };
+  useEffect(() => {
+    // Обработчик для ссылок, когда приложение уже открыто
+    const handleDeepLink = ({ url }) => {
+      if (!url) return;
+      console.log('Deep link received:', url);
+      processUrl(url);
+    };
 
-//     // Подписка на события ссылок, когда приложение уже открыто
-//     const subscription = Linking.addEventListener('url', handleDeepLink);
+    // Проверка начальной ссылки при запуске
+    const getInitialUrl = async () => {
+      try {
+        const url = await Linking.getInitialURL();
+        if (url) {
+          console.log('Initial URL:', url);
+          setInitialUrl(url);
+        }
+      } catch (err) {
+        console.error('Failed to get initial URL', err);
+      } finally {
+        setIsReady(true);
+      }
+    };
 
-//     // TODO: проверять env, развернуть сервер, для прода указывать myapp(м.б. другое)
-//     // Проверка начальной ссылки при запуске приложения
-//     Linking.getInitialURL().then((url) => {
-//       if (url) {
-//         handleDeepLink({ url });
-//       }
-//     }).catch((err) => console.error('Ошибка при получении начальной ссылки:', err));
+    getInitialUrl();
+    const subscription = Linking.addEventListener('url', handleDeepLink);
 
-//     // Очистка подписки при размонтировании компонента
-//     return () => {
-//       subscription.remove();
-//     };
-//   }, [navigation]);
+    return () => subscription.remove();
+  }, []);
 
-//   return null;
-// };
+  useEffect(() => {
+    if (isReady && initialUrl) {
+      processUrl(initialUrl);
+      setInitialUrl(null);
+    }
+  }, [isReady, initialUrl]);
+
+  const processUrl = (url) => {
+    const parsed = Linking.parse(url);
+    console.log('Parsed URL:', parsed);
+    if (!parsed.path?.includes('share') || !parsed.queryParams?.id || !parsed.queryParams?.type) {
+      navigation.navigate('Main');
+    }
+
+    switch (parsed.queryParams.type) {
+      case "post":
+        navigation.navigate('House', {
+          houseId: parsed.queryParams.id,
+          timestamp: Date.now() // Добавляем timestamp для принудительного обновления
+        });
+        break;
+      case "village":
+        navigation.navigate('Village', {
+          villageId: parsed.queryParams.id,
+          timestamp: Date.now() // Добавляем timestamp для принудительного обновления
+        });
+        break;
+      case "profile":
+        navigation.navigate('ProfilePageView', {
+          posterId: parsed.queryParams.id,
+          timestamp: Date.now() // Добавляем timestamp для принудительного обновления
+        });
+        break;
+    }
+
+  };
+
+  return null;
+};
 
 // Корневой (Root) компонент
 export default function App() {
   // useEffect(() => {
-  //   if (Yamap && typeof Yamap.init === 'function') {
-  //     Yamap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
-  //     Yamap.setLocale('ru_RU'); // Устанавливаем русский язык
+  //   if (YaMap && typeof YaMap.init === 'function') {
+  //     YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
+  //     YaMap.setLocale('ru_RU'); // Устанавливаем русский язык
   //   } else {
   //     console.error("Yamap не инициализирован");
   //   }
   // }, []);
 
-  // TODO: вернуть
-  // const linking = {
-  //   prefixes: [
-  //     // 'https://bast-backend-urdx.onrender.com', // ваш домен для продакшна на Android
-  //     "http://192.168.1.48:3000/",
-  //     Linking.createURL(''), // для разработки (exp://)
-  //     // 'myapp://' // дополнительный префикс (если нужен)
-  //   ],
-  //   config: {
-  //     screens: {
-  //       Tabs: {
-  //         screens: {
-  //           Home: {
-  //             screens: {
-  //               House: 'post/:houseId', // Маршрут для экрана House с параметром id
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // };
-  // TODO: вернуть
-  {/* <NavigationContainer linking={linking} > */ }
+  const linking = {
+    prefixes: [
+      'https://win-e5oqtj6uhak.tailb0dc72.ts.net',
+      'myapp://',
+      Linking.createURL('/')
+    ],
+    config: {
+      screens: {
+        Tabs: {
+          screens: {
+            Home: {
+              screens: {
+                House: {
+                  path: 'share/post',
+                  parse: {
+                    id: (id) => id.toString()
+                  },
+                  stringify: {
+                    id: (id) => id.toString()
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
 
   return (
     <ApiProvider>
       <AuthProvider>
         <ToastProvider>
-          <NavigationContainer>
+          <NavigationContainer linking={linking} >
             <AppInit />
           </NavigationContainer>
         </ToastProvider>
