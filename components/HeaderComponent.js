@@ -37,15 +37,16 @@ export default function HeaderComponent() {
 
 
 
-    if (String(searchQuery).length != 0) {
-
-      const result = await getCompanyByName(searchQuery)
-      const resultJson = JSON.parse(await result.text())
-
-
-      setResults(resultJson[1])
-
+    if (String(searchQuery).length == 0) {
+      return;
     }
+
+    const result = await getCompanyByName(searchQuery)
+    const resultJson = JSON.parse(await result.text())
+    console.log(resultJson);
+
+
+    setResults(resultJson[1])
 
 
   }

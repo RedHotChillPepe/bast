@@ -37,7 +37,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const houseId = route.houseId || route.params.houseId;
   const timestamp = route.params?.timestamp || 0;
   const isModal = route.isModal || false;
-  const { getPost, getIsOwner, getUserByID, updateStatus } = useApi();
+  const { getPost, getIsOwner, getUserByID, updateStatus, getCurrentUser } = useApi();
   const { getAuth } = useAuth();
   const showToast = useToast();
 
@@ -63,57 +63,59 @@ export default function DynamicHousePostPage({ navigation, route }) {
   // Получение данных объявления и пользователя
   useEffect(() => {
     const fetchData = async () => {
-      if (houseId) {
-        const result = await getPost(houseId);
-        const resultJson = JSON.parse(await result.text());
-        const post = resultJson.rows[0];
-        setPostData(post);
+      if (!houseId) {
+        return;
+      }
 
-        // Получаем пользователя-автора объявления
-        let ownerTypeStr = "user";
-        switch (post.poster_type) {
-          case 2:
-            ownerTypeStr = "company";
-            break;
-          case 3:
-            ownerTypeStr = "realtor";
-            break;
-          default:
-            break;
-        }
-        const tempUser = await getUserByID(post.poster_id, ownerTypeStr);
-        const tempUserJson = JSON.parse(await tempUser.text());
-        setOwnerUser(tempUserJson);
+      const result = await getPost(houseId);
+      const post = result[0];
+      setPostData(result[0]);
 
-        // Геокодирование, если координаты не заданы
-        const addressString = post.city + " " + post.full_address;
-        if (!post.latitude || !post.longitude) {
-          Geocoder.addressToGeo(addressString)
-            .then(({ lat, lon }) => {
-              setGeoState({ lat, lon });
-            })
-            .finally(() => setIsGeoLoaded(true));
-        } else {
-          setGeoState({
-            lat: parseFloat(post.latitude),
-            lon: parseFloat(post.longitude),
-          });
-          setIsGeoLoaded(true);
-        }
+      // Получаем пользователя-автора объявления
+      let ownerTypeStr = "user";
+      switch (post.poster_type) {
+        case 2:
+          ownerTypeStr = "company";
+          break;
+        case 3:
+          ownerTypeStr = "realtor";
+          break;
+        default:
+          break;
+      }
+      const tempUser = await getUserByID(post.poster_id, ownerTypeStr);
+      setOwnerUser(tempUser);
+      // Геокодирование, если координаты не заданы
+      const addressString = `${post.city} ${post.full_address}`;
+      if (!post.latitude || !post.longitude) {
+        Geocoder.addressToGeo(addressString)
+          .then(({ lat, lon }) => {
+            setGeoState({ lat, lon });
+          })
+          .finally(() => setIsGeoLoaded(true));
+      } else {
+        setGeoState({
+          lat: parseFloat(post.latitude),
+          lon: parseFloat(post.longitude),
+        });
+        setIsGeoLoaded(true);
       }
     };
 
     const checkUser = async () => {
-      if (houseId) {
-        const auth = JSON.parse(await getAuth());
-        console.log(auth);
-        if (auth[0].password) {
-          setIsLoggedIn(true);
-          const result = await getIsOwner(auth[0].phone, auth[0].password, houseId);
-          const resultJson = JSON.parse(await result.text());
-          setIsOwner(resultJson.result);
-        }
+      if (!houseId) {
+        return;
       }
+      const auth = await getAuth();
+      console.log(auth);
+      if (!auth) {
+        return;
+      }
+      setIsLoggedIn(true);
+      const result = await getIsOwner(houseId);
+      const resultJson = JSON.parse(await result.text());
+      console.log(resultJson);
+      setIsOwner(resultJson.result);
     };
 
     const checkFavorite = async () => {
@@ -137,24 +139,24 @@ export default function DynamicHousePostPage({ navigation, route }) {
       }
       await SecureStore.setItemAsync("favs", JSON.stringify(favs));
       setIsFavorite(false);
-    } else {
-      favs.push(houseId);
-      await SecureStore.setItemAsync("favs", JSON.stringify(favs));
-      setIsFavorite(true);
+      return;
     }
+    favs.push(houseId);
+    await SecureStore.setItemAsync("favs", JSON.stringify(favs));
+    setIsFavorite(true);
   };
 
   const handleCallButton = async () => {
     setShowModal(true);
     const result = await getUserByID(postData.poster_id);
-    const resultJson = JSON.parse(await result.text());
-    setPhone(resultJson[0].phone);
+    setPhone(result.phone);
   };
 
   // Функция изменения статуса объявления
   const changeStatus = async ({ post_id, post_status }) => {
     try {
-      await updateStatus({ post_id, post_status });
+      const result = await updateStatus({ post_id, post_status });
+      console.log(await result.json());
     } catch (error) {
       showToast(error.message, "error");
       logError(navigation.getState().routes[0].name, error, { postData, handleName: "changeStatus" });
@@ -167,7 +169,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
       setPostData(prev => ({ ...prev, status: 3 }));
       setShowCloseConfirm(false);
       showToast("Ваше объявление закрыто", "success");
-      navigation.navigate("UserPostsPage", { user_id: ownerUser[0]?.id, status: 3 });
+      navigation.navigate("UserPostsPage", { user_id: ownerUser?.id, status: 3 });
     } catch (error) {
       logError(navigation.getState().routes[0].name, error, { postData, handleName: "confirmClose" });
     }
@@ -178,7 +180,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
     setPostData(prev => ({ ...prev, status: -1 }));
     setShowDeleteConfirm(false);
     showToast("Ваше объявление удалено!", "success");
-    navigation.navigate("UserPostsPage", { user_id: ownerUser[0]?.id, status: -1 });
+    navigation.navigate("UserPostsPage", { user_id: ownerUser?.id, status: -1 });
   };
 
   const confirmRestore = async () => {
@@ -220,7 +222,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
         return (
           <View
             style={{
-              flexDirection: 'row', width: width, justifyContent: 'space-between',
+              flexDirection: 'row', width, justifyContent: 'space-between',
               paddingHorizontal: 16, alignItems: "flex-end", marginTop: 32
             }
             }>
@@ -339,9 +341,9 @@ export default function DynamicHousePostPage({ navigation, route }) {
 
   const renderMap = () => {
     return <View style={styles.addressView}>
-      <View style={{ borderRadius: 16, width: width, alignSelf: 'center' }}>
+      <View style={{ borderRadius: 16, width, alignSelf: 'center' }}>
         {isGeoLoaded ? (
-          process.env.NODE_ENV !== "development" ? (
+          process.env.NODE_ENV === "development" ? <Text style={{ color: "red", fontSize: 24, textAlign: "center" }}>Карта</Text> : (
             <View onTouchStart={() => setIsInteractingWithMap(true)} onTouchEnd={() => setIsInteractingWithMap(false)}>
               <YaMap
                 ref={mapRef}
@@ -351,7 +353,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
                 <Marker point={{ lat: geoState.lat, lon: geoState.lon }} scale={0.25} source={require('../assets/marker.png')} />
               </YaMap>
             </View>
-          ) : <Text style={{ color: "red", fontSize: 24, textAlign: "center" }}>Карта</Text>
+          )
         ) : (
           <Text style={{ alignSelf: 'center' }}>Загрузка Карты...</Text>
         )}
@@ -368,12 +370,12 @@ export default function DynamicHousePostPage({ navigation, route }) {
     return <View style={{ marginTop: 32, alignSelf: 'flex-start', marginLeft: 16 }}>
       <Text style={styles.infoTitle}>Продавец</Text>
       {Object.keys(ownerUser).length !== 0 && (
-        // <Pressable onPress={() => navigation.navigate("ProfilePageView", { posterId: ownerUser[0].id })}>
+        // <Pressable onPress={() => navigation.navigate("ProfilePageView", { posterId: ownerUser.id })}>
         <Pressable onPress={() => setShowNodalSeller(true)}>
           <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F2F2F7', width: width - 32, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 12 }}>
-            {ownerUser[0].photo ? (
+            {ownerUser.photo ? (
               <Image
-                source={{ uri: ownerUser[0].photo }}
+                source={{ uri: ownerUser.photo }}
                 style={{ width: 42, height: 42, borderRadius: 54, aspectRatio: 1 }}
               />
             ) : (
@@ -382,7 +384,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
             <View style={{ width: 12 }} />
             <View style={{ rowGap: 6 }}>
               <Text style={[styles.serviciesText, { color: '#3E3E3E', fontWeight: '600' }]}>
-                {ownerUser[0].name} {ownerUser[0].surname}
+                {ownerUser.name} {ownerUser.surname}
               </Text>
               <Text style={{ color: "#808080", fontSize: 14, fontFamily: "Sora400" }}>Риэлтор</Text>
             </View>
@@ -498,7 +500,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
       condition: showModal,
       props: {
         visible: showModal,
-        title: Object.keys(ownerUser).length !== 0 ? `${ownerUser[0].name} ${ownerUser[0].surname}` : '',
+        title: Object.keys(ownerUser).length === 0 ? '' : `${ownerUser.name} ${ownerUser.surname}`,
         message: isLoggedIn ? phone : "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона",
         onConfirm: () => {
           Linking.openURL(`tel:${phone}`);
@@ -663,13 +665,13 @@ ${priceInfo}
       }}>
         {renderBackButton()}
         {renderPostStatus()}
-        {isOwner ? renderEditAndFavoriteButtons() : (postData.status == 1 ? renderFavoriteAndShareButtons() : <View></View>)}
+        {isOwner ? renderEditAndFavoriteButtons() : (postData.status == 1 ? renderFavoriteAndShareButtons() : <View />)}
       </View>
     );
   };
 
   const shareProfile = () => {
-    const user = ownerUser[0];
+    const user = ownerUser;
 
     if (!user) return null;
 
@@ -716,7 +718,7 @@ ${priceInfo}
       </ScrollView>
 
       <CustomModal isVisible={showModalSeller} onClose={() => setShowNodalSeller(false)} buttonLeft={<BackIcon />} buttonRight={shareProfile()}>
-        <ProfilePageView route={{ params: { posterId: ownerUser[0]?.id } }} />
+        <ProfilePageView route={{ params: { posterId: ownerUser?.id } }} />
       </CustomModal>
 
       {renderModal()}

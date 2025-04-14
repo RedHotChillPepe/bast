@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text } from "react-native";
+import { Dimensions, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Geocoder, Marker, YaMap } from "react-native-yamap";
 import CustomModal from "../components/CustomModal";
@@ -30,37 +30,39 @@ export default function SearchMap({ navigation, route }) {
   useEffect(() => {
     // FIXME Крайне неоптимальный код, срочно поменять
     const loadMarkers = async () => {
-      console.log(query);
 
       const tempHouses =
-        query.length == 0
+        Object.keys(query).length == 0
           ? await getAllPosts()
           : await getPaginatedPosts("undefined", query); // FIXME
-      if ((await tempHouses[0][0].id) != undefined) {
-        tempHouses[0].forEach((house) => {
-          if (house.longitude != null || house.latitude != null) {
-            setDebugHouse((prevData) => [...prevData, house]);
-            setPosts((prevData) => [
-              ...prevData,
-              {
-                point: {
-                  lon: parseFloat(house.longitude),
-                  lat: parseFloat(house.latitude),
-                },
-                id: house.id,
+
+      if (tempHouses.length === 0) return;
+      console.log("tempHouses:", tempHouses.length);
+      tempHouses.forEach((house) => {
+        if (house.longitude != null || house.latitude != null) {
+          setDebugHouse((prevData) => [...prevData, house]);
+          setPosts((prevData) => [
+            ...prevData,
+            {
+              point: {
+                lon: parseFloat(house.longitude),
+                lat: parseFloat(house.latitude),
               },
-            ]);
-          } else {
-            const addressString = house.city + " " + house.full_address;
-            Geocoder.addressToGeo(addressString).then(({ lat, lon }) => {
-              setPosts((prevData) => [
-                ...prevData,
-                { point: { lon: lon, lat: lat }, id: house.id },
-              ]);
-            });
-          }
+              id: house.id,
+            },
+          ]);
+          console.log(1);
+          return;
+        }
+        const addressString = `${house.city} ${house.full_address}`;
+        Geocoder.addressToGeo(addressString).then(({ lat, lon }) => {
+          setDebugHouse((prevData) => [...prevData, { point: { lon, lat }, id: house.id }]);
+          setPosts((prevData) => [
+            ...prevData,
+            { point: { lon, lat }, id: house.id },
+          ]);
         });
-      }
+      });
     };
     loadMarkers();
     return () => { };
@@ -68,7 +70,23 @@ export default function SearchMap({ navigation, route }) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {process.env.NODE_ENV !== "development" ? (
+      {process.env.NODE_ENV === "development" ? (
+        <ScrollView>
+          <Text style={{ fontSize: 24, textAlign: "center", color: "red" }}>
+            Режим разработчика: карта
+          </Text>
+          {debugHouse.map((house, index) => (
+            <HouseCard
+              key={`debug-${index}`}
+              item={house}
+              navigation={navigation}
+              isModal={true}
+              handleSelected={handleSelected}
+              itemWidth={width - 32}
+            />
+          ))}
+        </ScrollView>
+      ) : (
         <YaMap
           style={{ width: "100%", height: "100%", alignSelf: "center" }}
           initialRegion={{ lat: 56.84976, lon: 53.20448, zoom: 10 }}
@@ -86,22 +104,6 @@ export default function SearchMap({ navigation, route }) {
 
           {/* <Marker onPress={() => navigation.navigate('Error404')} point={{ lat: 56.84976,lon: 53.20448 }} source={require('../assets/marker.png')} scale={0.4}/> */}
         </YaMap>
-      ) : (
-        <ScrollView>
-          <Text style={{ fontSize: 24, textAlign: "center", color: "red" }}>
-            Режим разработчика: карта
-          </Text>
-          {debugHouse.map((house, index) => (
-            <HouseCard
-              key={`debug-${index}`}
-              item={house}
-              navigation={navigation}
-              isModal={true}
-              handleSelected={handleSelected}
-              itemWidth={width - 32}
-            />
-          ))}
-        </ScrollView>
       )}
       <CustomModal isVisible={isModalShow} onClose={() => setIsModalShow(false)}>
         <DynamicHousePostPage
@@ -116,36 +118,3 @@ export default function SearchMap({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "#2196F3",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: 300,
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  closeButton: {
-    marginTop: 10,
-    backgroundColor: "#2196F3",
-    padding: 10,
-    borderRadius: 5,
-  },
-});

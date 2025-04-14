@@ -1,5 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getAuth, refreshAccessToken } from '../utils/authUtils';
 
 const AuthContext = createContext()
 
@@ -9,39 +10,20 @@ export default function AuthProvider({ children }) {
   const [checkAuthB, setCheckAuthB] = useState(false)
 
   async function setAuth(json) {
-    const { phone, password, status, onboarded, id, usertype } = json[0]
     await SecureStore.setItemAsync("auth",
       JSON.stringify([
         {
-          status: status,
-          onboarded: onboarded,
-          phone: phone,
-          password: password,
-          id: id,
-          usertype: usertype // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
+          access_token: json[0].access_token,
+          refresh_token: json[0].refresh_token
         }
       ]))
     setCheckAuthB(true)
   }
 
-  async function getAuth() {
-    let result = await SecureStore.getItemAsync("auth")
-    if (result) {
-      return result
-    }
-  }
-
+  // TODOL не используется
   async function setOnboard(bool) {
-    const tempauth = JSON.parse(await getAuth())
-    const { status, phone, password, id, usertype } = tempauth[0]
-    await setAuth([{
-      status: status,
-      onboarded: bool,
-      phone: phone,
-      password: password,
-      id: id,
-      usertype: usertype // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
-    }])
+    const tempauth = await getAuth();
+    await setAuth(tempauth)
     setCheckAuthB(true)
   }
 
@@ -52,30 +34,13 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
     async function checkAuth() {
-      if (await getAuth() == null) {
-        await setAuth([{
-          status: false,
-          onboarded: false,
-          phone: "",
-          password: "",
-          id: "",
-          usertype: -1 // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
-        }])
-        const tempauth = JSON.parse(await getAuth())
-        const { status, isOnboarded } = tempauth[0]
-        setIsAuth(status)
-        setIsOnboarded(isOnboarded)
-      } else {
-        const tempauth = JSON.parse(await getAuth())
-        const { status, onboarded } = tempauth[0]
-        setIsAuth(status)
-        setIsOnboarded(onboarded)
-      }
-      console.log(await getAuth());
+      const access_token = await getAuth();
+      const status = (access_token !== null)
+      setIsAuth(status)
+      setIsOnboarded(status)
     }
     checkAuth()
-
-
+    // TODO: проверить, что токен жив
     if (checkAuthB) {
       setCheckAuthB(false)
     }
@@ -83,9 +48,6 @@ export default function AuthProvider({ children }) {
 
     }
   }, [checkAuthB])
-
-
-
 
   return (
     <AuthContext.Provider value={{ isAuth, isOnboarded, getAuth, setOnboard, setAuth, setCheckAuthB, logout }}>

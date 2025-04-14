@@ -71,7 +71,7 @@ const SettingsPage = ({ navigation, route }) => {
 
           <Pressable onPress={() => navigation.navigate("ConfirmDeletion", {
             regData: {
-              userObjectt: userObjectt
+              userObjectt
             }
           })} style={styles.buttonDanger}>
             <Text>

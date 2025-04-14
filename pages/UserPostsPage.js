@@ -28,10 +28,10 @@ const UserPostsPage = ({ route }) => {
       const tempHouses = await getUserPostsByStatus(user_id, status)
       const tempHousesJson = JSON.parse(await tempHouses.text())
 
-      if (Object.keys(tempHousesJson.rows).length != 0) {
-        setHouses(tempHousesJson.rows)
+      if (Object.keys(tempHousesJson).length != 0) {
+        setHouses(tempHousesJson)
       }
-      if (Object.keys(tempHousesJson.rows).length == 0) {
+      if (Object.keys(tempHousesJson).length == 0) {
         setIsEmpty(true)
       }
     }

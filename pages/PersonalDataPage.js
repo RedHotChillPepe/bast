@@ -10,11 +10,13 @@ import { useLogger } from "../context/LoggerContext"
 const { width } = Dimensions.get('window');
 
 const PersonalDataPage = ({ route }) => {
-  const { getAuth, setAuth, setCheckAuthB } = useAuth()
-  const { postRegister } = useApi()
+  const { setAuth, setCheckAuthB } = useAuth()
+  const { registerUser } = useApi()
   const navigation = useNavigation()
 
   const { regData } = route.params
+
+  const [sendError, setSendError] = useState('');
 
   const [inputName, setInputName] = useState('')
   const [inputSurname, setInputsurname] = useState('')
@@ -28,46 +30,55 @@ const PersonalDataPage = ({ route }) => {
   const { logError } = useLogger();
 
   function calculateAge(birthday) { // принимает Date объект
-    var ageDifMs = Date.now() - birthday.getTime();
-    var ageDate = new Date(ageDifMs);
+    const ageDifMs = Date.now() - birthday.getTime();
+    const ageDate = new Date(ageDifMs);
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
   const handlePost = async (skip) => {
-
     const sendRegister = async () => {
       try {
-        var tempData = {
+        const birthdateFormatted =
+          inputBirthdate !== currentDate.current && calculateAge(inputBirthdate) >= 18
+            ? inputBirthdate.toISOString().split('T')[0] // YYYY-MM-DD
+            : undefined;
+
+        const tempData = {
           phoneNumber: regData.phoneNumber,
           password: regData.password,
-          name: inputName,
-          surname: inputSurname,
-          fathername: inputFathername,
-          birthdate: inputBirthdate == currentDate.current || calculateAge(inputBirthdate) < 18 ? "" : inputBirthdate,
-        }
-        const response = await postRegister(tempData)
-        if (response.status == "200") {
-          await setAuth([{
-            status: true,
-            onboarded: false,
-            phone: regData.phoneNumber,
-            password: await response.text(),
-            usertype: 1 // -1:"unregistered", 0:"admin", 1:"user", 2:"company", 3:"realtor"
-          }])
-          setCheckAuthB(true)
+          surname: inputSurname || undefined,
+          name: inputName || undefined,
+          fathername: inputFathername || undefined,
+          birthdate: birthdateFormatted,
+          email: regData.email || undefined,
+        };
 
+        const response = await registerUser(tempData);
+        const json = await response.json();
+
+        if (response.ok) {
+          await setAuth([{
+            access_token: json.access_token,
+            refresh_token: json.refresh_token,
+          }]);
+
+          setCheckAuthB(true);
+          navigation.navigate('Main'); // или куда нужно
+        } else {
+          setSendError(json.message || 'Ошибка при создании пользователя.');
         }
       } catch (error) {
-        logError(navigation.getState().routes[0].name, error, { tempData, handleName: "sendRegister" });
+        logError(navigation.getState().routes[0].name, error, {
+          handleName: "sendRegister",
+        });
+        setSendError('Произошла ошибка при создании аккаунта. Попробуйте позже.');
       }
-    }
+    };
 
-    if (!skip) {
-      if (calculateAge(inputBirthdate) < 18) {
-        setShowDateLabel(true)
-      } else {
-        await sendRegister()
-      }
+    if (skip) {
+      await sendRegister()
+    } else if (calculateAge(inputBirthdate) < 18) {
+      setShowDateLabel(true)
     } else {
       await sendRegister()
     }
@@ -77,10 +88,9 @@ const PersonalDataPage = ({ route }) => {
 
 
   const onDateSelect = (event, selectedDate) => {
-    const currentDate = selectedDate
     setShowDatePicker(false)
     console.log(selectedDate);
-    setInputBirthdate(currentDate)
+    setInputBirthdate(selectedDate)
 
   }
 
@@ -100,34 +110,40 @@ const PersonalDataPage = ({ route }) => {
 
       <View style={styles.block}>
         <View style={styles.title}>
-          <Text style={styles.titleText} >Фамилия</Text>
+          <Text style={styles.titleText}>Фамилия</Text>
         </View>
 
         <TextInput
           style={styles.input}
           placeholder="Фамилия"
+          value={inputSurname}
+          onChangeText={setInputsurname}
         />
       </View>
 
       <View style={styles.block}>
         <View style={styles.title}>
-          <Text style={styles.titleText} >Имя</Text>
+          <Text style={styles.titleText}>Имя</Text>
         </View>
 
         <TextInput
           style={styles.input}
           placeholder="Имя"
+          value={inputName}
+          onChangeText={setInputName}
         />
       </View>
 
       <View style={styles.block}>
         <View style={styles.title}>
-          <Text style={styles.titleText} >Отчество</Text>
+          <Text style={styles.titleText}>Отчество</Text>
         </View>
 
         <TextInput
           style={styles.input}
           placeholder="Отчество"
+          value={inputFathername}
+          onChangeText={setInputFathername}
         />
       </View>
 
@@ -138,31 +154,39 @@ const PersonalDataPage = ({ route }) => {
         <Pressable onPress={() => setShowDatePicker(true)}>
           <TextInput
             style={styles.input}
-            placeholder={inputBirthdate.getDate().toString() + "."
-              + inputBirthdate.getMonth().toString() + "."
-              + inputBirthdate.getFullYear().toString()}
+            placeholder="Дата рождения"
+            value={`${inputBirthdate.getDate().toString().padStart(2, '0')}.` +
+              `${(inputBirthdate.getMonth() + 1).toString().padStart(2, '0')}.` +
+              `${inputBirthdate.getFullYear().toString()}`}
             editable={false}
+            pointerEvents="none"
           />
         </Pressable>
 
-
-        {
-          showDatePicker
-          &&
+        {showDatePicker && (
           <DateTimePicker
             value={inputBirthdate}
             mode='date'
-            onChange={onDateSelect} />
-        }
+            display="default"
+            onChange={onDateSelect}
+          />
+        )}
 
-        {
-          showDateLabel
-          &&
+        {showDateLabel && (
           <Text style={styles.inputLabel}>
             Вам должно быть больше 18 лет
           </Text>
-        }
+        )}
       </View>
+
+      {sendError !== '' && (
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ color: 'red', fontSize: 16, textAlign: 'center' }}>
+            {sendError}
+          </Text>
+        </View>
+      )}
+
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Pressable style={{
@@ -175,7 +199,6 @@ const PersonalDataPage = ({ route }) => {
           <Text style={{ fontSize: 20, color: 'black' }}>
             Пропустить
           </Text>
-
         </Pressable>
 
         <Pressable style={{
@@ -188,13 +211,12 @@ const PersonalDataPage = ({ route }) => {
           <Text style={{ fontSize: 20, color: 'white' }}>
             Подтвердить
           </Text>
-
         </Pressable>
       </View>
 
     </SafeAreaView>
+  );
 
-  )
 }
 
 export default PersonalDataPage
@@ -202,7 +224,7 @@ export default PersonalDataPage
 const styles = StyleSheet.create({
   block: {
     paddingHorizontal: 32,
-    width: width,
+    width,
   },
 
   h1: {

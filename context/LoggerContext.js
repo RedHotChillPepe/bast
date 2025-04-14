@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
 const LoggerContext = createContext();
@@ -17,6 +17,7 @@ export const useLogger = () => {
 };
 
 export const LoggerProvider = ({ children }) => {
+
     const sendLog = useCallback(async (level, componentName, message, metadata = {}) => {
         // Разделяем технические и пользовательские метаданные
         const {
@@ -47,7 +48,7 @@ export const LoggerProvider = ({ children }) => {
         }
 
         try {
-            const response = await fetch(`${host}api/logger/logs`, {
+            const response = await fetch(`${host}api/logs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

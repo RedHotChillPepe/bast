@@ -16,7 +16,7 @@ const { width } = Dimensions.get('window');
 const ProfilePage = ({ route }) => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
-  const { getUser } = useApi()
+  const { getUser, getCurrentUser } = useApi()
   const insets = useSafeAreaInsets();
 
   const [usertype, setUsertype] = useState(1)
@@ -25,11 +25,10 @@ const ProfilePage = ({ route }) => {
 
   useEffect(() => {
     const init = async () => {
-      const auth = JSON.parse(await getAuth())
-      const user = await getUser(await auth[0].phone, "user")
-      const userJson = JSON.parse(await user.text())
-      if (userJson[0].result) setUser(await userJson[1])
-      setUsertype(await auth[0].usertype)
+      const currentUser = await getCurrentUser();
+      if (!currentUser) return
+      setUser(currentUser);
+      setUsertype(currentUser.usertype)
     }
     init()
   }, [usertype, getAuth, getUser])
@@ -42,6 +41,8 @@ const ProfilePage = ({ route }) => {
         photo: route.params.updatedUser.photo !== null ? route.params.updatedUser.photo : prevUser.photo,
       }));
     }
+    console.log("userr:", userr);
+    console.log("newUserData:", route.params?.updatedUser);
   }, [route.params?.updatedUser]);
 
 
@@ -79,7 +80,7 @@ const ProfilePage = ({ route }) => {
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage', { userObject: userr, usertype: usertype }] },
+        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage', { userObject: userr, usertype }] },
       ],
     },
 
@@ -120,7 +121,7 @@ const ProfilePage = ({ route }) => {
                     <FontAwesome6 name="face-tired" size={56} color="black" />
                 }
 
-                <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype: usertype })}>
+                <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype })}>
                   <FontAwesome name="edit" size={24} color="#fff" />
                 </Pressable>
               </View>
@@ -128,8 +129,8 @@ const ProfilePage = ({ route }) => {
               <View style={{ flexDirection: 'row' }}>
 
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
-                  <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
+                  <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? `${userr.name} ${userr.surname}` : "Name Surname"}</Text>
+                  <Text style={styles.email}>{userr.email ?? "mail@example.com"}</Text>
                   <Text style={styles.email}>
                     {userr.phone != undefined ? userr.phone.replace(/^(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})$/, '+7 ($2) $3-$4-$5') : "+ 7 (xxx) xxx xx xx"}
                   </Text>

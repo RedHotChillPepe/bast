@@ -9,7 +9,6 @@ import SortModal from '../components/SortModal.js'
 import { useApi } from '../context/ApiContext.js'
 import { useLogger } from '../context/LoggerContext.js'
 
-
 const { width } = Dimensions.get('window');
 
 const categories = [
@@ -146,7 +145,6 @@ const DynamicHousesPage = ({ route }) => {
       const filters = JSON.stringify(selectedFilters)
       const LpriceRange = JSON.stringify({ low: priceRange[0], high: priceRange[1] })
       const LareaRange = JSON.stringify({ low: areaRange[0], high: areaRange[1] })
-
       const query = { category, sort, LpriceRange, LareaRange, filters }
 
 
@@ -177,12 +175,12 @@ const DynamicHousesPage = ({ route }) => {
         try {
           const response = await getPaginatedPosts(page, queryObject.current);
           // Убедимся, что `response` является массивом
-          if (response[1] == 0) {
+          if (response.length == 0) {
             setHouses([])
             setZeroRows(true)
-          } else {
-            setHouses(Array.isArray(response[0]) ? response[0] : []);
+            return
           }
+          setHouses(Array.isArray(response) ? response : []);
 
         } catch (error) {
           logError(navigation.getState().routes[0].name, error, { queryObject, page, handleName: "Error fetching posts" });
@@ -199,8 +197,8 @@ const DynamicHousesPage = ({ route }) => {
 
     const response = await getPaginatedPosts(page, queryObject.current)
 
-    setHouses(Array.isArray(response[0]) ? response[0] : []);
-    if (response[1] == 0) {
+    setHouses(Array.isArray(response) ? response : []);
+    if (response.length == 0) {
       setZeroRows(true)
     }
   }
@@ -213,7 +211,7 @@ const DynamicHousesPage = ({ route }) => {
       const response = await getPaginatedPosts(nextPage, queryObject.current);
 
       setPage(nextPage);
-      setHouses((prev) => [...prev, ...(response[0] || [])]);
+      setHouses((prev) => [...prev, ...(response || [])]);
 
     } catch (error) {
       logError(navigation.getState().routes[0].name, error, { queryObject, nextPage, handleName: "Error loading more data" });
@@ -229,7 +227,7 @@ const DynamicHousesPage = ({ route }) => {
     try {
       const response = await getPaginatedPosts(1);
 
-      setHouses(Array.isArray(response[0]) ? response[0] : []);
+      setHouses(Array.isArray(response) ? response : []);
     } catch (error) {
       logError(navigation.getState().routes[0].name, error, { houses, handleName: "clearFilters" });
       if (error) {

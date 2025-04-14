@@ -38,23 +38,15 @@ const UserLoginPage = () => {
         const normalPhoneNumber = normalizePhoneNumber(phoneNumber);
         console.log(normalPhoneNumber);
         setIsPhoneLabelShown(false)
-        const response = await getLogin(normalPhoneNumber, password)
-        const responseJson = JSON.parse([await response.text()])
-        console.log(await response);
-        if (await response.status == 200) {
-            console.log(responseJson);
-
-            if (await responseJson.result) {
-                const authResp = await setAuth([{
-                    status: true,
-                    onboarded: false,
-                    phone: normalPhoneNumber,
-                    password: responseJson.hash,
-                    id: responseJson.id,
-                    usertype: responseJson.usertype
-                }])
-                return;
-            }
+        try {
+            const response = await getLogin(normalPhoneNumber, password)
+            await setAuth([{
+                access_token: response.access_token,
+                refresh_token: response.refresh_token
+            }])
+            return;
+        } catch (error) {
+            console.error(error.message);
             setIsAuthLabelShown(true);
         }
     }

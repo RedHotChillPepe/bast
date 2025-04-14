@@ -322,12 +322,11 @@ const MainPage = ({ navigation }) => {
   useEffect(() => {
     const housesFetch = async () => {
       const tempHouses = await getPaginatedPosts(page);
-      if (tempHouses[0][0].id === undefined) {
+      if (tempHouses[0].id === undefined) {
         return;
       }
       setHouses([]);
-
-      setHouses(tempHouses[0]);
+      setHouses(tempHouses);
       setIsLoaded(true);
     };
     const villagesFetch = async () => {
@@ -346,15 +345,16 @@ const MainPage = ({ navigation }) => {
   }, [getPaginatedPosts, getAllVillages, isFocused]);
 
   const fetchMoreData = useCallback(async () => {
-    if (selectedList !== "villages" && selectedList !== "builders" && hasMore) {
-      const nextPage = page + 1;
-      const newHouses = await getPaginatedPosts(nextPage);
-      if (newHouses[0].length === 0) {
-        setHasMore(false);
-      } else {
-        setHouses((prev) => [...prev, ...newHouses[0]]);
-        setPage(nextPage);
-      }
+    if (!(selectedList !== "villages" && selectedList !== "builders" && hasMore)) {
+      return;
+    }
+    const nextPage = page + 1;
+    const newHouses = await getPaginatedPosts(nextPage);
+    if (newHouses.length === 0) {
+      setHasMore(false);
+    } else {
+      setHouses((prev) => [...prev, ...newHouses]);
+      setPage(nextPage);
     }
   }, [page, selectedList, hasMore, getPaginatedPosts]);
 

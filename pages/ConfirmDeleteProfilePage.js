@@ -28,16 +28,14 @@ export default function ConfirmDeleteProfilePage({ navigation, route }) {
     }
   };
 
+  // [ ]
   const handleConfirm = async () => {
     const confirmationCode = code.join('');
     console.log("Confirmation code:", confirmationCode);
 
     const result = await verifySms(regData.userObjectt.phoneNumber, confirmationCode)
-    const resultJson = JSON.parse([await result.text()])
-    console.log(result);
-
-    console.log(await resultJson);
-
+    console.log(await result.json());
+    const resultJson = await result.json();
 
     if (await result.status == 200) {
       console.log(await resultJson);
@@ -64,13 +62,12 @@ export default function ConfirmDeleteProfilePage({ navigation, route }) {
   const handleSendCall = async () => {
 
     const result = await changePhone(regData.userObjectt.phoneNumber, regData.userObjectt.id, regData.userObjectt.usertype)
-    console.log(result);
 
-    if (await result.status == 200) {
+    if (result.ok) {
       setIsShowSend(false)
     }
 
-    console.log(result);
+    console.log(await result.json());
   }
 
   return (

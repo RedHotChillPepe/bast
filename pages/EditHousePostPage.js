@@ -18,6 +18,7 @@ export default function EditHousePostPage({ route }) {
   } = route.params
 
   const [formData, setFormData] = useState({
+    id,
     title: name,
     houseType: house_type,
     wallMaterial: walls_lb,
@@ -40,7 +41,8 @@ export default function EditHousePostPage({ route }) {
     sewerege: sewage,
     electricity: electricity_bill,
     heating: heating,
-    photos: photos
+    photos: photos,
+    
   });
 
   const [houseTypeModalVisible, setHouseTypeModalVisible] = useState(false);
@@ -92,6 +94,7 @@ export default function EditHousePostPage({ route }) {
       Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
       return;
     } */
+    // [ ]
     let result = await updatePost(formData, id)
 
     console.log(await result);

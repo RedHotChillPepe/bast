@@ -16,20 +16,16 @@ const ProfileRealtorPage = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const { getUser } = useApi()
+  const { getUser, getCurrentUser } = useApi()
 
   const [userr, setUser] = useState([])
 
   useEffect(() => {
     const init = async () => {
-      const auth = JSON.parse(await getAuth())
-      const user = await getUser(await auth[0].phone, "realtor")
-      /* console.log(await user.text()); */
+      const currentUser = await getCurrentUser();
 
-      const userJson = JSON.parse(await user.text())
-      console.log(await userJson[1]);
-      if (userJson.result != false) {
-        setUser(await userJson[1])
+      if (currentUser) {
+        setUser(currentUser)
       }
 
 
@@ -101,8 +97,17 @@ const ProfileRealtorPage = () => {
   ];
 
   const renderItem = (item, index) => (
-    <Pressable key={index} style={styles.listItem}
-      onPress={() => navigation.navigate(item.navigation)}>
+    <Pressable
+      key={index}
+      style={styles.listItem}
+      onPress={() => {
+        if (Array.isArray(item.navigation)) {
+          navigation.navigate(item.navigation[0], item.navigation[1]);
+        } else {
+          navigation.navigate(item.navigation);
+        }
+      }}
+    >
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
@@ -124,7 +129,7 @@ const ProfileRealtorPage = () => {
               <FontAwesome6 name="face-tired" size={100} color="#fff" />
           }
 
-          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
+          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype: 3 })}>
             <FontAwesome name="edit" size={28} color="#fff" />
           </Pressable>
         </View>

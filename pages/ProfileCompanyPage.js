@@ -16,20 +16,15 @@ const ProfileCompanyPage = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const { getUser } = useApi()
+  const { getCurrentUser } = useApi()
 
   const [userr, setUser] = useState([])
 
   useEffect(() => {
     const init = async () => {
-      const auth = JSON.parse(await getAuth())
-      const user = await getUser(auth[0].phone, "company")
-      /* console.log(await user.text()); */
-
-
-      const userJson = JSON.parse(await user.text())
-      if (userJson.result != false) {
-        setUser(await userJson[1])
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        setUser(currentUser)
       }
 
 
@@ -118,7 +113,7 @@ const ProfileCompanyPage = () => {
             <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
           </View>
         </View>
-        <Pressable onPress={() => navigation.navigate('ChangeAvatarPage')}>
+        <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype: 2 })}>
           <FontAwesome name="edit" size={24} color="#fff" />
         </Pressable>
       </View>

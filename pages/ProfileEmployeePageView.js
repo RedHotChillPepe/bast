@@ -14,7 +14,7 @@ const ProfileEmployeePageView = () => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
 
-  const { getUser } = useApi()
+  const { getUser, getCurrentUser } = useApi()
 
   const { getAllPosts, getAllVillages } = useApi();
   const [houses, setHouses] = useState([]);
@@ -53,14 +53,10 @@ const ProfileEmployeePageView = () => {
 
   useEffect(() => {
     const init = async () => {
-      const auth = JSON.parse(await getAuth())
-      const user = await getUser(await auth[0].phone, "realtor")
-      /* console.log(await user.text()); */
+      const currentUser = await getCurrentUser();
 
-      const userJson = JSON.parse(await user.text())
-      console.log(await userJson[1]);
-      if (userJson.result != false) {
-        setUser(await userJson[1])
+      if (currentUser) {
+        setUser(currentUser)
       }
 
 

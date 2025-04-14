@@ -49,7 +49,8 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
     const fetchVillage = async () => {
         getVillage(villageId)
             .then(async response => {
-                setVillageData(response)
+                setVillageData(response.data)
+                // TODO: я не записываю в бд координаты
                 const addressString = `${response.city} ${response.full_address}`;
                 if (!response.latitude || !response.longitude) {
                     Geocoder.addressToGeo(addressString)
@@ -65,10 +66,10 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
                     setIsGeoLoaded(true);
                 }
 
-                if (!response.houses) return
+                if (!response.data.houses) return
 
-                setActivePost(await getPostDataByStatus(response.houses, 1));
-                setClosedPost(await getPostDataByStatus(response.houses, 3));
+                setActivePost(await getPostDataByStatus(response.data.houses, 1));
+                setClosedPost(await getPostDataByStatus(response.data.houses, 3));
             })
             .catch(err => {
                 logError(navigation.getState().routes[0].name, err, { villageId, handleName: "fetchVillage" });
@@ -446,5 +447,9 @@ const styles = StyleSheet.create({
         letterSpacing: -0.48,
         fontWeight: "600",
         fontFamily: "Sora700",
+    },
+    map: {
+        width,
+        height: width * 0.6,
     },
 });

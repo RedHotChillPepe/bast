@@ -32,12 +32,11 @@ const ProfilePageView = ({ route, navigation }) => {
   useEffect(() => {
     const init = async () => {
       const result = await getUserByID(CompanyId, "company")
-      const resultJson = JSON.parse(await result.text())
       // TODO: у компаний нт созданных постов
       // TODO: сделать вывод что документы проверены или нет
-      setActivePost(resultJson[0].posts);
-      setClosedPost(resultJson[0].posts);
-      setUser(resultJson[0])
+      setActivePost(result.posts);
+      setClosedPost(result.posts);
+      setUser(result)
       setIsLoaded(true);
     }
     init()

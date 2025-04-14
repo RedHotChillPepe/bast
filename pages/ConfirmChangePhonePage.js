@@ -33,7 +33,7 @@ export default function ConfirmChangePhonePage({ navigation, route }) {
   const handleConfirm = async () => {
     const confirmationCode = code.join('');
     console.log("Confirmation code:", confirmationCode);
-
+// [ ]
     const result = await verifySms(regData.phoneNumber, confirmationCode)
     const resultJson = JSON.parse([await result.text()])
     console.log(result);

@@ -11,7 +11,7 @@ import HouseCard from '../components/HouseCard.js';
 import { useApi } from '../context/ApiContext';
 import DynamicHousePostPage from './DynamicHousePostPage.js';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const ProfilePageView = ({ route, navigation }) => {
   const { posterId } = route.params
@@ -32,18 +32,17 @@ const ProfilePageView = ({ route, navigation }) => {
   const getPostData = async (userId, status) => {
     const tempHouses = await getUserPostsByStatus(userId, status);
     const tempHousesJson = JSON.parse(await tempHouses.text());
-    return Object.keys(tempHousesJson.rows).length == 0 ? [] : tempHousesJson.rows;
+    return Object.keys(tempHousesJson).length == 0 ? [] : tempHousesJson;
   }
 
   useEffect(() => {
     const init = async () => {
       // TODO: сделать универсальной
       const result = await getUserByID(posterId, isCompany ? "company" : "user")
-      const resultJson = JSON.parse(await result.text())
-      setUser(resultJson[0])
+      setUser(result)
       // TODO: сделать вывод что документы проверены или нет
-      setActivePost(await getPostData(resultJson[0].id, 1));
-      setClosedPost(await getPostData(resultJson[0].id, 3));
+      setActivePost(await getPostData(result.id, 1));
+      setClosedPost(await getPostData(result.id, 3));
       setIsLoaded(true);
     }
     init()
@@ -92,7 +91,7 @@ const ProfilePageView = ({ route, navigation }) => {
       </View>
     )
   }
-// TODO: добавить проверку, что открыл другой пользователь, а не этот же
+  // TODO: добавить проверку, что открыл другой пользователь, а не этот же
   const ListHeader = () => {
     return (
       <View>
@@ -121,7 +120,7 @@ const ProfilePageView = ({ route, navigation }) => {
                 <Text style={{ fontSize: 12, color: '#808080', fontFamily: "Sora500", fontWeight: 400, lineHeight: 15, letterSpacing: -0.36 }}>На сайте с мая 2024</Text>
               </View>
           }
-{/* TODO: перекрасить navbar */}
+          {/* TODO: перекрасить navbar */}
           {
             Object.keys(userr).length === 0
               ?

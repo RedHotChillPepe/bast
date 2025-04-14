@@ -51,10 +51,10 @@ const TopStack = createNativeStackNavigator();
 const SearchStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-process.env.NODE_ENV !== "development" && YaMap.init(process.env.EXPO_PUBLIC_YAMAP_API_KEY)
-Geocoder.init(process.env.EXPO_PUBLIC_GEOCODER_API_KEY);
+// process.env.NODE_ENV !== "development" && YaMap.init(process.env.EXPO_PUBLIC_YAMAP_API_KEY)
+// Geocoder.init(process.env.EXPO_PUBLIC_GEOCODER_API_KEY);
 // YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
-// Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
+Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
 
 const SearchPostsStack = () => {
   return (
@@ -291,6 +291,13 @@ const AppStack = () => {
           //header:(props) => <HeaderComponent{...props}/>
           headerShown: true,
           headerTitle: "Настройки",
+        }}
+      />
+      <Stack.Screen
+        name="ConfirmationPage"
+        component={ConfirmationPage}
+        options={{
+          headerShown: false,
         }}
       />
 

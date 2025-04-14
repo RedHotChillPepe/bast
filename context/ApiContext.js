@@ -1,28 +1,36 @@
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Alert } from 'react-native'
-
+import { getAuth } from '../utils/authUtils'
 
 const ApiContext = createContext()
 const host = process.env.EXPO_PUBLIC_API_HOST
 
 export default function ApiProvider({ children }) {
+  const [accessToken, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      return setAccessToken(await getAuth())
+    }
+    fetchToken()
+  }, [accessToken]);
 
   const getAllPosts = async () => {
-    const url = host + "api/posts/all"
+    const url = `${host}api/posts`
     console.log(url);
 
-    return fetch(url)
+    return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
       .then(response => response.json()
       )
-      .then(json => { return json.rows }
+      .then(json => { return json }
       )
       .catch(error => {
-        console.error("Error fetching files: ", error);
+        console.error("Error fetching all posts: ", error);
       })
   }
 
   const getManyPosts = async (data) => {
-    const url = host + `api/posts/manyPosts`;
+    const url = `${host}api/posts/manyPosts`;
     try {
       return fetch(url, {
         method: "POST",
@@ -44,25 +52,36 @@ export default function ApiProvider({ children }) {
   }
 
   const getPaginatedPosts = async (page, params) => {
-    const query = new URLSearchParams(params) != "undefined" || params != undefined ? new URLSearchParams(params) : ""
-    console.log("paginated query: ", typeof (query));
+    // Формируем строку запроса с параметрами
+    if (!accessToken) return
+    const query = new URLSearchParams({
+      ...params, // Передаем все параметры
+      page, // Добавляем параметр страницы
+    }).toString();
+    console.log("Paginated query: ", query);
 
-    const url = host + `api/posts/page/${page}?` + query.toString()
+    // Формируем URL с query параметрами
+    const url = `${host}api/posts?${query}`;
     console.log(url);
+    try {
+      const response = await fetch(url, {
+        headers: { "Authorization": `Bearer ${accessToken}` }
+      });
 
-    return fetch(url)
-      .then(response => response.json()
-      )
-      .then(json => { return [json.rows, json.rowCount] }
-      )
-      .catch(error => {
-        console.error("Error fetching files: ", error);
-        Alert.alert("Error", "Network Error")
-      })
-  }
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.statusText}`);
+      }
+
+      // Возвращаем результат
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching posts: ", error);
+      Alert.alert("Error", "Network Error");
+    }
+  };
 
   const getPost = async (id) => {
-    const url = host + `api/posts/${id}`;
+    const url = `${host}api/posts?id=${id}`;
 
     try {
       return fetch(url, {
@@ -70,10 +89,11 @@ export default function ApiProvider({ children }) {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
         },
       })
-        .then((response) => {
-          return response;
+        .then(async (response) => {
+          return await response.json();
         })
         .catch((error) => {
           console.error("Error getting user: ", error);
@@ -84,18 +104,22 @@ export default function ApiProvider({ children }) {
   };
 
   const getVillage = async (id) => {
-    const url = `${host}api/posts/village/${id}`;
+    const url = `${host}api/villages/${id}`;
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        }
+      });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(`${data.message}`);
       }
 
-
+      // console.log(data);
       if (data.success) {
-        return data.data; // Возвращаем данные о поселке
+        return data; // Возвращаем данные о поселке
       }
 
       throw new Error(data.message || 'Неизвестная ошибка');
@@ -107,19 +131,16 @@ export default function ApiProvider({ children }) {
   };
 
   const getUserPostsByStatus = async (user_id, status_int) => {
-    const url = `${host}api/posts/getUserPostsByStatus`;
+    const url = `${host}api/posts/getUserPostsByStatus?user_id=${user_id}&post_status=${status_int}`;
 
     try {
       return fetch(url, {
-        method: "POST",
+        method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: user_id,
-          post_status: status_int,
-        }),
+          "Authorization": `Bearer ${accessToken}`
+        }
       })
         .then((response) => {
           return response;
@@ -133,7 +154,7 @@ export default function ApiProvider({ children }) {
   };
 
   const sendPost = async (data) => {
-    const url = host + "api/posts/newpost";
+    const url = `${host}api/posts/newpost`;
 
     // Функция для извлечения числового значения из объекта (если нужно)
     const getNumericValue = (field) => {
@@ -143,44 +164,52 @@ export default function ApiProvider({ children }) {
       return field;
     };
 
+
+    const uploadData = JSON.stringify({
+      name: data.title === "" ? null : data.title,
+      house_type: data.houseType === "" ? null : (typeof data.houseType === 'object' ? data.houseType.value : data.houseType),
+      walls_lb: data.wallMaterial === "" ? null : (typeof data.wallMaterial === 'object' ? data.wallMaterial.value : data.wallMaterial),
+      walls_part: data.partitionMaterial === "" ? null : (typeof data.partitionMaterial === 'object' ? data.partitionMaterial.value : data.partitionMaterial),
+      price: data.price === "" ? null : data.price,
+      house_area: data.area === "" ? null : getNumericValue(data.area),
+      num_floors: data.floors === "" ? null : getNumericValue(data.floors),
+      bedrooms: data.rooms === "" ? null : getNumericValue(data.rooms),
+      full_address: data.location === "" ? null : data.location,
+      city: data.settlement === "" ? null : data.settlement,
+      plot_area: data.plotSize === "" ? null : getNumericValue(data.plotSize),
+      text: data.description === "" ? null : data.description,
+      roof: data.roof === "" ? null : (typeof data.roof === 'object' ? data.roof.value : data.roof),
+      base: data.basement === "" ? null : (typeof data.basement === 'object' ? data.basement.value : data.basement),
+      kad_number: data.kadastr === "" ? null : data.kadastr,
+      house_status: data.houseCondition === "" ? null : data.houseCondition,
+      year_built: data.constructionYear === "" ? null : getNumericValue(data.constructionYear),
+      gas: data.gas === "" ? null : data.gas,
+      water: data.water === "" ? null : data.water,
+      sewage: data.sewerege === "" ? null : data.sewerege,
+      electricity_bill: data.electricity === "" ? null : data.electricity,
+      heating: data.heating === "" ? null : data.heating,
+      photos: data.photos,
+      poster_id: data.poster_id,
+      latitude: data.lat === "" ? null : data.lat,
+      longitude: data.lon === "" ? null : data.lon,
+      usertype: data.usertype,
+    })
+
+    console.log("data:", uploadData);
     try {
       return fetch(url, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
         },
-        body: JSON.stringify([{
-          name: data.title === "" ? null : data.title,
-          house_type: data.houseType === "" ? null : (typeof data.houseType === 'object' ? data.houseType.value : data.houseType),
-          walls_lb: data.wallMaterial === "" ? null : (typeof data.wallMaterial === 'object' ? data.wallMaterial.value : data.wallMaterial),
-          walls_part: data.partitionMaterial === "" ? null : (typeof data.partitionMaterial === 'object' ? data.partitionMaterial.value : data.partitionMaterial),
-          price: data.price === "" ? null : data.price,
-          house_area: data.area === "" ? null : getNumericValue(data.area),
-          num_floors: data.floors === "" ? null : getNumericValue(data.floors),
-          bedrooms: data.rooms === "" ? null : getNumericValue(data.rooms),
-          full_address: data.location === "" ? null : data.location,
-          city: data.settlement === "" ? null : data.settlement,
-          plot_area: data.plotSize === "" ? null : getNumericValue(data.plotSize),
-          text: data.description === "" ? null : data.description,
-          roof: data.roof === "" ? null : (typeof data.roof === 'object' ? data.roof.value : data.roof),
-          base: data.basement === "" ? null : (typeof data.basement === 'object' ? data.basement.value : data.basement),
-          kad_number: data.kadastr === "" ? null : data.kadastr,
-          house_status: data.houseCondition === "" ? null : data.houseCondition,
-          year_built: data.constructionYear === "" ? null : getNumericValue(data.constructionYear),
-          gas: data.gas === "" ? null : data.gas,
-          water: data.water === "" ? null : data.water,
-          sewage: data.sewerege === "" ? null : data.sewerege,
-          electricity_bill: data.electricity === "" ? null : data.electricity,
-          heating: data.heating === "" ? null : data.heating,
-          photos: data.photos,
-          poster_id: data.poster_id,
-          latitude: data.lat === "" ? null : data.lat,
-          longitude: data.lon === "" ? null : data.lon,
-          usertype: data.usertype,
-        }]),
+        body: uploadData,
       })
-        .then((response) => response)
+        .then((response) => {
+          return response
+        }
+        )
         .catch((error) => {
           console.error("Error executing query ", error);
         });
@@ -191,50 +220,55 @@ export default function ApiProvider({ children }) {
 
 
   const updatePost = async (data, id) => {
-    const url = host + "api/posts/updatepost";
+    const url = `${host}api/posts/updatepost`;
+    // [ ] TODO: доделать обновление поста
+    const formData = JSON.stringify(
+      {
+        id: data.id,
+        name: data.title == "" ? null : data.title,
+        house_type: data.houseType == "" ? null : data.houseType,
+        walls_lb: data.wallMaterial == "" ? null : data.wallMaterial,
+        walls_part:
+          data.partitionMaterial == "" ? null : data.partitionMaterial,
+        price: data.price == "" ? null : data.price,
+        house_area: data.area == "" ? null : data.area,
+        num_floors: data.floors == "" ? null : data.floors,
+        bedrooms: data.rooms == "" ? null : data.rooms,
+        full_address: data.location == "" ? null : data.location,
+        city: data.settlement == "" ? null : data.settlement,
+        plot_area: data.plotSize == "" ? null : data.plotSize,
+        text: data.description == "" ? null : data.description,
+        roof: data.roof == "" ? null : data.roof,
+        base: data.basement == "" ? null : data.basement,
+        /* landArea: '', */
+        kad_number: data.kadastr == "" ? null : data.kadastr,
+        house_status:
+          data.houseCondition == "" ? null : data.houseCondition,
+        year_built:
+          data.constructionYear == "" ? null : data.constructionYear,
+        gas: data.gas == "" ? null : data.gas,
+        water: data.water == "" ? null : data.water,
+        sewage: data.sewerege == "" ? null : data.sewerege,
+        electricity_bill: data.electricity == "" ? null : data.electricity,
+        heating: data.heating == "" ? null : data.heating,
+        photos: data.photos,
+      },
+    );
+
+    console.log(formData);
 
     try {
       return fetch(url, {
-        method: "POST",
+        method: "PUT",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
         },
-        body: JSON.stringify([
-          {
-            name: data.title == "" ? null : data.title,
-            house_type: data.houseType == "" ? null : data.houseType,
-            walls_lb: data.wallMaterial == "" ? null : data.wallMaterial,
-            walls_part:
-              data.partitionMaterial == "" ? null : data.partitionMaterial,
-            price: data.price == "" ? null : data.price,
-            house_area: data.area == "" ? null : data.area,
-            num_floors: data.floors == "" ? null : data.floors,
-            bedrooms: data.rooms == "" ? null : data.rooms,
-            full_address: data.location == "" ? null : data.location,
-            city: data.settlement == "" ? null : data.settlement,
-            plot_area: data.plotSize == "" ? null : data.plotSize,
-            text: data.description == "" ? null : data.description,
-            roof: data.roof == "" ? null : data.roof,
-            base: data.basement == "" ? null : data.basement,
-            /* landArea: '', */
-            kad_number: data.kadastr == "" ? null : data.kadastr,
-            house_status:
-              data.houseCondition == "" ? null : data.houseCondition,
-            year_built:
-              data.constructionYear == "" ? null : data.constructionYear,
-            gas: data.gas == "" ? null : data.gas,
-            water: data.water == "" ? null : data.water,
-            sewage: data.sewerege == "" ? null : data.sewerege,
-            electricity_bill: data.electricity == "" ? null : data.electricity,
-            heating: data.heating == "" ? null : data.heating,
-            photos: data.photos,
-            id: id,
-          },
-        ]),
+        body: formData
       })
-        .then((response) => {
-          return response;
+        .then(async (response) => {
+          return await response.json();
         })
         .catch((error) => {
           console.error("Error getting user: ", error);
@@ -245,20 +279,21 @@ export default function ApiProvider({ children }) {
   };
 
   const updateStatus = async (value) => {
-    const url = host + "api/posts/updateStatus";
+    const url = `${host}api/posts/update-status`;
 
     const { post_id, post_status } = value;
 
     try {
       return fetch(url, {
-        method: "POST",
+        method: "PUT",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
         },
         body: JSON.stringify({
-          post_id: post_id,
-          post_status: post_status,
+          post_id,
+          post_status,
         }),
       })
         .then((response) => {
@@ -273,21 +308,21 @@ export default function ApiProvider({ children }) {
   };
 
   const getAllVillages = async () => {
-    const url = host + "api/villages/all";
+    const url = `${host}api/villages/all`;
     console.log(url);
 
-    return fetch(url)
+    return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
       .then((response) => response.json())
       .then((json) => {
-        return json.rows;
+        return json;
       })
       .catch((error) => {
-        console.error("Error fetching files: ", error);
+        console.error("Error fetching villages: ", error);
       });
   };
 
   const postRegister = async (data) => {
-    const url = host + "api/users/newuser";
+    const url = `${host}api/users/newuser`;
     try {
       return fetch(url, {
         method: "POST",
@@ -309,46 +344,52 @@ export default function ApiProvider({ children }) {
   };
 
   const getLogin = async (phone, password) => {
-    const url = host + "api/users/login";
+    const url = `${host}api/auth/login`;
+
+    const requestData = {
+      phone,
+      password,
+    };
+
+    console.log("Request Data:", JSON.stringify(requestData)); // Логируем данные для отладки
+
     try {
-      return fetch(url, {
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([
-          {
-            phone: phone,
-            password: password,
-          },
-        ]),
-      })
-        .then((response) => {
-          return response;
-        })
-        .catch((error) => {
-          console.error("Error getting logged in: ", error);
-        });
+        body: JSON.stringify(requestData), // Отправляем данные как объект, а не массив
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json(); // Получаем тело ошибки, если она произошла
+        throw new Error(errorResponse.message || 'Неизвестная ошибка');
+      }
+
+      return await response.json();
     } catch (error) {
-      console.error(error);
+      throw new Error(error.message);
     }
   };
 
+
   const getUser = async (phone, query) => {
     const url =
-      host + "api/users/getuser" + (query != undefined ? "?user=" + query : "");
+      `${host}api/users/getuser${query != undefined ? `?user=${query}` : ""}`;
 
     try {
       return fetch(url, {
-        method: "POST",
+        method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+
         },
         body: JSON.stringify([
           {
-            phone: phone,
+            phone,
           },
         ]),
       })
@@ -364,7 +405,7 @@ export default function ApiProvider({ children }) {
   };
 
   const updateUserStatus = async (userId, usertype, newStatus) => {
-    const url = host + `api/users/updateuserstatus`
+    const url = `${host}api/users/update`
 
     try {
       return fetch(url, {
@@ -374,9 +415,9 @@ export default function ApiProvider({ children }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: userId,
-          usertype: usertype,
-          newStatus: newStatus
+          userId,
+          usertype,
+          newStatus
         })
       })
         .then(response => { return response })
@@ -392,14 +433,15 @@ export default function ApiProvider({ children }) {
   }
 
   const getCompanyByName = async (companyName) => {
-    const url = host + `api/users/getcompany/${companyName}`;
-
+    const url = `${host}api/users/getcompany/${companyName}`;
+    console.log(url);
     try {
       return fetch(url, {
         method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
         },
       })
         .then((response) => {
@@ -414,26 +456,33 @@ export default function ApiProvider({ children }) {
   }
 
   const updateUser = async (userObject) => {
-    const url = host + `api/users/updateuser`
+    const url = `${host}api/users/update`
+
+    const updateData = JSON.stringify({
+      id: userObject.id,
+      usertype: userObject.usertype,
+      phone: userObject.phoneNumber,
+      name: userObject.name,
+      surname: userObject.surname,
+      email: userObject.email,
+      photo: userObject.photo
+    })
+
+    console.log("updateData:", updateData);
 
     try {
       return fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${accessToken}`
         },
-        body: JSON.stringify({
-          userid: userObject.id,
-          usertype: userObject.usertype,
-          phoneNumber: userObject.phoneNumber,
-          name: userObject.name,
-          surname: userObject.surname,
-          email: userObject.email,
-          photo: userObject.photo
-        })
+        body: updateData
       })
-        .then(response => { return response })
+        .then(response => {
+          return response
+        })
         .catch(error => {
           console.error("Error updating user: ", error);
           Alert.alert("Error", "Network Error")
@@ -444,47 +493,53 @@ export default function ApiProvider({ children }) {
     }
   }
 
-  const getUserByID = async (id, usertype) => {
-    const url = host + `api/users/getuser/${usertype || "user"}/${id}`
+  const getUserByID = async (id, usertype, phone) => {
+    const query = new URLSearchParams({
+      id,
+      type: usertype || "user",
+      ...(phone && { phone }) // если передан phone — добавим его
+    }).toString();
+
+    const url = `${host}api/users/getuser?${query}`;
+    console.log("GetUser URL:", url);
 
     try {
-      return fetch(url, {
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${accessToken}`
         }
-      })
-        .then(response => { return response })
-        .catch(error => {
-          console.error("Error getting user: ", error);
-        })
-    } catch (error) {
-      console.error(error);
-    }
+      });
 
+      return await response.json();
+    } catch (error) {
+      console.error("Error getting user: ", error);
+    }
   };
 
-  const getIsOwner = async (phone, password, postid) => {
-    const url = host + "api/users/getisowner";
+  const getIsOwner = async (postId, userId) => {
+    const url = `${host}api/users/getisowner`;
+
+    const params = new URLSearchParams({
+      post_id: Number(postId).toString(),
+    });
+
+    if (userId !== undefined) {
+      params.append('user_id', userId.toString());
+    }
+
     try {
-      return fetch(url, {
-        method: "POST",
+      return fetch(`${url}?${params.toString()}`, {
+        method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
         },
-        body: JSON.stringify([
-          {
-            phone: phone,
-            password: password,
-            post_id: Number(postid),
-          },
-        ]),
       })
-        .then((response) => {
-          return response;
-        })
+        .then((response) => response)
         .catch((error) => {
           console.error("Error getting user ownership: ", error);
         });
@@ -493,8 +548,9 @@ export default function ApiProvider({ children }) {
     }
   };
 
+
   const sendSms = async (phone) => {
-    const url = host + "api/sms/sendsms";
+    const url = `${host}api/sms/sendsms`;
 
     try {
       return fetch(url, {
@@ -503,11 +559,11 @@ export default function ApiProvider({ children }) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([
+        body: JSON.stringify(
           {
-            phone: phone,
+            phone,
           },
-        ]),
+        ),
       })
         .then((response) => {
           return response;
@@ -521,7 +577,7 @@ export default function ApiProvider({ children }) {
   };
 
   const verifySms = async (phone, code) => {
-    const url = host + "api/sms/verifysms";
+    const url = `${host}api/sms/verify-code`;
 
     try {
       return fetch(url, {
@@ -530,12 +586,12 @@ export default function ApiProvider({ children }) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([
+        body: JSON.stringify(
           {
-            phone: phone,
-            code: code,
+            phone,
+            code,
           },
-        ]),
+        ),
       })
         .then((response) => {
           return response;
@@ -549,7 +605,15 @@ export default function ApiProvider({ children }) {
   }
 
   const changePhone = async (phone, userId, usertype) => {
-    const url = host + "api/sms/changephone"
+    const url = `${host}api/sms/changephone`
+
+    const data = JSON.stringify({
+      phone,
+      userId,
+      userType: usertype
+    });
+
+    console.log(data);
 
     try {
       return fetch(url, {
@@ -557,12 +621,9 @@ export default function ApiProvider({ children }) {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${accessToken}`,
         },
-        body: JSON.stringify([{
-          phone: phone,
-          userId: userId,
-          usertype: usertype
-        }])
+        body: data
       })
         .then(response => { return response })
         .catch(error => {
@@ -574,11 +635,82 @@ export default function ApiProvider({ children }) {
 
   }
 
+  const getCurrentUser = async () => {
+    const url = `${host}api/auth/me`
+
+    try {
+      return fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${accessToken}`
+        },
+      })
+        .then(async response => { return await response.json() })
+        .catch(error => {
+          console.error("Error: ", error);
+        })
+    } catch (error) {
+      console.error("Error fetching user: ", error);
+    }
+  }
+
+  const registerUser = async (formData) => {
+    const url = `${host}api/auth/register`
+
+    try {
+      if (!formData) throw new Error("Заполнены не все поля");
+
+      return fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+        .then(response => { return response })
+        .catch(error => {
+          console.error("Error: ", error);
+        })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const checkPhone = (phoneNumber) => {
+    const url = `${host}api/sms/check-phone`;
+
+    try {
+      if (!phoneNumber) throw new Error("Номер телефона обязателен");
+
+      return fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phoneNumber }),
+      })
+        .then(response => response.json())
+        .catch(error => {
+          console.error("Ошибка при проверке номера: ", error);
+          throw error;
+        });
+    } catch (error) {
+      console.log("Ошибка:", error);
+      throw error;
+    }
+  };
+
+
   return (
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
       getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
-      getPost, getVillage, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus, updateUserStatus
+      getPost, getVillage, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus,
+      updateUserStatus, getCurrentUser, registerUser, checkPhone
     }}>
       {children}
     </ApiContext.Provider>

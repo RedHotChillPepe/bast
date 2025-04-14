@@ -60,7 +60,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
                 title="Цена:"
                 unit="₽"
                 min={0}
-                max={100000000}
+                max={100_000_000}
                 step={1000}
                 sliderLength={width - 64}
               />
@@ -72,7 +72,7 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
                 min={0}
                 max={1000}
                 step={10}
-                onValuesChange={handleAreaRange}
+                onSliderChange={handleAreaRange}
               />
               <View style={{ height: 32 }} />
               {filterGroups.map((group) => (
@@ -117,8 +117,8 @@ export default FilterModal;
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    width: width,
-    height: height,
+    width,
+    height,
     position: 'absolute',
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

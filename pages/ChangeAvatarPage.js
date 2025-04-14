@@ -34,14 +34,13 @@ const ChangeAvatarPage = ({ route, navigation }) => {
   useEffect(() => {
     const init = async () => {
 
-      if (Object.keys(userObject).length != 0) {
-        setUser(userObject)
-        setName(userObject.name)
-        setSurname(userObject.surname)
-        setEmail(userObject.email)
-        setPhone(formatPhoneNumber(userObject.phone))
-        setAvatar(userObject.photo)
-      }
+      if (Object.keys(userObject).length == 0) return;
+      setUser(userObject)
+      setName(userObject.name)
+      setSurname(userObject.surname)
+      setEmail(userObject.email)
+      setPhone(formatPhoneNumber(userObject.phone))
+      setAvatar(userObject.photo)
 
     };
     init();
@@ -123,8 +122,7 @@ const ChangeAvatarPage = ({ route, navigation }) => {
 
     const firstAtIndex = formatted.indexOf("@");
     if (firstAtIndex !== -1)
-      formatted =
-        formatted.slice(0, firstAtIndex + 1) +
+      return formatted.slice(0, firstAtIndex + 1) +
         formatted.slice(firstAtIndex + 1).replace(/@/g, "");
 
     return formatted;
@@ -140,10 +138,11 @@ const ChangeAvatarPage = ({ route, navigation }) => {
     if (!text) return "";
     let cleaned = text.replace(/\D/g, "");
     cleaned = cleaned.startsWith("7") ? `8${cleaned.slice(1)}` : `8${cleaned}`;
-    if (cleaned.length > 11) cleaned = cleaned.slice(0, 11);
+    if (cleaned.length > 11) return cleaned.slice(0, 11);
     return cleaned;
   };
 
+  // TODO: добавить подтверждение смены номера телефона
   const handleSubmit = async () => {
     if (!isCorrect || !isChanged) return;
 
@@ -154,18 +153,18 @@ const ChangeAvatarPage = ({ route, navigation }) => {
     // Изначально формируем объект с данными пользователя
     let newUserData = {
       id: userObject.id,
-      usertype,
-      phoneNumber: phone === "" ? userObject.phone : normalizePhoneNumber(phone),
+      // usertype,
+      phone: phone === "" ? userObject.phone : normalizePhoneNumber(phone),
       name: name === "" ? userObject.name : name,
       surname: surname === "" ? userObject.surname : surname,
       email: email === "" ? userObject.email : email,
       photo,
     };
-
+    console.log(newUserData);
     try {
       const result = await updateUser(newUserData);
       const resultData = result.json ? await result.json() : result;
-
+      console.log(resultData);
       // Если сервер вернул обновлённое фото, обновляем объект newUserData
       if (resultData.photo) {
         newUserData = { ...newUserData, photo: resultData.photo };

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, Dimensions, Modal, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Geocoder } from 'react-native-yamap';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
@@ -8,9 +7,9 @@ import { useAuth } from '../context/AuthContext';
 import InputImage from '../components/PostComponents/InputImage';
 import InputProperty from '../components/PostComponents/InputProperty';
 
-import { useToast } from "../context/ToastProvider";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useLogger } from '../context/LoggerContext';
+import { useToast } from "../context/ToastProvider";
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,7 +22,7 @@ export default function CreateHousePostPage({ navigation }) {
   const usertype = useRef()
 
   const [isLoading, setIsLoading] = useState(false);
-
+  const { sendPost, getCurrentUser } = useApi()
   const { logError } = useLogger();
   const [formData, setFormData] = useState({
     title: '',
@@ -57,9 +56,9 @@ export default function CreateHousePostPage({ navigation }) {
 
   useEffect(() => {
     const getUserID = async () => {
-      const result = await getAuth()
-      userId.current = JSON.parse(await result)[0].id
-      usertype.current = JSON.parse(await result)[0].usertype
+      const result = await getCurrentUser();
+      userId.current = result.id
+      usertype.current = result.usertype
       setFormData((prevData) => ({ ...prevData, poster_id: userId.current }))
     }
     getUserID()
@@ -68,26 +67,25 @@ export default function CreateHousePostPage({ navigation }) {
     }
   }, [userId.current])
 
-  const { sendPost } = useApi()
-
   const handleInputChange = (field, value) => {
-    setFormData((prevData) => ({ ...prevData, [field]: value }));
+    setFormData((prevData) => ({ ...prevData, [field]: value.value || value }));
   };
 
   const handleSubmit = async () => {
-    if (!formData.price || !formData.settlement || !formData.location) {
-      showToast('Пожалуйста, заполните все обязательные поля.', "warn");
-      setPage(1);
-      return;
-    }
+    // TODO: вернуть
+    // if (!formData.price || !formData.settlement || !formData.location) {
+    //   showToast('Пожалуйста, заполните все обязательные поля.', "warn");
+    // setPage(1);
+    //   return;
+    // }
 
     setIsLoading(true);
     setIsButtonDisabled(true);
-    const addressString = `${formData.settlement} ${formData.location}`;
-
+    // TODO: Вернуть
+    // const addressString = `${formData.settlement} ${formData.location}`;
+    const addressString = `г. Ижвеск, Улица Кирова, 32`;
     try {
       // Получаем результат геокодирования
-      console.log(1);
       const geoResult = await Geocoder.addressToGeo(addressString);
 
       if (!geoResult?.lat || !geoResult?.lon) {
@@ -98,11 +96,12 @@ export default function CreateHousePostPage({ navigation }) {
         return;
       }
       const { lat, lon } = geoResult;
-      const antiStaleFormData = { ...formData, lat, lon, usertype: usertype.current };
-
+      const antiStaleFormData = { ...formData, lat, lon, usertype: usertype.current, photos: formData.photos.map(photo => photo.base64) };
       const result = await sendPost(antiStaleFormData);
-      const resultJson = JSON.parse(await result.text());
 
+      const resultJson = JSON.parse(await result.text());
+      console.log(resultJson);
+      if (!result.ok) throw new Error(resultJson.message);
       Alert.alert(
         "Успех",
         "Ваше объявление отправлено на модерацию. Оно будет опубликовано после проверки модератором.",
@@ -118,10 +117,11 @@ export default function CreateHousePostPage({ navigation }) {
         ]
       );
     } catch (error) {
-      logError(navigation.getState().routes[0].name, error, { formData, handleName: "handleSubmit" });
       showToast(`Произошла ошибка: ${error.message}`, "error");
       setIsLoading(false);
       setIsButtonDisabled(false);
+      // TODO: Вернуть
+      // logError(navigation.getState().routes[0].name, error, { formData, handleName: "handleSubmit" });
     }
   };
 
@@ -425,13 +425,14 @@ export default function CreateHousePostPage({ navigation }) {
   })
 
   // formData.price || !formData.settlement || !formData.location
+  // TODO: вернуть
   const requiredFieldsByPage = {
-    0: ['photos'],
-    1: ['settlement', 'location', 'kadastr'],
-    2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
-    3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
-    4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
-    5: ['description', 'price'],
+    // 0: ['photos'],
+    // 1: ['settlement', 'location', 'kadastr'],
+    // 2: ['houseType', 'constructionYear', 'floors', 'rooms', 'area'],
+    // 3: ['wallMaterial', 'partitionMaterial', 'basement', 'roof'],
+    // 4: ['electricity', 'water', 'gas', 'heating', 'sewerege'],
+    // 5: ['description', 'price'],
   };
 
   const isPageValid = () => {

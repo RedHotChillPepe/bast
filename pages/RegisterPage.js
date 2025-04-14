@@ -8,7 +8,8 @@ import { useApi } from '../context/ApiContext';
 const { width } = Dimensions.get('window');
 
 const RegisterPage = () => {
-  const { getUser } = useApi();
+  const { checkPhone } = useApi();
+
   const navigation = useNavigation();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [prevPhone, setPrevPhone] = useState("");
@@ -104,22 +105,24 @@ const RegisterPage = () => {
     if (!isCorrect) return;
 
     const normalPhoneNumber = normalizePhoneNumber(phoneNumber);
-
-    const result = await getUser(normalPhoneNumber);
-    const resultJson = JSON.parse([await result.text()]);
-    if (await result.status == 200) {
-      if (resultJson.result) {
-        setIsUserExistsLabelShown(true);
-        return;
+    try {
+      const result = await checkPhone(normalPhoneNumber)
+      if (result.statusCode !== 200) {
+        throw new Error(result.message)
       }
 
       navigation.navigate("ConfirmationPage", {
         regData: {
           phoneNumber: normalPhoneNumber,
-          password: password
+          password,
         }
       });
-    }
+
+    } catch (error) {
+      console.error(error);
+      setIsUserExistsLabelShown(true);
+      return;
+    };
   };
 
   const normalizePhoneNumber = (text) => {
@@ -128,15 +131,11 @@ const RegisterPage = () => {
     let cleaned = text.replace(/\D/g, "");
 
     // Если номер начинается с "7", заменяем на "8", иначе добавляем "8" в начале
-    if (cleaned.startsWith("7")) {
-      cleaned = "8" + cleaned.slice(1);
-    } else {
-      cleaned = "8" + cleaned;
-    }
+    cleaned = cleaned.startsWith("7") ? `8${cleaned.slice(1)}` : `8${cleaned}`;
 
     // Если цифр больше 11, обрезаем до 11
     if (cleaned.length > 11) {
-      cleaned = cleaned.slice(0, 11);
+      return cleaned.slice(0, 11);
     }
 
     // Возвращаем в формате 89999999999
