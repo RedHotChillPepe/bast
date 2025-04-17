@@ -10,6 +10,7 @@ import ChevronLeft from './../assets/svg/ChevronLeft';
 import ShareIcon from './../assets/svg/Share';
 import { useToast } from "../context/ToastProvider";
 import { useLogger } from '../context/LoggerContext';
+import { Selectors } from '../components/Selectors';
 
 const { width, height } = Dimensions.get("window");
 
@@ -173,21 +174,6 @@ ${priceInfo}
         { title: "Закрытые", value: "closed", id: 2 },
     ]
 
-    const renderSelectors = () => {
-        return (
-            <View style={styles.searchButtonsView}>
-                {listSelectProperties.map((item) => (
-                    <Pressable
-                        key={`postsSelector-${item.id}`}
-                        onPress={() => setSelectedList(item.value)}
-                        style={[selectedList === item.value && styles.activeButton, styles.searchButtonsContent]}>
-                        <Text style={[selectedList === item.value ? styles.activeButtonsText : styles.searchButtonsText]}>{item.title}</Text>
-                    </Pressable>
-                ))}
-            </View>
-        )
-    }
-
     const renderTitleBlock = () => {
         return (
             <View style={styles.titleBlock}>
@@ -273,7 +259,9 @@ ${priceInfo}
                 {renderHouseSpecs()}
                 {renderBlockDescription()}
                 {renderMap()}
-                {renderSelectors()}
+                <View style={{marginTop: 32}}>
+                    <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={listSelectProperties} />
+                </View>
                 {renderHouseItem()}
                 {/* <Pressable style={[{ display: hasMore ? "flex" : "none" }, styles.button]}> */}
                 <Pressable style={[{ display: "none" }, styles.button]}>

@@ -42,6 +42,8 @@ import SearchMap from "./pages/SearchMap.js";
 import SettingsPage from "./pages/SettingsPage.js";
 import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
+import UserTeamsPage from "./pages/Teams/UserTeamsPage";
+import TeamPage from "./pages/Teams/TeamPage";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -166,6 +168,22 @@ const StackProfile = () => {
           //header:(props) => <HeaderComponent{...props}/>
           headerShown: true,
           headerTitle: "Мои объявления",
+        }}
+      />
+      <ProfileStack.Screen
+        name="UserTeams"
+        component={UserTeamsPage}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
+      <ProfileStack.Screen
+        name="Team"
+        component={TeamPage}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
         }}
       />
 

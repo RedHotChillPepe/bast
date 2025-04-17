@@ -6,16 +6,8 @@ const ApiContext = createContext()
 const host = process.env.EXPO_PUBLIC_API_HOST
 
 export default function ApiProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(null);
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      return setAccessToken(await getAuth())
-    }
-    fetchToken()
-  }, [accessToken]);
-
   const getAllPosts = async () => {
+    const accessToken = await getAuth();
     const url = `${host}api/posts`
     console.log(url);
 
@@ -52,6 +44,7 @@ export default function ApiProvider({ children }) {
   }
 
   const getPaginatedPosts = async (page, params) => {
+    const accessToken = await getAuth();
     // Формируем строку запроса с параметрами
     if (!accessToken) return
     const query = new URLSearchParams({
@@ -82,7 +75,7 @@ export default function ApiProvider({ children }) {
 
   const getPost = async (id) => {
     const url = `${host}api/posts?id=${id}`;
-
+    const accessToken = await getAuth();
     try {
       return fetch(url, {
         method: "GET",
@@ -105,7 +98,7 @@ export default function ApiProvider({ children }) {
 
   const getVillage = async (id) => {
     const url = `${host}api/villages/${id}`;
-
+    const accessToken = await getAuth();
     try {
       const response = await fetch(url, {
         headers: {
@@ -132,7 +125,7 @@ export default function ApiProvider({ children }) {
 
   const getUserPostsByStatus = async (user_id, status_int) => {
     const url = `${host}api/posts/getUserPostsByStatus?user_id=${user_id}&post_status=${status_int}`;
-
+    const accessToken = await getAuth();
     try {
       return fetch(url, {
         method: "GET",
@@ -155,7 +148,7 @@ export default function ApiProvider({ children }) {
 
   const sendPost = async (data) => {
     const url = `${host}api/posts/newpost`;
-
+    const accessToken = await getAuth();
     // Функция для извлечения числового значения из объекта (если нужно)
     const getNumericValue = (field) => {
       if (field && typeof field === 'object') {
@@ -221,6 +214,7 @@ export default function ApiProvider({ children }) {
 
   const updatePost = async (data, id) => {
     const url = `${host}api/posts/updatepost`;
+    const accessToken = await getAuth();
     // [ ] TODO: доделать обновление поста
     const formData = JSON.stringify(
       {
@@ -280,7 +274,7 @@ export default function ApiProvider({ children }) {
 
   const updateStatus = async (value) => {
     const url = `${host}api/posts/update-status`;
-
+    const accessToken = await getAuth();
     const { post_id, post_status } = value;
 
     try {
@@ -310,7 +304,7 @@ export default function ApiProvider({ children }) {
   const getAllVillages = async () => {
     const url = `${host}api/villages/all`;
     console.log(url);
-
+    const accessToken = await getAuth();
     return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
       .then((response) => response.json())
       .then((json) => {
@@ -435,6 +429,7 @@ export default function ApiProvider({ children }) {
   const getCompanyByName = async (companyName) => {
     const url = `${host}api/users/getcompany/${companyName}`;
     console.log(url);
+    const accessToken = await getAuth();
     try {
       return fetch(url, {
         method: "GET",
@@ -457,7 +452,7 @@ export default function ApiProvider({ children }) {
 
   const updateUser = async (userObject) => {
     const url = `${host}api/users/update`
-
+    const accessToken = await getAuth();
     const updateData = JSON.stringify({
       id: userObject.id,
       usertype: userObject.usertype,
@@ -499,7 +494,7 @@ export default function ApiProvider({ children }) {
       type: usertype || "user",
       ...(phone && { phone }) // если передан phone — добавим его
     }).toString();
-
+    const accessToken = await getAuth();
     const url = `${host}api/users/getuser?${query}`;
     console.log("GetUser URL:", url);
 
@@ -525,7 +520,7 @@ export default function ApiProvider({ children }) {
     const params = new URLSearchParams({
       post_id: Number(postId).toString(),
     });
-
+    const accessToken = await getAuth();
     if (userId !== undefined) {
       params.append('user_id', userId.toString());
     }
@@ -614,7 +609,7 @@ export default function ApiProvider({ children }) {
     });
 
     console.log(data);
-
+    const accessToken = await getAuth();
     try {
       return fetch(url, {
         method: 'POST',
@@ -637,7 +632,7 @@ export default function ApiProvider({ children }) {
 
   const getCurrentUser = async () => {
     const url = `${host}api/auth/me`
-
+    const accessToken = await getAuth();
     try {
       return fetch(url, {
         method: 'GET',
@@ -704,13 +699,26 @@ export default function ApiProvider({ children }) {
     }
   };
 
+  const getUserTeams = async () => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/my-teams`
+
+    return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
+      .then(response => response.json()
+      )
+      .then(json => { return json }
+      )
+      .catch(error => {
+        console.error("Error fetching all posts: ", error);
+      })
+  }
 
   return (
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
       getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
       getPost, getVillage, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus,
-      updateUserStatus, getCurrentUser, registerUser, checkPhone
+      updateUserStatus, getCurrentUser, registerUser, checkPhone, getUserTeams
     }}>
       {children}
     </ApiContext.Provider>

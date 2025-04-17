@@ -10,6 +10,7 @@ import CustomModal from '../components/CustomModal.js';
 import HouseCard from '../components/HouseCard.js';
 import { useApi } from '../context/ApiContext';
 import DynamicHousePostPage from './DynamicHousePostPage.js';
+import { Selectors } from '../components/Selectors.js';
 
 const { width } = Dimensions.get('window');
 
@@ -71,21 +72,6 @@ const ProfilePageView = ({ route, navigation }) => {
     { title: "Закрытые", value: "closed", id: 2 },
   ]
 
-  const renderSelectors = () => {
-    return (
-      <View style={styles.searchButtonsView}>
-        {listSelectProperties.map((item) => (
-          <Pressable
-            key={`postsSelector-${item.id}`}
-            onPress={() => setSelectedList(item.value)}
-            style={[selectedList === item.value && styles.activeButton, styles.searchButtonsContent]}>
-            <Text style={[selectedList === item.value ? styles.activeButtonsText : styles.searchButtonsText]}>{item.title}</Text>
-          </Pressable>
-        ))}
-      </View>
-    )
-  }
-
   const ListHeader = () => {
     return (
       <View>
@@ -138,8 +124,9 @@ const ProfilePageView = ({ route, navigation }) => {
             Написать
           </Text>
         </Pressable>
-
-        {renderSelectors()}
+        <View style={{ marginLeft: 16 }}>
+          <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={listSelectProperties} />
+        </View>
       </View>
     )
   }

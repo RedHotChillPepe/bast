@@ -38,8 +38,7 @@ export const checkAccessToken = async (access_token) => {
             },
             body: JSON.stringify({ "authorization": access_token })
         });
-
-        console.log("checkAccessToken:", await res.json());
+        console.log("access_token:",access_token);
         return res.ok;
     } catch (err) {
         return false;

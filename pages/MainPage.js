@@ -21,6 +21,7 @@ import { useApi } from "../context/ApiContext";
 import AdvertisementModalPage from "../pages/AdvertisementModalPage";
 import DynamicHousePostPage from "./DynamicHousePostPage";
 import { DynamicVillagePostPage } from './DynamicVillagePostPage';
+import { Selectors } from "../components/Selectors";
 
 const { width, height } = Dimensions.get("window");
 
@@ -372,35 +373,11 @@ const MainPage = ({ navigation }) => {
   );
 
   const SearchButtonsContent = [
-    { text: "Все", value: "houses" },
-    { text: "Дома", value: "newHouses" },
-    { text: "Поселки", value: "villages" },
+    { title: "Все", value: "houses", id: 1 },
+    { title: "Дома", value: "newHouses", id: 2 },
+    { title: "Поселки", value: "villages", id: 3 },
     // { text: "Застройщики", value: "builders" },
   ];
-
-  const renderSearchButtonsContent = () => {
-    return (<View style={styles.searchButtonsView}>
-      {SearchButtonsContent.map((item, index) => (
-        <Pressable
-          key={index}
-          onPress={() => handleSearchButton(item.value)}
-          style={[
-            styles.searchButtonsContent,
-            selectedList === item.value && styles.activeButton,
-          ]}
-        >
-          <Text
-            style={[
-              styles.searchButtonsText,
-              selectedList === item.value && styles.activeButtonsText,
-            ]}
-          >
-            {item.text}
-          </Text>
-        </Pressable>
-      ))}
-    </View>);
-  }
 
   const FlatListHeaderComponent = () => {
     return (
@@ -424,7 +401,9 @@ const MainPage = ({ navigation }) => {
             <HeaderButton icon={<Octicons name="search" size={20} color="#2C88EC" />} title="Поиск дома" handleButton={() => navigation.navigate("Поиск")} />
           </View>
           <View style={{ height: 24 }} />
-          {renderSearchButtonsContent()}
+          <View style={{ marginLeft: 16 }}>
+            <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={SearchButtonsContent} />
+          </View>
         </View>
       </View>
     );
@@ -550,7 +529,6 @@ const MainPage = ({ navigation }) => {
   };
 
   // TODO: удалить после разработки
-  // return <Modal animationType="slide" isVisible={(true)}><TeamPage title={"Команда «А»"} /></Modal>;
 
   return (
     <View style={styles.container}>

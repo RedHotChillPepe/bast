@@ -4,7 +4,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
@@ -19,14 +19,14 @@ const ProfilePage = ({ route }) => {
   const { getUser, getCurrentUser } = useApi()
   const insets = useSafeAreaInsets();
 
-  const [usertype, setUsertype] = useState(1)
+  const [usertype, setUsertype] = useState()
 
-  const [userr, setUser] = useState([])
+  const [user, setUser] = useState([])
 
   useEffect(() => {
     const init = async () => {
       const currentUser = await getCurrentUser();
-      if (!currentUser) return
+      if (!currentUser) return navigation.navigate("Error", { messageProp: "Ошибка! Не удалось загрузить профиль" })
       setUser(currentUser);
       setUsertype(currentUser.usertype)
     }
@@ -41,8 +41,6 @@ const ProfilePage = ({ route }) => {
         photo: route.params.updatedUser.photo !== null ? route.params.updatedUser.photo : prevUser.photo,
       }));
     }
-    console.log("userr:", userr);
-    console.log("newUserData:", route.params?.updatedUser);
   }, [route.params?.updatedUser]);
 
 
@@ -59,10 +57,10 @@ const ProfilePage = ({ route }) => {
       data: [
         { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное', navigation: ['Favourites'] },
         { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
-        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 1 }] },
-        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 3 }] },
-        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: userr.id, status: -1 }] },
-        { icon: <Ionicons name="alert-circle-outline" size={20} color="black" />, label: 'Объявления на модерации', navigation: ['UserPostsPage', { user_id: userr.id, status: 0 }] },
+        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 1 }] },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 3 }] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: user.id, status: -1 }] },
+        { icon: <Ionicons name="alert-circle-outline" size={20} color="black" />, label: 'Объявления на модерации', navigation: ['UserPostsPage', { user_id: user.id, status: 0 }] },
         { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риелторы', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
@@ -80,7 +78,7 @@ const ProfilePage = ({ route }) => {
     {
       title: 'Дополнительные',
       data: [
-        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage', { userObject: userr, usertype }] },
+        { icon: <Ionicons name="settings-outline" size={20} color="black" />, label: 'Настройки', navigation: ['SettingsPage', { userObject: user, usertype }] },
       ],
     },
 
@@ -100,12 +98,21 @@ const ProfilePage = ({ route }) => {
     </Pressable>
   );
 
+  if (!usertype) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#2C88EC" />
+        <Text>Загрузка профиля...</Text>
+      </View>
+    );
+  }
+
   switch (usertype) {
     case 2:
-      return <ProfileCompanyPage />;
+      return <ProfileCompanyPage user={user} />;
     case 3:
-      return <ProfileRealtorPage />;
-    default:
+      return <ProfileRealtorPage user={user} />;
+    case 1:
       return (
         <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
           <ScrollView contentContainerStyle={styles.container}>
@@ -114,14 +121,14 @@ const ProfilePage = ({ route }) => {
                 <View style={{ height: 17, width: 16 }} />
 
                 {
-                  Object.keys(userr).length != 0 && userr.photo != undefined
+                  Object.keys(user).length != 0 && user.photo != undefined
                     ?
-                    <Image style={{ overflow: 'hidden', borderRadius: 150 / 2, alignSelf: 'center' }} width={100} height={100} source={{ uri: userr.photo }} />
+                    <Image style={{ overflow: 'hidden', borderRadius: 150 / 2, alignSelf: 'center' }} width={100} height={100} source={{ uri: user.photo }} />
                     :
                     <FontAwesome6 name="face-tired" size={56} color="black" />
                 }
 
-                <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype })}>
+                <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype })}>
                   <FontAwesome name="edit" size={24} color="#fff" />
                 </Pressable>
               </View>
@@ -129,10 +136,10 @@ const ProfilePage = ({ route }) => {
               <View style={{ flexDirection: 'row' }}>
 
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? `${userr.name} ${userr.surname}` : "Name Surname"}</Text>
-                  <Text style={styles.email}>{userr.email ?? "mail@example.com"}</Text>
+                  <Text style={styles.name}>{user.name != undefined && user.surname != undefined ? `${user.name} ${user.surname}` : "Name Surname"}</Text>
+                  <Text style={styles.email}>{user.email ?? "mail@example.com"}</Text>
                   <Text style={styles.email}>
-                    {userr.phone != undefined ? userr.phone.replace(/^(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})$/, '+7 ($2) $3-$4-$5') : "+ 7 (xxx) xxx xx xx"}
+                    {user.phone != undefined ? user.phone.replace(/^(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})$/, '+7 ($2) $3-$4-$5') : "+ 7 (xxx) xxx xx xx"}
                   </Text>
                 </View>
               </View>
@@ -162,8 +169,6 @@ const ProfilePage = ({ route }) => {
         </View>
       );
   }
-
-
 };
 
 export default ProfilePage;
@@ -237,5 +242,11 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: '#fff',
     opacity: 0.6
+  },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+    rowGap: 12,
   },
 });

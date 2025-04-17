@@ -86,7 +86,7 @@ const ProfileEmployeePageView = () => {
       title: 'Основные',
       data: [
         { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Компания' },
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Комнада' },
+        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Команда' },
         { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Контрагенты' },
       ],
     },

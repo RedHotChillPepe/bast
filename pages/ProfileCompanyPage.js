@@ -3,38 +3,21 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { default as FontAwesome5, default as FontAwesome6 } from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
+import UserTeamsPage from './Teams/UserTeamsPage';
 
 const { width } = Dimensions.get('window');
 
-const ProfileCompanyPage = () => {
+const ProfileCompanyPage = ({ user }) => {
   const { logout, getAuth } = useAuth();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const { getCurrentUser } = useApi()
 
-  const [userr, setUser] = useState([])
-
-  useEffect(() => {
-    const init = async () => {
-      const currentUser = await getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser)
-      }
-
-
-    }
-    init()
-
-    return () => {
-
-    }
-  }, [])
+  const [showTeamModal, setShowTeamModal] = useState(false)
 
   // Массив данных для списков
   const sections = [
@@ -42,7 +25,7 @@ const ProfileCompanyPage = () => {
       title: 'Команда',
       data: [
         { icon: <FontAwesome6 name="house-circle-check" size={17} color="black" />, label: 'Компания', navigation: ['Error', { errorCode: 2004 }] },
-        { icon: <Ionicons name="people-outline" size={17} color="black" />, label: 'Команда', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <Ionicons name="document-outline" size={17} color="black" />, label: 'Команда', handlePress: () => setShowTeamModal(true) },
         { icon: <FontAwesome5 name="people-arrows" size={17} color="black" />, label: 'Контрагенты', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
@@ -62,8 +45,8 @@ const ProfileCompanyPage = () => {
       title: 'Мои действия',
       data: [
         { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation: ['Error', { errorCode: 2004 }] },
-        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 3 }] },
-        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: userr.id, status: -1 }] },
+        { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 3 }] },
+        { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: user.id, status: -1 }] },
         { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
       ],
@@ -88,13 +71,22 @@ const ProfileCompanyPage = () => {
 
   const renderItem = (item, index) => (
     <Pressable key={index} style={styles.listItem}
-      onPress={() => navigation.navigate(item.navigation[0], item.navigation[1])}>
+      onPress={() => {
+        if (!item.navigation) {
+          item.handlePress()
+        }
+        else if (Array.isArray(item.navigation)) {
+          navigation.navigate(item.navigation[0], item.navigation[1]);
+        } else {
+          navigation.navigate(item.navigation);
+        }
+      }}>
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
       <Ionicons name="chevron-forward" size={17} color="black" />
-    </Pressable>
+    </Pressable >
   );
 
   return (
@@ -102,18 +94,18 @@ const ProfileCompanyPage = () => {
       <View style={styles.nameBlock}>
         <View style={{ flexDirection: 'row' }}>
           {
-            Object.keys(userr).length != 0 && userr.photo != undefined
+            Object.keys(user).length != 0 && user.photo != undefined
               ?
-              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={56} height={56} source={{ uri: userr.photo }} />
+              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={56} height={56} source={{ uri: user.photo }} />
               :
               <FontAwesome6 name="face-tired" size={56} color="black" />
           }
           <View style={{ marginLeft: 16 }}>
-            <Text style={styles.name}>{userr.name != undefined ? userr.name : "Company Name"}</Text>
-            <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
+            <Text style={styles.name}>{user.name != undefined ? user.name : "Company Name"}</Text>
+            <Text style={styles.email}>{user.email != undefined ? user.email : "mail@example.com"}</Text>
           </View>
         </View>
-        <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype: 2 })}>
+        <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype: 2 })}>
           <FontAwesome name="edit" size={24} color="#fff" />
         </Pressable>
       </View>
@@ -156,6 +148,9 @@ const ProfileCompanyPage = () => {
         <Button title="500" onPress={() => navigation.navigate('Error500')} />
         <Button title="503" onPress={() => navigation.navigate('Error503')} />
       </View> */}
+        {/* <Modal animationType="slide" visible={showTeamModal}><userequestPage user={user}  handleClose={() => setShowTeamModal(false)} /></Modal> */}
+        <Modal animationType="slide" visible={showTeamModal}><UserTeamsPage handleClose={() => setShowTeamModal(false)} /></Modal>
+
       </ScrollView>
     </View>
 

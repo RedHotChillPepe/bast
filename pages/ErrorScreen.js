@@ -6,25 +6,30 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const ErrorScreen = ({ route }) => {
     const navigation = useNavigation();
     const { errorCode } = route.params || 0;
+    const { messageProp } = route.params || ""
     const renderMessage = () => {
-        let message = 'Ошибка! Повторите попытку позже.';
-        switch (errorCode) {
-            case 403:
-                message = "Ой... Доступ к этой странице запрещен.";
-                break;
-            case 404:
-                message = "Ой... Страница не найдена.";
-                break;
-            case 500:
-                message = "На сервере произошла ошибка. Пожалуйста, подождите, мы скоро это исправим.";
-                break;
-            case 503:
-                message = "Извините, запрашиваемый ресурс временно недоступен. Пожалуйста, попробуйте снова позже.";
-                break;
-            case 2004:
-                message = "Извините, запрашиваемый ресурс появится позже.";
-                break;
+
+        let message = messageProp || 'Ошибка! Повторите попытку позже.';
+        if (!messageProp) {
+            switch (errorCode) {
+                case 403:
+                    message = "Ой... Доступ к этой странице запрещен.";
+                    break;
+                case 404:
+                    message = "Ой... Страница не найдена.";
+                    break;
+                case 500:
+                    message = "На сервере произошла ошибка. Пожалуйста, подождите, мы скоро это исправим.";
+                    break;
+                case 503:
+                    message = "Извините, запрашиваемый ресурс временно недоступен. Пожалуйста, попробуйте снова позже.";
+                    break;
+                case 2004:
+                    message = "Извините, запрашиваемый ресурс появится позже.";
+                    break;
+            }
         }
+
         return <Text style={styles.message}>{message}</Text>;
     };
 

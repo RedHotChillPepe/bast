@@ -115,6 +115,8 @@ const toastStyles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 6,
     paddingVertical: 12, // Добавил внутренний отступ
+    zIndex: 9999,
+    pointerEvents: "box-none",
   },
   toastContent: {
     flexDirection: "row",
