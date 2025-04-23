@@ -43,8 +43,6 @@ export default function HeaderComponent() {
 
     const result = await getCompanyByName(searchQuery)
     const resultJson = JSON.parse(await result.text())
-    console.log(resultJson);
-
 
     setResults(resultJson[1])
 

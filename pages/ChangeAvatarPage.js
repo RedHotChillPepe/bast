@@ -160,11 +160,9 @@ const ChangeAvatarPage = ({ route, navigation }) => {
       email: email === "" ? userObject.email : email,
       photo,
     };
-    console.log(newUserData);
     try {
       const result = await updateUser(newUserData);
       const resultData = result.json ? await result.json() : result;
-      console.log(resultData);
       // Если сервер вернул обновлённое фото, обновляем объект newUserData
       if (resultData.photo) {
         newUserData = { ...newUserData, photo: resultData.photo };

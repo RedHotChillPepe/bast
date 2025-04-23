@@ -1,12 +1,19 @@
 import React from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import UserRemove from '../../assets/svg/UserRemove';
 import AccordionList from '../../components/AccordionList';
+import { useApi } from '../../context/ApiContext';
 
 const EmployeeTeamPage = (props) => {
 
-    const { handleClose, selectedPeople } = props;
+    const { handleClose, selectedPeople, selectedTeam, isOwner, setTeamsData, setTeamMembers, setRequestTeam } = props;
+
+    const [showKickModal, setShowKickModal] = React.useState(false);
+    const [isLoadingResult, setIsLoadingResult] = React.useState(false);
+    const [error, setError] = React.useState("");
+
+    const { removeTeamMember } = useApi();
 
     const renderHeader = () => {
         return <View style={styles.header}>
@@ -14,29 +21,28 @@ const EmployeeTeamPage = (props) => {
                 <ChevronLeft />
             </Pressable>
             <Text style={styles.header__title}>Сотрудник</Text>
-            <Pressable>
-                <UserRemove />
-            </Pressable>
+            {isOwner ?
+                <Pressable onPress={() => setShowKickModal(true)}>
+                    <UserRemove />
+                </Pressable>
+                : <View />}
         </View>
     }
 
     const renderPeopleItem = () => {
-        console.log(selectedPeople);
         return (
             <View style={styles.item}>
                 <View style={{ flexDirection: "row", columnGap: 8 }}>
-                    <Image style={styles.item__photo} source={{ uri: selectedPeople.photo }} />
+                    <Image style={styles.item__photo} source={{ uri: selectedPeople.user.photo }} />
                     <View style={styles.item__about}>
                         <View style={styles.people}>
-                            <Text style={styles.people__name}>{selectedPeople.name}</Text>
-                            <Text style={styles.people__classification}>{selectedPeople.classification}</Text>
+                            <Text style={styles.people__name}>{selectedPeople.user.name} {selectedPeople.user.surname}</Text>
+                            <Text style={styles.people__classification}>{selectedPeople.role_description}</Text>
                         </View>
-                        {selectedPeople?.status &&
-                            <View style={styles.status_container}>
-                                <Text style={styles.people__status}>в работе: </Text>
-                                <Text style={styles.people__status__number}>{selectedPeople.status}</Text>
-                            </View>
-                        }
+                        <View style={styles.status_container}>
+                            <Text style={styles.people__status}>в работе: </Text>
+                            <Text style={styles.people__status__number}>{selectedPeople.request_count}</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -92,6 +98,102 @@ const EmployeeTeamPage = (props) => {
         ))
     }
 
+    const handleKickMember = async () => {
+        try {
+            setIsLoadingResult(true);
+            setError("");
+
+            const result = await removeTeamMember(
+                selectedTeam.team_id,
+                selectedPeople.user.id,
+                selectedPeople.usertype,
+            );
+
+            if (!result.success) {
+                throw new Error(result.message)
+            }
+
+            // Удалить участника из списка
+            setTeamMembers((prev) =>
+                prev.filter(member => member.member_id !== selectedPeople.member_id)
+            );
+
+            // Удалить заявки, связанные с участником
+            setRequestTeam((prev) =>
+                prev.filter(request => request.user_id !== selectedPeople.user.id && request.user_type !== selectedPeople.usertype)
+            );
+
+            // Обновить teamsData и уменьшить request_count
+            setTeamsData((prev) =>
+                prev.map(team => {
+                    if (team.team_id === selectedTeam.team_id) {
+                        const removedCount = parseInt(selectedPeople.request_count || "0", 10);
+                        const currentCount = parseInt(team.request_count || "0", 10);
+                        return {
+                            ...team,
+                            request_count: (currentCount - removedCount).toString()
+                        };
+                    }
+                    return team;
+                })
+            );
+
+            setIsLoadingResult(false);
+            setShowKickModal(false);
+            handleClose();
+        } catch (err) {
+            setIsLoadingResult(false);
+            setError(err.message || "Не удалось удалить участника. Попробуйте позже.");
+        }
+    };
+
+    const KickMemberModal = () => {
+        return (
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalTitle}>
+                        Удалить участника
+                    </Text>
+
+                    {isLoadingResult ? (
+                        <View style={{ paddingVertical: 24 }}>
+                            <ActivityIndicator size="large" color="#32322C" />
+                        </View>
+                    ) : (
+                        <View>
+                            <Text style={[styles.modalSubtitle, { color: "#3E3E3E" }]}>
+                                Вы уверены, что хотите удалить участника{' '}
+                                <Text style={{ fontWeight: 'bold' }}>
+                                    {selectedPeople.user.name} {selectedPeople.user.surname}
+                                </Text>{' '}
+                                из команды?
+                            </Text>
+                            {error ? (
+                                <Text style={[styles.modalSubtitle, { color: "red" }]}>{error}</Text>
+                            ) : null}
+                        </View>
+                    )}
+                    <View style={styles.modalButtons}>
+                        <TouchableOpacity
+                            style={[styles.modalButton, { backgroundColor: isLoadingResult ? "#F2F2F780" : "#F2F2F7" }]}
+                            onPress={() => setShowKickModal(false)}
+                            disabled={isLoadingResult}
+                        >
+                            <Text style={[styles.cancelButtonText, { color: isLoadingResult ? "#3E3E3E66" : '#3E3E3E' }]}>Отмена</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.modalButton, { backgroundColor: isLoadingResult || error.length > 0 ? "#2C88EC66" : "#2C88EC" }]}
+                            onPress={handleKickMember}
+                            disabled={isLoadingResult || error.length > 0}
+                        >
+                            <Text style={styles.confirmButtonText}>Удалить</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        );
+    };
+
     return (
         <View style={styles.container}>
             {renderHeader()}
@@ -104,9 +206,12 @@ const EmployeeTeamPage = (props) => {
                     <AccordionList title="Закрытые" ></AccordionList>
                 </View>
             </ScrollView>
-            <Pressable style={styles.button}>
-                <Text style={styles.button__text}>Добавить задачу</Text>
-            </Pressable>
+            {isOwner &&
+                <Pressable style={styles.button}>
+                    <Text style={styles.button__text}>Добавить задачу</Text>
+                </Pressable>
+            }
+            <Modal visible={showKickModal} transparent={true} onRequestClose={() => setShowKickModal(false)}><KickMemberModal /></Modal>
         </View>
     )
 }
@@ -267,6 +372,57 @@ const styles = StyleSheet.create({
         fontFamily: "Sora400",
         lineHeight: 17.6,
         letterSpacing: -0.42,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+    },
+    modalContainer: {
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        padding: 24,
+        width: '100%',
+        maxWidth: 360,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        fontFamily: 'Sora700',
+        color: '#3E3E3E',
+        marginBottom: 8,
+    },
+    modalSubtitle: {
+        fontSize: 14,
+        fontWeight: '400',
+        fontFamily: 'Sora400',
+        marginBottom: 20,
+        lineHeight: 20,
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        columnGap: 12,
+    },
+    modalButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 10,
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    cancelButtonText: {
+        fontFamily: 'Sora600',
+        fontSize: 14,
+    },
+    confirmButtonText: {
+        color: '#fff',
+        fontFamily: 'Sora600',
+        fontSize: 14,
     }
 });
 

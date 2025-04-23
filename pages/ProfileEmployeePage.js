@@ -1,6 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,8 +11,8 @@ import EditPencil from "../assets/svg/EditPencil";
 import Folders from "../assets/svg/Folders";
 import ListUnordered from "../assets/svg/ListUnordered";
 import TeamMembers from "../assets/svg/TeamMembers";
-import UserTeamsPage from './Teams/UserTeamsPage';
 import UserRequestPage from './Requests/UserRequestPage';
+import UserTeamsPage from './Teams/UserTeamsPage';
 
 const { width } = Dimensions.get('window');
 
@@ -23,6 +23,19 @@ const ProfileRealtorPage = ({ user }) => {
 
   const [showModalTeams, setShowModalTeams] = useState(false)
   const [showModalRequest, setShowModalRequest] = useState(false)
+
+  // TODO: это фикс с модалками(не кликабельность после navigate)
+  useFocusEffect(
+    React.useCallback(() => {
+      setShowModalTeams(false);
+      setShowModalRequest(false);
+
+      return () => {
+        setShowModalTeams(false);
+        setShowModalRequest(false);
+      };
+    }, [])
+  );
 
   // Массив данных для списков
   const sections = [
@@ -128,7 +141,7 @@ const ProfileRealtorPage = ({ user }) => {
         </Pressable>
       </ScrollView>
       <Modal visible={showModalRequest}><UserRequestPage user={user} handleClose={() => setShowModalRequest(false)} /></Modal>
-      <Modal visible={showModalTeams}><UserTeamsPage handleClose={() => setShowModalTeams(false)} /></Modal>
+      <Modal visible={showModalTeams}><UserTeamsPage handleClose={() => setShowModalTeams(false)} currentUser={user} /></Modal>
     </View>
   );
 };

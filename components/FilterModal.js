@@ -30,8 +30,6 @@ const FilterModal = ({ visible, onClose, selectedFilters, setSelectedFilters, fi
       }
 
     });
-    console.log("filter:", group.id, option);
-
   };
 
   const handlePriceRange = (range) => {

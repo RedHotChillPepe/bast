@@ -107,14 +107,12 @@ export default function DynamicHousePostPage({ navigation, route }) {
         return;
       }
       const auth = await getAuth();
-      console.log(auth);
       if (!auth) {
         return;
       }
       setIsLoggedIn(true);
       const result = await getIsOwner(houseId);
       const resultJson = JSON.parse(await result.text());
-      console.log(resultJson);
       setIsOwner(resultJson.result);
     };
 
@@ -156,7 +154,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const changeStatus = async ({ post_id, post_status }) => {
     try {
       const result = await updateStatus({ post_id, post_status });
-      console.log(await result.json());
     } catch (error) {
       showToast(error.message, "error");
       logError(navigation.getState().routes[0].name, error, { postData, handleName: "changeStatus" });
@@ -449,7 +446,11 @@ export default function DynamicHousePostPage({ navigation, route }) {
             <Pressable
               key={index}
               style={styles.serviciesPressable}
-              onPress={() => navigation.navigate(service.route, service.params)}
+              onPress={() => {
+                if (isModal)
+                  route.setIsModalShow(false);
+                navigation.navigate(service.route, service.params)
+              }}
             >
               <Text style={styles.serviciesText}>{service.title}</Text>
             </Pressable>
@@ -671,14 +672,13 @@ ${priceInfo}
   };
 
   const shareProfile = () => {
-    const user = ownerUser;
 
-    if (!user) return null;
+    if (!ownerUser) return null;
 
     const options = {
       type: 'profile',
-      id: user.id,
-      user, // передаём весь объект пользователя
+      id: ownerUser.id,
+      user: ownerUser,
     };
 
     return (

@@ -17,7 +17,7 @@ export default function ConfirmChangePhonePage({ navigation, route }) {
 
 
   const handleInputChange = (text, index) => {
-    let newCode = [...code];
+    const newCode = [...code];
     newCode[index] = text;
     setCode(newCode);
 
@@ -32,23 +32,18 @@ export default function ConfirmChangePhonePage({ navigation, route }) {
 
   const handleConfirm = async () => {
     const confirmationCode = code.join('');
-    console.log("Confirmation code:", confirmationCode);
-// [ ]
+    // [ ]
     const result = await verifySms(regData.phoneNumber, confirmationCode)
     const resultJson = JSON.parse([await result.text()])
-    console.log(result);
-
-    console.log(await resultJson);
 
 
     if (await result.status == 200) {
-      console.log(await resultJson);
 
       if (await resultJson.result) {
 
-        let result = await updateUser(regData.userObjectt).then(navigation.navigate("Profile"))
+        const result = await updateUser(regData.userObjectt).then(navigation.navigate("Profile"))
         const auth = JSON.parse(await getAuth())
-        let status = await setAuth([{
+        const status = await setAuth([{
           status: true,
           onboarded: false,
           phone: regData.userObjectt.phoneNumber,
@@ -74,8 +69,6 @@ export default function ConfirmChangePhonePage({ navigation, route }) {
     if (await result.status == 200) {
       setIsShowSend(false)
     }
-
-    console.log(result);
   }
 
   return (
@@ -133,9 +126,7 @@ export default function ConfirmChangePhonePage({ navigation, route }) {
 
       {/* временная кнопка для перехода на главную страницу */}
       <Pressable>
-        <Text>
-
-        </Text>
+        <Text />
       </Pressable>
     </KeyboardAvoidingView>
   );

@@ -10,19 +10,21 @@ import {
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import InputProperty from '../../components/PostComponents/InputProperty';
 import TeamInvationPage from './TeamInvationPage';
+import { useApi } from '../../context/ApiContext';
 
 export default function CreateTeamPage(props) {
-    const { handleClose } = props;
+    const { handleClose, setTeamsData } = props;
     const [formData, setFormData] = useState({
         team_name: '',
         description: '',
     });
 
+    const { createTeam } = useApi();
+
     const [isShowInvationModal, setIsShowInvationModal] = useState(false);
 
     const handleInputChange = (field, value) => {
         setFormData((prevData) => ({ ...prevData, [field]: value.value || value }));
-        console.log(formData);
     };
 
     const renderHeader = () => {
@@ -58,15 +60,43 @@ export default function CreateTeamPage(props) {
         </View>)
     }
 
+    const isFormValidAndChanged = () => {
+        const { team_name } = formData;
+        return team_name.trim() !== "" && team_name.length >= 4;
+    };
+
+    const handleNext = async () => {
+        if (!formData.team_name) return;
+
+        try {
+            const response = await createTeam(formData);
+            if (response.statusCode && response.statusCode !== 201) throw new Error(response.message)
+
+            setTeamsData((prev) => [...prev, response]);
+            setIsShowInvationModal(true);
+        } catch (error) {
+            console.error("Произошла ошибка при создании команды:", error.message);
+            navigator.navigate("Error", { messageProp: "Произошла ошибка при создании команды" })
+        }
+    }
+
     return (
         <KeyboardAvoidingView style={styles.container}>
             {renderHeader()}
             <View style={styles.containerItem}>
                 {renderInput()}
             </View>
-            <Pressable style={styles.button} onPress={() => setIsShowInvationModal(true)}>
+            <Pressable
+                style={[
+                    styles.button,
+                    { backgroundColor: isFormValidAndChanged() ? "#2C88EC" : "#2C88EC66" }
+                ]}
+                onPress={handleNext}
+                disabled={!isFormValidAndChanged()}
+            >
                 <Text style={styles.button__text}>Далее</Text>
             </Pressable>
+
 
             <Modal visible={isShowInvationModal}><TeamInvationPage handleClose={() => setIsShowInvationModal(false)} teamData={formData} /></Modal>
         </KeyboardAvoidingView>
@@ -99,7 +129,6 @@ const styles = StyleSheet.create({
         flex: 1
     },
     button: {
-        backgroundColor: "#2C88EC",
         padding: 12,
         alignItems: "center",
         borderRadius: 12,

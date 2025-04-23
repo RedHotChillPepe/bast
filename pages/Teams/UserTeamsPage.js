@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import TeamMembers from "../../assets/svg/TeamMembers";
+import Loader from '../../components/Loader';
 import { useApi } from '../../context/ApiContext';
 import CreateTeamPage from './CreateTeamPage';
 import TeamPage from './TeamPage';
@@ -12,6 +13,8 @@ const UserTeamsPage = (props) => {
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [teamsData, setTeamsData] = useState([])
 
+    const { currentUser } = props;
+
     const { getUserTeams } = useApi();
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
@@ -19,7 +22,6 @@ const UserTeamsPage = (props) => {
         const fetchTeams = async () => {
             setTeamsData(await getUserTeams());
             setIsLoading(false);
-            console.log("teamsData:", teamsData);
         }
 
         fetchTeams();
@@ -27,10 +29,7 @@ const UserTeamsPage = (props) => {
 
     if (isLoading) {
         return (
-            <View style={styles.center}>
-                <ActivityIndicator size="large" color="#2C88EC" />
-                <Text>Загрузка команд...</Text>
-            </View>
+            <Loader />
         );
     }
 
@@ -50,7 +49,6 @@ const UserTeamsPage = (props) => {
 
     const renderTeams = () => {
         if (teamsData.length == 0) return <Text style={styles.text__empty}>У вас нет действующих команд</Text>
-
         return (
             <View style={styles.containerItem}>
                 {teamsData.map((item) =>
@@ -60,10 +58,12 @@ const UserTeamsPage = (props) => {
                             <View style={styles.team}>
                                 <View style={styles.team__about}>
                                     <Text style={styles.team__name}>{item.team_name}</Text>
-                                    <View style={styles.status_container}>
-                                        <Text style={styles.team__status}>в работе: </Text>
-                                        <Text style={styles.team__status__number}>{item?.status || 0}</Text>
-                                    </View>
+                                    {item.member_role === 1 &&
+                                        <View style={styles.status_container}>
+                                            <Text style={styles.team__status}>в работе: </Text>
+                                            <Text style={styles.team__status__number}>{item.request_count}</Text>
+                                        </View>
+                                    }
                                 </View>
                                 <Text style={styles.team__classification}>{item.description}</Text>
                             </View>
@@ -89,8 +89,15 @@ const UserTeamsPage = (props) => {
                 <Text style={styles.button__text}>Создать команду</Text>
             </Pressable>
 
-            <Modal visible={isShowCreateModal}><CreateTeamPage handleClose={() => setIsShowCreateModal(false)} /></Modal>
-            <Modal visible={isShowModal}><TeamPage handleClose={() => setIsShowModal(false)} selectedTeam={selectedTeam} /></Modal>
+            <Modal visible={isShowCreateModal}><CreateTeamPage handleClose={() => setIsShowCreateModal(false)} setTeamsData={setTeamsData} /></Modal>
+            <Modal visible={isShowModal}>
+                <TeamPage
+                    handleClose={() => setIsShowModal(false)}
+                    selectedTeam={selectedTeam}
+                    setTeamsData={setTeamsData}
+                    setSelectedTeam={setSelectedTeam}
+                    currentUser={currentUser} />
+            </Modal>
         </View>
     )
 }
@@ -104,12 +111,6 @@ const styles = StyleSheet.create({
     containerScroll: {
         flex: 1,
         marginBottom: 16
-    },
-    center: {
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-        rowGap: 12,
     },
     header: {
         justifyContent: "space-between",

@@ -149,7 +149,7 @@ const ProfileCompanyPage = ({ user }) => {
         <Button title="503" onPress={() => navigation.navigate('Error503')} />
       </View> */}
         {/* <Modal animationType="slide" visible={showTeamModal}><userequestPage user={user}  handleClose={() => setShowTeamModal(false)} /></Modal> */}
-        <Modal animationType="slide" visible={showTeamModal}><UserTeamsPage handleClose={() => setShowTeamModal(false)} /></Modal>
+        <Modal animationType="slide" visible={showTeamModal}><UserTeamsPage handleClose={() => setShowTeamModal(false)} currentUser = {user} /></Modal>
 
       </ScrollView>
     </View>

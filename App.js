@@ -3,14 +3,14 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer, useNavigation, useNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
 import * as Linking from 'expo-linking';
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { Platform, Pressable, Text } from "react-native";
+import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
 import { Geocoder, YaMap } from "react-native-yamap";
 import HeaderComponent from "./components/HeaderComponent";
 import ApiProvider from "./context/ApiContext";
@@ -44,11 +44,14 @@ import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
 import UserTeamsPage from "./pages/Teams/UserTeamsPage";
 import TeamPage from "./pages/Teams/TeamPage";
+import TeamJoinRequestScreen from "./pages/Teams/TeamJoinRequestScreen";
+import Loader from "./components/Loader";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const OnboardingStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
+const TeamStack = createNativeStackNavigator();
 const TopStack = createNativeStackNavigator();
 const SearchStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -170,22 +173,6 @@ const StackProfile = () => {
           headerTitle: "Мои объявления",
         }}
       />
-      <ProfileStack.Screen
-        name="UserTeams"
-        component={UserTeamsPage}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
-      <ProfileStack.Screen
-        name="Team"
-        component={TeamPage}
-        options={{
-          //header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }}
-      />
 
       <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
         options={{//header:(props) => <HeaderComponent{...props}/>
@@ -207,9 +194,49 @@ const StackProfile = () => {
         options={{//header:(props) => <HeaderComponent{...props}/>
           headerShown: false,
         }} />
+
+      <ProfileStack.Screen
+        name="Team"
+        component={StackTeam}
+        options={{
+          headerShown: false,
+        }}
+      />
     </ProfileStack.Navigator>
   );
 };
+
+
+const StackTeam = () => {
+  return (
+    <TeamStack.Navigator initialRouteName="UserTeams">
+      <TeamStack.Screen
+        name="Team"
+        component={TeamPage}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
+      <TeamStack.Screen
+        name="UserTeams"
+        component={UserTeamsPage}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
+      <TeamStack.Screen
+        name="TeamJoin"
+        component={TeamJoinRequestScreen}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
+    </TeamStack.Navigator>
+  )
+}
 
 /// Объявление доступных страниц, навигация (возможно стоит в отдельный компонент)
 const AppStack = () => {
@@ -561,9 +588,8 @@ const AppTopStack = () => {
 
 // Условный рендер в зависимости от того авторизирован ли пользователь или нет
 const AppInit = () => {
-  const { isAuth, isOnboarded } = useAuth();
+  const { isAuth, isOnboarded, tokenIsLoaded } = useAuth();
 
-  setBackgroundColorAsync("#F2F2F7");
   const [loaded] = useFonts({
     Montserrat400: require("./assets/fonts/Inter_18pt-Regular.ttf"),
     Montserrat500: require("./assets/fonts/Inter_18pt-Medium.ttf"),
@@ -576,8 +602,8 @@ const AppInit = () => {
     Sora700: require('./assets/fonts/Sora-Bold.ttf'),
   });
 
-  if (!loaded) {
-    return;
+  if (!loaded || !tokenIsLoaded) {
+    return <Loader />
   }
 
   SplashScreen.hide();
@@ -591,7 +617,7 @@ const AppInit = () => {
   if (!isOnboarded) {
     return (
       <OnboardingStack.Navigator initialRouteName='Onboarding'>
-      <OnboardingStack.Screen name='Onboarding' component={OnboardingPage}/>
+        <OnboardingStack.Screen name='Onboarding' component={OnboardingPage} />
       </OnboardingStack.Navigator>
       )
     } */
@@ -613,7 +639,6 @@ const DeepLinkHandler = () => {
     // Обработчик для ссылок, когда приложение уже открыто
     const handleDeepLink = ({ url }) => {
       if (!url) return;
-      console.log('Deep link received:', url);
       processUrl(url);
     };
 
@@ -622,7 +647,6 @@ const DeepLinkHandler = () => {
       try {
         const url = await Linking.getInitialURL();
         if (url) {
-          console.log('Initial URL:', url);
           setInitialUrl(url);
         }
       } catch (err) {
@@ -647,39 +671,70 @@ const DeepLinkHandler = () => {
 
   const processUrl = (url) => {
     const parsed = Linking.parse(url);
-    console.log('Parsed URL:', parsed);
-    if (!parsed.path?.includes('share') || !parsed.queryParams?.id || !parsed.queryParams?.type) {
-      navigation.navigate('Main');
+
+    // Обработка приглашений по ссылке
+    if (parsed.path?.includes('teams/join')) {
+      const parts = parsed.path.split('/');
+      const token = parts[parts.length - 1];
+      if (token) {
+        navigation.navigate("Профиль", {
+          screen: "Team",
+          params: {
+            screen: "TeamJoin",
+            params: { token }
+          }
+        });
+        return;
+      }
     }
 
-    switch (parsed.queryParams.type) {
-      case "post":
+    // Обработка новых ссылок типа /posts/15, /villages/42, /profile/7
+    const pathSegments = parsed.path?.split('/') || [];
+    if (pathSegments.length == 0) {
+      navigation.navigate('Main');
+      return;
+    }
+
+    const [type, id] = pathSegments.slice(-2);
+    console.info(pathSegments.slice(-2));
+    if (!id) {
+      navigation.navigate('Main');
+      return;
+    }
+
+    switch (type) {
+      case "posts":
         navigation.navigate('House', {
-          houseId: parsed.queryParams.id,
-          timestamp: Date.now() // Добавляем timestamp для принудительного обновления
+          houseId: id,
+          timestamp: Date.now()
         });
         break;
-      case "village":
+      case "villages":
         navigation.navigate('Village', {
-          villageId: parsed.queryParams.id,
-          timestamp: Date.now() // Добавляем timestamp для принудительного обновления
+          villageId: id,
+          timestamp: Date.now()
         });
         break;
       case "profile":
         navigation.navigate('ProfilePageView', {
-          posterId: parsed.queryParams.id,
-          timestamp: Date.now() // Добавляем timestamp для принудительного обновления
+          posterId: id,
+          timestamp: Date.now()
         });
         break;
+      default:
+        navigation.navigate('Main');
     }
-
-  };
-
-  return null;
+  }
 };
+
 
 // Корневой (Root) компонент
 export default function App() {
+
+  useEffect(() => {
+    setBackgroundColorAsync("#F2F2F7").catch(console.error); // Устанавливаем цвет фона
+  }, []);
+
   process.env.NODE_ENV !== "development" &&
     useEffect(() => {
       if (YaMap && typeof YaMap.init === 'function') {
@@ -719,12 +774,27 @@ export default function App() {
     }
   };
 
+  const navigationRef = useNavigationContainerRef();
+
+  useEffect(() => {
+    const unsubscribe = navigationRef.addListener('state', () => {
+      const currentRoute = navigationRef.getCurrentRoute();
+      if (currentRoute) {
+        console.warn('Текущий экран:', currentRoute.name);
+      } else {
+        console.warn('Текущий экран пока не определён');
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
   return (
     <ApiProvider>
       <AuthProvider>
         <ToastProvider>
           <LoggerProvider>
-            <NavigationContainer linking={linking} >
+            <NavigationContainer ref={navigationRef} linking={linking} >
               <AppInit />
             </NavigationContainer>
           </LoggerProvider>

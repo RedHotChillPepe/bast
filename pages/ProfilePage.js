@@ -10,6 +10,7 @@ import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
 import ProfileCompanyPage from './ProfileCompanyPage.js';
 import ProfileRealtorPage from './ProfileEmployeePage.js';
+import Loader from '../components/Loader';
 
 const { width } = Dimensions.get('window');
 
@@ -99,12 +100,7 @@ const ProfilePage = ({ route }) => {
   );
 
   if (!usertype) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#2C88EC" />
-        <Text>Загрузка профиля...</Text>
-      </View>
-    );
+    return <Loader />
   }
 
   switch (usertype) {
@@ -242,11 +238,5 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: '#fff',
     opacity: 0.6
-  },
-  center: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-    rowGap: 12,
   },
 });

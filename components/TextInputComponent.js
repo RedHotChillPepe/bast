@@ -11,7 +11,6 @@ const TextInputComponent = (props) => {
         placeholder={props.placeholder}
         value={props.value}
         onChangeText={(value) => {
-          console.log(`ValueName: ${props.valueName}, Value: ${value}`);
           props.handleInputChange(props.valueName, value);
         }}
       />

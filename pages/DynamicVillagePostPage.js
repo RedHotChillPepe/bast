@@ -52,7 +52,7 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
             .then(async response => {
                 setVillageData(response.data)
                 // TODO: я не записываю в бд координаты
-                const addressString = `${response.city} ${response.full_address}`;
+                const addressString = `${response.data.city} ${response.data.full_address}`;
                 if (!response.latitude || !response.longitude) {
                     Geocoder.addressToGeo(addressString)
                         .then(({ lat, lon }) => {
@@ -61,12 +61,11 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
                         .finally(() => setIsGeoLoaded(true));
                 } else {
                     setGeoState({
-                        lat: parseFloat(response.latitude),
-                        lon: parseFloat(response.longitude),
+                        lat: parseFloat(response.data.latitude),
+                        lon: parseFloat(response.data.longitude),
                     });
                     setIsGeoLoaded(true);
                 }
-
                 if (!response.data.houses) return
 
                 setActivePost(await getPostDataByStatus(response.data.houses, 1));
@@ -259,7 +258,7 @@ ${priceInfo}
                 {renderHouseSpecs()}
                 {renderBlockDescription()}
                 {renderMap()}
-                <View style={{marginTop: 32}}>
+                <View style={{ marginTop: 32 }}>
                     <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={listSelectProperties} />
                 </View>
                 {renderHouseItem()}

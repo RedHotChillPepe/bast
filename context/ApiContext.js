@@ -9,7 +9,6 @@ export default function ApiProvider({ children }) {
   const getAllPosts = async () => {
     const accessToken = await getAuth();
     const url = `${host}api/posts`
-    console.log(url);
 
     return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
       .then(response => response.json()
@@ -51,11 +50,10 @@ export default function ApiProvider({ children }) {
       ...params, // Передаем все параметры
       page, // Добавляем параметр страницы
     }).toString();
-    console.log("Paginated query: ", query);
 
     // Формируем URL с query параметрами
     const url = `${host}api/posts?${query}`;
-    console.log(url);
+
     try {
       const response = await fetch(url, {
         headers: { "Authorization": `Bearer ${accessToken}` }
@@ -110,7 +108,6 @@ export default function ApiProvider({ children }) {
         throw new Error(`${data.message}`);
       }
 
-      // console.log(data);
       if (data.success) {
         return data; // Возвращаем данные о поселке
       }
@@ -188,7 +185,6 @@ export default function ApiProvider({ children }) {
       usertype: data.usertype,
     })
 
-    console.log("data:", uploadData);
     try {
       return fetch(url, {
         method: "POST",
@@ -249,8 +245,6 @@ export default function ApiProvider({ children }) {
       },
     );
 
-    console.log(formData);
-
     try {
       return fetch(url, {
         method: "PUT",
@@ -303,7 +297,7 @@ export default function ApiProvider({ children }) {
 
   const getAllVillages = async () => {
     const url = `${host}api/villages/all`;
-    console.log(url);
+
     const accessToken = await getAuth();
     return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
       .then((response) => response.json())
@@ -333,7 +327,6 @@ export default function ApiProvider({ children }) {
           console.error("Error posting user: ", error);
         });
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -344,8 +337,6 @@ export default function ApiProvider({ children }) {
       phone,
       password,
     };
-
-    console.log("Request Data:", JSON.stringify(requestData)); // Логируем данные для отладки
 
     try {
       const response = await fetch(url, {
@@ -428,7 +419,7 @@ export default function ApiProvider({ children }) {
 
   const getCompanyByName = async (companyName) => {
     const url = `${host}api/users/getcompany/${companyName}`;
-    console.log(url);
+
     const accessToken = await getAuth();
     try {
       return fetch(url, {
@@ -463,8 +454,6 @@ export default function ApiProvider({ children }) {
       photo: userObject.photo
     })
 
-    console.log("updateData:", updateData);
-
     try {
       return fetch(url, {
         method: 'PUT',
@@ -496,7 +485,6 @@ export default function ApiProvider({ children }) {
     }).toString();
     const accessToken = await getAuth();
     const url = `${host}api/users/getuser?${query}`;
-    console.log("GetUser URL:", url);
 
     try {
       const response = await fetch(url, {
@@ -608,7 +596,6 @@ export default function ApiProvider({ children }) {
       userType: usertype
     });
 
-    console.log(data);
     const accessToken = await getAuth();
     try {
       return fetch(url, {
@@ -670,7 +657,6 @@ export default function ApiProvider({ children }) {
           console.error("Error: ", error);
         })
     } catch (error) {
-      console.log(error);
     }
   }
 
@@ -694,7 +680,6 @@ export default function ApiProvider({ children }) {
           throw error;
         });
     } catch (error) {
-      console.log("Ошибка:", error);
       throw error;
     }
   };
@@ -713,18 +698,318 @@ export default function ApiProvider({ children }) {
       })
   }
 
+  const getTeamById = async (teamId) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/${teamId}`
+
+    return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
+      .then(response => response.json()
+      )
+      .then(json => { return json }
+      )
+      .catch(error => {
+        console.error("Error fetching all posts: ", error);
+      })
+  }
+
+  const createTeam = async (formData) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/`;
+
+    const requestBody = {
+      team_name: formData.team_name,
+      description: formData.description || "" // Добавляем описание, даже если пустое
+    };
+
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json" // Важно указать content-type
+      },
+      body: JSON.stringify(requestBody)
+    })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw err; });
+        }
+        return response.json();
+      })
+      .catch(error => {
+        console.error("Error creating team: ", error);
+        throw error; // Пробрасываем ошибку дальше
+      });
+  }
+
+  const editTeam = async (formData) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams`;
+
+    const requestBody = {
+      team_id: formData.team_id,
+      team_name: formData.team_name || undefined,
+      description: formData.description || "",
+    };
+
+    return fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const error = await response.json();
+          throw error;
+        }
+        return response.json();
+      })
+      .catch((error) => {
+        console.error("Ошибка при редактировании команды:", error);
+        throw error;
+      });
+  };
+
+  const getTeamRequest = async (teamId) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/${teamId}/requests`
+
+    return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
+      .then(response => response.json()
+      )
+      .then(json => { return json }
+      )
+      .catch(error => {
+        console.error("Error fetching all posts: ", error);
+      })
+  }
+
+  const getActiveInvitationToTeam = async (teamId) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/invitations/${teamId}`
+
+    return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
+      .then(response => response.json()
+      )
+      .then(json => { return json }
+      )
+      .catch(error => {
+        console.error("Error fetching all posts: ", error);
+      })
+  }
+
+  const isValidInvitation = async (token) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/${token}/validate`
+
+    return fetch(url, { headers: { "Authorization": `Bearer ${accessToken}` } })
+      .then(response => response.json()
+      )
+      .then(json => { return json }
+      )
+      .catch(error => {
+        console.error("Error fetching all posts: ", error);
+      })
+  }
+
+  const createInvitationToTeam = async (invitationData) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/invitations`;
+    const requestBody = {
+      teamId: invitationData.team_id,
+      maxUses: invitationData.maxUses ?? 1
+    };
+
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json" // Важно указать content-type
+      },
+      body: JSON.stringify(requestBody)
+    })
+      .then(async response => {
+        if (!response.ok) {
+          const err = await response.json()
+          throw err
+        }
+        return response.json();
+      })
+      .catch(error => {
+        console.error("Error creating team: ", error);
+        throw error; // Пробрасываем ошибку дальше
+      });
+  }
+
+  const acceptInvitationToTeam = async (invitationToken) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/acceptInvitation`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token: invitationToken })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        return {
+          success: false,
+          message: error.message || "Не удалось принять приглашение."
+        };
+      }
+
+      const result = await response.json();
+      return {
+        success: true,
+        message: result.message || "Приглашение успешно принято!"
+      };
+    } catch (error) {
+      console.error("Error accepting invitation: ", error);
+      return {
+        success: false,
+        message: error.message || "Произошла ошибка при принятии приглашения."
+      };
+    }
+  };
+
+  const acceptTeamRequest = async (requestId) => {
+    const url = `${host}api/teams/requests/${requestId}/accept`;
+    const accessToken = await getAuth();
+
+    try {
+      return fetch(url, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error("Ошибка при принятии заявки:", error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const rejectTeamRequest = async (requestId) => {
+    const url = `${host}api/teams/requests/${requestId}/reject`;
+    const accessToken = await getAuth();
+
+    try {
+      return fetch(url, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error("Ошибка при отклонении заявки:", error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const sendLeaveTeamRequest = async (teamId) => {
+    const accessToken = await getAuth(); // получаем токен пользователя
+    const url = `${host}api/teams/leave`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ team_id: teamId })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || "Не удалось отправить заявку на выход из команды"
+        };
+      }
+
+      return {
+        success: result.success,
+        message: result.message || "Заявка на выход из команды успешно отправлена",
+        request: result.result
+      };
+    } catch (error) {
+      console.error("Ошибка при выходе из команды:", error);
+      return {
+        success: false,
+        message: error.message || "Произошла ошибка при попытке выхода из команды"
+      };
+    }
+  };
+
+  const removeTeamMember = async (teamId, userId, usertype) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/teams/member`;
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ teamId, userId, usertype })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || "Не удалось удалить участника"
+        };
+      }
+
+      return {
+        success: result.success,
+        message: result.message || "Участник успешно удалён"
+      };
+    } catch (error) {
+      console.error("Ошибка при удалении участника из команды:", error);
+      return {
+        success: false,
+        message: error.message || "Произошла ошибка при удалении участника"
+      };
+    }
+  };
+
+
   return (
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
       getLogin, getUser, updateUser, getCompanyByName, getIsOwner, postRegister, sendSms, verifySms, changePhone,
       getPost, getVillage, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus,
-      updateUserStatus, getCurrentUser, registerUser, checkPhone, getUserTeams
+      updateUserStatus, getCurrentUser, registerUser, checkPhone, getUserTeams, getTeamById, createTeam, editTeam,
+      getTeamRequest, getActiveInvitationToTeam, createInvitationToTeam, isValidInvitation, acceptInvitationToTeam,
+      acceptTeamRequest, rejectTeamRequest, sendLeaveTeamRequest, removeTeamMember
     }}>
       {children}
     </ApiContext.Provider>
   )
 
 }
-
 
 export const useApi = () => useContext(ApiContext)

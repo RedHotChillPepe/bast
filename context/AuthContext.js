@@ -8,6 +8,7 @@ export default function AuthProvider({ children }) {
   const [isAuth, setIsAuth] = useState(false)             // заменить на
   const [isOnboarded, setIsOnboarded] = useState(false)   // secure store. ТЕСТОВЫЕ ПЕРЕМЕННЫЕ!
   const [checkAuthB, setCheckAuthB] = useState(false)
+  const [tokenIsLoaded, setTokenIsLoaded] = useState(false);
 
   async function setAuth(json) {
     await SecureStore.setItemAsync("auth",
@@ -38,6 +39,7 @@ export default function AuthProvider({ children }) {
       const status = (access_token !== null)
       setIsAuth(status)
       setIsOnboarded(status)
+      setTokenIsLoaded(true)
     }
     checkAuth()
     // TODO: проверить, что токен жив
@@ -50,7 +52,7 @@ export default function AuthProvider({ children }) {
   }, [checkAuthB])
 
   return (
-    <AuthContext.Provider value={{ isAuth, isOnboarded, getAuth, setOnboard, setAuth, setCheckAuthB, logout }}>
+    <AuthContext.Provider value={{ isAuth, isOnboarded, getAuth, setOnboard, setAuth, setCheckAuthB, checkAuthB, logout, tokenIsLoaded }}>
       {children}
     </AuthContext.Provider>
   )

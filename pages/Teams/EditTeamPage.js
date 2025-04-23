@@ -8,12 +8,18 @@ import {
 } from "react-native";
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import InputProperty from '../../components/PostComponents/InputProperty';
+import { useApi } from '../../context/ApiContext';
+import { useNavigation } from '@react-navigation/native';
 
 export default function EditTeamPage(props) {
-    const { handleClose, selectedTeam } = props;
+    const { handleClose, selectedTeam, setTeamsData, setSelectedTeam } = props;
+
+    const { editTeam } = useApi();
+    const navigation = useNavigation();
+
     const [formData, setFormData] = useState({
-        team_name: selectedTeam.team_name || '',
-        description: selectedTeam.description || '',
+        team_name: selectedTeam.team_name ?? '',
+        description: selectedTeam.description ?? '',
     });
 
     const handleInputChange = (field, value) => {
@@ -53,16 +59,56 @@ export default function EditTeamPage(props) {
         </View>)
     }
 
+    const isFormValidAndChanged = () => {
+        const { team_name, description } = formData;
+
+        const nameNotEmpty = team_name.trim() !== "" && team_name.length >= 4;
+        const nameChanged = team_name !== selectedTeam.team_name;
+        const descriptionChanged = (selectedTeam.description ?? '') !== (formData.description ?? '');
+
+        return nameNotEmpty && (nameChanged || descriptionChanged);
+    };
+
+    const handleEditSubmit = async () => {
+        try {
+            const payload = {
+                ...formData,
+                team_id: selectedTeam.team_id,
+            };
+            const updatedTeam = await editTeam(payload);
+            setSelectedTeam(updatedTeam);
+
+            setTeamsData(prev =>
+                prev.map(team =>
+                    team.team_id === updatedTeam.team_id ? updatedTeam : team
+                )
+            );
+
+            handleClose();
+        } catch (error) {
+            console.error("Ошибка при обновлении команды:", error);
+            navigation.navigate("Error");
+        }
+    };
+
+
     return (
-        <KeyboardAvoidingView style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} >
             {renderHeader()}
-            <View style={styles.containerItem}>
+            < View style={styles.containerItem} >
                 {renderInput()}
             </View>
-            <Pressable style={styles.button}>
+            <Pressable
+                style={[
+                    styles.button,
+                    { backgroundColor: isFormValidAndChanged() ? "#2C88EC" : "#2C88EC66" }
+                ]}
+                onPress={handleEditSubmit}
+                disabled={!isFormValidAndChanged()}
+            >
                 <Text style={styles.button__text}>Сохранить</Text>
             </Pressable>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     )
 }
 
@@ -92,7 +138,6 @@ const styles = StyleSheet.create({
         flex: 1
     },
     button: {
-        backgroundColor: "#2C88EC",
         padding: 12,
         alignItems: "center",
         borderRadius: 12,

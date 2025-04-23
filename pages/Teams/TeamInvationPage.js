@@ -1,8 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
     Pressable,
     StyleSheet,
     Text,
@@ -12,40 +11,84 @@ import {
 import QRCode from 'react-native-qrcode-svg';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import LinkIcon from '../../assets/svg/Link';
-import { useToast } from '../../context/ToastProvider';
+import Loader from '../../components/Loader';
+import { useApi } from '../../context/ApiContext';
 
 export default function TeamInvationPage(props) {
     const { handleClose, teamData } = props;
     const [inviteLink, setInviteLink] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
-    const showToast = useToast();
     const [qrWidth, setQrWidth] = useState(0);
+    const [copied, setCopied] = useState(false);
+    const copyTimeout = useRef(null);
+
+    const { getActiveInvitationToTeam, createInvitationToTeam } = useApi();
 
     useEffect(() => {
-        const generateShortLink = async () => {
-            const longUrl = `https://win-e5oqtj6uhak.tailb0dc72.ts.net/share/post/13`;
+        const fetchInvitationAndGenerateLink = async () => {
             try {
-                const response = await fetch(`https://clck.ru/--?url=${encodeURIComponent(longUrl)}`);
-                const short = await response.text();
-                if (!response.ok) throw new Error(short)
-                setInviteLink(short);
+                // 1. Получаем активное приглашение
+                let invitation = await getActiveInvitationToTeam(teamData.team_id);
+
+                if (!invitation || invitation.length === 0) {
+                    // 2. Если не найдено — создаём
+                    const reqBody = { team_id: teamData.team_id };
+                    invitation = await createInvitationToTeam(reqBody);
+                }
+
+
+                // 3. Формируем длинную ссылку
+                const longUrl = invitation[0].invitationLink;
+                let finalLink = longUrl;
+
+                // 4. Пробуем сократить ссылку
+                try {
+                    const response = await fetch(`https://clck.ru/--?url=${encodeURIComponent(longUrl)}`);
+                    const short = await response.text();
+                    if (!response.ok || !short.startsWith("http")) {
+                        throw new Error("Invalid shortened link");
+                    }
+                    finalLink = short;
+                } catch (err) {
+                    console.warn("Не удалось сократить ссылку, используем оригинальную:", longUrl);
+                }
+
+                // 5. Устанавливаем финальную ссылку
+                setInviteLink(finalLink);
             } catch (err) {
+                console.error("Ошибка при получении приглашения", err);
                 navigation.navigate("Error");
-                console.error("Ошибка при генерации ссылки", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        generateShortLink();
+        fetchInvitationAndGenerateLink();
     }, [teamData]);
+
 
     useEffect(() => {
         if (!loading && !inviteLink) {
             navigation.navigate("Error", { messageProp: "Не удалось сгенерировать ссылку" });
         }
     }, [loading, inviteLink]);
+
+    const handleCopy = async () => {
+        await Clipboard.setStringAsync(inviteLink);
+        setCopied(true);
+
+        // Сброс предыдущего таймера, если он есть
+        if (copyTimeout.current) {
+            clearTimeout(copyTimeout.current);
+        }
+
+        // Устанавливаем новый таймер
+        copyTimeout.current = setTimeout(() => {
+            setCopied(false);
+            copyTimeout.current = null;
+        }, 2000);
+    };
 
     const renderHeader = () => (
         <View style={styles.header}>
@@ -59,13 +102,7 @@ export default function TeamInvationPage(props) {
 
     if (loading) {
         return (
-            <View style={styles.container}>
-                {renderHeader()}
-                <View style={styles.center}>
-                    <ActivityIndicator size="large" color="#2C88EC" />
-                    <Text>Загрузка кода...</Text>
-                </View>
-            </View>
+            <Loader />
         );
     }
 
@@ -94,20 +131,19 @@ export default function TeamInvationPage(props) {
                         </View>
                         <TouchableOpacity
                             style={styles.qr__button}
-                            onPress={() => {
-                                Clipboard.setStringAsync(inviteLink)
-                                showToast("Ссылка скопирована", "info");
-                            }}
+                            onPress={handleCopy}
                         >
-                            <Text style={styles.qr__button_text}>Копировать</Text>
+                            <Text style={styles.qr__button_text}>
+                                {copied ? "Скопировано" : "Копировать"}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
-            <Pressable style={styles.button}>
+            <Pressable style={styles.button} onPress={() => handleClose(true)}>
                 <Text style={styles.button__text}>Перейти к команде</Text>
             </Pressable>
-        </View>
+        </View >
     );
 }
 
@@ -116,12 +152,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#E5E5EA",
         padding: 16,
         flex: 1,
-    },
-    center: {
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-        rowGap: 12,
     },
     header: {
         justifyContent: "space-between",

@@ -23,8 +23,6 @@ const SortModal = ({ visible, onClose, selectedSort, setSelectedSort, handleFilt
 
   const handleSortPress = (option) => {
     setSelectedSort(option);
-    console.log("sort: ", option);
-
   };
 
   const handleApplyPress = () => {
