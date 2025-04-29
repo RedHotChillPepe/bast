@@ -3,14 +3,18 @@ import * as SecureStore from 'expo-secure-store';
 
 const host = process.env.EXPO_PUBLIC_API_HOST;
 
-export const getAuth = async () => {
+export const getAuth = async (isGetInfo = false) => {
     const authDataRaw = await SecureStore.getItemAsync('auth');
     if (!authDataRaw) return null;
     const authData = await JSON.parse(authDataRaw)[0];
     const { access_token, refresh_token } = authData;
     const isValid = await checkAccessToken(access_token);
 
-    if (isValid) return access_token;
+    console.log(refresh_token);
+
+    if (isGetInfo && isValid.valid) return { access_token, decoded: isValid.decoded }
+
+    if (isValid.valid) return access_token;
 
     // Попробуем обновить токен
     const newTokens = await refreshAccessToken(refresh_token);
@@ -38,8 +42,7 @@ export const checkAccessToken = async (access_token) => {
             },
             body: JSON.stringify({ "authorization": access_token })
         });
-        console.log("access_token:",access_token);
-        return res.ok;
+        return await res.json();
     } catch (err) {
         return false;
     }

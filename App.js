@@ -10,7 +10,7 @@ import * as Linking from 'expo-linking';
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, AppState, Platform, Pressable, Text, View } from "react-native";
 import { Geocoder, YaMap } from "react-native-yamap";
 import HeaderComponent from "./components/HeaderComponent";
 import ApiProvider from "./context/ApiContext";
@@ -46,12 +46,16 @@ import UserTeamsPage from "./pages/Teams/UserTeamsPage";
 import TeamPage from "./pages/Teams/TeamPage";
 import TeamJoinRequestScreen from "./pages/Teams/TeamJoinRequestScreen";
 import Loader from "./components/Loader";
+import ChatScreen from "./pages/Chats/ChatScreen";
+import ChatListScreen from "./pages/Chats/ChatListScreen";
+import usePresenceSocket from "./hooks/usePresenceSocket";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const OnboardingStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const TeamStack = createNativeStackNavigator();
+const ChatStack = createNativeStackNavigator();
 const TopStack = createNativeStackNavigator();
 const SearchStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -235,6 +239,28 @@ const StackTeam = () => {
         }}
       />
     </TeamStack.Navigator>
+  )
+}
+const StackChats = () => {
+  return (
+    <ChatStack.Navigator initialRouteName="ChatList">
+      <ChatStack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
+      <ChatStack.Screen
+        name="ChatList"
+        component={ChatListScreen}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
+    </ChatStack.Navigator>
   )
 }
 
@@ -450,8 +476,9 @@ const AppTabs = () => {
             <Ionicons name="chatbubble-outline" size={size} color={color} />
           ),
         }}
+        component={StackChats}
       >
-        {() => <ErrorScreen route={{ params: { errorCode: 2004 } }} />}
+        {/* {() => <ErrorScreen route={{ params: { errorCode: 2004 } }} />} */}
       </Tab.Screen>
       <Tab.Screen
         name="Профиль"
@@ -589,6 +616,7 @@ const AppTopStack = () => {
 // Условный рендер в зависимости от того авторизирован ли пользователь или нет
 const AppInit = () => {
   const { isAuth, isOnboarded, tokenIsLoaded } = useAuth();
+  const { isConnected, setOnlineStatus } = usePresenceSocket();
 
   const [loaded] = useFonts({
     Montserrat400: require("./assets/fonts/Inter_18pt-Regular.ttf"),
@@ -601,6 +629,22 @@ const AppInit = () => {
     Sora500: require('./assets/fonts/Sora-Medium.ttf'),
     Sora700: require('./assets/fonts/Sora-Bold.ttf'),
   });
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      if (nextAppState === 'active' && isAuth) {
+        setOnlineStatus(true);
+      } else if ((nextAppState === 'background' || nextAppState === 'inactive') && isAuth) {
+        setOnlineStatus(false);
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isAuth, isConnected]);
 
   if (!loaded || !tokenIsLoaded) {
     return <Loader />

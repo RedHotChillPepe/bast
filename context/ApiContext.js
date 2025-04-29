@@ -996,6 +996,192 @@ export default function ApiProvider({ children }) {
     }
   };
 
+  const getUserChats = async () => {
+    const accessToken = await getAuth();
+    const url = `${host}api/chats`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        return {
+          success: false,
+          message: error.message || "Не удалось получить чаты пользователя."
+        };
+      }
+
+      const result = await response.json();
+      return {
+        success: true,
+        data: result, // Данные чатов пользователя
+        message: "Чаты успешно получены!"
+      };
+    } catch (error) {
+      console.error("Error fetching user chats: ", error);
+      return {
+        success: false,
+        message: error.message || "Произошла ошибка при получении чатов."
+      };
+    }
+  };
+
+
+  const getChatMessages = async (chatId) => {
+    const accessToken = await getAuth(); // получение accessToken
+    const url = `${host}api/chats/${chatId}/messages`; // предполагаемый маршрут
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        return {
+          success: false,
+          message: error.message || "Не удалось получить сообщения чата."
+        };
+      }
+
+      const result = await response.json();
+      return {
+        success: true,
+        data: result, // массив сообщений
+        message: "Сообщения успешно получены!"
+      };
+    } catch (error) {
+      console.error("Error fetching chat messages: ", error);
+      return {
+        success: false,
+        message: error.message || "Произошла ошибка при получении сообщений."
+      };
+    }
+  };
+
+  const searchMessages = async (query) => {
+    const accessToken = await getAuth();
+
+    const params = new URLSearchParams({
+      q: query.toString(),
+    });
+
+    const url = `${host}api/chats/search/messages?${params}`;
+
+    try {
+      return fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error("Ошибка при поиске:", error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const togglePinedChat = async (chatId) => {
+    const accessToken = await getAuth();
+
+    const url = `${host}api/chats/pined/${Number(chatId)}`;
+
+    console.log(url);
+
+    try {
+      return fetch(url, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error("Ошибка при закрепление чата:", error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const setStatusMessage = async (messageId) => {
+    const accessToken = await getAuth();
+
+    const url = `${host}api/chats/messages/${Number(messageId)}/status/1`;
+
+    console.log(url);
+
+    try {
+      return fetch(url, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error("Ошибка при обновление статуса сообщения:", error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const createChat = async (postId) => {
+    const accessToken = await getAuth();
+
+    const url = `${host}api/chats/`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          post_id: postId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка при создании чата');
+      }
+
+      const data = await response.json();
+
+      return {
+        chat: data.chat,
+        post: data.post,
+        current_user: data.current_user,
+        opponent_user: data.opponent_user,
+      };
+
+    } catch (error) {
+      console.error("Ошибка при создании чата:", error);
+      throw error;
+    }
+  };
 
   return (
     <ApiContext.Provider value={{
@@ -1004,7 +1190,8 @@ export default function ApiProvider({ children }) {
       getPost, getVillage, getManyPosts, getUserPostsByStatus, getUserByID, sendPost, updatePost, updateStatus,
       updateUserStatus, getCurrentUser, registerUser, checkPhone, getUserTeams, getTeamById, createTeam, editTeam,
       getTeamRequest, getActiveInvitationToTeam, createInvitationToTeam, isValidInvitation, acceptInvitationToTeam,
-      acceptTeamRequest, rejectTeamRequest, sendLeaveTeamRequest, removeTeamMember
+      acceptTeamRequest, rejectTeamRequest, sendLeaveTeamRequest, removeTeamMember, getUserChats, getChatMessages, host,
+      searchMessages, togglePinedChat, setStatusMessage, createChat
     }}>
       {children}
     </ApiContext.Provider>

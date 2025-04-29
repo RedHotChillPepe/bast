@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Dimensions, FlatList, StyleSheet, Text, View } from 'react-native'
 import HouseCard from '../components/HouseCard.js'
 import { useApi } from '../context/ApiContext.js'
+import { StatusBar } from 'expo-status-bar'
 
 const { width, height } = Dimensions.get('window');
 
@@ -43,7 +44,7 @@ const FavouritesPage = ({ route }) => {
 
   return (
     <View style={styles.container}>
-
+      <StatusBar backgroundColor={"#fff"} />
       {Object.keys(houses).length != 0 ? (
         <View style={styles.housesView}>
           <FlatList

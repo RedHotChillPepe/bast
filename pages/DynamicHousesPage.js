@@ -8,6 +8,7 @@ import HouseCard from '../components/HouseCard.js'
 import SortModal from '../components/SortModal.js'
 import { useApi } from '../context/ApiContext.js'
 import { useLogger } from '../context/LoggerContext.js'
+import { StatusBar } from 'expo-status-bar'
 
 const { width } = Dimensions.get('window');
 
@@ -263,8 +264,6 @@ const DynamicHousesPage = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={{ height: 8 }} />
-
-
       {/* Категории */}
       <View style={styles.categoriesContainer}>
         <Pressable style={{ backgroundColor: '#007AFF', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8, alignSelf: 'flex-start', marginLeft: 12 }} onPress={() => { clearFilters() }}>

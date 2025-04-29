@@ -30,6 +30,7 @@ import { useToast } from "../context/ToastProvider";
 import MortgageCalculator from './MortgageCalculator';
 import ProfilePageView from './ProfilePageView';
 import { useLogger } from '../context/LoggerContext';
+import ChatScreen from './Chats/ChatScreen';
 
 const { width, height } = Dimensions.get('window');
 
@@ -37,7 +38,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const houseId = route.houseId || route.params.houseId;
   const timestamp = route.params?.timestamp || 0;
   const isModal = route.isModal || false;
-  const { getPost, getIsOwner, getUserByID, updateStatus, getCurrentUser } = useApi();
+  const { getPost, getIsOwner, getUserByID, updateStatus, getCurrentUser, createChat } = useApi();
   const { getAuth } = useAuth();
   const showToast = useToast();
 
@@ -55,6 +56,10 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [isInteractingWithMap, setIsInteractingWithMap] = useState(false);
   const [showModalSeller, setShowNodalSeller] = useState(false);
+  const [isShowChatModal, setIsShowChatModal] = useState(false);
+
+  const [chatData, setChatData] = useState([]);
+  const [currentUser, setCurrentUser] = useState({});
 
   const { logError } = useLogger();
 
@@ -148,6 +153,36 @@ export default function DynamicHousePostPage({ navigation, route }) {
     setShowModal(true);
     const result = await getUserByID(postData.poster_id);
     setPhone(result.phone);
+  };
+
+  const handleChatButton = async () => {
+    try {
+      // Создаем чат
+      const chatData = await createChat(postData.id);
+      setChatData({
+        ...chatData.chat,
+        post: chatData.post
+      });
+
+      setCurrentUser(chatData.current_user)
+      setIsShowChatModal(true);
+      // // Переходим в чат
+      // navigation.navigate("ChatScreen", {
+      //   selectedChat: chatData.chat,
+      //   currentUser: {
+      //     id: currentUser.id,
+      //     usertype: currentUser.usertype,
+      //     name: currentUser.name,
+      //     surname: currentUser.surname,
+      //     photo: currentUser.photo,
+      //   },
+      //   post: chatData.post,
+      // });
+
+    } catch (error) {
+      console.error("Ошибка при создании чата:", error);
+      showToast(error.message || "Не удалось создать чат", "error");
+    }
   };
 
   // Функция изменения статуса объявления
@@ -252,9 +287,19 @@ export default function DynamicHousePostPage({ navigation, route }) {
     }
 
     return (
-      <TouchableOpacity onPress={() => handleCallButton()} style={[styles.button, { marginTop: 32, }]}>
-        <Text style={styles.buttonText}>Позвонить</Text>
-      </TouchableOpacity >
+      <View
+        style={{
+          flexDirection: 'row', width, justifyContent: 'space-between',
+          paddingHorizontal: 16, alignItems: "flex-end", marginTop: 32
+        }
+        }>
+        <TouchableOpacity onPress={() => handleChatButton()} style={[styles.button_1, { paddingVertical: 8 }]}>
+          <Text style={styles.buttonText}>Написать</Text>
+        </TouchableOpacity >
+        <TouchableOpacity onPress={() => handleCallButton()} style={[styles.button_2, { paddingVertical: 8 }]}>
+          <Text style={styles.buttonText2}>Позвонить</Text>
+        </TouchableOpacity >
+      </View>
     );
   };
 
@@ -722,6 +767,9 @@ ${priceInfo}
       </CustomModal>
 
       {renderModal()}
+      <Modal visible={isShowChatModal}>
+        <ChatScreen handleClose={() => setIsShowChatModal(false)} selectedChat={chatData} currentUser={currentUser} />
+      </Modal>
     </View>
   );
 }
@@ -890,8 +938,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center'
   },
+  button_2: {
+    paddingVertical: 12,
+    width: (width - 48) / 2,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderColor: "#2C88EC",
+    borderWidth: 1,
+  },
   buttonText: {
     color: '#fff',
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: -0.43,
+    fontWeight: "400",
+    fontFamily: "Sora700",
+  },
+  buttonText2: {
+    color: '#2C88EC',
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.43,
