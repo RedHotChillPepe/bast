@@ -261,7 +261,11 @@ const ChatScreen = (props) => {
             >
                 <Image
                     style={styles.user__image}
-                    source={{ uri: item.user?.avatar || 'https://via.placeholder.com/42' }}
+                    source={
+                        item.user?.avatar
+                            ? { uri: item.user?.avatar }
+                            : require('../../assets/placeholder.png')
+                    }
                 />
                 <View style={{ rowGap: 7 }}>
                     <Text

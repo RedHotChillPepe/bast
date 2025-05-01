@@ -49,11 +49,21 @@ const ChatListScreen = ({ navigation }) => {
     useEffect(() => {
         setIsLoading(true);
         const fetchChats = async () => {
-            const chatData = await getUserChats();
-            setChatsData(chatData.data.chats);
-            setCurrentUser(chatData.data.current_user);
-            setIsLoading(false);
-        }
+            try {
+                const chatData = await getUserChats();
+                if (chatData?.data?.chats) {
+                    setChatsData(sortChats(chatData.data.chats, isAscSort));
+                }
+                if (chatData?.data?.current_user) {
+                    setCurrentUser(chatData.data.current_user);
+                }
+            } catch (error) {
+                console.error('Error fetching chats:', error);
+                showToast('Ошибка при загрузке чатов', 'error');
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
         fetchChats();
     }, [isFocused]);
@@ -61,6 +71,8 @@ const ChatListScreen = ({ navigation }) => {
     if (isLoading) return <Loader />
 
     const handleSelectedChat = (item, isShowModalChat = true) => {
+        if (!item) return
+
         setSelectedChat(item);
         setIsShowModal(isShowModalChat);
         setIsModalEditShow(!isShowModalChat);
@@ -74,7 +86,7 @@ const ChatListScreen = ({ navigation }) => {
                         <ChatCard
                             post={selectedChat?.post}
                             isModal={true}
-                            initials={`${selectedChat?.opponent_user.name} ${selectedChat?.opponent_user.surname[0]}.`}
+                            initials={`${selectedChat?.opponent_user?.name} ${selectedChat?.opponent_user?.surname?.[0]}.`}
                         />
                         <View style={{ gap: 16 }}>
                             <TouchableOpacity
@@ -139,7 +151,7 @@ const ChatListScreen = ({ navigation }) => {
             setSearchValue={setSearchValue}
         />
         <FlatList
-            data={searchValue.length > 0 ? searchData : chatsData}
+            data={searchValue.length > 0 ? (searchData || []).filter(Boolean) : (chatsData || []).filter(Boolean)}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => {
                 const chat = item || {};
@@ -155,7 +167,7 @@ const ChatListScreen = ({ navigation }) => {
                             post={post}
                             lastMessage={lastMessage}
                             searchValue={searchValue}
-                            initials={`${item?.opponent_user.name} ${item?.opponent_user.surname[0]}.`}
+                            initials={`${item?.opponent_user?.name} ${item?.opponent_user?.surname?.[0]}.`}
                             isPined={item.isPined}
                         />
                     </TouchableOpacity>

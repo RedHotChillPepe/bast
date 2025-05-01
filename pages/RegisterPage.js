@@ -1,32 +1,50 @@
-import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { Dimensions, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions, Modal, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ChevronLeft from '../assets/svg/ChevronLeft';
+import InputProperty from "../components/PostComponents/InputProperty";
 import { useApi } from '../context/ApiContext';
+import DocumentationScreen from './Register/DocumentationScreen';
+import { useToast } from "../context/ToastProvider";
 
 const { width } = Dimensions.get('window');
 
-const RegisterPage = () => {
-  const { checkPhone } = useApi();
+const RegisterPage = ({ route }) => {
+  const { checkPhone, getDocument } = useApi();
+  const showToast = useToast();
 
   const navigation = useNavigation();
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [prevPhone, setPrevPhone] = useState("");
-  const [password, setPassword] = useState('');
-  const [doublePass, setDoublePass] = useState('');
 
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errorMessageRetryPassword, setErrorMessageRetryPassword] = useState("");
-  const [secureText, setSecureText] = useState(true);
-  const [secureDoubleText, setSecureDoubleText] = useState(true);
+  const [formData, setFormData] = useState({
+    phoneNumber: '',
+    password: '',
+    confirmPassword: "",
+    usertype: route.params.usertype,
+    isCheckPrivacy: false,
+    isCheckTerm: false
+  });
 
-  const [isPhoneLabelShown, setIsPhoneLabelShown] = useState(false);
-  const [isUserExistsLabelShown, setIsUserExistsLabelShown] = useState(false);
+  const [formErrors, setFormErrors] = useState({
+    phoneNumber: '',
+    password: '',
+    confirmPassword: '',
+  });
 
-  const formatPhoneNumber = (text, previousText) => {
+
+  const [documents, setDocuments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState({});
+  const [isShowDocumentModal, setIsShowDocumentModal] = useState(false);
+
+  const handleSelectedDocument = (item) => {
+    setSelectedDocument(item);
+    setIsShowDocumentModal(true);
+  }
+
+  const formatPhoneNumber = (text, previousText, field) => {
     if (!text) return "";
-    setIsPhoneLabelShown(text.length !== 18);
     if (previousText && previousText.length > text.length) return text;
     let cleaned = text.replace(/\D/g, "");
     cleaned = cleaned.startsWith("7") || cleaned.startsWith("8") ? `7${cleaned.slice(1)}` : `7${cleaned}`;
@@ -49,80 +67,106 @@ const RegisterPage = () => {
     return text;
   };
 
-  const handleChangePhone = (text) => {
-    const formatted = formatPhoneNumber(text, prevPhone);
-    setPhoneNumber(formatted);
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getDocument();
+        setDocuments(result);
+
+      } catch (error) {
+        console.log(error);
+      }
+      setIsLoading(false);
+    }
+
+    fetchDocuments();
+  }, []);
+
+  const handleChangePhone = (field, value) => {
+    const formatted = formatPhoneNumber(value, prevPhone, field);
+    setFormData((prevData) => ({ ...prevData, [field]: formatted }));
     setPrevPhone(formatted);
+    setFormErrors((prev) => ({ ...prev, [field]: formatted.length === 18 ? "" : "Не верный формат номера телефона" }))
   };
 
   // Разрешённые символы: ASCII от 33 (!) до 126 (~)
   const allowedRegex = /^[\x21-\x7E]*$/;
-  const handlePasswordChange = (text) => {
-    if (!allowedRegex.test(text)) {
-      setErrorMessage("Введён недопустимый символ");
+  const handlePasswordChange = (field, value) => {
+    if (!allowedRegex.test(value)) {
+      setFormErrors((prev) => ({ ...prev, [field]: "Введён недопустимый символ" }));
       return;
     }
 
-    setPassword(text);
-    setErrorMessage(text.length > 0 && text.length < 6 ? "Пароль должен содержать минимум 6 символов" : "");
+    setFormData((prevData) => {
+      const newData = { ...prevData, [field]: value };
+      const password = field === 'password' ? value : prevData.password;
+      const confirmPassword = field === 'confirmPassword' ? value : prevData.confirmPassword;
 
-    if (doublePass !== text) {
-      setErrorMessageRetryPassword("Пароли не совпадают");
-      return
-    }
+      const newErrors = {
+        password: password.length > 0 && password.length < 6
+          ? "Пароль должен содержать минимум 6 символов"
+          : password !== confirmPassword ? "Пароли не совпадают" : "",
+        confirmPassword: password !== confirmPassword ? "Пароли не совпадают" : ""
+      };
 
-    setErrorMessageRetryPassword("");
+      setFormErrors(newErrors);
+      return newData;
+    });
   };
 
-  const handleDoublePassChange = (text) => {
-    setDoublePass(text);
-    if (password !== text) {
-      setErrorMessageRetryPassword("Пароли не совпадают");
-      return;
+  const hasFormErrors = () => {
+    // Проверка ошибок валидации
+    if (Object.values(formErrors).some(error => error !== "")) {
+      return true;
     }
-    setErrorMessageRetryPassword("");
+
+    let result = false;
+
+    // Проверка обязательных полей
+    const requiredFields = {
+      phoneNumber: "Телефон обязателен",
+      password: "Пароль обязателен",
+      confirmPassword: "Подтверждение пароля обязательно"
+    };
+
+    for (const [field, errorMessage] of Object.entries(requiredFields)) {
+      if (!formData[field] || formData[field].trim() === "") {
+        // setFormErrors(prev => ({ ...prev, [field]: errorMessage }));
+        result = true;
+      }
+    }
+
+    return result;
   };
 
   const handleSubmit = async () => {
-    const phonePattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/g;
-
-    let isCorrect = (errorMessage.length == 0 && !isPhoneLabelShown && errorMessageRetryPassword.length == 0);
-    if (!phonePattern.test(phoneNumber)) {
-      setIsPhoneLabelShown(true);
-      isCorrect = false;
+    // Проверка на ошибки
+    if (hasFormErrors()) {
+      showToast("Пожалуйста, исправьте ошибки в форме", "warn");
+      return;
     }
 
-    if (!password) {
-      setErrorMessage("Необходимо указать пароль");
-      isCorrect = false;
-    }
-
-    if (!doublePass) {
-      setErrorMessageRetryPassword("Необходимо повторить пароль");
-      isCorrect = false;
-    }
-
-    if (!isCorrect) return;
-
-    const normalPhoneNumber = normalizePhoneNumber(phoneNumber);
+    // Если ошибок нет, продолжаем обработку
     try {
-      const result = await checkPhone(normalPhoneNumber)
+      const normalPhoneNumber = normalizePhoneNumber(formData.phoneNumber);
+      const result = await checkPhone(normalPhoneNumber);
+
       if (result.statusCode !== 200) {
-        throw new Error(result.message)
+        throw new Error(result.message);
       }
 
       navigation.navigate("ConfirmationPage", {
         regData: {
           phoneNumber: normalPhoneNumber,
-          password,
+          password: formData.password,
+          usertype: formData.usertype
         }
       });
-
     } catch (error) {
       console.error(error);
-      setIsUserExistsLabelShown(true);
-      return;
-    };
+      showToast(error.message || "Ошибка при регистрации");
+    }
   };
 
   const normalizePhoneNumber = (text) => {
@@ -142,94 +186,127 @@ const RegisterPage = () => {
     return cleaned;
   };
 
-  const handleChangeShowSecureText = () => {
-    setSecureDoubleText(!secureText);
-    setSecureText(!secureText);
+  const inputList = [
+    { label: "Телефон", placeholder: "+7 (ХХХ) ХХХ-ХХ-ХХ", valueName: "phoneNumber", type: "tel", error: formErrors.phoneNumber },
+    { label: "Придумайте пароль", placeholder: "Пароль", valueName: "password", type: "password", error: formErrors.password },
+    { label: "Подтвердите пароль", placeholder: "Подтвердите пароль", valueName: "confirmPassword", type: "confirmPassword", error: formErrors.confirmPassword },
+  ]
+
+  const handleInputChange = (field, value) => {
+    switch (field) {
+      case "phoneNumber":
+        handleChangePhone(field, value);
+        break;
+      case "password":
+        handlePasswordChange(field, value);
+        break;
+      case "confirmPassword":
+        handlePasswordChange(field, value);
+        break;
+    }
+  };
+
+  const renderHeader = () => {
+    return <View style={styles.header}>
+      <Pressable onPress={() => navigation.goBack()}>
+        <ChevronLeft />
+      </Pressable>
+      <Text style={styles.header__title}>Регистрация</Text>
+      <View />
+    </View >
+  }
+
+  const radioButton = (typeCheck) => {
+    return <View style={{ columnGap: 12, flexDirection: "row", alignItems: "center", alignItems: "center", }}>
+      <TouchableOpacity
+        onPress={() => handleInputChange(typeCheck, !formData[typeCheck])}
+        style={[styles.radio__button, { borderColor: formData[typeCheck] ? "#2C88EC" : "#A1A1A1" }]}
+      >
+        {formData[typeCheck] &&
+          <View style={styles.radio__point}></View>
+        }
+      </TouchableOpacity>
+      <View style={styles.radio__text__container}>
+        <Text style={[styles.radio__text, { color: "#808080" }]}>Я прочитал и согласен с </Text>
+        <TouchableOpacity>
+          <Text style={[styles.radio__text, { color: "#2C88EC" }]}>политикой конфиденциальности</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  }
+
+  const renderDocuments = () => {
+    if (isLoading) return <View style={{ marginTop: 40 }}><ActivityIndicator /></View>
+
+    return <View style={{ marginTop: 40, alignSelf: "stretch" }}>
+      <Text style={[styles.confirm__text, { color: "#808080" }]}>
+        Нажимая «Далее», вы соглашаетесь с условиями следующих документов:&nbsp;
+        {documents.map((item, index) => (
+          <Text style={styles.confirm__text} key={`documents-${index}`}>
+            <Text
+              style={[styles.confirm__text, { color: '#2C88EC' }]}
+              onPress={() => handleSelectedDocument(item)}
+            >
+              {item.title}
+            </Text>
+            {index === documents.length - 1 ? '.' : ', '}
+          </Text>
+        ))}
+      </Text>
+    </View>
+  }
+
+  const renderInput = () => {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", alignSelf: 'stretch', marginHorizontal: 16, }}>
+        <Text style={styles.titleText}>Данные пользователя</Text>
+        <View style={styles.input__container}>
+          {inputList.map((item, index) => (
+            <View key={`input-${index}`}>
+              <View View style={styles.row} >
+                <InputProperty
+                  title={item.label}
+                  placeholder={item.placeholder}
+                  value={formData[item.valueName]}
+                  valueName={item.valueName}
+                  type={item.type}
+                  handleInputChange={handleInputChange}
+                />
+              </View>
+              {item.error &&
+                <Text style={styles.errorText}>{item.error}</Text>
+              }
+            </View>)
+          )}
+        </View>
+        {/* <View style={{ rowGap: 16, marginTop: 40, alignSelf: "stretch" }}>
+          {radioButton("isCheckPrivacy")}
+          {radioButton("isCheckTerm")}
+        </View> */}
+        {renderDocuments()}
+      </View >)
+  }
+
+  const renderSubmitButton = () => {
+    return <TouchableOpacity
+      style={[styles.submitButton, { opacity: hasFormErrors() ? 0.5 : 1 }]}
+      onPress={() => handleSubmit()}
+      disabled={hasFormErrors()}
+    >
+      <Text style={styles.submitButtonText}>
+        Далее
+      </Text>
+    </TouchableOpacity>
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Телефон:</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="+7 (912) 444-22-11"
-            keyboardType='phone-pad'
-            value={phoneNumber}
-            maxLength={18}
-            onChangeText={text => handleChangePhone(text)}
-            placeholderTextColor="rgba(60,60,67,0.6)"
-            fontSize={17}
-          />
-        </View>
-        {isPhoneLabelShown && (
-          <Text style={styles.inputLabel}>Неверный номер телефона</Text>
-        )}
-      </View>
+      <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
+      {renderHeader()}
+      {renderInput()}
+      {renderSubmitButton()}
+      <Modal visible={isShowDocumentModal}><DocumentationScreen selectedDocument={selectedDocument} handleClose={() => setIsShowDocumentModal(false)} /></Modal>
 
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Пароль:</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Пароль"
-            secureTextEntry={secureText}
-            value={password}
-            onChangeText={(text) => handlePasswordChange(text)}
-            maxLength={20}
-            placeholderTextColor="rgba(60,60,67,0.6)"
-            fontSize={17}
-          />
-          <Pressable
-            style={styles.iconContainer}
-            onPress={handleChangeShowSecureText}
-          >
-            <AntDesign name={secureText ? "eyeo" : "eye"} size={20} color="gray" />
-          </Pressable>
-        </View>
-        {errorMessage ? (
-          <Text style={styles.errorText}>{errorMessage}</Text>
-        ) : null}
-      </View>
-
-      <View style={styles.block}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>Подтвердите пароль:</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Повтор пароля"
-            secureTextEntry={secureDoubleText}
-            value={doublePass}
-            onChangeText={text => handleDoublePassChange(text)}
-            maxLength={20}
-            placeholderTextColor="rgba(60,60,67,0.6)"
-            fontSize={17}
-          />
-        </View>
-        {errorMessageRetryPassword ? (
-          <Text style={styles.errorText}>{errorMessageRetryPassword}</Text>
-        ) : null}
-      </View>
-
-      <Pressable
-        style={styles.submitButton}
-        onPress={() => handleSubmit()}
-      >
-        <Text style={styles.submitButtonText}>
-          Подтвердить
-        </Text>
-      </Pressable>
-
-      {isUserExistsLabelShown && (
-        <Text style={styles.inputLabel}>Этот номер телефона уже зарегистрирован</Text>
-      )}
     </SafeAreaView>
   );
 };
@@ -239,39 +316,49 @@ export default RegisterPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#E5E5EA',
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  header: {
+    justifyContent: "space-between",
+    flexDirection: "row",
+    paddingVertical: 16,
+    alignItems: "center",
+    alignSelf: "stretch",
+    marginHorizontal: 16
+  },
+  header__title: {
+    color: "#3E3E3E",
+    fontSize: 20,
+    fontFamily: "Sora700",
+    fontWeight: 600,
+    lineHeight: 25.2,
+    letterSpacing: -0.6,
+  },
+
   errorText: {
     marginTop: 8,
     color: "red",
     fontSize: 14,
   },
-  block: {
-    width: width * 0.6,
-    marginBottom: 24,
+  input__container: {
+    gap: 24,
+    alignSelf: "stretch",
   },
-  inputContainer: {
+  row: {
+    columnGap: 16,
     flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    backgroundColor: 'rgba(120,120,128,0.12)',
-    height: 40,
-    borderRadius: 12,
-    paddingHorizontal: 8,
-  },
-  iconContainer: {
-    padding: 8,
-  },
-  title: {
-    marginBottom: 12,
   },
   titleText: {
-    fontSize: 20,
-    lineHeight: 25,
-    letterSpacing: -0.45,
-    fontWeight: '500',
+    fontSize: 16,
+    color: "#3E3E3E",
+    lineHeight: 20.17,
+    letterSpacing: -0.48,
+    fontWeight: 600,
+    fontFamily: "Sora700",
+    paddingBottom: 24,
   },
   input: {
     flex: 1,
@@ -279,21 +366,53 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     fontSize: 17,
   },
-  inputLabel: {
-    color: "red",
-    marginTop: 4,
-  },
   submitButton: {
     backgroundColor: '#007AFF',
-    paddingVertical: 7,
-    paddingHorizontal: 14,
+    padding: 12,
+    alignSelf: "stretch",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 16,
     borderRadius: 12,
-    marginTop: 32,
+    marginBottom: 44,
   },
   submitButtonText: {
-    fontSize: 17,
-    lineHeight: 22,
-    letterSpacing: -0.43,
-    color: 'white',
+    fontSize: 16,
+    lineHeight: 20.17,
+    letterSpacing: -0.48,
+    fontWeight: 600,
+    fontFamily: "Sora700",
+    color: '#F2F2F7',
   },
+  radio__button: {
+    borderRadius: "50%",
+    width: 14,
+    height: 14,
+    borderWidth: 1,
+    padding: 2
+  },
+  radio__point: {
+    borderRadius: "50%",
+    backgroundColor: "#2C88EC",
+    flex: 1
+  },
+  radio__text__container: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  radio__text: {
+    fontSize: 12,
+    fontWeight: 400,
+    lineHeight: 16,
+    letterSpacing: -0.36,
+    fontFamily: "Sora400"
+  },
+  confirm__text: {
+    flexWrap: 'wrap',
+    fontSize: 12,
+    fontWeight: 400,
+    lineHeight: 16,
+    letterSpacing: -0.36,
+    fontFamily: "Sora400"
+  }
 });

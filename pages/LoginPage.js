@@ -38,7 +38,7 @@ const LoginPage = () => {
         alignItems: 'center',
         justifyContent: 'center'
       }}
-        onPress={() => navigation.navigate("Register")}>
+        onPress={() => navigation.navigate("RegisterSelectType")}>
         <Text style={{ color: '#007AFF', fontSize: 17, lineHeight: 22, letterSpacing: -0.43, fontWeight: 400 }}>Регистрация</Text>
       </Pressable>
 

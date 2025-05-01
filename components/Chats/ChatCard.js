@@ -23,7 +23,20 @@ export default function ChatCard({ post, lastMessage = "", searchValue, isModal 
     return (
         <View style={[styles.container, { padding: isModal ? 0 : 16, borderBottomWidth: isModal ? 0 : 1, backgroundColor: isPined ? "#FFF" : "#E5E5EA" }]}>
             <View style={styles.postContainer}>
-                <Image style={[styles.post__image, { width: isModal ? 87 : 78, aspectRatio: isModal ? (87.15 / 56) : (39 / 25), }]} source={{ uri: post.photos[0] }} />
+                <Image
+                    style={[
+                        styles.post__image,
+                        {
+                            width: isModal ? 87 : 78,
+                            aspectRatio: isModal ? (87.15 / 56) : (39 / 25),
+                        },
+                    ]}
+                    source={
+                        post?.photos?.[0]
+                            ? { uri: post.photos[0] }
+                            : require('../../assets/placeholder.png')
+                    }
+                />
                 <View style={styles.post__info}>
                     <Text style={styles.post__price}>{initials}</Text>
                     <View style={[styles.post__caption, { flexDirection: isModal ? "column" : "row", alignItems: isModal ? "baseline" : "center" }]}>

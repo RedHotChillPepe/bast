@@ -10,14 +10,18 @@ import * as Linking from 'expo-linking';
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { ActivityIndicator, AppState, Platform, Pressable, Text, View } from "react-native";
+import { AppState, Platform, Pressable, Text } from "react-native";
 import { Geocoder, YaMap } from "react-native-yamap";
 import HeaderComponent from "./components/HeaderComponent";
+import Loader from "./components/Loader";
 import ApiProvider from "./context/ApiContext";
 import AuthProvider, { useAuth } from "./context/AuthContext";
 import { LoggerProvider } from './context/LoggerContext';
 import ToastProvider from "./context/ToastProvider";
+import usePresenceSocket from "./hooks/usePresenceSocket";
 import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
+import ChatListScreen from "./pages/Chats/ChatListScreen";
+import ChatScreen from "./pages/Chats/ChatScreen";
 import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
 import ConfirmDeleteProfilePage from './pages/ConfirmDeleteProfilePage';
 import ConfirmationPage from "./pages/ConfirmationPage.js";
@@ -37,18 +41,15 @@ import ProfileCompanyPageView from "./pages/ProfileCompanyPageView.js";
 import ProfileEmployeePageView from "./pages/ProfileEmployeePageView.js";
 import ProfilePage from "./pages/ProfilePage";
 import ProfilePageView from "./pages/ProfilePageView.js";
+import RegisterTypeUserPage from "./pages/Register/RegisterTypeUserPage";
 import RegisterPage from "./pages/RegisterPage";
 import SearchMap from "./pages/SearchMap.js";
 import SettingsPage from "./pages/SettingsPage.js";
+import TeamJoinRequestScreen from "./pages/Teams/TeamJoinRequestScreen";
+import TeamPage from "./pages/Teams/TeamPage";
+import UserTeamsPage from "./pages/Teams/UserTeamsPage";
 import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
-import UserTeamsPage from "./pages/Teams/UserTeamsPage";
-import TeamPage from "./pages/Teams/TeamPage";
-import TeamJoinRequestScreen from "./pages/Teams/TeamJoinRequestScreen";
-import Loader from "./components/Loader";
-import ChatScreen from "./pages/Chats/ChatScreen";
-import ChatListScreen from "./pages/Chats/ChatListScreen";
-import usePresenceSocket from "./hooks/usePresenceSocket";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -62,7 +63,7 @@ const Tab = createBottomTabNavigator();
 
 // process.env.NODE_ENV !== "development" && YaMap.init(process.env.EXPO_PUBLIC_YAMAP_API_KEY)
 // Geocoder.init(process.env.EXPO_PUBLIC_GEOCODER_API_KEY);
-// YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
+YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
 Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
 
 const SearchPostsStack = () => {
@@ -505,12 +506,25 @@ const AppAuthStack = () => {
           headerShown: false,
         }}
       />
-
+      <AuthStack.Screen
+        name="RegisterSelectType"
+        component={RegisterTypeUserPage}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AuthStack.Screen
+        name="Главная"
+        component={MainPage}
+        options={{
+          header: (props) => <HeaderComponent {...props} />
+        }}
+      />
       <AuthStack.Screen
         name="Register"
         component={RegisterPage}
         options={({ navigation }) => ({
-          headerShown: true,
+          headerShown: false,
           headerTitle: "Регистрация",
           ...(Platform.OS === "ios" && {
             headerLeft: () => (
@@ -779,7 +793,7 @@ export default function App() {
     setBackgroundColorAsync("#F2F2F7").catch(console.error); // Устанавливаем цвет фона
   }, []);
 
-  process.env.NODE_ENV !== "development" &&
+  // process.env.NODE_ENV !== "development" &&
     useEffect(() => {
       if (YaMap && typeof YaMap.init === 'function') {
         YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ

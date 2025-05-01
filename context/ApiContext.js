@@ -1183,6 +1183,25 @@ export default function ApiProvider({ children }) {
     }
   };
 
+  const getDocument = async (docType) => {
+
+    let url = `${host}api/documents`;
+
+    if (docType) {
+      const params = new URLSearchParams({
+        type: docType.toString(),
+      });
+      url += `?${params}`;
+    }
+
+    const response = await fetch(url);
+    const resultJson = await response.json();
+    if (!response.ok) {
+      throw new Error(resultJson.message);
+    }
+    return resultJson;
+  };
+
   return (
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
@@ -1191,7 +1210,7 @@ export default function ApiProvider({ children }) {
       updateUserStatus, getCurrentUser, registerUser, checkPhone, getUserTeams, getTeamById, createTeam, editTeam,
       getTeamRequest, getActiveInvitationToTeam, createInvitationToTeam, isValidInvitation, acceptInvitationToTeam,
       acceptTeamRequest, rejectTeamRequest, sendLeaveTeamRequest, removeTeamMember, getUserChats, getChatMessages, host,
-      searchMessages, togglePinedChat, setStatusMessage, createChat
+      searchMessages, togglePinedChat, setStatusMessage, createChat, getDocument
     }}>
       {children}
     </ApiContext.Provider>

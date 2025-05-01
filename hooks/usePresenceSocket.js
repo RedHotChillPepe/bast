@@ -26,6 +26,7 @@ const useSocket = () => {
     const connectSocket = async () => {
         try {
             const user = await getAuth(true);
+            if (!user) return
             userRef.current = user.decoded;
             const token = user.token;
 

@@ -155,7 +155,11 @@ const TeamPage = (props) => {
     const renderPeopleItem = (member) => {
         return (
             <View style={{ flexDirection: "row", columnGap: 8 }}>
-                <Image style={styles.item__photo} source={{ uri: member.user.photo }} />
+                <Image style={styles.item__photo} source={
+                    member?.user?.photo
+                        ? { uri: member?.user?.photo }
+                        : require('../../assets/placeholder.png')
+                } />
                 <View style={styles.item__about}>
                     <View style={styles.people}>
                         <Text style={styles.people__name}>{member.user.name} {member.user.surname}</Text>

@@ -1,9 +1,14 @@
-import React from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import ShowIcon from "../../assets/svg/Show";
+import HideIcon from "../../assets/svg/Hide";
 
 const InputProperty = (props) => {
     const { placeholder, title, type, valueName, value, options, handleInputChange, keyboardType } = props;
+    const [secureText, setSecureText] = useState(type === 'password' || type === 'confirmPassword');
+    const [showToggleIcon, setShowToggleIcon] = useState(type === "password" || type === "confirmPassword");
+
     const renderInput = () => {
         switch (type) {
             case 'select':
@@ -35,27 +40,43 @@ const InputProperty = (props) => {
                         }}
                     />
                 );
-            default: // обычный инпут
+            default:
+                let keyboardType = "default";
+
+                if (type === "tel") keyboardType = "phone-pad";
+                if (type === "email") keyboardType = "email-address";
+                if (type === "number") keyboardType = "numeric";
+
                 return (
-                    <TextInput
-                        style={styles.input}
-                        placeholder={placeholder}
-                        placeholderTextColor="#A1A1A1"
-                        keyboardType={keyboardType || "default"}
-                        value={value}
-                        onChangeText={(value) => {
-                            handleInputChange(valueName, value);
-                        }}
-                    />
+                    <View style={styles.inputWrapper}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={placeholder}
+                            placeholderTextColor="#A1A1A1"
+                            keyboardType={keyboardType}
+                            secureTextEntry={secureText}
+                            value={value}
+                            onChangeText={(value) => handleInputChange(valueName, value)}
+                        />
+                    </View>
                 );
         }
     };
 
     return (
         <View style={styles.container}>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                <Text style={styles.title}>{title}</Text>
-                {renderInput()}
+            <KeyboardAvoidingView style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <View>
+                    <Text style={styles.title}>{title}</Text>
+                    {renderInput()}
+                </View>
+                <Pressable onPress={() => setSecureText(!secureText)}>
+                    {
+                        showToggleIcon && (
+                            secureText ? <ShowIcon /> : <HideIcon />
+                        )
+                    }
+                </Pressable>
             </KeyboardAvoidingView>
         </View>
     );
@@ -101,6 +122,10 @@ const styles = StyleSheet.create({
     textarea: {
         height: 240,
         textAlignVertical: "top",
+    },
+    inputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });
 

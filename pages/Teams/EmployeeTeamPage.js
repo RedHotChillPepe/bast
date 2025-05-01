@@ -33,7 +33,11 @@ const EmployeeTeamPage = (props) => {
         return (
             <View style={styles.item}>
                 <View style={{ flexDirection: "row", columnGap: 8 }}>
-                    <Image style={styles.item__photo} source={{ uri: selectedPeople.user.photo }} />
+                    <Image style={styles.item__photo} source={
+                        selectedPeople?.user?.photo
+                            ? { uri: selectedPeople?.user?.photo }
+                            : require('../../assets/placeholder.png')
+                    } />
                     <View style={styles.item__about}>
                         <View style={styles.people}>
                             <Text style={styles.people__name}>{selectedPeople.user.name} {selectedPeople.user.surname}</Text>

@@ -166,18 +166,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
 
       setCurrentUser(chatData.current_user)
       setIsShowChatModal(true);
-      // // Переходим в чат
-      // navigation.navigate("ChatScreen", {
-      //   selectedChat: chatData.chat,
-      //   currentUser: {
-      //     id: currentUser.id,
-      //     usertype: currentUser.usertype,
-      //     name: currentUser.name,
-      //     surname: currentUser.surname,
-      //     photo: currentUser.photo,
-      //   },
-      //   post: chatData.post,
-      // });
 
     } catch (error) {
       console.error("Ошибка при создании чата:", error);
