@@ -4,18 +4,19 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
 import ProfileCompanyPage from './ProfileCompanyPage.js';
 import ProfileRealtorPage from './ProfileEmployeePage.js';
 import Loader from '../components/Loader';
+import { UserCardIcon } from '../assets/svg/UserCard';
 
 const { width } = Dimensions.get('window');
 
 const ProfilePage = ({ route }) => {
-  const { logout, getAuth } = useAuth();
+  const { logout, getAuth, changePassword } = useAuth();
   const navigation = useNavigation();
   const { getUser, getCurrentUser } = useApi()
   const insets = useSafeAreaInsets();
@@ -87,7 +88,7 @@ const ProfilePage = ({ route }) => {
   ];
 
   const renderItem = (item, index, sectionData) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => navigation.navigate(item.navigation[0], item.navigation[1])}
       key={index}
       style={styles.listItem}>
@@ -96,7 +97,7 @@ const ProfilePage = ({ route }) => {
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
       <Ionicons name="chevron-forward" size={17} color="black" />
-    </Pressable>
+    </TouchableOpacity>
   );
 
   if (!usertype) {
@@ -124,9 +125,9 @@ const ProfilePage = ({ route }) => {
                     <FontAwesome6 name="face-tired" size={56} color="black" />
                 }
 
-                <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype })}>
+                <TouchableOpacity onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype })}>
                   <FontAwesome name="edit" size={24} color="#fff" />
-                </Pressable>
+                </TouchableOpacity>
               </View>
 
               <View style={{ flexDirection: 'row' }}>
@@ -151,15 +152,17 @@ const ProfilePage = ({ route }) => {
             ))
             }
 
-            <Pressable onPress={logout} style={styles.logoutButton}>
+            <TouchableOpacity onPress={logout} style={styles.logoutButton}>
               <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
               <Ionicons name="exit-outline" size={24} color="#fff" />
-            </Pressable>
-
-            <Pressable onPress={() => { navigation.navigate("ProfileCompanyPageView", { CompanyId: 1 }) }} style={styles.logoutButton}>
-              <Text style={[styles.itemText, styles.logoutText]}>Профиль компании</Text>
-              <Ionicons name="exit-outline" size={24} color="#fff" />
-            </Pressable>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => changePassword(navigation, user.phone)}
+              style={styles.logoutButton}
+            >
+              <Text style={[styles.itemText, styles.logoutText]}>Сменить пароль</Text>
+              <UserCardIcon color="#fff"/>
+            </TouchableOpacity>
             <View style={{ height: 128 }} />
           </ScrollView>
         </View>
@@ -217,6 +220,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginLeft: 16,
     marginTop: 32,
+    alignItems: "center"
   },
   logoutText: {
     color: '#fff',

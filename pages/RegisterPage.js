@@ -132,7 +132,6 @@ const RegisterPage = ({ route }) => {
 
     for (const [field, errorMessage] of Object.entries(requiredFields)) {
       if (!formData[field] || formData[field].trim() === "") {
-        // setFormErrors(prev => ({ ...prev, [field]: errorMessage }));
         result = true;
       }
     }
@@ -161,11 +160,12 @@ const RegisterPage = ({ route }) => {
           phoneNumber: normalPhoneNumber,
           password: formData.password,
           usertype: formData.usertype
-        }
+        },
+        isRegister: true
       });
     } catch (error) {
       console.error(error);
-      showToast(error.message || "Ошибка при регистрации");
+      showToast(error.message || "Ошибка при регистрации", "warn");
     }
   };
 

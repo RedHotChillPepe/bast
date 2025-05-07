@@ -1,7 +1,9 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import Octicons from "@expo/vector-icons/Octicons";
-import React, { useState } from "react";
+import * as SecureStore from 'expo-secure-store';
+import React, { useEffect, useState } from "react";
 import { Dimensions, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useFavorites } from '../context/FavoritesContext';
 
 import FastImage from "react-native-fast-image";
 
@@ -10,19 +12,7 @@ const { width } = Dimensions.get("window");
 const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelected }) => {
   if (!item) return null;
 
-  // Если в данных есть поле likes, используем его, иначе начинаем с 0
-  const [isLiked, setIsLiked] = useState(false);
-  const [likes, setLikes] = useState(0);
-
-  const handleLikePress = () => {
-    // При нажатии переключаем состояние лайка и обновляем число лайков
-    if (isLiked) {
-      setLikes(likes - 1);
-    } else {
-      setLikes(likes + 1);
-    }
-    setIsLiked(!isLiked);
-  };
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   return (
     <Pressable
@@ -66,11 +56,11 @@ const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelecte
                 {item.city}, {item.full_address}
               </Text>
             </View>
-            <Pressable onPress={handleLikePress} style={styles.likeButton}>
+            <Pressable onPress={() => toggleFavorite(item.id)} style={styles.likeButton}>
               <MaterialIcons
-                name={isLiked ? "favorite" : "favorite-border"}
+                name={isFavorite(item.id) ? "favorite" : "favorite-border"}
                 size={28}
-                color={isLiked ? "red" : "#007AFF"}
+                color={isFavorite(item.id) ? "red" : "#007AFF"}
               />
             </Pressable>
           </View>

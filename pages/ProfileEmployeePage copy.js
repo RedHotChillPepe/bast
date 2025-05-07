@@ -4,16 +4,17 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Modal, TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
 import TeamPage from './Teams/TeamPage';
+import { UserCardIcon } from '../assets/svg/UserCard';
 
 const { width } = Dimensions.get('window');
 
 const ProfileRealtorPage = () => {
-  const { logout, getAuth } = useAuth();
+  const { logout, changePassword } = useAuth();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -76,7 +77,7 @@ const ProfileRealtorPage = () => {
         { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 1 }] },
         { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: userr.id, status: 3 }] },
         { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: userr.id, status: -1 }] },
-        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Favourites'] },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <Ionicons name="man-outline" size={17} color="black" />, label: 'Риэлторы', navigation: ['Error', { errorCode: 2004 }] },
       ],
@@ -100,7 +101,7 @@ const ProfileRealtorPage = () => {
   ];
 
   const renderItem = (item, index) => (
-    <Pressable
+    <TouchableOpacity
       key={index}
       style={styles.listItem}
       onPress={() => {
@@ -119,7 +120,7 @@ const ProfileRealtorPage = () => {
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
       <Ionicons name="chevron-forward" size={24} color="black" />
-    </Pressable>
+    </TouchableOpacity>
   );
 
   return (
@@ -135,9 +136,9 @@ const ProfileRealtorPage = () => {
               <FontAwesome6 name="face-tired" size={100} color="#fff" />
           }
 
-          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype: 3 })}>
+          <TouchableOpacity onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: userr, usertype: 3 })}>
             <FontAwesome name="edit" size={28} color="#fff" />
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         <View style={{ marginLeft: 16, width: width - 32, alignItems: 'center' }}>
@@ -191,11 +192,17 @@ const ProfileRealtorPage = () => {
           </View>
         ))}
 
-        <Pressable onPress={logout} style={styles.logoutButton}>
+        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
           <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
           <Ionicons name="exit-outline" size={24} color="#fff" />
-        </Pressable>
-
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => changePassword(navigation, userr.phone)}
+          style={styles.logoutButton}
+        >
+          <Text style={[styles.itemText, styles.logoutText]}>Сменить пароль</Text>
+          <UserCardIcon />
+        </TouchableOpacity>
         {/* <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />

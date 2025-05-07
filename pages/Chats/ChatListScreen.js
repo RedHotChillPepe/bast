@@ -1,50 +1,72 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { FlatList, Modal, Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import ChatCard from '../../components/Chats/ChatCard';
 import { useApi } from '../../context/ApiContext';
 import { useToast } from '../../context/ToastProvider';
 import SearchHeaderChat from './../../components/Chats/SearchHeaderChat';
+import CustomModal from './../../components/CustomModal';
 import Loader from './../../components/Loader';
 import ChatScreen from './ChatScreen';
 
 const ChatListScreen = ({ navigation }) => {
 
+    const [originalChats, setOriginalChats] = useState([]);
     const [chatsData, setChatsData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isShowModal, setIsShowModal] = useState(false);
     const [isModalEditShow, setIsModalEditShow] = useState(false);
     const [selectedChat, setSelectedChat] = useState();
     const [currentUser, setCurrentUser] = useState();
-    const { getUserChats, togglePinedChat } = useApi();
-    const [isAscSort, setIsAscSort] = useState(true);
+    const { getUserChats, togglePinedChat, setStatusMessage, deleteChat } = useApi();
 
     const [searchData, setSearchData] = useState([]);
     const [searchValue, setSearchValue] = useState("");
+
+    const [isShowSortModal, setIsShowSortModal] = useState(false)
+    const [selectedSort, setSelectedSort] = useState(1);
 
     const showToast = useToast();
 
     const isFocused = useIsFocused();
 
-    // Функция сортировки: сначала все isPined, потом остальные;
-    // внутри pinned — по убыванию даты, внутри остальных — asc/desc.
-    const sortChats = (chats, asc) => {
+    const sortChats = (chats) => {
         const pinned = chats.filter(c => c.isPined);
         const unpinned = chats.filter(c => !c.isPined);
 
-        // DESC по дате для pinned
-        pinned.sort((a, b) => new Date(b.last_message[0]?.creation_date || 0)
-            - new Date(a.last_message[0]?.creation_date || 0));
+        const sortByStatusAndDate = (a, b) => {
+            const statusA = a.last_message?.status ?? 0;
+            const statusB = b.last_message?.status ?? 0;
+            const dateA = new Date(a.last_message?.creation_date ?? 0).getTime();
+            const dateB = new Date(b.last_message?.creation_date ?? 0).getTime();
 
-        // asc/desc для unpinned
-        unpinned.sort((a, b) => {
-            const diff = new Date(b.last_message[0]?.creation_date || 0)
-                - new Date(a.last_message[0]?.creation_date || 0);
-            return asc ? -diff : diff;
-        });
+            // Не прочитанные выше прочитанных
+            if (statusA !== statusB) return statusB - statusA;
+
+            // Новые выше старых
+            return dateB - dateA;
+        };
+
+        pinned.sort(sortByStatusAndDate);
+        unpinned.sort(sortByStatusAndDate);
 
         return [...pinned, ...unpinned];
     };
+
+    useEffect(() => {
+        let filtered = [...originalChats];
+        if (selectedSort === 2) {
+            // Оставляем только чаты с непрочитанным сообщением от оппонента
+            filtered = filtered.filter(chat => {
+                const msg = chat.last_message?.[0];
+                if (!msg) return false;
+
+                return msg.status === 0 && msg.user_id === chat.opponent_user?.id;
+            });
+        }
+
+        setChatsData(sortChats(filtered));
+    }, [selectedSort, originalChats]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -52,7 +74,8 @@ const ChatListScreen = ({ navigation }) => {
             try {
                 const chatData = await getUserChats();
                 if (chatData?.data?.chats) {
-                    setChatsData(sortChats(chatData.data.chats, isAscSort));
+                    setOriginalChats(chatData.data.chats);
+                    setChatsData(sortChats(chatData.data.chats));
                 }
                 if (chatData?.data?.current_user) {
                     setCurrentUser(chatData.data.current_user);
@@ -95,12 +118,15 @@ const ChatListScreen = ({ navigation }) => {
                             >
                                 <Text style={styles.modal__text}>{selectedChat?.isPined ? "Открепить" : "Закрепить"}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={handleToRead}
-                                style={[styles.modal_button, { backgroundColor: "#2C88EC" }]}
-                            >
-                                <Text style={styles.modal__text}>Отметить прочитанным</Text>
-                            </TouchableOpacity>
+                            {console.log(selectedChat?.last_message)}
+                            {(selectedChat?.last_message[0].is_opponent_message && selectedChat?.last_message[0].status == 0) &&
+                                <TouchableOpacity
+                                    onPress={handleToRead}
+                                    style={[styles.modal_button, { backgroundColor: "#2C88EC" }]}
+                                >
+                                    <Text style={styles.modal__text}>Отметить прочитанным</Text>
+                                </TouchableOpacity>
+                            }
                             <TouchableOpacity
                                 onPress={handleToRemove}
                                 style={[styles.modal_button, { backgroundColor: "#FF2D55" }]}
@@ -119,11 +145,18 @@ const ChatListScreen = ({ navigation }) => {
             const result = await togglePinedChat(selectedChat.id);
             if (!result.success) throw new Error(result.message);
 
+            setOriginalChats(prev => {
+                const updated = prev.map(c =>
+                    c.id === selectedChat.id ? { ...c, isPined: result.isPined } : c
+                );
+                return updated;
+            });
+
             setChatsData(prev => {
                 const updated = prev.map(c =>
                     c.id === selectedChat.id ? { ...c, isPined: result.isPined } : c
                 );
-                return sortChats(updated, isAscSort);
+                return sortChats(updated);
             });
         } catch (e) {
             showToast(e.message, "error");
@@ -131,24 +164,92 @@ const ChatListScreen = ({ navigation }) => {
         setIsModalEditShow(false);
     };
 
-    const handleToRead = () => {
+    const handleToRead = async () => {
+        try {
+            const lastMessage = selectedChat.last_message[0];
+            if (!lastMessage || (!lastMessage.is_opponent_message && lastMessage.status == 1)) return;
+
+            const result = await setStatusMessage(lastMessage.id);
+            if (!result.success) throw new Error(result.message);
+
+            const updatedChat = {
+                ...selectedChat,
+                last_message: [
+                    {
+                        ...lastMessage,
+                        status: 1,
+                    },
+                ],
+            }
+
+            setOriginalChats(prev => {
+                return prev.map(item => item.id === selectedChat.id ? updatedChat : item);
+            });
+
+            setChatsData(prev => {
+                const updated = prev.map(c =>
+                    c.id === selectedChat.id ? updatedChat : c
+                );
+                return sortChats(updated);
+            });
+
+        } catch (error) {
+            showToast(error.message, "error");
+        }
         setIsModalEditShow(false);
-    }
-    const handleToRemove = () => {
+    };
+
+    const handleToRemove = async () => {
+        try {
+            const result = await deleteChat(selectedChat.id);
+            setOriginalChats(prev => prev.filter(c => c.id !== selectedChat.id));
+            setChatsData(prev => prev.filter(c => c.id !== selectedChat.id));
+        } catch (error) {
+            showToast(error.message, "error");
+        }
         setIsModalEditShow(false);
     }
 
-    return <SafeAreaView style={styles.container}>
+    const listSort = [
+        { label: "Последние", id: 1, },
+        { label: "Непрочитанные", id: 2, }
+    ]
+
+    const handleSelectedSort = (id) => {
+        setSelectedSort(id);
+    }
+
+    const radioButtons = () => {
+        return <View style={{ rowGap: 12 }}>
+            {listSort.map((item) =>
+                <TouchableOpacity
+                    key={`sortItem-${item.id}`}
+                    onPress={() => handleSelectedSort(item.id)}
+                    style={{ columnGap: 12, flexDirection: "row", alignItems: "center", alignItems: "center", }}
+                >
+                    <View style={[styles.radio__button, { borderColor: selectedSort == item.id ? "#2C88EC" : "#A1A1A1" }]}
+                    >
+                        {selectedSort == item.id &&
+                            <View style={styles.radio__point}></View>
+                        }
+                    </View>
+                    <View style={styles.radio__text__container}>
+                        <Text style={[styles.radio__text, { color: "#808080" }]}>{item.label}</Text>
+                    </View>
+                </TouchableOpacity>)}
+        </View>
+    }
+
+    return <SafeAreaView style={[styles.container]}>
         <SearchHeaderChat
             sortChats={sortChats}
-            isAscSort={isAscSort}
-            setIsAscSort={setIsAscSort}
             chatsData={chatsData}
             setChatsData={setChatsData}
             searchData={searchData}
             setSearchData={setSearchData}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
+            handleSort={() => setIsShowSortModal(true)}
         />
         <FlatList
             data={searchValue.length > 0 ? (searchData || []).filter(Boolean) : (chatsData || []).filter(Boolean)}
@@ -183,6 +284,13 @@ const ChatListScreen = ({ navigation }) => {
         <Modal visible={isShowModal}>
             <ChatScreen handleClose={() => setIsShowModal(false)} selectedChat={selectedChat} currentUser={currentUser} />
         </Modal>
+        <CustomModal onClose={() => setIsShowSortModal(false)} isVisible={isShowSortModal} customHeight='300' title="Сортировка">
+            <View
+                style={{ gap: 16, padding: 16 }}
+            >
+                {radioButtons()}
+            </View>
+        </CustomModal>
     </SafeAreaView>
 };
 
@@ -227,7 +335,30 @@ const styles = StyleSheet.create({
         letterSpacing: -0.48,
         lineHeight: 20.17,
         fontFamily: "Sora700"
-    }
+    },
+    radio__button: {
+        borderRadius: "50%",
+        width: 14,
+        height: 14,
+        borderWidth: 1,
+        padding: 2
+    },
+    radio__point: {
+        borderRadius: "50%",
+        backgroundColor: "#2C88EC",
+        flex: 1
+    },
+    radio__text__container: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    radio__text: {
+        fontSize: 12,
+        fontWeight: 400,
+        lineHeight: 16,
+        letterSpacing: -0.36,
+        fontFamily: "Sora400"
+    },
 });
 
 export default ChatListScreen;

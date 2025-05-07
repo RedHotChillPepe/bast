@@ -14,7 +14,7 @@ const PersonalDataPage = ({ route }) => {
   const { registerUser } = useApi()
   const navigation = useNavigation()
 
-  const { regData } = route.params
+  const { regData, token } = route.params
   const { usertype } = regData;
   const [sendError, setSendError] = useState('');
   const [inputName, setInputName] = useState('')
@@ -73,8 +73,9 @@ const PersonalDataPage = ({ route }) => {
         let tempData = {
           phoneNumber: regData.phoneNumber,
           password: regData.password,
-          email: regData.email || undefined,
+          email: email || undefined,
           usertype: regData.usertype,
+          token
         };
 
         if (regData.usertype === 1 || regData.usertype === 3) {
@@ -82,7 +83,7 @@ const PersonalDataPage = ({ route }) => {
             ...tempData,
             surname: inputSurname || undefined,
             name: inputName || undefined,
-            email: regData.email || undefined,
+            email: email || undefined,
             // fathername: inputFathername || undefined,
             // birthdate: birthdateFormatted,
           };
@@ -98,7 +99,6 @@ const PersonalDataPage = ({ route }) => {
         }
 
         console.log(tempData);
-
         const response = await registerUser(tempData);
         const json = await response.json();
 

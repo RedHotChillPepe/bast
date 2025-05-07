@@ -31,6 +31,7 @@ import MortgageCalculator from './MortgageCalculator';
 import ProfilePageView from './ProfilePageView';
 import { useLogger } from '../context/LoggerContext';
 import ChatScreen from './Chats/ChatScreen';
+import { useFavorites } from '../context/FavoritesContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,11 +43,12 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const { getAuth } = useAuth();
   const showToast = useToast();
 
+  const { toggleFavorite, isFavorite } = useFavorites();
+
   const [postData, setPostData] = useState({});
   const [isGeoLoaded, setIsGeoLoaded] = useState(false);
   const [geoState, setGeoState] = useState({ lat: 0, lon: 0 });
   const [isOwner, setIsOwner] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [phone, setPhone] = useState("");
   const [ownerUser, setOwnerUser] = useState({});
@@ -132,22 +134,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
     checkUser();
     checkFavorite();
   }, [houseId, timestamp]);
-
-  const toggleFavorite = async () => {
-    const favs = JSON.parse(await SecureStore.getItemAsync("favs")) || [];
-    if (isFavorite) {
-      const index = favs.indexOf(houseId);
-      if (index > -1) {
-        favs.splice(index, 1);
-      }
-      await SecureStore.setItemAsync("favs", JSON.stringify(favs));
-      setIsFavorite(false);
-      return;
-    }
-    favs.push(houseId);
-    await SecureStore.setItemAsync("favs", JSON.stringify(favs));
-    setIsFavorite(true);
-  };
 
   const handleCallButton = async () => {
     setShowModal(true);
@@ -678,11 +664,11 @@ ${priceInfo}
 
   const renderFavoriteAndShareButtons = () => (
     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end", columnGap: 4 }}>
-      <Pressable onPress={toggleFavorite}>
+      <Pressable onPress={() => toggleFavorite(houseId)}>
         <MaterialIcons
-          name={isFavorite ? 'favorite' : 'favorite-border'}
+          name={isFavorite(houseId) ? 'favorite' : 'favorite-border'}
           size={24}
-          color={isFavorite ? 'red' : '#007AFF'}
+          color={isFavorite(houseId) ? 'red' : '#007AFF'}
         />
       </Pressable>
       <Pressable onPress={sharePost}>

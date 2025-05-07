@@ -2,7 +2,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Modal, TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,11 +13,12 @@ import ListUnordered from "../assets/svg/ListUnordered";
 import TeamMembers from "../assets/svg/TeamMembers";
 import UserRequestPage from './Requests/UserRequestPage';
 import UserTeamsPage from './Teams/UserTeamsPage';
+import { UserCardIcon } from '../assets/svg/UserCard';
 
 const { width } = Dimensions.get('window');
 
 const ProfileRealtorPage = ({ user }) => {
-  const { logout, getAuth } = useAuth();
+  const { logout, changePassword } = useAuth();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -62,7 +63,7 @@ const ProfileRealtorPage = ({ user }) => {
       data: [
         // TODO: объявления компании, сейчас страница пользователя выводит только для пользователя
         { icon: <ListUnordered />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 1 }] },
-        { icon: <ListUnordered />, label: 'Избранное', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <ListUnordered />, label: 'Избранное', navigation: ['Favourites'] },
         { icon: <ListUnordered />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 3 }] },
         { icon: <ListUnordered />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: user.id, status: -1 }] },
       ],
@@ -70,7 +71,7 @@ const ProfileRealtorPage = ({ user }) => {
   ];
 
   const renderItem = (item, index) => (
-    <Pressable
+    <TouchableOpacity
       key={index}
       style={styles.listItem}
       onPress={() => {
@@ -89,7 +90,7 @@ const ProfileRealtorPage = ({ user }) => {
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
       <ChevronRight />
-    </Pressable>
+    </TouchableOpacity>
   );
 
   return (
@@ -105,9 +106,9 @@ const ProfileRealtorPage = ({ user }) => {
               <FontAwesome6 name="face-tired" size={100} color="#fff" />
           }
 
-          <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype: 3 })}>
+          <TouchableOpacity onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype: 3 })}>
             <EditPencil />
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         <View style={{ marginLeft: 16, width: width - 32, alignItems: 'center', marginBottom: 32 }}>
@@ -135,14 +136,21 @@ const ProfileRealtorPage = ({ user }) => {
           </View>
         ))}
 
-        <Pressable onPress={logout} style={styles.logoutButton}>
+        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
           <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
           <Ionicons name="exit-outline" size={24} color="#3E3E3E" />
-        </Pressable>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => changePassword(navigation, user.phone)}
+          style={styles.logoutButton}
+        >
+          <Text style={[styles.itemText, styles.logoutText]}>Сменить пароль</Text>
+          <UserCardIcon />
+        </TouchableOpacity>
       </ScrollView>
       <Modal visible={showModalRequest}><UserRequestPage user={user} handleClose={() => setShowModalRequest(false)} /></Modal>
       <Modal visible={showModalTeams}><UserTeamsPage handleClose={() => setShowModalTeams(false)} currentUser={user} /></Modal>
-    </View>
+    </View >
   );
 };
 

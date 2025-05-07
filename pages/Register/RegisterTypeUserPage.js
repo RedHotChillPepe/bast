@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const RegisterTypeUserPage = () => {
     const navigation = useNavigation();
     const [selectedType, setSelectedType] = useState(null);
@@ -58,12 +59,12 @@ const RegisterTypeUserPage = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
             {renderHeader()}
             {renderSelectors()}
             {renderSubmitButton()}
-        </View>
+        </SafeAreaView>
     )
 }
 

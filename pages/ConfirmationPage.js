@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Pressable, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useApi } from '../context/ApiContext';
 import ChevronLeft from '../assets/svg/ChevronLeft';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ConfirmationPage({ navigation, route }) {
   const [code, setCode] = useState(['', '', '', '']);
@@ -11,8 +12,9 @@ export default function ConfirmationPage({ navigation, route }) {
   const [canResend, setCanResend] = useState(false);
   const [timer, setTimer] = useState(60);
 
-  const { sendSms, verifySms } = useApi();
-  const { regData } = route.params;
+  const { sendSms, verifySms, checkSmsCode } = useApi();
+  const { regData, isResetPassword = false, isRegister = false } = route.params;
+  const [tempToken, setTempToken] = useState('');
 
   useEffect(() => {
     handleSendCall();
@@ -46,21 +48,16 @@ export default function ConfirmationPage({ navigation, route }) {
   const handleConfirm = async () => {
     const confirmationCode = code.join('');
     try {
-      const result = await verifySms(regData.phoneNumber, confirmationCode);
-      const resultJson = await result.json();
-
-      if (result.status === 201) {
-        if (result.ok) {
-          navigation.navigate('PersonalData', { regData });
-        } else {
-          setSendError(resultJson.message || 'Неверный код');
-        }
-      } else {
-        setSendError(resultJson.message || 'Ошибка проверки кода');
-      }
+      const result = await verifySms(regData.phoneNumber, confirmationCode, tempToken)
+      console.log(result);
+      if (isRegister) {
+        navigation.navigate('PersonalData', { regData, token: result.tempToken});
+      } else if (isResetPassword)
+        navigation.navigate('ResetPassword', { regData, token: result.tempToken});
     } catch (error) {
       console.error(error);
-      setSendError('Произошла ошибка при подтверждении. Попробуйте позже.');
+      setSuccessMessage("");
+      setSendError(error.message || 'Произошла ошибка при подтверждении. Попробуйте позже.');
     }
   };
 
@@ -68,18 +65,25 @@ export default function ConfirmationPage({ navigation, route }) {
     setSendError('');
     setCanResend(false);
     try {
-      const result = await sendSms(regData.phoneNumber);
+      let purpose = "";
+      if (isResetPassword) purpose = "reset_password";
+      else if (isRegister) purpose = "register";
+
+      const result = await sendSms(regData.phoneNumber, purpose);
       const json = await result.json();
 
       if (result.status === 201) {
         console.log(json);
+        setTempToken(json.tempToken);
         setSuccessMessage('Код отправлен. Введите последние 4 цифры номера.');
       } else {
         const msg = json?.message || 'Не удалось отправить код. Попробуйте позже.';
         setSendError(msg);
+        setSuccessMessage("");
       }
     } catch (error) {
       console.error('Ошибка при отправке:', error);
+      setSuccessMessage("");
       setSendError('Ошибка подключения. Проверьте интернет и попробуйте снова.');
     }
   };
@@ -95,48 +99,51 @@ export default function ConfirmationPage({ navigation, route }) {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
-      {renderHeader()}
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: "center" }}>
-        <Text style={styles.title}>Подтверждение номера телефона</Text>
-        <Text style={styles.text}>Введите последние 4 цифры входящего номера</Text>
-        <View style={styles.inputContainer}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
+      <KeyboardAvoidingView style={styles.container}>
+        {renderHeader()}
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: "center" }}>
+          <Text style={styles.title}>Подтверждение номера телефона</Text>
+          <Text style={styles.text}>Введите последние 4 цифры входящего номера</Text>
+          <View style={styles.inputContainer}>
 
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            {code.map((value, index) => (
-              <TextInput
-                key={index}
-                ref={(ref) => (inputRefs.current[index] = ref)}
-                style={styles.input}
-                keyboardType="number-pad"
-                maxLength={1}
-                value={value}
-                onChangeText={(text) => handleInputChange(text, index)}
-              />
-            ))}
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {code.map((value, index) => (
+                <TextInput
+                  key={index}
+                  ref={(ref) => (inputRefs.current[index] = ref)}
+                  style={styles.input}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  value={value}
+                  onChangeText={(text) => handleInputChange(text, index)}
+                />
+              ))}
+            </View>
           </View>
+          {sendError.length > 0 && <Text style={styles.errorText}>{sendError}</Text>}
+          {successMessage && <Text style={styles.successText}>{successMessage}</Text>}
+          <Pressable
+            style={[styles.resendButton, { opacity: canResend ? 1 : 0.5 }]}
+            disabled={!canResend}
+            onPress={handleSendCall}
+          >
+            <Text style={styles.resendText}>
+              {canResend ? 'Отправить код повторно' : `Повторная отправка через ${timer} сек.`}
+            </Text>
+          </Pressable>
         </View>
-        {sendError.length > 0 && <Text style={styles.errorText}>{sendError}</Text>}
-        {successMessage && <Text style={styles.successText}>{successMessage}</Text>}
-        <Pressable
-          style={[styles.resendButton, { opacity: canResend ? 1 : 0.5 }]}
-          disabled={!canResend}
-          onPress={handleSendCall}
-        >
-          <Text style={styles.resendText}>
-            {canResend ? 'Отправить код повторно' : `Повторная отправка через ${timer} сек.`}
-          </Text>
-        </Pressable>
-      </View>
 
-      <TouchableOpacity
-        style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]}
-        onPress={handleConfirm}
-        disabled={code.includes('')}
-      >
-        <Text style={styles.buttonText}>Далее</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+        <TouchableOpacity
+          style={[styles.button, { opacity: code.includes('') ? 0.5 : 1 }]}
+          onPress={handleConfirm}
+          disabled={code.includes('')}
+        >
+          <Text style={styles.buttonText}>Далее</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

@@ -4,15 +4,16 @@ import { default as FontAwesome5, default as FontAwesome6 } from '@expo/vector-i
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Modal, TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import UserTeamsPage from './Teams/UserTeamsPage';
+import { UserCardIcon } from '../assets/svg/UserCard';
 
 const { width } = Dimensions.get('window');
 
 const ProfileCompanyPage = ({ user }) => {
-  const { logout, getAuth } = useAuth();
+  const { logout, changePassword } = useAuth();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -47,7 +48,7 @@ const ProfileCompanyPage = ({ user }) => {
         { icon: <FontAwesome6 name="list-alt" size={17} color="black" />, label: 'Мои объявления', navigation: ['Error', { errorCode: 2004 }] },
         { icon: <Ionicons name="lock-closed-outline" size={20} color="black" />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 3 }] },
         { icon: <Ionicons name="trash-bin-outline" size={20} color="black" />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: user.id, status: -1 }] },
-        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Error', { errorCode: 2004 }] },
+        { icon: <AntDesign name="hearto" size={17} color="black" />, label: 'Избранное', navigation: ['Favourites'] },
         { icon: <Ionicons name="search" size={17} color="black" />, label: 'Поиски', navigation: ['Error', { errorCode: 2004 }] },
       ],
     },
@@ -70,7 +71,7 @@ const ProfileCompanyPage = ({ user }) => {
   ];
 
   const renderItem = (item, index) => (
-    <Pressable key={index} style={styles.listItem}
+    <TouchableOpacity key={index} style={styles.listItem}
       onPress={() => {
         if (!item.navigation) {
           item.handlePress()
@@ -86,7 +87,7 @@ const ProfileCompanyPage = ({ user }) => {
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
       <Ionicons name="chevron-forward" size={17} color="black" />
-    </Pressable >
+    </TouchableOpacity >
   );
 
   return (
@@ -105,9 +106,9 @@ const ProfileCompanyPage = ({ user }) => {
             <Text style={styles.email}>{user.email != undefined ? user.email : "mail@example.com"}</Text>
           </View>
         </View>
-        <Pressable onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype: 2 })}>
+        <TouchableOpacity onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype: 2 })}>
           <FontAwesome name="edit" size={24} color="#fff" />
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.container}>
@@ -127,11 +128,17 @@ const ProfileCompanyPage = ({ user }) => {
           </View>
         ))}
 
-        <Pressable onPress={logout} style={styles.logoutButton}>
+        <TouchableOpacity onPress={logout} style={styles.logoutButton}>
           <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
           <Ionicons name="exit-outline" size={24} color="#fff" />
-        </Pressable>
-
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => changePassword(navigation, user.phone)}
+          style={styles.logoutButton}
+        >
+          <Text style={[styles.itemText, styles.logoutText]}>Сменить пароль</Text>
+          <UserCardIcon color='#fff'/>
+        </TouchableOpacity>
         {/*       <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
@@ -149,7 +156,7 @@ const ProfileCompanyPage = ({ user }) => {
         <Button title="503" onPress={() => navigation.navigate('Error503')} />
       </View> */}
         {/* <Modal animationType="slide" visible={showTeamModal}><userequestPage user={user}  handleClose={() => setShowTeamModal(false)} /></Modal> */}
-        <Modal animationType="slide" visible={showTeamModal}><UserTeamsPage handleClose={() => setShowTeamModal(false)} currentUser = {user} /></Modal>
+        <Modal animationType="slide" visible={showTeamModal}><UserTeamsPage handleClose={() => setShowTeamModal(false)} currentUser={user} /></Modal>
 
       </ScrollView>
     </View>
@@ -209,6 +216,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginLeft: 16,
     marginTop: 32,
+    alignItems: "center"
   },
   logoutText: {
     color: '#fff',

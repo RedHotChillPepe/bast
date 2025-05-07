@@ -20,27 +20,30 @@ export default function ApiProvider({ children }) {
       })
   }
 
-  const getManyPosts = async (data) => {
-    const url = `${host}api/posts/manyPosts`;
+  const getManyPosts = async (postIds) => {
+    const accessToken = await getAuth();
+
+    const postIdsStr = postIds.join(',');
+
+    const url = `${host}api/posts/many?post_ids=${postIdsStr}`;
+
     try {
-      return fetch(url, {
-        method: "POST",
+      const response = await fetch(url, {
+        method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(data),
-      })
-        .then((response) => {
-          return response;
-        })
-        .catch((error) => {
-          console.error("Error getting user: ", error);
-        });
+      });
+
+      return await response.json();
     } catch (error) {
-      console.error(error);
+      console.error("Error getting posts: ", error);
     }
-  }
+  };
+
+
 
   const getPaginatedPosts = async (page, params) => {
     const accessToken = await getAuth();
@@ -532,7 +535,7 @@ export default function ApiProvider({ children }) {
   };
 
 
-  const sendSms = async (phone) => {
+  const sendSms = async (phone, purpose) => {
     const url = `${host}api/sms/sendsms`;
 
     try {
@@ -545,6 +548,7 @@ export default function ApiProvider({ children }) {
         body: JSON.stringify(
           {
             phone,
+            purpose
           },
         ),
       })
@@ -559,15 +563,16 @@ export default function ApiProvider({ children }) {
     }
   };
 
-  const verifySms = async (phone, code) => {
+  const verifySms = async (phone, code, token) => {
     const url = `${host}api/sms/verify-code`;
-
+    const accessToken = token ? token : await getAuth();
     try {
       return fetch(url, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
         },
         body: JSON.stringify(
           {
@@ -576,14 +581,17 @@ export default function ApiProvider({ children }) {
           },
         ),
       })
-        .then((response) => {
-          return response;
+        .then(async (response) => {
+          const json = await response.json();
+          console.log(json);
+          if (!response.ok) throw json;
+          return json;
         })
         .catch((error) => {
-          console.error("Error getting user: ", error);
+          throw error;
         });
     } catch (error) {
-      console.error("Error sending Sms: ", error);
+      throw error;
     }
   }
 
@@ -649,6 +657,7 @@ export default function ApiProvider({ children }) {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${formData.token}`
         },
         body: JSON.stringify(formData)
       })
@@ -660,7 +669,7 @@ export default function ApiProvider({ children }) {
     }
   }
 
-  const checkPhone = (phoneNumber) => {
+  const checkPhone = (phoneNumber, isResetPassword = false) => {
     const url = `${host}api/sms/check-phone`;
 
     try {
@@ -672,7 +681,7 @@ export default function ApiProvider({ children }) {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phoneNumber }),
+        body: JSON.stringify({ phoneNumber, isResetPassword }),
       })
         .then(response => response.json())
         .catch(error => {
@@ -1137,7 +1146,7 @@ export default function ApiProvider({ children }) {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-        .then((response) => response.json())
+        .then(async (response) => await response.json())
         .catch((error) => {
           console.error("Ошибка при обновление статуса сообщения:", error);
         });
@@ -1202,6 +1211,82 @@ export default function ApiProvider({ children }) {
     return resultJson;
   };
 
+  const deleteChat = async (chatId) => {
+    const accessToken = await getAuth();
+
+    const url = `${host}api/chats/delete/${Number(chatId)}`;
+
+    console.log(url);
+
+    try {
+      return fetch(url, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then(async (response) => await response.json())
+        .catch((error) => {
+          console.error("Ошибка при удаление чата:", error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const resetPassword = async (formData, token = '') => {
+
+    const accessToken = token.length > 0 ? token : await getAuth();
+    const url = `${host}api/auth/reset-password`;
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка при сбросе пароля');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Ошибка при сбросе пароля:", error);
+      throw error;
+    }
+  };
+
+  const checkSmsCode = (token = '') => {
+    const url = `${host}api/sms/check-code`;
+
+    try {
+      return fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .catch((error) => {
+          console.error("Ошибка при проверке кода:", error);
+          throw new Error("Ошибка при проверке кода:", error.message);
+        });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   return (
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
@@ -1210,7 +1295,7 @@ export default function ApiProvider({ children }) {
       updateUserStatus, getCurrentUser, registerUser, checkPhone, getUserTeams, getTeamById, createTeam, editTeam,
       getTeamRequest, getActiveInvitationToTeam, createInvitationToTeam, isValidInvitation, acceptInvitationToTeam,
       acceptTeamRequest, rejectTeamRequest, sendLeaveTeamRequest, removeTeamMember, getUserChats, getChatMessages, host,
-      searchMessages, togglePinedChat, setStatusMessage, createChat, getDocument
+      searchMessages, togglePinedChat, setStatusMessage, createChat, getDocument, deleteChat, resetPassword, checkSmsCode
     }}>
       {children}
     </ApiContext.Provider>

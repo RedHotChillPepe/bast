@@ -50,6 +50,9 @@ import TeamPage from "./pages/Teams/TeamPage";
 import UserTeamsPage from "./pages/Teams/UserTeamsPage";
 import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
+import { FavoritesProvider } from './context/FavoritesContext';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import UserResetPassword from "./pages/UserResetPassword";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -63,7 +66,7 @@ const Tab = createBottomTabNavigator();
 
 // process.env.NODE_ENV !== "development" && YaMap.init(process.env.EXPO_PUBLIC_YAMAP_API_KEY)
 // Geocoder.init(process.env.EXPO_PUBLIC_GEOCODER_API_KEY);
-YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
+// YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
 Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
 
 const SearchPostsStack = () => {
@@ -402,21 +405,32 @@ const AppStack = () => {
           headerTitle: "Поиск по карте",
         }}
       />
+      <Stack.Screen
+        name="Auth"
+        component={AppAuthStack}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };
 
 const AppTabs = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
       backBehavior="history"
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: "#F2F2F7",     // Цвет фона
-          paddingHorizontal: 12,       // Горизонтальные отступы
-          paddingTop: 12,               // Отступ сверху
-          height: 60,
+          backgroundColor: "#F2F2F7",
+          paddingHorizontal: 12,
+          paddingTop: 12,
+          paddingBottom: insets.bottom + 8,  // Динамический отступ снизу
+          height: 60 + insets.bottom,        // Учет нижнего отступа
           borderTopStartRadius: 12,
           borderTopEndRadius: 12,
         },
@@ -557,8 +571,41 @@ const AppAuthStack = () => {
         name="LoginEntry"
         component={UserLoginPage}
         options={({ navigation }) => ({
-          headerShown: true,
+          headerShown: false,
           headerTitle: "Авторизация",
+          ...(Platform.OS === "ios" && {
+            headerLeft: () => (
+              <Pressable
+                onPress={() => navigation.goBack()}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
+                <MaterialIcons
+                  name="arrow-back-ios"
+                  size={22}
+                  color="#007AFF"
+                />
+                <Text
+                  style={{
+                    fontSize: 17,
+                    letterSpacing: -0.43,
+                    lineHeight: 22,
+                    color: "#007AFF",
+                  }}
+                >
+                  Назад
+                </Text>
+              </Pressable>
+            ),
+          }),
+        })}
+      />
+
+      <AuthStack.Screen
+        name="ResetPassword"
+        component={UserResetPassword}
+        options={({ navigation }) => ({
+          headerShown: false,
+          headerTitle: "Сброс пароля",
           ...(Platform.OS === "ios" && {
             headerLeft: () => (
               <Pressable
@@ -793,7 +840,7 @@ export default function App() {
     setBackgroundColorAsync("#F2F2F7").catch(console.error); // Устанавливаем цвет фона
   }, []);
 
-  // process.env.NODE_ENV !== "development" &&
+  process.env.NODE_ENV !== "development" &&
     useEffect(() => {
       if (YaMap && typeof YaMap.init === 'function') {
         YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
@@ -853,7 +900,9 @@ export default function App() {
         <ToastProvider>
           <LoggerProvider>
             <NavigationContainer ref={navigationRef} linking={linking} >
-              <AppInit />
+              <FavoritesProvider>
+                <AppInit />
+              </FavoritesProvider>
             </NavigationContainer>
           </LoggerProvider>
         </ToastProvider>

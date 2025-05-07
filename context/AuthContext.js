@@ -21,6 +21,12 @@ export default function AuthProvider({ children }) {
     setCheckAuthB(true)
   }
 
+  const changePassword = (navigation, phoneNumber) => {
+    if (!phoneNumber || !navigation) return;
+
+    navigation.navigate("Auth", { screen: "ResetPassword", params: { regData: { phoneNumber, password: "", confirmPassword: "" } } });
+  }
+
   // TODOL не используется
   async function setOnboard(bool) {
     const tempauth = await getAuth();
@@ -51,8 +57,9 @@ export default function AuthProvider({ children }) {
     }
   }, [checkAuthB])
 
+
   return (
-    <AuthContext.Provider value={{ isAuth, isOnboarded, getAuth, setOnboard, setAuth, setCheckAuthB, checkAuthB, logout, tokenIsLoaded }}>
+    <AuthContext.Provider value={{ isAuth, isOnboarded, getAuth, setOnboard, setAuth, setCheckAuthB, checkAuthB, logout, tokenIsLoaded, changePassword }}>
       {children}
     </AuthContext.Provider>
   )

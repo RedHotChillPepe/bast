@@ -3,15 +3,16 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Button, Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, Dimensions, Image, TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
 import HouseCard from '../components/HouseCard.js';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
+import { UserCardIcon } from '../assets/svg/UserCard.js';
 
 const { width } = Dimensions.get('window');
 
 const ProfileEmployeePageView = () => {
-  const { logout, getAuth } = useAuth();
+  const { logout, changePassword } = useAuth();
   const navigation = useNavigation();
 
   const { getUser, getCurrentUser } = useApi()
@@ -119,13 +120,13 @@ const ProfileEmployeePageView = () => {
   ];
 
   const renderItem = (item, index) => (
-    <Pressable key={index} style={styles.listItem}>
+    <TouchableOpacity key={index} style={styles.listItem}>
       <View style={styles.listItemContent}>
         {item.icon}
         <Text style={styles.itemText}>{item.label}</Text>
       </View>
       <Ionicons name="chevron-forward" size={24} color="black" />
-    </Pressable>
+    </TouchableOpacity>
   );
 
   return (
@@ -154,11 +155,17 @@ const ProfileEmployeePageView = () => {
 
 
 
-      <Pressable onPress={logout} style={styles.logoutButton}>
+      <TouchableOpacity onPress={logout} style={styles.logoutButton}>
         <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
         <Ionicons name="exit-outline" size={24} color="grey" />
-      </Pressable>
-
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => changePassword(navigation, userr.phone)}
+        style={styles.logoutButton}
+      >
+        <Text style={[styles.itemText, styles.logoutText]}>Сменить пароль</Text>
+        <UserCardIcon />
+      </TouchableOpacity>
       {/* <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />

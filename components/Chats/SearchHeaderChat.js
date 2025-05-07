@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import SortAscIcon from "../../assets/svg/SortAsc";
 import SortDescIcon from "../../assets/svg/SortDesc";
+import FilterIcon from "../../assets/svg/Filter";
 import { useApi } from '../../context/ApiContext';
 import ChatInput from '../../pages/Chats/ChatInput';
 
 export default function SearchHeaderChat(props) {
     const {
         sortChats,
-        isAscSort,
-        setIsAscSort,
+        handleSort,
         chatsData,
         setChatsData,
         setSearchData,
@@ -24,11 +24,11 @@ export default function SearchHeaderChat(props) {
     };
 
     const handleChangeFilter = () => {
-        setIsAscSort(prev => !prev);
+        handleSort();
     };
 
     useEffect(() => {
-        const sorted = sortChats(chatsData, isAscSort);
+        const sorted = sortChats(chatsData);
         if (!searchValue || searchValue.length < 2) {
             setChatsData(sorted);
             setSearchData([]);
@@ -51,7 +51,7 @@ export default function SearchHeaderChat(props) {
                     };
                 }).filter(Boolean);
 
-                setSearchData(sortChats(foundChats, isAscSort));
+                setSearchData(sortChats(foundChats));
             } catch (e) {
                 console.warn(e);
             }
@@ -59,7 +59,7 @@ export default function SearchHeaderChat(props) {
 
         const timer = setTimeout(fetchSearch, 300);
         return () => clearTimeout(timer);
-    }, [searchValue, isAscSort]);
+    }, [searchValue]);
 
     return (
         <View style={styles.container}>
@@ -69,7 +69,7 @@ export default function SearchHeaderChat(props) {
                 placeholder="Поиск по сообщениям"
             />
             <Pressable onPress={handleChangeFilter}>
-                {isAscSort ? <SortAscIcon /> : <SortDescIcon />}
+                <FilterIcon />
             </Pressable>
         </View>
     );

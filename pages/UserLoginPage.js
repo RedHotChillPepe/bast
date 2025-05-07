@@ -1,45 +1,45 @@
 import React, { useState } from 'react';
-import { Dimensions, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, Pressable, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApi } from '../context/ApiContext';
 import { useAuth } from '../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import ChevronLeft from '../assets/svg/ChevronLeft';
+import InputProperty from '../components/PostComponents/InputProperty';
+import { useToast } from '../context/ToastProvider';
 
 const { width } = Dimensions.get('window');
 
 const UserLoginPage = () => {
-    const { getLogin } = useApi()
+    const { getLogin, checkPhone } = useApi()
     const { setAuth } = useAuth()
+    const showToast = useToast();
+    const navigation = useNavigation();
 
-    const [phoneNumber, setPhoneNumber] = useState('')
+    const [formData, setFormData] = useState({
+        phoneNumber: '',
+        password: '',
+    });
+
+    const [formErrors, setFormErrors] = useState({
+        phoneNumber: '',
+        password: '',
+        responseError: ''
+    });
+
     const [prevPhone, setPrevPhone] = useState("");
 
-    const [password, setPassword] = useState('')
-    const [errorMessage, setErrorMessage] = useState("");
-
-    const [isPhoneLabelShown, setIsPhoneLabelShown] = useState(false)
-    const [isAuthLabelShown, setIsAuthLabelShown] = useState(false)
+    const [isResetPassword, setIsResetPassword] = useState(false);
 
     const handleSubmit = async () => {
-        const phonePattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/g
-
-        let isCorrect = (errorMessage.length == 0);
-        if (!phonePattern.test(phoneNumber)) {
-            setIsPhoneLabelShown(true)
-            isCorrect = false;
+        if (hasFormErrors()) {
+            showToast("Пожалуйста, исправьте ошибки в форме", "warn");
+            return;
         }
 
-        if (!password) {
-            setErrorMessage("Необходимо указать пароль");
-            isCorrect = false;
-        }
-
-        if (!isCorrect) return;
-
-        const normalPhoneNumber = normalizePhoneNumber(phoneNumber);
-        console.log(normalPhoneNumber);
-        setIsPhoneLabelShown(false)
+        const normalPhoneNumber = normalizePhoneNumber(formData.phoneNumber);
         try {
-            const response = await getLogin(normalPhoneNumber, password)
+            const response = await getLogin(normalPhoneNumber, formData.password)
             await setAuth([{
                 access_token: response.access_token,
                 refresh_token: response.refresh_token
@@ -47,7 +47,24 @@ const UserLoginPage = () => {
             return;
         } catch (error) {
             console.error(error.message);
-            setIsAuthLabelShown(true);
+            showToast(error.message, "warn");
+        }
+    }
+
+    const handleResetPassword = async () => {
+        try {
+            const normalPhoneNumber = normalizePhoneNumber(formData.phoneNumber);
+            const result = await checkPhone(normalPhoneNumber, isResetPassword);
+            if (result.statusCode !== 200) throw new Error(result.message);
+            navigation.navigate("ConfirmationPage", {
+                regData: {
+                    phoneNumber: normalPhoneNumber,
+                },
+                isResetPassword
+            });
+        } catch (error) {
+            console.log(error.message);
+            showToast(error.message, "warn");
         }
     }
 
@@ -72,15 +89,16 @@ const UserLoginPage = () => {
         return cleaned;
     };
 
-    const handleChangePhone = (text) => {
-        const formatted = formatPhoneNumber(text, prevPhone);
-        setPhoneNumber(formatted);
+    const handleChangePhone = (field, value) => {
+        const formatted = formatPhoneNumber(value, prevPhone);
+        setFormData((prevData) => ({ ...prevData, [field]: formatted }));
+        setFormErrors((prev) => ({ ...prev, [field]: formatted.length === 18 ? "" : "Не верный формат номера телефона" }))
         setPrevPhone(formatted);
     };
 
     const formatPhoneNumber = (text, previousText) => {
         if (!text) return "";
-        setIsPhoneLabelShown(text.length !== 18);
+
         // Если пользователь удаляет символы, не переформатируем (чтобы не «скакала» маска)
         if (previousText && previousText.length > text.length) return text;
 
@@ -122,119 +140,207 @@ const UserLoginPage = () => {
 
     // Разрешённые символы: ASCII от 33 (!) до 126 (~)
     const allowedRegex = /^[\x21-\x7E]*$/;
-    const handlePasswordChange = (text) => {
-        if (!allowedRegex.test(text)) {
-            setErrorMessage("Введён недопустимый символ");
+    const handlePasswordChange = (field, value) => {
+        if (!allowedRegex.test(value)) {
+            setFormErrors((prev) => ({ ...prev, [field]: "Введён недопустимый символ" }));
             return;
         }
 
-        setPassword(text);
-        if (text.length > 0 && text.length < 6) {
-            setErrorMessage("Пароль должен содержать минимум 6 символов");
-            return;
-        }
-
-        setErrorMessage("");
+        setFormErrors((prev) => ({ ...prev, [field]: "" }));
+        setFormData((prevData) => ({ ...prevData, [field]: value }));
     };
 
-    return (
-        <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={styles.block}>
-                <View style={styles.title}>
-                    <Text style={styles.titleText} >Телефон:</Text>
-                </View>
+    const hasFormErrors = () => {
+        // Проверка ошибок валидации (только для активных полей)
+        const activeFormErrors = isResetPassword
+            ? { phoneNumber: formErrors.phoneNumber }  // В режиме восстановления пароля - только телефон
+            : formErrors;                             // Иначе - все ошибки
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="+7 (912) 444-22-11"
-                    keyboardType='phone-pad'
-                    maxLength={18}
-                    value={phoneNumber}
-                    onChangeText={text => handleChangePhone(text)}
-                    placeholderTextColor='rgba(60,60,67, 0.6'
-                    fontSize={17}
-                />
-                {
-                    isPhoneLabelShown
-                    &&
-                    <Text style={styles.inputLabel}>Неверный номер телефона</Text>
-                }
-            </View>
+        if (Object.values(activeFormErrors).some(error => error !== "")) {
+            return true;
+        }
 
-            <View style={styles.block}>
-                <View style={styles.title}>
-                    <Text style={styles.titleText} >Пароль:</Text>
-                </View>
+        let result = false;
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Пароль"
-                    secureTextEntry={true}
-                    value={password}
-                    onChangeText={(text) => handlePasswordChange(text)}
-                    maxLength={20}
-                    placeholderTextColor='rgba(60,60,67, 0.6'
-                    fontSize={17}
-                />
-                {errorMessage ? (
-                    <Text style={styles.errorText}>{errorMessage}</Text>
-                ) : null}
-            </View>
+        // Проверка обязательных полей (только для активных полей)
+        const requiredFields = isResetPassword
+            ? { phoneNumber: "Телефон обязателен" }    // В режиме восстановления пароля - только телефон
+            : {                                        // Иначе - телефон и пароль
+                phoneNumber: "Телефон обязателен",
+                password: "Пароль обязателен",
+            };
 
-            <Pressable style={{ backgroundColor: '#007AFF', paddingVertical: 7, paddingHorizontal: 14, borderRadius: 12, marginTop: 32 }}
-                //  onPress={() => setIsAuth(true)}
-                onPress={() => handleSubmit()}>
-                <Text style={{ fontSize: 20, color: 'white' }}>
-                    Подтвердить
-                </Text>
-            </Pressable>
-
-            {
-                isAuthLabelShown
-                &&
-                <Text style={styles.inputLabel}>Неверный номер телефона или пароль</Text>
+        for (const [field, errorMessage] of Object.entries(requiredFields)) {
+            if (!formData[field] || formData[field].trim() === "") {
+                result = true;
             }
+        }
 
+        return result;
+    };
 
-        </SafeAreaView>
+    const renderHeader = () => {
+        return <View style={styles.header}>
+            <Pressable onPress={() => isResetPassword ? setIsResetPassword(false) : navigation.goBack()}>
+                <ChevronLeft />
+            </Pressable>
+            <Text style={styles.header__title}>{isResetPassword ? "Восстановление пароля" : "Авторизация"}</Text>
+            <View />
+        </View >
+    }
+
+    const listInput = [
+        { label: "Телефон", placeholder: "+7 (ХХХ) ХХХ-ХХ-ХХ", valueName: "phoneNumber", type: "tel", error: formErrors.phoneNumber },
+        { label: "Пароль", placeholder: "Пароль", valueName: "password", type: "password", error: formErrors.password },
+    ];
+
+    const handleInputChange = (field, value) => {
+        switch (field) {
+            case "phoneNumber":
+                handleChangePhone(field, value);
+                break;
+            case "password":
+                handlePasswordChange(field, value);
+                break;
+        }
+    };
+
+    const renderInput = () => {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", alignSelf: 'stretch', marginHorizontal: 16, }}>
+                <Text style={styles.titleText}>Данные пользователя</Text>
+                <View style={styles.input__container}>
+                    {listInput.filter((item) => {
+                        if (!isResetPassword) return true;
+                        return item.valueName === 'phoneNumber';
+                    }).map((item, index) => (
+                        <View key={`input-${index}`}>
+                            <View View style={styles.row} >
+                                <InputProperty
+                                    title={item.label}
+                                    placeholder={item.placeholder}
+                                    value={formData[item.valueName]}
+                                    valueName={item.valueName}
+                                    type={item.type}
+                                    handleInputChange={handleInputChange}
+                                />
+                            </View>
+                            {item.error &&
+                                <Text style={styles.errorText}>{item.error}</Text>
+                            }
+                        </View>)
+                    )}
+                </View>
+                <TouchableOpacity
+                    onPress={() => setIsResetPassword(!isResetPassword)}
+                    style={{ marginTop: 16 }}
+                >
+                    <Text style={styles.reset__text}>{isResetPassword ? "Я вспомнил пароль" : "Забыли пароль?"}</Text>
+                </TouchableOpacity>
+            </View >)
+    }
+
+    const renderSubmitButton = () => {
+        return <TouchableOpacity style={[styles.button, { opacity: hasFormErrors() ? 0.5 : 1 }]}
+            disabled={hasFormErrors()}
+            onPress={() => isResetPassword ? handleResetPassword() : handleSubmit()}>
+            <Text style={styles.button__text}>
+                {isResetPassword ? "Сбросить пароль" : "Подтвердить"}
+            </Text>
+        </TouchableOpacity>
+    }
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
+            {renderHeader()}
+            {renderInput()}
+            {renderSubmitButton()}
+        </SafeAreaView >
     )
 }
 
 export default UserLoginPage
 
 const styles = StyleSheet.create({
-    block: {
-        width: width * 0.6,
-        marginBottom: 24
+    container: {
+        flex: 1,
+        backgroundColor: '#E5E5EA',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    header: {
+        justifyContent: "space-between",
+        flexDirection: "row",
+        paddingVertical: 16,
+        alignItems: "center",
+        alignSelf: "stretch",
+        marginHorizontal: 16
+    },
+    header__title: {
+        color: "#3E3E3E",
+        fontSize: 20,
+        fontFamily: "Sora700",
+        fontWeight: 600,
+        lineHeight: 25.2,
+        letterSpacing: -0.6,
+    },
+    button: {
+        backgroundColor: '#007AFF',
+        padding: 12,
+        alignSelf: "stretch",
+        justifyContent: "center",
+        alignItems: "center",
+        marginHorizontal: 16,
+        borderRadius: 12,
+        marginBottom: 44,
+    },
+    button__text: {
+        fontSize: 16,
+        lineHeight: 20.17,
+        letterSpacing: -0.48,
+        fontWeight: 600,
+        fontFamily: "Sora700",
+        color: '#F2F2F7',
     },
     errorText: {
         marginTop: 8,
         color: "red",
         fontSize: 14,
+        lineHeight: 17.6,
+        letterSpacing: -0.42,
+        fontWeight: 400,
+        fontFamily: "Sora400",
     },
-
-    title: {
-        marginBottom: 4
+    input__container: {
+        gap: 24,
+        alignSelf: "stretch",
     },
-
+    row: {
+        columnGap: 16,
+        flexDirection: "row",
+    },
     titleText: {
-        fontSize: 20,
-        lineHeight: 25,
-        letterSpacing: -0.45,
-        fontWeight: '500',
-        marginBottom: 8,
+        fontSize: 16,
+        color: "#3E3E3E",
+        lineHeight: 20.17,
+        letterSpacing: -0.48,
+        fontWeight: 600,
+        fontFamily: "Sora700",
+        paddingBottom: 24,
     },
-
     input: {
-        backgroundColor: 'rgba(120,120,128, 0.12)',
+        flex: 1,
         height: 40,
-        width: width * 0.6,
-        marginBottom: 12,
-        borderRadius: 12,
         paddingVertical: 7,
-        paddingHorizontal: 8,
+        fontSize: 17,
     },
-    inputLabel: {
-        color: "red"
+    reset__text: {
+        fontSize: 14,
+        lineHeight: 17.6,
+        letterSpacing: -0.42,
+        fontWeight: 400,
+        fontFamily: "Sora400",
+        color: '#2C88EC',
     }
 })
