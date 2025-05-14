@@ -5,7 +5,7 @@ import { Selectors } from '../../components/Selectors';
 import RequestPage from './RequestPage';
 
 const UserRequestPage = (props) => {
-    const { handleClose, user } = props;
+    const { handleClose, user, isDeal = false } = props;
     const [selectedList, setSelectedList] = useState("waiting");
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [isShowModal, setIsShowModal] = useState(false);
@@ -16,7 +16,7 @@ const UserRequestPage = (props) => {
             <Pressable onPress={handleClose}>
                 <ChevronLeft />
             </Pressable>
-            <Text style={styles.header__title}>Заявки</Text>
+            <Text style={styles.header__title}>{isDeal ? "Сделки" : "Заявки"}</Text>
             <View />
         </View>
     }
@@ -141,10 +141,15 @@ const UserRequestPage = (props) => {
         setIsShowModal(true);
     }
 
-    const listSelectProperties = [
+    const listSelectPropertiesRequest = [
         { title: "В ожидании", value: "waiting", id: 1 },
         { title: "В работе", value: "working", id: 2 },
         { title: "Закрытые", value: "closed", id: 3 },
+    ]
+
+    const listSelectPropertiesDeal = [
+        { title: "Открытые", value: "waiting", id: 1 },
+        { title: "Закрытые", value: "closed", id: 2 },
     ]
 
     return (
@@ -152,11 +157,11 @@ const UserRequestPage = (props) => {
             {renderHeader()}
             <ScrollView
                 style={styles.containerScroll}>
-                <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={listSelectProperties} />
+                <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={isDeal ? listSelectPropertiesDeal : listSelectPropertiesRequest} />
                 {selectedList === "working" ? renderRequest(requestListWorking) :
                     selectedList === "waiting" ? renderRequest(requestListWaiting) : renderRequest(requestListClosed)}
             </ScrollView >
-            <Modal visible={isShowModal}><RequestPage user={user} handleClose={() => setIsShowModal(false)} selectedRequest={selectedRequest} /></Modal>
+            <Modal visible={isShowModal}><RequestPage user={user} handleClose={() => setIsShowModal(false)} selectedRequest={selectedRequest} isDeal={isDeal} /></Modal>
         </View>
     )
 }

@@ -15,6 +15,7 @@ import { useApi } from '../../context/ApiContext';
 export default function CreateTeamPage(props) {
     const { handleClose, setTeamsData } = props;
     const [formData, setFormData] = useState({
+        team_id: null,
         team_name: '',
         description: '',
     });
@@ -71,8 +72,8 @@ export default function CreateTeamPage(props) {
         try {
             const response = await createTeam(formData);
             if (response.statusCode && response.statusCode !== 201) throw new Error(response.message)
-
             setTeamsData((prev) => [...prev, response]);
+            setFormData((prevData) => ({ ...prevData, team_id: response.team_id }));
             setIsShowInvationModal(true);
         } catch (error) {
             console.error("Произошла ошибка при создании команды:", error.message);

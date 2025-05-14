@@ -9,7 +9,7 @@ import { useFonts } from "expo-font";
 import * as Linking from 'expo-linking';
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AppState, Platform, Pressable, Text } from "react-native";
 import { Geocoder, YaMap } from "react-native-yamap";
 import HeaderComponent from "./components/HeaderComponent";
@@ -53,6 +53,12 @@ import UserPostsPage from "./pages/UserPostsPage.js";
 import { FavoritesProvider } from './context/FavoritesContext';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import UserResetPassword from "./pages/UserResetPassword";
+import { HeartIcon } from "./assets/svg/Tabbar/HeartIcon";
+import { SearchIcon } from "./assets/svg/Tabbar/SearchIcon";
+import { CommunicationIcon } from "./assets/svg/Tabbar/CommunicationIcon";
+import { UserIcon } from "./assets/svg/Tabbar/UserIcon";
+import { HouseIcon } from "./assets/svg/Tabbar/HouseIcon";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -453,7 +459,7 @@ const AppTabs = () => {
           tabBarShowLabel: true,
           tabBarLabel: "Главная",
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="home" size={size} color={color} />
+            <HouseIcon color={color} />
           ),
         }}
       />
@@ -466,7 +472,7 @@ const AppTabs = () => {
           headerTitle: "Избранное",
           tabBarLabel: "Избранное",
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="heart-o" size={size} color={color} />
+            <HeartIcon color={color} />
           ),
         }}
       />
@@ -478,7 +484,7 @@ const AppTabs = () => {
           headerTitle: " ", // текст заголовка скрыт
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="search1" size={size} color={color} />
+            <SearchIcon color={color} />
           ),
         }}
       />
@@ -488,12 +494,11 @@ const AppTabs = () => {
           headerShown: false,
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubble-outline" size={size} color={color} />
+            <CommunicationIcon color={color} />
           ),
         }}
         component={StackChats}
       >
-        {/* {() => <ErrorScreen route={{ params: { errorCode: 2004 } }} />} */}
       </Tab.Screen>
       <Tab.Screen
         name="Профиль"
@@ -502,7 +507,7 @@ const AppTabs = () => {
           headerShown: false,
           tabBarShowLabel: true,
           tabBarIcon: ({ color, size }) => (
-            <Feather name="user" size={size} color={color} />
+            <UserIcon color={color} />
           ),
         }}
       />
@@ -676,7 +681,7 @@ const AppTopStack = () => {
 
 // Условный рендер в зависимости от того авторизирован ли пользователь или нет
 const AppInit = () => {
-  const { isAuth, isOnboarded, tokenIsLoaded } = useAuth();
+  const { isAuth, isOnboarded, tokenIsLoaded, setReferralToken } = useAuth();
   const { isConnected, setOnlineStatus } = usePresenceSocket();
 
   const [loaded] = useFonts({
@@ -713,10 +718,10 @@ const AppInit = () => {
 
   SplashScreen.hide();
 
-  // Проверка зарегистрирован ли пользователь
-  if (!isAuth) {
-    return <AppAuthStack />;
-  }
+  return <React.Fragment>
+    <DeepLinkHandler setReferralToken={setReferralToken} />
+    {isAuth ? <AppTopStack /> : <AppAuthStack />}
+  </React.Fragment>
 
   /* // Проверка проведён ли пользователь через "онбординг"
   if (!isOnboarded) {
@@ -727,15 +732,9 @@ const AppInit = () => {
       )
     } */
 
-  if (/* isOnboarded &&  */ isAuth) {
-    return <React.Fragment>
-      <DeepLinkHandler />
-      <AppTopStack />
-    </React.Fragment>
-  }
 };
 ///
-const DeepLinkHandler = () => {
+const DeepLinkHandler = ({ setReferralToken }) => {
   const navigation = useNavigation();
   const [isReady, setIsReady] = React.useState(false);
   const [initialUrl, setInitialUrl] = React.useState(null);
@@ -791,6 +790,14 @@ const DeepLinkHandler = () => {
         });
         return;
       }
+    } else if (parsed.path?.includes('user/join')) {
+      const parts = parsed.path.split('/');
+      const token = parts[parts.length - 1];
+      if (token) {
+        setReferralToken(token);
+        console.log("referral");
+      }
+      return
     }
 
     // Обработка новых ссылок типа /posts/15, /villages/42, /profile/7
@@ -901,7 +908,9 @@ export default function App() {
           <LoggerProvider>
             <NavigationContainer ref={navigationRef} linking={linking} >
               <FavoritesProvider>
-                <AppInit />
+                <ThemeProvider>
+                  <AppInit />
+                </ThemeProvider>
               </FavoritesProvider>
             </NavigationContainer>
           </LoggerProvider>

@@ -13,63 +13,82 @@ import ChevronLeft from '../../assets/svg/ChevronLeft';
 import LinkIcon from '../../assets/svg/Link';
 import Loader from '../../components/Loader';
 import { useApi } from '../../context/ApiContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function TeamInvationPage(props) {
-    const { handleClose, teamData } = props;
+    const { handleClose, teamData, user, isReferral = false } = props;
     const [inviteLink, setInviteLink] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
     const [qrWidth, setQrWidth] = useState(0);
     const [copied, setCopied] = useState(false);
     const copyTimeout = useRef(null);
+    const { getActiveInvitationToTeam, createInvitationToTeam, getReferralLink } = useApi();
 
-    const { getActiveInvitationToTeam, createInvitationToTeam } = useApi();
+    const { theme } = useTheme();
+    const styles = makeStyleByTheme(theme);
 
     useEffect(() => {
-        const fetchInvitationAndGenerateLink = async () => {
-            try {
-                // 1. Получаем активное приглашение
-                let invitation = await getActiveInvitationToTeam(teamData.team_id);
-
-                if (!invitation || invitation.length === 0) {
-                    // 2. Если не найдено — создаём
-                    const reqBody = { team_id: teamData.team_id };
-                    invitation = await createInvitationToTeam(reqBody);
-                }
-
-
-                // 3. Формируем длинную ссылку
-                const longUrl = invitation[0].invitationLink;
-                let finalLink = longUrl;
-
-                // 4. Пробуем сократить ссылку
-                try {
-                    const response = await fetch(`https://clck.ru/--?url=${encodeURIComponent(longUrl)}`);
-                    const short = await response.text();
-                    if (!response.ok || !short.startsWith("http")) {
-                        throw new Error("Invalid shortened link");
-                    }
-                    finalLink = short;
-                } catch (err) {
-                    console.warn("Не удалось сократить ссылку, используем оригинальную:", longUrl);
-                }
-
-                // 5. Устанавливаем финальную ссылку
-                setInviteLink(finalLink);
-            } catch (err) {
-                console.error("Ошибка при получении приглашения", err);
-                navigation.navigate("Error");
-            } finally {
-                setLoading(false);
-            }
-        };
-
+        if (isReferral) {
+            fetchReferralLinkAndGenerateLink();
+            return
+        }
         fetchInvitationAndGenerateLink();
     }, [teamData]);
 
+    const generateQrLink = async (link) => {
+        let finalLink = link;
+        try {
+            const response = await fetch(`https://clck.ru/--?url=${encodeURIComponent(link)}`);
+            const short = await response.text();
+            if (!response.ok || !short.startsWith("http")) {
+                throw new Error("Invalid shortened link");
+            }
+            finalLink = short;
+        } catch (err) {
+            console.log(err);
+            console.warn("Не удалось сократить ссылку, используем оригинальную:", link);
+        } finally {
+            setInviteLink(finalLink);
+        }
+    }
+
+    const fetchReferralLinkAndGenerateLink = async () => {
+        try {
+            const result = await getReferralLink();
+            await generateQrLink(result.link);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchInvitationAndGenerateLink = async () => {
+        try {
+            // 1. Получаем активное приглашение
+            let invitation = await getActiveInvitationToTeam(teamData.team_id);
+
+            if (!invitation || invitation.length === 0) {
+                // 2. Если не найдено — создаём
+                const reqBody = { team_id: teamData.team_id };
+                invitation = await createInvitationToTeam(reqBody);
+                console.log("invitationCreate:", invitation);
+            }
+
+            await generateQrLink(invitation[0].invitationLink);
+
+        } catch (err) {
+            console.error("Ошибка при получении приглашения", err);
+            navigation.navigate("Error");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (!loading && !inviteLink) {
+            handleClose();
             navigation.navigate("Error", { messageProp: "Не удалось сгенерировать ссылку" });
         }
     }, [loading, inviteLink]);
@@ -95,7 +114,7 @@ export default function TeamInvationPage(props) {
             <Pressable onPress={handleClose}>
                 <ChevronLeft />
             </Pressable>
-            <Text style={styles.header__title}>Ссылка приглашение</Text>
+            <Text style={styles.header__title}>{isReferral ? "Реферальная программа" : "Ссылка приглашение"}</Text>
             <View />
         </View>
     );
@@ -110,7 +129,11 @@ export default function TeamInvationPage(props) {
         <View style={styles.container}>
             {renderHeader()}
             <View style={styles.containerItem}>
-                <Text style={styles.title}>С помощью этой ссылки можно подать заявку на вступление в команду</Text>
+                <Text style={styles.title}>{
+                    isReferral ?
+                        "При регистрации по этой ссылкепользователь станет вашим рефералом, и вы получите вознаграждение с первой его сделки." :
+                        "С помощью этой ссылки можно подать заявку на вступление в команду"}
+                </Text>
                 <View
                     style={styles.qr__container}
                 >
@@ -120,7 +143,7 @@ export default function TeamInvationPage(props) {
                     }}
                         style={{ padding: 16 }}
                     >
-                        {qrWidth > 0 && (
+                        {(qrWidth > 0 && inviteLink !== null) && (
                             <QRCode value={inviteLink} size={qrWidth} backgroundColor={"#F2F2F7"} color={"#3E3E3E"} />
                         )}
                     </View>
@@ -141,62 +164,43 @@ export default function TeamInvationPage(props) {
                 </View>
             </View>
             <Pressable style={styles.button} onPress={() => handleClose(true)}>
-                <Text style={styles.button__text}>Перейти к команде</Text>
+                <Text style={styles.button__text}>Перейти к {isReferral ? "рефералам" : "команде"}</Text>
             </Pressable>
         </View >
     );
 }
 
-const styles = StyleSheet.create({
+const makeStyleByTheme = (theme) => StyleSheet.create({
     container: {
-        backgroundColor: "#E5E5EA",
-        padding: 16,
-        flex: 1,
+        ...theme.container
     },
     header: {
         justifyContent: "space-between",
         flexDirection: "row",
-        paddingBottom: 16,
+        paddingBottom: theme.spacing.medium,
         alignItems: "center"
     },
     header__title: {
-        color: "#3E3E3E",
-        fontSize: 20,
-        fontFamily: "Sora700",
-        fontWeight: 600,
-        lineHeight: 25.2,
-        letterSpacing: -0.6,
+        ...theme.typography.title2
     },
     containerItem: {
         rowGap: 12,
-        marginTop: 8,
+        marginTop: theme.spacing.small,
         flex: 1
     },
     button: {
-        backgroundColor: "#2C88EC",
-        padding: 12,
-        alignItems: "center",
+        ...theme.buttons.classisButton,
         borderRadius: 12,
         marginBottom: 28,
     },
     button__text: {
-        color: "#F2F2F7",
-        fontSize: 16,
-        fontWeight: 600,
-        lineHeight: 20.17,
-        letterSpacing: -0.48,
-        fontFamily: "Sora700",
+        ...theme.typography.title3("block")
     },
     title: {
-        color: "#3E3E3E",
-        fontSize: 14,
-        fontWeight: 400,
-        lineHeight: 17.6,
-        letterSpacing: -0.42,
-        fontFamily: "Sora400",
+        ...theme.typography.regular
     },
     qr__container: {
-        backgroundColor: "#F2F2F7",
+        backgroundColor: theme.colors.block,
         borderRadius: 12,
         paddingVertical: 12,
         paddingHorizontal: 17,
@@ -208,26 +212,12 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     link__text: {
-        color: "#3E3E3E",
-        fontSize: 16,
-        fontWeight: 600,
-        lineHeight: 20.17,
-        letterSpacing: -0.48,
-        fontFamily: "Sora700",
+        ...theme.typography.title3("text")
     },
     qr__button: {
-        padding: 12,
-        backgroundColor: "#2C88EC",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 12,
+        ...theme.buttons.classisButton
     },
     qr__button_text: {
-        color: "#F2F2F7",
-        fontSize: 14,
-        fontWeight: 400,
-        lineHeight: 17.6,
-        letterSpacing: -0.42,
-        fontFamily: "Sora400",
+        ...theme.typography.regular("block")
     },
 });

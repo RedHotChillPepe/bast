@@ -9,6 +9,7 @@ export default function AuthProvider({ children }) {
   const [isOnboarded, setIsOnboarded] = useState(false)   // secure store. ТЕСТОВЫЕ ПЕРЕМЕННЫЕ!
   const [checkAuthB, setCheckAuthB] = useState(false)
   const [tokenIsLoaded, setTokenIsLoaded] = useState(false);
+  const [referralToken, setReferralToken] = useState();
 
   async function setAuth(json) {
     await SecureStore.setItemAsync("auth",
@@ -57,9 +58,17 @@ export default function AuthProvider({ children }) {
     }
   }, [checkAuthB])
 
+  useEffect(() => {
+    if (!referralToken) return;
+    console.log(1);
+    // [ ] Логика для авторизованного чела
+  }, [referralToken])
 
   return (
-    <AuthContext.Provider value={{ isAuth, isOnboarded, getAuth, setOnboard, setAuth, setCheckAuthB, checkAuthB, logout, tokenIsLoaded, changePassword }}>
+    <AuthContext.Provider value={{
+      isAuth, isOnboarded, getAuth, setOnboard, setAuth, setCheckAuthB, checkAuthB,
+      logout, tokenIsLoaded, changePassword, setReferralToken, referralToken
+    }}>
       {children}
     </AuthContext.Provider>
   )

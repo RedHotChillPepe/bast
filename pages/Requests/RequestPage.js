@@ -1,29 +1,49 @@
-import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import CloseIcon from '../../assets/svg/Close';
+import { CreditCardIcon } from '../../assets/svg/CreditCard';
+import DotIcon from "../../assets/svg/Dot";
 import ShareIcon from '../../assets/svg/Share';
+import CopyIcon from '../../assets/svg/Copy';
+import { useTheme } from '../../context/ThemeContext';
+import InputImage from './../../components/PostComponents/InputImage';
+import * as Clipboard from 'expo-clipboard';
 
 const RequestPage = (props) => {
-    const { handleClose, selectedRequest, user } = props;
+    const { handleClose, selectedRequest, user, isDeal = false } = props;
+
+    const { theme } = useTheme();
+    const styles = makeStyle(theme);
 
     const [currentStage, setCurrentStage] = useState(0)
     const [maxStage, setMaxStage] = useState(4)
     const [isRejection, setIsRejection] = useState(false);
+
+    const [paymentsStage, setPaymentsStage] = useState(0);
+    const [documentIsUpload, setDocumentIsUploadIsUpload] = useState(false);
+
+    const [formData, setFormData] = useState({
+        photos: []
+    });
+
+    useEffect(() => {
+        setDocumentIsUploadIsUpload(formData.photos.length > 0);
+    }, [formData])
 
     const renderHeader = () => {
         return <View style={styles.header}>
             <Pressable onPress={handleClose}>
                 <ChevronLeft />
             </Pressable>
-            <Text style={styles.header__title}>Заявка №{selectedRequest.id}</Text>
+            <Text style={styles.header__title}>{isDeal ? currentStage == maxStage ? "Выплата агенту" : "Сделка" : "Заявка"} {(!isDeal || currentStage !== maxStage) && selectedRequest.id}</Text>
             <Pressable>
                 <ShareIcon />
             </Pressable>
         </View>
     }
 
-    const listRequestStatuses = ["Начало", "Начало", "Подтверждена", "Оформление", "Завершена"]
+    const listRequestStatuses = ["Начало", isDeal ? "Проверка документов" : "Начало", isDeal ? "Ожидание оплаты" : "Подтверждена", isDeal ? "Выплата вознаграждений" : "Оформление", "Завершена"]
 
     const renderStatus = () => {
         return (<View style={[styles.status__flag, { backgroundColor: isRejection ? "#FF2D55" : "#2C88EC" }]}>
@@ -31,38 +51,99 @@ const RequestPage = (props) => {
         </View>)
     }
 
+    const renderRequestHeader = () => {
+        return <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <View style={{ flexDirection: "row" }}>
+                <Text style={styles.update__text}>
+                    Обновлено:&nbsp;
+                </Text>
+                <Text style={styles.update__date}>{selectedRequest.updateDate}</Text>
+            </View>
+            {renderStatus()}
+        </View>
+    }
+
+    const renderRequestBody = () => {
+        return <View style={{ rowGap: 16, marginTop: 8 }}>
+            <View style={{ rowGap: 4 }}>
+                <Text style={styles.initials}>{selectedRequest.initials}</Text>
+                <Text style={styles.type}>{selectedRequest.type}</Text>
+            </View>
+            <View style={styles.location}>
+                <Text style={styles.location__text}>{selectedRequest.location}</Text>
+                <Text style={styles.location__text}>№{selectedRequest.id}</Text>
+            </View>
+        </View>
+    }
+
+    const renderPost = () => {
+        return <View style={{ flexDirection: "row", gap: 12, marginTop: 12, alignItems: "center" }}>
+            <Image style={{ width: 80, height: 51, borderRadius: 20, aspectRatio: 80 / 51, }} source={{ uri: "https://i3.imageban.ru/out/2025/01/27/972dc53aa3963aa9aaa8a4ee7041829a.jpg" }} />
+            <View>
+                <Text style={stylePost.price}>{Number(8_900_000).toLocaleString('ru-RU')} ₽</Text>
+                <Text style={stylePost.location}>с . Завьялово, ул. Совесткая, 25</Text>
+                <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                    <Text style={stylePost.caption}>2 этажа</Text>
+                    <DotIcon />
+                    <Text style={stylePost.caption}>200 м2</Text>
+                    <DotIcon />
+                    <Text style={stylePost.caption}>20 соток</Text>
+                </View>
+            </View>
+        </View>
+    }
+
+    const stylePost = StyleSheet.create({
+        price: {
+            color: "#0A0F09",
+            fontSize: 17,
+            fontFamily: "Sora500",
+            lineHeight: 22,
+            letterSpacing: -0.43,
+        },
+        location: {
+            color: "#0A0F09",
+            fontSize: 12,
+            fontFamily: "Sora500",
+            lineHeight: 16,
+        },
+        caption: {
+            color: "#0A0F09",
+            fontSize: 11,
+            fontFamily: "Sora400",
+            lineHeight: 13,
+            letterSpacing: 0.06,
+        }
+    });
+
     const renderRequest = () => {
         return <View style={styles.containerItem}>{
             <View key={selectedRequest.id} style={styles.item}>
-                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                    <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.update__text}>
-                            Обновлено:&nbsp;
-                        </Text>
-                        <Text style={styles.update__date}>{selectedRequest.updateDate}</Text>
-                    </View>
-                    {renderStatus()}
-                </View>
-                <View style={{ rowGap: 16, marginTop: 8 }}>
-                    <View style={{ rowGap: 4 }}>
-                        <Text style={styles.initials}>{selectedRequest.initials}</Text>
-                        <Text style={styles.type}>{selectedRequest.type}</Text>
-                    </View>
-                    <View style={styles.location}>
-                        <Text style={styles.location__text}>{selectedRequest.location}</Text>
-                        <Text style={styles.location__text}>№{selectedRequest.id}</Text>
-                    </View>
-                </View>
+                {renderRequestHeader()}
+                {isDeal ? renderPost() : renderRequestBody()}
             </View>
         }</View>
     }
 
+    const listPeople = [
+        { type: 1, typeName: "Покупатель", user: { surname: "Гребенкина", name: "Мария", fathername: "Александровна" }, id: 1 },
+        { type: 2, typeName: "Продавец", user: { surname: "Васильева", name: "Елена", fathername: "Петровна" }, id: 2 },
+        { type: 3, typeName: "Агент", user: { surname: "Пупкин", name: "Василий", fathername: "Иванович" }, id: 3 },
+    ]
+
+    const renderPeopleBlock = (item) => {
+        return listPeople.map((item) => <View key={`people-${item.id}`} style={[styles.item, { rowGap: 4 }]}>
+            <Text style={styles.type}>{item.typeName}</Text>
+            <Text style={styles.initials}>{item.user.surname} {item.user.name} {item.user?.fathername}</Text>
+        </View>);
+    }
+
     const listStageDescriptions = [
-        "Заявка без исполнителя",
-        "Заявка взята в работу",
-        "Менеджер связался с клиентом",
-        "Сделка находится в процессе оформления",
-        "Сделка успешно завершена"
+        isDeal ? "Начало сделки" : "Заявка без исполнителя",
+        isDeal ? "Подготовка документов" : "Заявка взята в работу",
+        isDeal ? "Подписание договора" : "Менеджер связался с клиентом",
+        isDeal ? "Завершение сделки" : "Сделка находится в процессе оформления",
+        isDeal ? "Выплата вознаграждений" : "Сделка успешно завершена"
     ]
 
     const renderStageBlock = () => {
@@ -72,7 +153,7 @@ const RequestPage = (props) => {
                 {renderStageIndicator()}
                 <Text style={styles.stage__description}>{isRejection ? "Клиент отказался от сделки" : listStageDescriptions[currentStage]}</Text>
             </View>
-            {(currentStage < maxStage && !isRejection && user.usertype === 3) &&
+            {((currentStage < maxStage && !isRejection && user.usertype === 3) || isDeal && maxStage == currentStage) &&
                 renderStageButton()
             }
         </View>
@@ -93,30 +174,79 @@ const RequestPage = (props) => {
     }
 
     const listButtonStage = [
-        { title: "Взять в работу", handlePress: () => setCurrentStage((prev) => { return prev + 1 }), id: 1 },
-        { title: "Подтвердить завяку", handlePress: () => setCurrentStage((prev) => { return prev + 1 }), id: 2 },
-        { title: "Начать оформление", handlePress: () => setCurrentStage((prev) => { return prev + 1 }), id: 3 },
+        { title: isDeal ? "Начать сделку" : "Взять в работу", handlePress: () => setCurrentStage((prev) => { return prev + 1 }), id: 1 },
+        { title: isDeal ? "Документы готовы" : "Подтвердить завяку", handlePress: () => setCurrentStage((prev) => { return prev + 1 }), id: 2 },
+        { title: isDeal ? "Договор подписан" : "Начать оформление", handlePress: () => setCurrentStage((prev) => { return prev + 1 }), id: 3 },
         { title: "Завершить сделку", handlePress: () => setCurrentStage((prev) => { return prev + 1 }), id: 4 },
+    ]
+
+    const listPaymentsButton = [
+        { title: "Выплата отправлена", handlePress: () => console.log(1), id: 5 },
+        { title: "Выплата отправлена", handlePress: () => console.log(1), id: 6 },
     ]
 
     const renderStageButton = () => {
         return <View style={styles.stage__button__container}>
+            {!isDeal &&
+                <TouchableOpacity
+                    style={styles.stage__button}
+                    onPress={() => setIsRejection(true)}
+                >
+                    <Text style={[styles.stage__button__text, { color: "#2C88EC" }]}>Отказ</Text>
+                </TouchableOpacity>
+            }
             <TouchableOpacity
-                style={styles.stage__button}
-                onPress={() => setIsRejection(true)}
-            >
-                <Text style={[styles.stage__button__text, { color: "#2C88EC" }]}>Отказ</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={[styles.stage__button, { backgroundColor: "#2C88EC" }]}
-                onPress={listButtonStage[currentStage].handlePress}
+                disabled={isDeal && maxStage == currentStage && !documentIsUpload}
+                style={[styles.stage__button, { backgroundColor: `#2C88EC${isDeal && maxStage == currentStage && !documentIsUpload ? '60' : ''}` }]}
+                onPress={isDeal && maxStage == currentStage ? listPaymentsButton[paymentsStage].handlePress : listButtonStage[currentStage].handlePress}
             >
                 <Text
                     numberOfLines={1}
                     adjustsFontSizeToFit
-                    style={[styles.stage__button__text, { color: "#F2F2F7" }]}>{listButtonStage[currentStage].title}</Text>
+                    style={[styles.stage__button__text, { color: "#F2F2F7" }]}>{isDeal && maxStage == currentStage ? listPaymentsButton[paymentsStage].title : listButtonStage[currentStage].title}</Text>
             </TouchableOpacity>
         </View>
+    }
+
+    const renderPaymentsBlock = () => {
+        return <View>
+            {renderCreditBLock()}
+            {renderDocumentBlock()}
+        </View>
+    }
+
+    const renderCreditBLock = () => {
+        return <TouchableOpacity
+            onPress={() => { Clipboard.setStringAsync("Номер карты") }}
+            style={styles.credit__container}
+        >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <Text style={theme.typography.regularBold}>Счет для вознаграждений</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: theme.spacing.small }}>
+                    <CreditCardIcon />
+                    <Text style={theme.typography.regular('caption')}>{"2200 4480 7700 7654"}</Text>
+                </View>
+                <CopyIcon size={24} strokeWidth={2} />
+            </View>
+            <Text>Переведите вознаграждение по номеру банковской карты</Text>
+        </TouchableOpacity>
+    }
+
+    const renderDocumentBlock = () => {
+        return <View>
+            <InputImage
+                label="Чек об операции"
+                buttonText="Загрузить документы о переводе"
+                title=""
+                verticalMargin={0}
+                marginTop={10}
+                selectionLimit={1}
+                showImages={false}
+                setFormData={setFormData}
+                photos={formData.photos} />
+        </View >
     }
 
     return (
@@ -125,14 +255,15 @@ const RequestPage = (props) => {
             <ScrollView
                 style={styles.containerScroll}>
                 <View style={styles.containerItem}>
-                    {renderRequest()}
+                    {(!isDeal || currentStage !== maxStage) ? renderRequest() : renderPaymentsBlock()}
+                    {isDeal && currentStage !== maxStage && renderPeopleBlock()}
                     {renderStageBlock()}
                 </View>
             </ScrollView >
             {(user.usertype === 3 || user.usertype === 2 && currentStage < maxStage) &&
                 <Pressable
-                    disabled={user.usertype === 3 && currentStage !== maxStage && !isRejection}
-                    style={[styles.button, { backgroundColor: user.usertype === 2 || currentStage === maxStage || isRejection ? "#2C88EC" : "#2C88EC66" }]}
+                    disabled={(user.usertype === 3 && currentStage !== maxStage && !isRejection) || (isDeal && !documentIsUpload)}
+                    style={[styles.button, { backgroundColor: !isDeal && (user.usertype === 2 || currentStage === maxStage || isRejection) || (isDeal && documentIsUpload) ? "#2C88EC" : "#2C88EC66" }]}
                     onPress={() => user.usertype === 3 ? console.log("Закрыта") : console.log("Выбор исполнителя")}
                 >
                     <Text style={styles.button__text}>{user.usertype === 3 ? "Закрыть сделку" : currentStage === 0 ? "Выбрать исполнителя" : "Сменить исполнителя"}</Text>
@@ -142,65 +273,39 @@ const RequestPage = (props) => {
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: "#E5E5EA",
-        padding: 16,
-        flex: 1,
-    },
+const makeStyle = (theme) => StyleSheet.create({
+    container: theme.container,
     containerScroll: {
         flex: 1,
-        marginBottom: 16
+        marginBottom: theme.spacing.medium
     },
     header: {
         justifyContent: "space-between",
         flexDirection: "row",
-        paddingBottom: 16,
+        paddingBottom: theme.spacing.medium,
         alignItems: "center"
     },
     containerItem: {
-        rowGap: 8,
-        marginTop: 8,
+        rowGap: theme.spacing.small,
+        marginTop: theme.spacing.small,
     },
     item: {
-        backgroundColor: "#F2F2F7",
+        backgroundColor: theme.colors.block,
         borderRadius: 12,
-        padding: 16,
+        padding: theme.spacing.medium,
     },
-    header__title: {
-        color: "#3E3E3E",
-        fontSize: 20,
-        fontFamily: "Sora700",
-        fontWeight: 600,
-        lineHeight: 25.2,
-        letterSpacing: -0.6,
-    },
+    header__title: theme.typography.title2,
     status__flag: {
-        paddingHorizontal: 8,
-        borderRadius: 8,
+        paddingHorizontal: theme.spacing.small,
+        borderRadius: theme.spacing.small,
         alignSelf: "stretch",
     },
-    flag__text: {
-        color: "#F5F5F5",
-        textAlign: "center",
-        fontSize: 12,
-        fontFamily: "Sora500",
-        fontWeight: 400,
-        lineHeight: 17,
-        letterSpacing: -0.36,
-    },
+    flag__text: theme.typography.captionBold,
     location: {
         flexDirection: "row",
         justifyContent: "space-between"
     },
-    location__text: {
-        color: "#808080",
-        fontSize: 14,
-        fontWeight: 400,
-        fontFamily: "Sora400",
-        lineHeight: 17.6,
-        letterSpacing: -0.42,
-    },
+    location__text: theme.typography.regular("caption"),
     initials: {
         color: "#000",
         fontSize: 14,
@@ -209,14 +314,7 @@ const styles = StyleSheet.create({
         lineHeight: 17.6,
         letterSpacing: -0.42,
     },
-    update__text: {
-        color: "#808080",
-        fontSize: 12,
-        fontWeight: 400,
-        fontFamily: "Sora400",
-        lineHeight: 16,
-        letterSpacing: -0.36,
-    },
+    update__text: theme.typography.caption,
     update__date: {
         color: "#000",
         fontSize: 12,
@@ -239,14 +337,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 28,
     },
-    button__text: {
-        color: "#F2F2F7",
-        fontSize: 16,
-        fontWeight: 600,
-        lineHeight: 20.17,
-        letterSpacing: -0.48,
-        fontFamily: "Sora700",
-    },
+    button__text: theme.typography.buttonTextXL,
     container__stages: {
         flexDirection: "row",
         columnGap: 6,
@@ -255,7 +346,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 26,
         borderRadius: 12,
-        backgroundColor: "#2C88EC66",
+        backgroundColor: `${theme.colors.accent}66`,
         justifyContent: "center",
         alignItems: "center"
     },
@@ -263,20 +354,20 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 26,
         borderRadius: 12,
-        backgroundColor: "#2C88EC",
+        backgroundColor: theme.colors.accent,
         justifyContent: "center",
         alignItems: "center"
     },
     stage__button__container: {
         flexDirection: "row",
-        columnGap: 16,
+        columnGap: theme.spacing.medium,
     },
     stage__button: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 12,
-        paddingVertical: 8,
+        paddingVertical: theme.spacing.small,
         borderRadius: 12,
         minWidth: 0, // 🛠️ позволяет flex shrink корректно сработать
     },
@@ -307,6 +398,14 @@ const styles = StyleSheet.create({
         letterSpacing: -0.42,
         color: "#000"
     },
+    credit__container: {
+        padding: theme.spacing.medium,
+        backgroundColor: theme.colors.block,
+        gap: 12,
+        borderRadius: 12,
+        marginTop: theme.spacing.small,
+    },
 });
+
 
 export default RequestPage;

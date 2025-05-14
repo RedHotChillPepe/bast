@@ -2,18 +2,21 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Dimensions, Image, Modal, TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 
 import ChevronRight from "../assets/svg/ChevronRight";
 import EditPencil from "../assets/svg/EditPencil";
 import Folders from "../assets/svg/Folders";
+import { HouseCheckIcon } from '../assets/svg/HouseCheckIcon';
 import ListUnordered from "../assets/svg/ListUnordered";
 import TeamMembers from "../assets/svg/TeamMembers";
+import { UserCardIcon } from '../assets/svg/UserCard';
+import { UserVoiceIcon } from '../assets/svg/UserVoiceIcon';
+import ReferralListPage from './ReferralPrograms/ReferralListPage';
 import UserRequestPage from './Requests/UserRequestPage';
 import UserTeamsPage from './Teams/UserTeamsPage';
-import { UserCardIcon } from '../assets/svg/UserCard';
 
 const { width } = Dimensions.get('window');
 
@@ -24,6 +27,9 @@ const ProfileRealtorPage = ({ user }) => {
 
   const [showModalTeams, setShowModalTeams] = useState(false)
   const [showModalRequest, setShowModalRequest] = useState(false)
+  const [showModalReferral, setShowModalReferral] = useState(false)
+
+  const [isDeal, setIsDeal] = useState(false);
 
   // TODO: это фикс с модалками(не кликабельность после navigate)
   useFocusEffect(
@@ -55,7 +61,19 @@ const ProfileRealtorPage = ({ user }) => {
     {
       title: 'Заявки',
       data: [
-        { icon: <Folders />, label: 'Заявки', handlePress: () => setShowModalRequest(true) },
+        { icon: <Folders />, label: 'Заявки', handlePress: () => { setShowModalRequest(true); setIsDeal(false) } },
+      ],
+    },
+    {
+      title: 'Сделки',
+      data: [
+        { icon: <HouseCheckIcon />, label: 'Сделки', handlePress: () => { setShowModalRequest(true); setIsDeal(true) } },
+      ],
+    },
+    {
+      title: 'Реферальная программа',
+      data: [
+        { icon: <UserVoiceIcon />, label: 'Реферальная программа', handlePress: () => setShowModalReferral(true) },
       ],
     },
     {
@@ -148,8 +166,9 @@ const ProfileRealtorPage = ({ user }) => {
           <UserCardIcon />
         </TouchableOpacity>
       </ScrollView>
-      <Modal visible={showModalRequest}><UserRequestPage user={user} handleClose={() => setShowModalRequest(false)} /></Modal>
+      <Modal visible={showModalRequest}><UserRequestPage user={user} handleClose={() => setShowModalRequest(false)} isDeal={isDeal} /></Modal>
       <Modal visible={showModalTeams}><UserTeamsPage handleClose={() => setShowModalTeams(false)} currentUser={user} /></Modal>
+      <Modal visible={showModalReferral}><ReferralListPage handleClose={() => setShowModalReferral(false)} /></Modal>
     </View >
   );
 };

@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../context/AuthContext';
 const RegisterTypeUserPage = () => {
     const navigation = useNavigation();
     const [selectedType, setSelectedType] = useState(null);
-
+    const { referralToken } = useAuth();
+    console.log(referralToken);
     const renderHeader = () => {
         return <View style={styles.header}>
             <Pressable onPress={() => navigation.goBack()}>

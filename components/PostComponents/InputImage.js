@@ -1,19 +1,23 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
-import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { UploadFileIcon } from '../../assets/svg/UploadFileIcon';
 import { useToast } from "../../context/ToastProvider";
 
 const { width } = Dimensions.get('window');
 
-const containerHorizontalPadding = 16;
-const gap = 16;
-const containerWidth = width - 16;
+const containerHorizontalPadding = 12;
+const gap = 12;
+const containerWidth = width - 32;
 const availableWidth = containerWidth - 2 * containerHorizontalPadding;
 
 const InputImage = (props) => {
-    const { setFormData, photos } = props;
+    const { showImages = true, selectionLimit = 20, setFormData, photos, label = "Фото", buttonText = "Загрузить изображения", title = "Фотографии", widthMinus = 32, verticalMargin = 16, marginTop = 16 } = props;
     const showToast = useToast();
+
+    const styles = makeStyle(widthMinus, verticalMargin, marginTop);
+
     const pickImages = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -24,7 +28,7 @@ const InputImage = (props) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
             allowsMultipleSelection: true,
-            selectionLimit: 20,
+            selectionLimit,
             quality: 1,
             base64: true
         });
@@ -39,7 +43,7 @@ const InputImage = (props) => {
 
         setFormData(prevData => ({
             ...prevData,
-            photos: [...prevData.photos, ...newPhotos],
+            photos: selectionLimit > 1 ? [...prevData.photos, ...newPhotos] : [...newPhotos],
         }));
         showToast('Изображения успешно добавлены!');
     };
@@ -64,64 +68,76 @@ const InputImage = (props) => {
 
     return (
         <View style={styles.inputContainer}>
-            <Text style={styles.title}>Фотографии</Text>
+            {title.length > 0 && <Text style={styles.title}>{title}</Text>}
             <View style={styles.photoContainer}>
-                {photos.length === 0 &&
+                {(photos.length === 0 || !showImages) &&
                     <View style={styles.photoContainer__title}>
-                        <Text style={styles.header}>Фото</Text>
+                        <Text style={styles.header}>{label}</Text>
                     </View>}
                 {/* Галерея выбранных фото */}
-                <View style={styles.galleryContainer}>
-                    {rows.map((row, rowIndex) => {
-                        const rowLength = row.length;
-                        // Вычисляем ширину для каждого фото в данном ряду
-                        const photoWidth = (availableWidth - gap * (rowLength - 1)) / rowLength;
-                        return (
-                            <View key={rowIndex} style={[styles.row]}>
-                                {row.map((item, index) => (
-                                    <View
-                                        key={index}
-                                        style={[
-                                            styles.photoWrapper,
-                                            {
-                                                width: photoWidth,
-                                                height: photoWidth,
-                                                marginRight: index !== rowLength - 1 ? gap : 0,
-                                            },
-                                        ]}
-                                    >
-                                        <Image source={{ uri: item.uri }} style={styles.photo} />
-                                        <Pressable
-                                            style={styles.removeIcon}
-                                            onPress={() => removePhoto(item.uri)}
+                {showImages ?
+                    <View style={styles.galleryContainer}>
+                        {rows.map((row, rowIndex) => {
+                            const rowLength = row.length;
+                            // Вычисляем ширину для каждого фото в данном ряду
+                            const photoWidth = (availableWidth - gap * (rowLength - 1)) / rowLength;
+                            return (
+                                <View key={rowIndex} style={[styles.row]}>
+                                    {row.map((item, index) => (
+                                        <View
+                                            key={index}
+                                            style={[
+                                                styles.photoWrapper,
+                                                {
+                                                    width: photoWidth,
+                                                    height: photoWidth,
+                                                    marginRight: index !== rowLength - 1 ? gap : 0,
+                                                },
+                                            ]}
                                         >
-                                            <AntDesign name="close" size={20} color="white" />
-                                        </Pressable>
-                                    </View>
-                                ))}
-                            </View>
-                        );
-                    })}
-                </View>
-                {photos.length === 0 && (
-                    <View style={styles.photoContainer__button}>
-                        <Pressable style={styles.button} onPress={pickImages}>
-                            <AntDesign name="addfile" size={24} color="white" />
-                            <Text style={styles.buttonText}>Загрузить изображения</Text>
-                        </Pressable>
+                                            <Image source={{ uri: item.uri }} style={styles.photo} />
+                                            <Pressable
+                                                style={styles.removeIcon}
+                                                onPress={() => removePhoto(item.uri)}
+                                            >
+                                                <AntDesign name="close" size={20} color="white" />
+                                            </Pressable>
+                                        </View>
+                                    ))}
+                                </View>
+                            );
+                        })}
                     </View>
-                )}
-            </View>
+                    : <View style={photos.length > 0 && styles.fileNameContainer}>
+                        {photos.map((item, index) => <View key={`image-${index}`}>
+                            <TouchableOpacity style={{ flex: 1 }} onPress={pickImages}>
+                                <Text style={styles.fileNameText} numberOfLines={1}>
+                                    {item.filename}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>)}
+                    </View>}
+                {
+                    photos.length === 0 && (
+                        <View style={styles.photoContainer__button}>
+                            <Pressable style={styles.button} onPress={pickImages}>
+                                <UploadFileIcon />
+                                <Text style={styles.buttonText}>{buttonText}</Text>
+                            </Pressable>
+                        </View>
+                    )
+                }
+            </View >
         </View >
     );
 };
 
 export default InputImage;
 
-const styles = StyleSheet.create({
+const makeStyle = (widthMinus, verticalMargin, marginTop) => StyleSheet.create({
     inputContainer: {
-        width: width - 16,
-        marginVertical: 16,
+        width: width - widthMinus,
+        marginVertical: verticalMargin,
     },
     title: {
         textAlign: "center",
@@ -129,8 +145,10 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     photoContainer: {
-        marginTop: 16,
-        padding: 16,
+        marginTop: marginTop,
+        paddingTop: 8,
+        paddingHorizontal: 12,
+        paddingBottom: 12,
         borderRadius: 12,
         borderWidth: 1,
         borderColor: "#A1A1A1",
@@ -149,6 +167,7 @@ const styles = StyleSheet.create({
     galleryContainer: {
         alignSelf: 'stretch',
         gap: 16,
+        paddingTop: 4,
     },
     row: {
         flexDirection: 'row',
@@ -170,7 +189,7 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     photoContainer__button: {
-        marginTop: 16,
+        marginTop: 12,
     },
     button: {
         flexDirection: "row",
@@ -180,7 +199,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         alignSelf: "stretch",
         justifyContent: "center",
-        marginBottom: 8,
+        marginBottom: 12,
     },
     buttonText: {
         color: "white",
@@ -188,4 +207,17 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         marginLeft: 8,
     },
+    fileNameContainer: {
+        padding: 12,
+        marginTop: 16,
+        marginBottom: 12,
+        width: '100%',
+    },
+    fileNameText: {
+        color: "#2C88EC",
+        fontFamily: "Sora400",
+        fontSize: 14,
+        letterSpacing: -0.42,
+        lineHeight: 17.656
+    }
 });

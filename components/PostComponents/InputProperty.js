@@ -66,7 +66,7 @@ const InputProperty = (props) => {
     return (
         <View style={styles.container}>
             <KeyboardAvoidingView style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                <View>
+                <View style={{ flex: 1 }}>
                     <Text style={styles.title}>{title}</Text>
                     {renderInput()}
                 </View>
@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
         margin: 0,
         textAlignVertical: "center",
         lineHeight: 17,
+        flex: 1
     },
     dropdown: {
         justifyContent: "center",

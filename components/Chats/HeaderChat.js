@@ -1,9 +1,12 @@
 import React from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from "../../assets/svg/ChevronLeft"
+import { useTheme } from '../../context/ThemeContext';
 
 export default function HeaderChat(props) {
-    const { handleClose, title, online } = props;
+    const { handleClose, title, online, isOwner = false } = props;
+    const { theme } = useTheme();
+    const styles = makeStyles(theme);
 
     return <View style={styles.header}>
         <Pressable onPress={handleClose}>
@@ -11,29 +14,32 @@ export default function HeaderChat(props) {
         </Pressable>
         <View style={styles.info}>
             <Text style={styles.header__title}>{title}</Text>
-            {online && <View style={styles.onlineDot} />} 
+            {online && <View style={styles.onlineDot} />}
         </View>
-        <View />
+        {isOwner ?
+            <TouchableOpacity style={styles.button}>
+                <Text
+                    numberOfLines={2}
+                    style={styles.button__text}>Начать</Text>
+                <Text
+                    numberOfLines={2}
+                    style={styles.button__text}>сделку</Text>
+            </TouchableOpacity> : <View />
+        }
     </View>
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (theme) => StyleSheet.create({
     header: {
         justifyContent: "space-between",
         flexDirection: "row",
-        padding: 16,
+        padding: theme.spacing.medium,
         alignItems: "center",
-        backgroundColor: "#F2F2F7",
+        backgroundColor: theme.colors.block,
         borderBottomWidth: 1,
-        borderBottomColor: "#A1A1A1"
     },
     header__title: {
-        color: "#000",
-        fontSize: 16,
-        fontFamily: "Sora700",
-        fontWeight: 600,
-        lineHeight: 20.17,
-        letterSpacing: -0.48,
+        ...theme.typography.title3("text")
     },
     info: {
         flexDirection: "row",
@@ -47,4 +53,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'green',
         marginTop: 2,
     },
+    button: {
+        ...theme.buttons.buttonCustom(4, 8),
+    },
+    button__text: {
+        ...theme.typography.buttonTextSmall,
+    }
 })

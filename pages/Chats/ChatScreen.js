@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Image, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CheckAllIcon from "../../assets/svg/CheckAll";
 import CommunicationIcon from "../../assets/svg/Communication";
 import DotIcon from "../../assets/svg/Dot";
@@ -10,6 +10,10 @@ import { useApi } from '../../context/ApiContext';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import useSocket from '../../hooks/usePresenceSocket';
 import ChatInput from './ChatInput';
+import CustomModal from '../../components/CustomModal';
+import DynamicHousePostPage from '../DynamicHousePostPage';
+import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../../context/ThemeContext';
 
 
 const ChatScreen = (props) => {
@@ -19,11 +23,13 @@ const ChatScreen = (props) => {
     const [messages, setMessages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isListReady, setIsListReady] = useState(false);
-
     const listRef = useRef(null);
     const [keyboardVisible, setKeyboardVisible] = useState(false);
     const typingTimeout = useRef(null);
     const [isTyping, setIsTyping] = useState(false);
+    const [isShowModalPost, setIsShowModalPost] = useState(false);
+
+    const navigation = useNavigation();
 
     const handleIncoming = useCallback(msg => setMessages(prev => [...prev, msg]), []);
 
@@ -37,6 +43,9 @@ const ChatScreen = (props) => {
         handleIncoming,
         handleTyping,
     );
+
+    const { theme } = useTheme();
+    const styles = makeStyles(theme);
 
     // обработчик входящих событий о прочтении
     useEffect(() => {
@@ -219,7 +228,9 @@ const ChatScreen = (props) => {
         const price = post.price ? Number(post.price).toLocaleString('ru-RU') : 'Цена не указана';
 
         return (
-            <View style={styles.post__container}>
+            <Pressable
+                onPress={() => setIsShowModalPost(true)}
+                style={styles.post__container}>
                 <Image
                     style={styles.post__image}
                     source={{ uri: firstPhoto }}
@@ -235,7 +246,7 @@ const ChatScreen = (props) => {
                         <Text style={styles.caption__text}>{post.plot_area} соток</Text>
                     </View>
                 </View>
-            </View>
+            </Pressable>
         );
     };
 
@@ -370,7 +381,7 @@ const ChatScreen = (props) => {
                         placeholder={"Сообщение"}
                     />
                     <TouchableOpacity onPress={handleSendMessage}>
-                        <CommunicationIcon />
+                        <CommunicationIcon color={theme.colors.accent} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -388,19 +399,30 @@ const ChatScreen = (props) => {
                 title={selectedChat?.opponent_fullname || 'Чат'}
                 avatar={selectedChat?.opponent_user?.photo}
                 online={opponentStatus}
+                isOwner={selectedChat.post.poster_id == currentUser.id && selectedChat.post.poster_type == currentUser.usertype}
             />
             {renderPost()}
             {renderMessages()}
             {renderInput()}
+            <CustomModal isVisible={isShowModalPost} onClose={() => setIsShowModalPost(false)}>
+                <DynamicHousePostPage
+                    navigation={navigation}
+                    route={{
+                        houseId: selectedChat.post.id,
+                        isModal: true,
+                        setIsModalShow: setIsShowModalPost,
+                    }}
+                />
+            </CustomModal>
         </KeyboardAvoidingView>
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (theme) => StyleSheet.create({
     container: {
-        backgroundColor: "#E5E5EA",
-        padding: 16,
-        gap: 16,
+        backgroundColor: theme.colors.background,
+        padding: theme.spacing.medium,
+        gap: theme.spacing.medium,
         flexGrow: 1,
     },
     emptyContainer: {
@@ -409,23 +431,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyText: {
-        fontSize: 16,
-        color: '#808080',
+        ...theme.typography.title3("caption")
     },
     full__date: {
-        textAlign: "center",
-        color: "#3E3E3E",
-        fontFamily: "Sora700",
-        fontWeight: 600,
-        fontSize: 16,
-        letterSpacing: -0.48,
-        lineHeight: 20.17,
-        paddingBottom: 16,
+        ...theme.typography.title3("text"),
+        paddingBottom: theme.spacing.medium,
     },
     sender__container: {
         flexDirection: "row",
-        gap: 8,
-        marginBottom: 16,
+        gap: theme.spacing.small,
+        marginBottom: theme.spacing.medium,
     },
     user__image: {
         width: 42,
@@ -434,16 +449,11 @@ const styles = StyleSheet.create({
         borderRadius: 100,
     },
     user__initials: {
-        color: '#3E3E3E',
-        fontSize: 14,
-        fontFamily: 'Sora700',
-        fontWeight: 600,
-        lineHeight: 17.66,
-        letterSpacing: -0.42,
+        ...theme.typography.regularBold,
         wordWrap: 'break-word',
     },
     message: {
-        backgroundColor: "#F2F2F7",
+        backgroundColor: theme.colors.block,
         justifyContent: "center",
         alignItems: "center",
         alignContent: "center",
@@ -454,27 +464,17 @@ const styles = StyleSheet.create({
         borderRadius: 12
     },
     message__text: {
-        letterSpacing: -0.42,
-        color: '#3E3E3E',
-        fontSize: 14,
-        fontFamily: 'Sora400',
-        fontWeight: 400,
-        lineHeight: 17.66,
+        ...theme.typography.regular(),
         wordWrap: 'break-word'
     },
     message__date: {
-        color: '#808080',
-        fontSize: 12,
-        fontFamily: 'Sora400',
-        fontWeight: 400,
-        lineHeight: 16,
-        letterSpacing: -0.36,
+        ...theme.typography.caption,
         wordWrap: 'break-word',
     },
     post__container: {
-        backgroundColor: "#F2F2F7",
+        backgroundColor: theme.colors.block,
         borderBottomWidth: 1,
-        borderBottomColor: "#A1A1A1",
+        borderBottomColor: theme.colors.placeholder,
         paddingHorizontal: 16,
         paddingVertical: 12,
         gap: 12,
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
         aspectRatio: 80 / 50
     },
     info__price: {
-        color: "#0A0F09",
+        color: theme.colors.text,
         fontFamily: "Sora700",
         letterSpacing: -0.43,
         fontWeight: 600,
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
     },
     info__location: {
-        color: "#0A0F09",
+        color: theme.colors.text,
         fontFamily: "Sora500",
         fontWeight: 500,
         lineHeight: 16,
@@ -507,30 +507,24 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     caption__text: {
-        color: "#0A0F09",
-        fontFamily: "Sora400",
-        letterSpacing: 0.06,
-        fontWeight: 400,
-        lineHeight: 13,
-        fontSize: 11,
+        ...theme.typography.caption
     },
     input__container: {
         flexDirection: "row",
-        backgroundColor: "#F2F2F7",
-        gap: 8,
-        paddingVertical: 8,
+        backgroundColor: theme.colors.block,
+        gap: theme.spacing.small,
+        paddingVertical: theme.spacing.small,
         alignItems: "center",
-        paddingHorizontal: 16,
+        paddingHorizontal: theme.spacing.medium,
     },
     typingIndicator: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        paddingVertical: theme.spacing.small,
+        paddingHorizontal: theme.spacing.medium,
         backgroundColor: "transparent",
         alignItems: 'flex-start',
     },
     typingText: {
-        fontStyle: 'italic',
-        color: '#666',
+        ...theme.typography.caption
     },
 });
 

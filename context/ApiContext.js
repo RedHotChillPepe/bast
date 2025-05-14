@@ -1287,6 +1287,62 @@ export default function ApiProvider({ children }) {
     }
   }
 
+  const getReferralLink = async () => {
+    const accessToken = await getAuth();
+    const url = `${host}api/referrals/link`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error
+      }
+
+      const result = await response.json();
+      return {
+        success: true,
+        link: result.link,
+        message: "Реферальная ссылка получена!"
+      };
+    } catch (error) {
+      console.error("Error fetching referral link: ", error);
+      throw error;
+    }
+  }
+
+  const getUserReferrals = async () => {
+    const accessToken = await getAuth();
+    const url = `${host}api/referrals/invites`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Error fetching referrals: ", error);
+      throw error;
+    }
+  }
+
   return (
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
@@ -1295,7 +1351,8 @@ export default function ApiProvider({ children }) {
       updateUserStatus, getCurrentUser, registerUser, checkPhone, getUserTeams, getTeamById, createTeam, editTeam,
       getTeamRequest, getActiveInvitationToTeam, createInvitationToTeam, isValidInvitation, acceptInvitationToTeam,
       acceptTeamRequest, rejectTeamRequest, sendLeaveTeamRequest, removeTeamMember, getUserChats, getChatMessages, host,
-      searchMessages, togglePinedChat, setStatusMessage, createChat, getDocument, deleteChat, resetPassword, checkSmsCode
+      searchMessages, togglePinedChat, setStatusMessage, createChat, getDocument, deleteChat, resetPassword, checkSmsCode,
+      getReferralLink, getUserReferrals
     }}>
       {children}
     </ApiContext.Provider>
