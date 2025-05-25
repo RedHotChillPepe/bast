@@ -117,7 +117,15 @@ const baseStyles = (colors) => {
                     textAlign: 'center',
                     color
                 }
-            }
+            },
+            errorText: {
+                color: colors.error,
+                fontSize: 14,
+                lineHeight: 17.6,
+                letterSpacing: -0.42,
+                fontWeight: 400,
+                fontFamily: "Sora400",
+            },
         },
         buttons: {
             buttonCustom: (vertical = 12, horizontal = 12, color = "#2C88EC") => {
@@ -158,6 +166,9 @@ const colorSchemes = {
         placeholder: '#A1A1A1',
         black: '#000',
         white: '#FFF',
+        error: "red",
+        success: "#4CAF50",
+        warn: "#FFC107"
     },
     dark: {
         block: '#1C1C1E',
@@ -169,6 +180,9 @@ const colorSchemes = {
         placeholder: '#636366',
         black: '#000',
         white: '#FFF',
+        error: "red",
+        success: "#4CAF50",
+        warn: "#FFC107"
     }
 };
 

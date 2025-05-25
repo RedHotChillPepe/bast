@@ -61,7 +61,7 @@ const UserTeamsPage = (props) => {
                                     {item.member_role === 1 &&
                                         <View style={styles.status_container}>
                                             <Text style={styles.team__status}>в работе: </Text>
-                                            <Text style={styles.team__status__number}>{item.request_count}</Text>
+                                            <Text style={styles.team__status__number}>{item.team_request_count}</Text>
                                         </View>
                                     }
                                 </View>

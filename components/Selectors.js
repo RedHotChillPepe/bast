@@ -14,7 +14,7 @@ export const Selectors = (props) => {
                     key={`Selector-${item.id}`}
                     onPress={() => handleSelected(item.value)}
                     style={[selectedList === item.value && styles.activeButton, styles.searchButtonsContent]}>
-                    <Text style={[selectedList === item.value ? styles.activeButtonsText : styles.searchButtonsText]}>{item.title}</Text>
+                    <Text numberOfLines={1} style={[selectedList === item.value ? styles.activeButtonsText : styles.searchButtonsText]}>{item.title}</Text>
                 </Pressable>
             ))}
         </View>
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         lineHeight: 17.6,
         letterSpacing: -0.43,
+        textAlign: "center",
         fontFamily: "Sora400"
     },
     activeButtonsText: {
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#F2F2F7",
         fontFamily: "Sora700",
+        textAlign: "center",
         fontSize: 14,
     },
 })

@@ -32,6 +32,7 @@ import ProfilePageView from './ProfilePageView';
 import { useLogger } from '../context/LoggerContext';
 import ChatScreen from './Chats/ChatScreen';
 import { useFavorites } from '../context/FavoritesContext';
+import ServicesPage from './Services/ServicesPage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -65,6 +66,13 @@ export default function DynamicHousePostPage({ navigation, route }) {
 
   const { logError } = useLogger();
 
+  const [selectedItem, setSelectedItem] = useState();
+  const [isShowModal, setIsShowModal] = useState(false);
+
+  const handleSelected = (item) => {
+    setSelectedItem(item);
+    setIsShowModal(true);
+  }
 
   const mapRef = useRef(null);
   // Получение данных объявления и пользователя
@@ -450,10 +458,28 @@ export default function DynamicHousePostPage({ navigation, route }) {
   }
 
   const servicesList = [
-    { title: 'Страхование', route: 'Error', params: { errorCode: 2004 } },
-    { title: 'Оценка недвижимости', route: 'Error', params: { errorCode: 2004 } },
-    { title: 'Trade-in', route: 'Error', params: { errorCode: 2004 } },
-    { title: 'Дизайн интерьера', route: 'Error', params: { errorCode: 2004 } },
+    {
+      buttonTitle: "Страхование",
+      title: 'Страхование жилья',
+      serviceId: 1,
+      subTitle: "Страхование жилья",
+      subText: `Поможем Вам застраховать ваше недвижимое имущество. Наш менеджер сам свяжется с вами.`,
+    },
+    {
+      buttonTitle: "Сопровождение сделки",
+      title: 'Сопровождение сделки',
+      serviceId: 2,
+      subTitle: "Сопровождение ипотеки",
+      subText: 'Поможем Вам получить одобрение ипотеки.',
+    },
+    {
+      buttonTitle: "Оценка",
+      title: 'Оценка недвижимости',
+      serviceId: 3,
+      subTitle: "Оценка недвижимости",
+      subText: 'Поможем Вам застраховать ваше недвижимое имущество. Наш менеджер сам свяжется с вами.',
+    },
+    // { title: 'Дизайн интерьера', route: 'Error', params: { errorCode: 2004 } },
   ];
 
   const renderServicesBlock = () => {
@@ -462,17 +488,13 @@ export default function DynamicHousePostPage({ navigation, route }) {
         <Text style={styles.infoTitle}>Услуги</Text>
         <View style={styles.serviciesView}>
           {servicesList.map((service, index) => (
-            <Pressable
+            <TouchableOpacity
               key={index}
               style={styles.serviciesPressable}
-              onPress={() => {
-                if (isModal)
-                  route.setIsModalShow(false);
-                navigation.navigate(service.route, service.params)
-              }}
+              onPress={() => { handleSelected(service) }}
             >
-              <Text style={styles.serviciesText}>{service.title}</Text>
-            </Pressable>
+              <Text numberOfLines={2} style={styles.serviciesText}>{service.buttonTitle}</Text>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
@@ -744,6 +766,7 @@ ${priceInfo}
       <Modal visible={isShowChatModal}>
         <ChatScreen handleClose={() => setIsShowChatModal(false)} selectedChat={chatData} currentUser={currentUser} />
       </Modal>
+      <Modal visible={isShowModal} animationType='slide'><ServicesPage handleClose={() => setIsShowModal(false)} selectedItem={selectedItem} /></Modal>
     </View>
   );
 }
@@ -881,22 +904,26 @@ const styles = StyleSheet.create({
     width: width - 32,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    gap: 12,
+    flex: 1,
+    // justifyContent: 'space-between',
   },
   serviciesPressable: {
-    width: (width - 32 - 16) / 2,
-    height: width * 0.2,
+    alignSelf: "stretch",
+    width: (width - 32 - 16) / 3,
+    // height: width * 0.2,
+    flex: 1,
     backgroundColor: '#F2F2F7',
     borderRadius: 12,
     padding: 12,
-    marginBottom: 16,
+    // marginBottom: 16,
   },
   serviciesText: {
     fontSize: 14,
     lineHeight: 17,
     letterSpacing: -0.42,
     fontFamily: "Sora400",
-    color: "#3E3E3E"
+    color: "#3E3E3E",
   },
   button: {
     backgroundColor: '#007AFF',

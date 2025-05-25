@@ -1,19 +1,41 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import UserRemove from '../../assets/svg/UserRemove';
 import AccordionList from '../../components/AccordionList';
 import { useApi } from '../../context/ApiContext';
+import { useTheme } from '../../context/ThemeContext';
+import RequestPage from '../Requests/RequestPage';
+import UserRequestPage from '../Requests/UserRequestPage';
 
 const EmployeeTeamPage = (props) => {
 
-    const { handleClose, selectedPeople, selectedTeam, isOwner, setTeamsData, setTeamMembers, setRequestTeam } = props;
+    const { theme } = useTheme();
 
-    const [showKickModal, setShowKickModal] = React.useState(false);
-    const [isLoadingResult, setIsLoadingResult] = React.useState(false);
-    const [error, setError] = React.useState("");
+    const { handleClose, selectedPeople, selectedTeam, isOwner, setTeamsData, setTeamMembers, setRequestTeam, setSelectedPeople } = props;
 
-    const { removeTeamMember } = useApi();
+    const [showKickModal, setShowKickModal] = useState(false);
+    const [isLoadingResult, setIsLoadingResult] = useState(false);
+    const [error, setError] = useState("");
+
+    const [isShowAddRequestModal, setIsShowAddRequestModal] = useState(false);
+    const [isShowRequestsModal, setIsShowRequestModal] = useState(false);
+
+    const prevStatusRef = useRef();
+
+    const [selectedRequest, setSelectedRequest] = useState();
+    const [stages, setStages] = useState([])
+
+    const { removeTeamMember, getStages, changeAssignee } = useApi();
+
+    useEffect(() => {
+        const fetchStages = async () => {
+            const resultStatuses = await getStages();
+            setStages(resultStatuses);
+        }
+
+        fetchStages();
+    }, [])
 
     const renderHeader = () => {
         return <View style={styles.header}>
@@ -27,6 +49,47 @@ const EmployeeTeamPage = (props) => {
                 </Pressable>
                 : <View />}
         </View>
+    }
+
+    const handleAssign = async (request) => {
+        try {
+            const payload = {
+                requestId: request.request_id,
+                team_id: selectedTeam.team_id,
+                user_id: selectedPeople.user?.id,
+                user_type: selectedPeople.usertype,
+            }
+
+            const result = await changeAssignee(payload);
+            setTeamMembers((prev) => prev.map(people => {
+                if (people.member_id == selectedPeople.member_id) {
+                    const payload = {
+                        ...request.last_assign,
+                        assigned_at: new Date(),
+                        id: request.request_id,
+                        service: request.service,
+                        user: request.user
+                    }
+                    people.requests.push({ ...payload })
+                    people.request_count++;
+                };
+                return people
+            }))
+
+            setTeamsData(prev =>
+                prev.map(team => {
+                    if (team.team_id === selectedTeam.team_id) team.team_request_count++
+                    return team;
+                })
+            );
+
+        }
+        catch (error) {
+            console.error(error);
+        }
+        finally {
+            setIsShowAddRequestModal(false)
+        }
     }
 
     const renderPeopleItem = () => {
@@ -53,54 +116,67 @@ const EmployeeTeamPage = (props) => {
         )
     }
 
-    const requestList = [
-        {
-            updateDate: `13.04 18:34`,
-            initials: "Гребенкина Марина Александровна",
-            status: "В работе",
-            type: "Сопровождение сделки",
-            location: "г Ижевск, ул Горнолыжная, д 23",
-            id: 1
-        },
-        {
-            updateDate: `13.04 18:34`,
-            initials: "Гребенкина Марина Александровна",
-            status: "В работе",
-            type: "Сопровождение сделки",
-            location: "г Ижевск, ул Горнолыжная, д 23",
-            id: 2
-        },
-    ]
-
-    const renderStatus = (status) => {
-        return (<View style={styles.status__flag}>
+    const renderStatus = (status, id) => {
+        return (<View style={[styles.status__flag, { backgroundColor: id == -1 ? "#FF2D55" : id == 4 ? theme.colors.success : id == 0 ? '#FFC107' : "#2C88EC" }]}>
             <Text style={styles.flag__text}>{status}</Text>
         </View>)
     }
 
-    const renderRequest = () => {
-        return requestList.map((item) => (
-            <View key={item.id} style={{ rowGap: 8 }}>
-                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                    <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.update__text}>
-                            Обновлено:&nbsp;
-                        </Text>
-                        <Text style={styles.update__date}>{item.updateDate}</Text>
-                    </View>
-                    {renderStatus(item.status)}
-                </View>
-                <View style={{ rowGap: 4 }}>
-                    <Text style={styles.initials}>{item.initials}</Text>
-                    <Text style={styles.type}>{item.type}</Text>
-                    <View style={styles.location}>
-                        <Text style={styles.location__text}>{item.location}</Text>
-                        <Text style={styles.location__text}>№{item.id}</Text>
-                    </View>
-                </View>
-            </View>
-        ))
+    const handleSelectedRequest = (item) => {
+        const payload = {
+            user: item.user,
+            service: item.service,
+            last_assign: {
+                ...item,
+            }
+        }
+        setSelectedRequest(payload);
+        setIsShowRequestModal(true);
     }
+
+    const renderList = (title, data, emptyText) => (
+        <AccordionList title={title} isExpanded={true}>
+            {data.length === 0 ? (
+                <Text style={theme.typography.regular("caption")}>{emptyText}</Text>
+            ) : (
+                data.map((item) => (
+                    <TouchableOpacity onPress={() => handleSelectedRequest(item)} key={`${item?.id}-${item.assigned_at}`} style={{ rowGap: 8 }}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                            <View style={{ flexDirection: "row" }}>
+                                <Text style={styles.update__text}>Обновлено:&nbsp;</Text>
+                                <Text style={styles.update__date}>
+                                    {new Date(item.assigned_at).toLocaleDateString("ru-RU", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
+                                </Text>
+                            </View>
+                            {renderStatus(item.status.stage, item.status.id)}
+                        </View>
+                        <View style={{ rowGap: 4 }}>
+                            <Text style={styles.initials}>{item.user.name} {item.user.surname}</Text>
+                            <Text style={styles.type}>{item.service.description}</Text>
+                        </View>
+                    </TouchableOpacity>
+                ))
+            )}
+        </AccordionList>
+    );
+
+    const renderRequests = () => {
+        const inProgressRequests = selectedPeople.requests.filter(r => r.status?.id !== -1 && r.status?.id !== 4);
+        const closedRequests = selectedPeople.requests.filter(r => r.status?.id === -1 || r.status?.id === 4);
+
+        return (
+            <>
+                {renderList("В работе", inProgressRequests, "У вас нет заявок в работе")}
+                {renderList("Закрытые", closedRequests, "У вас нет закрытых заявок")}
+            </>
+        );
+    };
+
 
     const handleKickMember = async () => {
         try {
@@ -109,7 +185,7 @@ const EmployeeTeamPage = (props) => {
 
             const result = await removeTeamMember(
                 selectedTeam.team_id,
-                selectedPeople.user.id,
+                selectedPeople.user?.id,
                 selectedPeople.usertype,
             );
 
@@ -124,18 +200,18 @@ const EmployeeTeamPage = (props) => {
 
             // Удалить заявки, связанные с участником
             setRequestTeam((prev) =>
-                prev.filter(request => request.user_id !== selectedPeople.user.id && request.user_type !== selectedPeople.usertype)
+                prev.filter(request => request.user_id !== selectedPeople.user?.id && request.user_type !== selectedPeople.usertype)
             );
 
-            // Обновить teamsData и уменьшить request_count
+            // Обновить teamsData и уменьшить team_request_count 
             setTeamsData((prev) =>
                 prev.map(team => {
                     if (team.team_id === selectedTeam.team_id) {
                         const removedCount = parseInt(selectedPeople.request_count || "0", 10);
-                        const currentCount = parseInt(team.request_count || "0", 10);
+                        const currentCount = parseInt(team.team_request_count || "0", 10);
                         return {
                             ...team,
-                            request_count: (currentCount - removedCount).toString()
+                            team_request_count: (currentCount - removedCount).toString()
                         };
                     }
                     return team;
@@ -198,25 +274,64 @@ const EmployeeTeamPage = (props) => {
         );
     };
 
+    const listModals = [
+        {
+            visible: showKickModal,
+            animationType: "fade",
+            transparent: true,
+            content: (
+                <KickMemberModal />
+            ),
+            onRequestClose: () => setShowKickModal(false),
+        },
+        {
+            visible: isShowAddRequestModal,
+            animationType: "slide",
+            content: (
+                <UserRequestPage handleClose={() => setIsShowAddRequestModal(false)} isOwner={isOwner} selectedPeople={selectedPeople.member_id} handleAssign={handleAssign} />
+            ),
+            onRequestClose: () => setIsShowAddRequestModal(false),
+        },
+        {
+            visible: isShowRequestsModal,
+            animationType: "slide",
+            content: (
+                <RequestPage setTeamMembers={setTeamMembers} setSelectedRequest={setSelectedRequest} prevStatusRef={prevStatusRef} setSelectedPeople={setSelectedPeople} handleAssign={handleAssign} selectedRequest={selectedRequest} selectedTeam={selectedTeam} handleClose={() => setIsShowRequestModal(false)} isOwner={isOwner} stages={stages} user={selectedPeople.user} />
+            ),
+            onRequestClose: () => setIsShowRequestModal(false),
+        },
+    ];
+
+    const renderModals = () => {
+        return listModals.map((modal, index) => (
+            <Modal
+                key={`modal-${index}`}
+                visible={modal.visible}
+                transparent={modal.transparent ?? false}
+                animationType={modal.animationType ?? "slide"}
+                onRequestClose={modal.onRequestClose}
+            >
+                {modal.content}
+            </Modal>
+        ));
+    };
+
     return (
-        <View style={styles.container}>
+        <View style={styles.container} >
             {renderHeader()}
-            <ScrollView style={styles.containerScroll}>
+            < ScrollView style={styles.containerScroll} >
                 <View style={styles.containerItem}>
                     {renderPeopleItem()}
-                    <AccordionList title="В работе" isExpanded={true}>
-                        {renderRequest()}
-                    </AccordionList>
-                    <AccordionList title="Закрытые" ></AccordionList>
+                    {renderRequests()}
                 </View>
-            </ScrollView>
+            </ScrollView >
             {isOwner &&
-                <Pressable style={styles.button}>
+                <TouchableOpacity onPress={() => setIsShowAddRequestModal(true)} style={styles.button}>
                     <Text style={styles.button__text}>Добавить задачу</Text>
-                </Pressable>
+                </TouchableOpacity>
             }
-            <Modal visible={showKickModal} transparent={true} onRequestClose={() => setShowKickModal(false)}><KickMemberModal /></Modal>
-        </View>
+            {renderModals()}
+        </View >
     )
 }
 

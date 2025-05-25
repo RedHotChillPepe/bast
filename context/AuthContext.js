@@ -49,7 +49,6 @@ export default function AuthProvider({ children }) {
       setTokenIsLoaded(true)
     }
     checkAuth()
-    // TODO: проверить, что токен жив
     if (checkAuthB) {
       setCheckAuthB(false)
     }

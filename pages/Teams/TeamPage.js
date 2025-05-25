@@ -1,25 +1,28 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ChevronLeft from '../../assets/svg/ChevronLeft';
 import EditPencil from '../../assets/svg/EditPencil';
+import { LeftIcon } from '../../assets/svg/LeftIcon';
+import Loader from '../../components/Loader';
 import { Selectors } from '../../components/Selectors';
 import { useApi } from '../../context/ApiContext';
+import UserRequestPage from './../Requests/UserRequestPage';
 import EditTeamPage from './EditTeamPage';
 import EmployeeTeamPage from './EmployeeTeamPage';
 import TeamInvationPage from './TeamInvationPage';
-import Loader from '../../components/Loader';
-import { useNavigation } from '@react-navigation/native';
 
 const TeamPage = (props) => {
     const [selectedList, setSelectedList] = useState("active");
 
     const { getTeamById, getTeamRequest, rejectTeamRequest, acceptTeamRequest, sendLeaveTeamRequest } = useApi();
 
-    const { selectedTeam, handleClose, setTeamsData, setSelectedTeam, currentUser } = props;
+    const { selectedTeam, handleClose, setTeamsData, setSelectedTeam, currentUser, handleChangeAssign, isChangeAssign = false } = props;
     const [isShowModal, setIsShowModal] = useState(false);
     const [isShowEditModal, setIsShowEditModal] = useState(false);
     const [isShowInvationModal, setIsShowInvationModal] = useState(false);
     const [isShowLeaveTeamModal, setIsShowLeaveTeamModal] = useState(false);
+    const [isShowRequestsModal, setIsShowRequestsModal] = useState(false);
 
     const [error, setError] = useState("");
     const [hasPendingRequest, setHasPendingRequest] = useState(false);
@@ -52,11 +55,12 @@ const TeamPage = (props) => {
         }
 
         setTeamMembers(result.members);
+        console.log(currentUser);
         const checkOwner = (
             currentUser &&
             selectedTeam &&
             currentUser.id === selectedTeam.owner_id &&
-            currentUser.usertype === selectedTeam.usertype
+            currentUser.usertype === selectedTeam.usertype || isChangeAssign
         );
         setIsOwner(checkOwner);
 
@@ -139,11 +143,12 @@ const TeamPage = (props) => {
                 <ChevronLeft />
             </Pressable>
             <Text style={styles.header__title}>{selectedTeam.team_name}</Text>
-            {isOwner ?
-                <Pressable onPress={() => setIsShowEditModal(true)}>
-                    <EditPencil />
-                </Pressable> : <View />
-            }
+            <Pressable onPress={() => isOwner ? setIsShowEditModal(true) : setIsShowLeaveTeamModal(true)}>
+                {isOwner ?
+                    <EditPencil /> :
+                    <LeftIcon />
+                }
+            </Pressable>
         </View>
     }
 
@@ -183,7 +188,7 @@ const TeamPage = (props) => {
     }
 
     const renderPeoples = () => {
-        if (teamMembers.length <= 1) return <Text style={styles.text__empty}>Нет активных участников</Text>
+        if (teamMembers.length == 0) return <Text style={styles.text__empty}>Нет активных участников</Text>
 
         // Сортировка: сначала текущий пользователь, потом все остальные
         const sortedMembers = [...teamMembers].sort((a, b) => {
@@ -359,6 +364,7 @@ const TeamPage = (props) => {
                     setTeamsData={setTeamsData}
                     setTeamMembers={setTeamMembers}
                     setRequestTeam={setRequestTeam}
+                    setSelectedPeople={setSelectedPeople}
                     handleClose={() => setIsShowModal(false)}
                 />
             ),
@@ -372,6 +378,12 @@ const TeamPage = (props) => {
             ),
             onRequestClose: () => setIsShowLeaveTeamModal(false),
         },
+        {
+            visible: isShowRequestsModal,
+            animationType: "slide",
+            content: (<UserRequestPage handleClose={() => setIsShowRequestsModal(false)} isOwner={true} />),
+            onRequestClose: () => setIsShowRequestsModal(false)
+        }
     ];
 
     const renderModals = () => {
@@ -393,7 +405,11 @@ const TeamPage = (props) => {
 
         if (isOwner || isSelf) {
             setSelectedPeople(people);
-            setIsShowModal(true);
+            if (handleChangeAssign == undefined)
+                setIsShowModal(true);
+            else {
+                handleChangeAssign({ teamId: selectedTeam.team_id, ...people });
+            }
         }
     };
 
@@ -406,7 +422,7 @@ const TeamPage = (props) => {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                {isOwner &&
+                {isOwner && !isChangeAssign &&
                     <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={listSelectProperties} />
                 }
                 {selectedList == "active" ?
@@ -415,9 +431,11 @@ const TeamPage = (props) => {
                 }
             </ScrollView >
 
-            <TouchableOpacity style={styles.button} onPress={() => isOwner ? setIsShowInvationModal(true) : setIsShowLeaveTeamModal(true)}>
-                <Text style={styles.button__text}>{isOwner ? "Добавить сотрудника" : hasPendingRequest ? "Отменить заявку" : "Покинуть команду"}</Text>
-            </TouchableOpacity>
+            {!isChangeAssign &&
+                <TouchableOpacity style={styles.button} onPress={() => isOwner ? setIsShowInvationModal(true) : setIsShowRequestsModal(true)}>
+                    <Text style={styles.button__text}>{isOwner ? "Добавить сотрудника" : "Мои задачи"}</Text>
+                </TouchableOpacity>
+            }
 
             {renderModals()}
         </View>
@@ -449,7 +467,7 @@ const styles = StyleSheet.create({
         letterSpacing: -0.6,
     },
     containerItem: {
-        rowGap: 12,
+        rowGap: 4,
         marginTop: 8,
     },
     item: {

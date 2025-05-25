@@ -1343,6 +1343,143 @@ export default function ApiProvider({ children }) {
     }
   }
 
+  const createServiceRequest = async (formData) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/requests`;
+
+    console.log(formData);
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.log("Произошла ошибка при создании заявки на услугу:", error);
+      throw error;
+    }
+  }
+
+  const getRequest = async (memberId) => {
+    try {
+      const accessToken = await getAuth();
+      let url = `${host}api/requests`;
+
+      if (memberId) {
+        const params = new URLSearchParams({
+          memberId: Number(memberId),
+        });
+        url += `?${params}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.log("Произошла ошибка при получении заявок:", error);
+      throw error;
+    }
+  }
+
+  const getStages = async () => {
+    try {
+      const accessToken = await getAuth();
+      const url = `${host}api/requests/stages`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.log("Произошла ошибка при получении этапов заявки:", error);
+      throw error;
+    }
+  }
+
+  const changeStatusRequest = async (request_id, service_status) => {
+    try {
+      const accessToken = await getAuth();
+      const url = `${host}api/requests/changeStatus`;
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ request_id, service_status })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.log("Произошла ошибка во время обновления статуса заявки:", error);
+      throw error;
+    }
+  }
+
+  const changeAssignee = async (payload) => {
+    try {
+      const accessToken = await getAuth();
+      const url = `${host}api/teams/changeAssignee`;
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.log("Произошла ошибка во время назначения исполнителя:", error);
+      throw error;
+    }
+  }
+
   return (
     <ApiContext.Provider value={{
       getAllPosts, getPaginatedPosts, getAllVillages,
@@ -1352,7 +1489,7 @@ export default function ApiProvider({ children }) {
       getTeamRequest, getActiveInvitationToTeam, createInvitationToTeam, isValidInvitation, acceptInvitationToTeam,
       acceptTeamRequest, rejectTeamRequest, sendLeaveTeamRequest, removeTeamMember, getUserChats, getChatMessages, host,
       searchMessages, togglePinedChat, setStatusMessage, createChat, getDocument, deleteChat, resetPassword, checkSmsCode,
-      getReferralLink, getUserReferrals
+      getReferralLink, getUserReferrals, createServiceRequest, getRequest, getStages, changeStatusRequest, changeAssignee
     }}>
       {children}
     </ApiContext.Provider>

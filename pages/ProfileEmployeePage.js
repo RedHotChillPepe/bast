@@ -166,9 +166,9 @@ const ProfileRealtorPage = ({ user }) => {
           <UserCardIcon />
         </TouchableOpacity>
       </ScrollView>
-      <Modal visible={showModalRequest}><UserRequestPage user={user} handleClose={() => setShowModalRequest(false)} isDeal={isDeal} /></Modal>
-      <Modal visible={showModalTeams}><UserTeamsPage handleClose={() => setShowModalTeams(false)} currentUser={user} /></Modal>
-      <Modal visible={showModalReferral}><ReferralListPage handleClose={() => setShowModalReferral(false)} /></Modal>
+      <Modal visible={showModalRequest} animationType='slide'><UserRequestPage user={user} handleClose={() => setShowModalRequest(false)} isDeal={isDeal} /></Modal>
+      <Modal visible={showModalTeams} animationType='slide'><UserTeamsPage handleClose={() => setShowModalTeams(false)} currentUser={user} /></Modal>
+      <Modal visible={showModalReferral} animationType='slide'><ReferralListPage handleClose={() => setShowModalReferral(false)} /></Modal>
     </View >
   );
 };
