@@ -1,33 +1,45 @@
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext';
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import {
+  Dimensions,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
 
 import ChevronRight from "../assets/svg/ChevronRight";
 import EditPencil from "../assets/svg/EditPencil";
 import Folders from "../assets/svg/Folders";
-import { HouseCheckIcon } from '../assets/svg/HouseCheckIcon';
+import { HouseCheckIcon } from "../assets/svg/HouseCheckIcon";
 import ListUnordered from "../assets/svg/ListUnordered";
 import TeamMembers from "../assets/svg/TeamMembers";
-import { UserCardIcon } from '../assets/svg/UserCard';
-import { UserVoiceIcon } from '../assets/svg/UserVoiceIcon';
-import ReferralListPage from './ReferralPrograms/ReferralListPage';
-import UserRequestPage from './Requests/UserRequestPage';
-import UserTeamsPage from './Teams/UserTeamsPage';
+import { UserCardIcon } from "../assets/svg/UserCard";
+import { UserVoiceIcon } from "../assets/svg/UserVoiceIcon";
+import ReferralListPage from "./ReferralPrograms/ReferralListPage";
+import UserRequestPage from "./Requests/UserRequestPage";
+import UserTeamsPage from "./Teams/UserTeamsPage";
+import { useNotification } from "../context/NotificationsContext";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const ProfileRealtorPage = ({ user }) => {
   const { logout, changePassword } = useAuth();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const [showModalTeams, setShowModalTeams] = useState(false)
-  const [showModalRequest, setShowModalRequest] = useState(false)
-  const [showModalReferral, setShowModalReferral] = useState(false)
+  const { sendPushNotification } = useNotification();
+
+  const [showModalTeams, setShowModalTeams] = useState(false);
+  const [showModalRequest, setShowModalRequest] = useState(false);
+  const [showModalReferral, setShowModalReferral] = useState(false);
 
   const [isDeal, setIsDeal] = useState(false);
 
@@ -47,43 +59,85 @@ const ProfileRealtorPage = ({ user }) => {
   // Массив данных для списков
   const sections = [
     {
-      title: 'Основные',
+      title: "Основные",
       data: [
-        { icon: <ListUnordered />, label: 'Мои документы', navigation: ['Error', { errorCode: 2004 }] },
+        {
+          icon: <ListUnordered />,
+          label: "Мои документы",
+          navigation: ["Error", { errorCode: 2004 }],
+        },
       ],
     },
     {
-      title: 'Команда',
+      title: "Команда",
       data: [
-        { icon: <TeamMembers />, label: 'Работа в команде', handlePress: () => setShowModalTeams(true) },
+        {
+          icon: <TeamMembers />,
+          label: "Работа в команде",
+          handlePress: () => setShowModalTeams(true),
+        },
       ],
     },
     {
-      title: 'Заявки',
+      title: "Заявки",
       data: [
-        { icon: <Folders />, label: 'Заявки', handlePress: () => { setShowModalRequest(true); setIsDeal(false) } },
+        {
+          icon: <Folders />,
+          label: "Заявки",
+          handlePress: () => {
+            setShowModalRequest(true);
+            setIsDeal(false);
+          },
+        },
       ],
     },
     {
-      title: 'Сделки',
+      title: "Сделки",
       data: [
-        { icon: <HouseCheckIcon />, label: 'Сделки', handlePress: () => { setShowModalRequest(true); setIsDeal(true) } },
+        {
+          icon: <HouseCheckIcon />,
+          label: "Сделки",
+          handlePress: () => {
+            setShowModalRequest(true);
+            setIsDeal(true);
+          },
+        },
       ],
     },
     {
-      title: 'Реферальная программа',
+      title: "Реферальная программа",
       data: [
-        { icon: <UserVoiceIcon />, label: 'Реферальная программа', handlePress: () => setShowModalReferral(true) },
+        {
+          icon: <UserVoiceIcon />,
+          label: "Реферальная программа",
+          handlePress: () => setShowModalReferral(true),
+        },
       ],
     },
     {
-      title: 'Мои действия',
+      title: "Мои действия",
       data: [
         // TODO: объявления компании, сейчас страница пользователя выводит только для пользователя
-        { icon: <ListUnordered />, label: 'Мои объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 1 }] },
-        { icon: <ListUnordered />, label: 'Избранное', navigation: ['Favourites'] },
-        { icon: <ListUnordered />, label: 'Закрытые объявления', navigation: ['UserPostsPage', { user_id: user.id, status: 3 }] },
-        { icon: <ListUnordered />, label: 'Корзина объявлений', navigation: ['UserPostsPage', { user_id: user.id, status: -1 }] },
+        {
+          icon: <ListUnordered />,
+          label: "Мои объявления",
+          navigation: ["UserPostsPage", { user_id: user.id, status: 1 }],
+        },
+        {
+          icon: <ListUnordered />,
+          label: "Избранное",
+          navigation: ["Favourites"],
+        },
+        {
+          icon: <ListUnordered />,
+          label: "Закрытые объявления",
+          navigation: ["UserPostsPage", { user_id: user.id, status: 3 }],
+        },
+        {
+          icon: <ListUnordered />,
+          label: "Корзина объявлений",
+          navigation: ["UserPostsPage", { user_id: user.id, status: -1 }],
+        },
       ],
     },
   ];
@@ -94,9 +148,8 @@ const ProfileRealtorPage = ({ user }) => {
       style={styles.listItem}
       onPress={() => {
         if (!item.navigation) {
-          item.handlePress()
-        }
-        else if (Array.isArray(item.navigation)) {
+          item.handlePress();
+        } else if (Array.isArray(item.navigation)) {
           navigation.navigate(item.navigation[0], item.navigation[1]);
         } else {
           navigation.navigate(item.navigation);
@@ -111,29 +164,69 @@ const ProfileRealtorPage = ({ user }) => {
     </TouchableOpacity>
   );
 
+  const handlePress = () => {
+    sendPushNotification({
+      title: "Заявка №102171539",
+      body: "Новый статус: Начало сделки",
+      data: { requestId: 102171539 },
+    });
+  };
+
   return (
-    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: '#9DC0F6' }}>
+    <View
+      style={{ flex: 1, paddingTop: insets.top, backgroundColor: "#9DC0F6" }}
+    >
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.nameBlock}>
           <View style={{ height: 17, width: 28 }} />
-          {
-            Object.keys(user).length != 0 && user.photo != undefined
-              ?
-              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={100} height={100} source={{ uri: user.photo }} />
-              :
-              <FontAwesome6 name="face-tired" size={100} color="#fff" />
-          }
+          {Object.keys(user).length != 0 && user.photo != undefined ? (
+            <Image
+              style={{ overflow: "hidden", borderRadius: 150 / 2 }}
+              width={100}
+              height={100}
+              source={{ uri: user.photo }}
+            />
+          ) : (
+            <FontAwesome6 name="face-tired" size={100} color="#fff" />
+          )}
 
-          <TouchableOpacity onPress={() => navigation.navigate('ChangeAvatarPage', { userObject: user, usertype: 3 })}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("ChangeAvatarPage", {
+                userObject: user,
+                usertype: 3,
+              })
+            }
+          >
             <EditPencil />
           </TouchableOpacity>
         </View>
 
-        <View style={{ marginLeft: 16, width: width - 32, alignItems: 'center', marginBottom: 32 }}>
-          <Text style={styles.name}>{user.name != undefined && user.surname != undefined ? `${user.name} ${user.surname}` : "Name Surname"}</Text>
+        <View
+          style={{
+            marginLeft: 16,
+            width: width - 32,
+            alignItems: "center",
+            marginBottom: 32,
+          }}
+        >
+          <Text style={styles.name}>
+            {user.name != undefined && user.surname != undefined
+              ? `${user.name} ${user.surname}`
+              : "Name Surname"}
+          </Text>
           <View style={{ rowGap: 4, alignItems: "center" }}>
-            <Text style={styles.email}>{user.email != undefined ? user.email : "mail@example.com"}</Text>
-            <Text style={styles.email}>{user.phone != undefined ? user.phone.replace(/^(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})$/, '+7 ($2) $3-$4-$5') : "+ 7 (xxx) xxx xx xx"}</Text>
+            <Text style={styles.email}>
+              {user.email != undefined ? user.email : "mail@example.com"}
+            </Text>
+            <Text style={styles.email}>
+              {user.phone != undefined
+                ? user.phone.replace(
+                    /^(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})$/,
+                    "+7 ($2) $3-$4-$5"
+                  )
+                : "+ 7 (xxx) xxx xx xx"}
+            </Text>
           </View>
         </View>
 
@@ -145,12 +238,7 @@ const ProfileRealtorPage = ({ user }) => {
             keyExtractor={(item, idx) => idx.toString()}
           /> */}
 
-            {
-              section.data.map((item, index) =>
-                renderItem(item, index)
-              )
-            }
-
+            {section.data.map((item, index) => renderItem(item, index))}
           </View>
         ))}
 
@@ -162,14 +250,37 @@ const ProfileRealtorPage = ({ user }) => {
           onPress={() => changePassword(navigation, user.phone)}
           style={styles.logoutButton}
         >
-          <Text style={[styles.itemText, styles.logoutText]}>Сменить пароль</Text>
+          <Text style={[styles.itemText, styles.logoutText]}>
+            Сменить пароль
+          </Text>
           <UserCardIcon />
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handlePress()}
+          style={styles.logoutButton}
+        >
+          <Text style={[styles.itemText, styles.logoutText]}>
+            Тест уведомлений
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
-      <Modal visible={showModalRequest} animationType='slide'><UserRequestPage user={user} handleClose={() => setShowModalRequest(false)} isDeal={isDeal} /></Modal>
-      <Modal visible={showModalTeams} animationType='slide'><UserTeamsPage handleClose={() => setShowModalTeams(false)} currentUser={user} /></Modal>
-      <Modal visible={showModalReferral} animationType='slide'><ReferralListPage handleClose={() => setShowModalReferral(false)} /></Modal>
-    </View >
+      <Modal visible={showModalRequest} animationType="slide">
+        <UserRequestPage
+          user={user}
+          handleClose={() => setShowModalRequest(false)}
+          isDeal={isDeal}
+        />
+      </Modal>
+      <Modal visible={showModalTeams} animationType="slide">
+        <UserTeamsPage
+          handleClose={() => setShowModalTeams(false)}
+          currentUser={user}
+        />
+      </Modal>
+      <Modal visible={showModalReferral} animationType="slide">
+        <ReferralListPage handleClose={() => setShowModalReferral(false)} />
+      </Modal>
+    </View>
   );
 };
 
@@ -177,35 +288,36 @@ export default ProfileRealtorPage;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    backgroundColor: '#E5E5EA',
+    alignItems: "center",
+    backgroundColor: "#E5E5EA",
     paddingBottom: 64,
-    flex: 1,
+    // flex: 1,
+    height: "120%"
   },
   nameBlock: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: width - 32,
     marginTop: 17,
     marginBottom: 16,
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   itemBlock: {
     width: width - 32,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: "#F2F2F7",
     padding: 8,
     gap: 8,
     borderRadius: 12,
     marginBottom: 10,
   },
   listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   listItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   itemText: {
     fontSize: 14,
@@ -213,24 +325,24 @@ const styles = StyleSheet.create({
     lineHeight: 17.6,
     letterSpacing: -0.42,
     fontFamily: "Sora400",
-    color: '#3E3E3E',
+    color: "#3E3E3E",
     marginLeft: 12,
   },
   logoutButton: {
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
+    flexDirection: "row",
+    alignSelf: "flex-start",
     marginLeft: 16,
     marginTop: 16,
     alignItems: "center",
   },
   logoutText: {
-    color: '#3E3E3E',
+    color: "#3E3E3E",
     fontFamily: "Sora500",
-    fontWeight: '500',
+    fontWeight: "500",
     marginRight: 8,
   },
   buttonsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginVertical: 8,
   },
   name: {
@@ -239,7 +351,7 @@ const styles = StyleSheet.create({
     lineHeight: 25.2,
     letterSpacing: -0.6,
     fontFamily: "Sora700",
-    color: '#3E3E3E',
+    color: "#3E3E3E",
     marginBottom: 8,
   },
   email: {
@@ -248,6 +360,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.36,
     fontFamily: "Sora400",
     fontSize: 12,
-    color: '#808080',
+    color: "#808080",
   },
 });

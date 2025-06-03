@@ -1,12 +1,19 @@
 {
   "expo": {
-    "name": "bast",
+    "name": "БАСТ Недвижимость",
     "scheme": "myapp",
     "slug": "bast",
     "version": "1.0.0",
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/BastLogo.png",
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#311b92",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Updates from Colab.notes",
+      "iosDisplayInForeground": true
+    },
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/BastSplash.png",
@@ -15,10 +22,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bastithouses.app",
+      "bundleIdentifier": "com.bastit.bast",
       "associatedDomains": [
-        "applinks:win-e5oqtj6uhak.tailb0dc72.ts.net",
-        "applinks:win-e5oqtj6uhak.tailb0dc72.ts.net"
+        "applinksilia-work.tailb0dc72.ts.net",
+        "applinksilia-work.tailb0dc72.ts.net"
       ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -38,14 +45,11 @@
                 "pathPrefix": "/share/*"
               },
               {
-              "scheme": "myapp",
-              "host": "*"
-            }
+                "scheme": "myapp",
+                "host": "*"
+              }
             ],
-            "category": [
-              "BROWSABLE",
-              "DEFAULT"
-            ]
+            "category": ["BROWSABLE", "DEFAULT"]
           }
         ]
       },
@@ -79,11 +83,17 @@
           "image": "./assets/BastSplash.png",
           "imageWidth": 200
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff"
+        }
       ]
     ],
     "extra": {
       "eas": {
-        // "projectId": "85a3da12-d559-473b-9c38-6ba1b3c03a5a"
         "projectId": "a60250af-82aa-413f-814e-365a2d573c3a"
       }
     }

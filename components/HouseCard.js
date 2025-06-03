@@ -1,15 +1,28 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import Octicons from "@expo/vector-icons/Octicons";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
-import { Dimensions, Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { useFavorites } from '../context/FavoritesContext';
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useFavorites } from "../context/FavoritesContext";
 
 import FastImage from "react-native-fast-image";
 
 const { width } = Dimensions.get("window");
 
-const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelected }) => {
+const HouseCard = ({
+  item,
+  navigation,
+  itemWidth,
+  isModal = false,
+  handleSelected,
+}) => {
   if (!item) return null;
 
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -17,7 +30,11 @@ const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelecte
   return (
     <Pressable
       style={{ width: itemWidth + 32 }}
-      onPress={() => isModal ? handleSelected(item.id) : navigation.navigate("House", { houseId: item.id })}
+      onPress={() =>
+        isModal
+          ? handleSelected(item.id)
+          : navigation.navigate("House", { houseId: item.id })
+      }
     >
       <View style={[styles.houseItem, { width: itemWidth }]}>
         <View style={styles.houseImageView}>
@@ -56,7 +73,10 @@ const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelecte
                 {item.city}, {item.full_address}
               </Text>
             </View>
-            <Pressable onPress={() => toggleFavorite(item.id)} style={styles.likeButton}>
+            <Pressable
+              onPress={() => toggleFavorite(item.id)}
+              style={styles.likeButton}
+            >
               <MaterialIcons
                 name={isFavorite(item.id) ? "favorite" : "favorite-border"}
                 size={28}
@@ -66,7 +86,7 @@ const HouseCard = ({ item, navigation, itemWidth, isModal = false, handleSelecte
           </View>
         </View>
       </View>
-    </Pressable >
+    </Pressable>
   );
 };
 
@@ -122,7 +142,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.43,
     fontWeight: 500,
     color: "#3E3E3E",
-    fontFamily: "Sora500"
+    fontFamily: "Sora500",
   },
   addressText: {
     fontSize: 12,
@@ -137,7 +157,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 16,
     marginBottom: 16,
-    alignItems: "flex-end"
+    alignItems: "flex-end",
   },
 });
 

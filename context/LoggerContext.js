@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { Platform } from 'react-native';
 
 const LoggerContext = createContext();
-const host = process.env.EXPO_PUBLIC_API_HOST;
+const host = "";
 
 // Функция для извлечения имени компонента из stack trace
 const extractComponentName = (stack) => {

@@ -3,10 +3,14 @@ import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, useNavigation, useNavigationContainerRef } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useNavigation,
+  useNavigationContainerRef,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
-import * as Linking from 'expo-linking';
+import * as Linking from "expo-linking";
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useState } from "react";
@@ -16,14 +20,13 @@ import HeaderComponent from "./components/HeaderComponent";
 import Loader from "./components/Loader";
 import ApiProvider from "./context/ApiContext";
 import AuthProvider, { useAuth } from "./context/AuthContext";
-import { LoggerProvider } from './context/LoggerContext';
+import { LoggerProvider } from "./context/LoggerContext";
 import ToastProvider from "./context/ToastProvider";
 import usePresenceSocket from "./hooks/usePresenceSocket";
 import ChangeAvatarPage from "./pages/ChangeAvatarPage.js";
 import ChatListScreen from "./pages/Chats/ChatListScreen";
 import ChatScreen from "./pages/Chats/ChatScreen";
-import ConfirmChangePhonePage from './pages/ConfirmChangePhonePage';
-import ConfirmDeleteProfilePage from './pages/ConfirmDeleteProfilePage';
+import ConfirmChangePhonePage from "./pages/ConfirmChangePhonePage";
 import ConfirmationPage from "./pages/ConfirmationPage.js";
 import CreateHousePostPage from "./pages/CreateHousePostPage.js";
 import DynamicHousePostPage from "./pages/DynamicHousePostPage";
@@ -50,7 +53,7 @@ import TeamPage from "./pages/Teams/TeamPage";
 import UserTeamsPage from "./pages/Teams/UserTeamsPage";
 import UserLoginPage from "./pages/UserLoginPage.js";
 import UserPostsPage from "./pages/UserPostsPage.js";
-import { FavoritesProvider } from './context/FavoritesContext';
+import { FavoritesProvider } from "./context/FavoritesContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import UserResetPassword from "./pages/UserResetPassword";
 import { HeartIcon } from "./assets/svg/Tabbar/HeartIcon";
@@ -59,6 +62,8 @@ import { CommunicationIcon } from "./assets/svg/Tabbar/CommunicationIcon";
 import { UserIcon } from "./assets/svg/Tabbar/UserIcon";
 import { HouseIcon } from "./assets/svg/Tabbar/HouseIcon";
 import { ThemeProvider } from "./context/ThemeContext";
+import { NotificationProvider } from "./context/NotificationsContext.js";
+import RestoreAndDeleteProfile from "./pages/RestoreAndDeleteProfile.js";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -72,7 +77,7 @@ const Tab = createBottomTabNavigator();
 
 // process.env.NODE_ENV !== "development" && YaMap.init(process.env.EXPO_PUBLIC_YAMAP_API_KEY)
 // Geocoder.init(process.env.EXPO_PUBLIC_GEOCODER_API_KEY);
-// YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
+YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c")
 Geocoder.init("d4e0fa5b-61fc-468d-886c-31740a78b323");
 
 const SearchPostsStack = () => {
@@ -188,26 +193,33 @@ const StackProfile = () => {
         }}
       />
 
-      <ProfileStack.Screen name='MortgageCalculator' component={MortgageCalculator}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false
-        }} />
+      <ProfileStack.Screen
+        name="MortgageCalculator"
+        component={MortgageCalculator}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
+          headerShown: false,
+        }}
+      />
 
-      <ProfileStack.Screen name='ChangeAvatarPage' component={ChangeAvatarPage}
-        options={{//header:(props) => <HeaderComponent{...props}/>
+      <ProfileStack.Screen
+        name="ChangeAvatarPage"
+        component={ChangeAvatarPage}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
           headerShown: true,
-          headerTitle: 'Редактирование профиля'
-        }} />
+          headerTitle: "Редактирование профиля",
+        }}
+      />
 
-      <ProfileStack.Screen name='ConfirmPhone' component={ConfirmChangePhonePage}
-        options={{//header:(props) => <HeaderComponent{...props}/>
+      <ProfileStack.Screen
+        name="ConfirmPhone"
+        component={ConfirmChangePhonePage}
+        options={{
+          //header:(props) => <HeaderComponent{...props}/>
           headerShown: false,
-        }} />
-
-      <ProfileStack.Screen name='ConfirmDeletion' component={ConfirmDeleteProfilePage}
-        options={{//header:(props) => <HeaderComponent{...props}/>
-          headerShown: false,
-        }} />
+        }}
+      />
 
       <ProfileStack.Screen
         name="Team"
@@ -219,7 +231,6 @@ const StackProfile = () => {
     </ProfileStack.Navigator>
   );
 };
-
 
 const StackTeam = () => {
   return (
@@ -249,8 +260,8 @@ const StackTeam = () => {
         }}
       />
     </TeamStack.Navigator>
-  )
-}
+  );
+};
 const StackChats = () => {
   return (
     <ChatStack.Navigator initialRouteName="ChatList">
@@ -271,8 +282,8 @@ const StackChats = () => {
         }}
       />
     </ChatStack.Navigator>
-  )
-}
+  );
+};
 
 /// Объявление доступных страниц, навигация (возможно стоит в отдельный компонент)
 const AppStack = () => {
@@ -435,8 +446,8 @@ const AppTabs = () => {
           backgroundColor: "#F2F2F7",
           paddingHorizontal: 12,
           paddingTop: 12,
-          paddingBottom: insets.bottom + 8,  // Динамический отступ снизу
-          height: 60 + insets.bottom,        // Учет нижнего отступа
+          paddingBottom: insets.bottom + 8, // Динамический отступ снизу
+          height: 60 + insets.bottom, // Учет нижнего отступа
           borderTopStartRadius: 12,
           borderTopEndRadius: 12,
         },
@@ -447,7 +458,7 @@ const AppTabs = () => {
           letterSpacing: -0.3,
           fontWeight: "400",
         },
-        tabBarActiveTintColor: "#2C88EC",  // Цвет иконки и текста, если вкладка активна
+        tabBarActiveTintColor: "#2C88EC", // Цвет иконки и текста, если вкладка активна
         tabBarInactiveTintColor: "#808080", // Цвет, если вкладка не активна}
       }}
     >
@@ -458,9 +469,7 @@ const AppTabs = () => {
           headerShown: false,
           tabBarShowLabel: true,
           tabBarLabel: "Главная",
-          tabBarIcon: ({ color, size }) => (
-            <HouseIcon color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <HouseIcon color={color} />,
         }}
       />
       <Tab.Screen
@@ -471,9 +480,7 @@ const AppTabs = () => {
           tabBarShowLabel: true,
           headerTitle: "Избранное",
           tabBarLabel: "Избранное",
-          tabBarIcon: ({ color, size }) => (
-            <HeartIcon color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <HeartIcon color={color} />,
         }}
       />
       <Tab.Screen
@@ -483,9 +490,7 @@ const AppTabs = () => {
           headerShown: false,
           headerTitle: " ", // текст заголовка скрыт
           tabBarShowLabel: true,
-          tabBarIcon: ({ color, size }) => (
-            <SearchIcon color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <SearchIcon color={color} />,
         }}
       />
       <Tab.Screen
@@ -493,31 +498,28 @@ const AppTabs = () => {
         options={{
           headerShown: false,
           tabBarShowLabel: true,
-          tabBarIcon: ({ color, size }) => (
-            <CommunicationIcon color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <CommunicationIcon color={color} />,
         }}
         component={StackChats}
-      >
-      </Tab.Screen>
+      ></Tab.Screen>
       <Tab.Screen
         name="Профиль"
         component={StackProfile}
         options={{
           headerShown: false,
           tabBarShowLabel: true,
-          tabBarIcon: ({ color, size }) => (
-            <UserIcon color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <UserIcon color={color} />,
         }}
       />
-    </Tab.Navigator >
+    </Tab.Navigator>
   );
 };
 
-const AppAuthStack = () => {
+const AppAuthStack = ({ isDeleted = false }) => {
   return (
-    <AuthStack.Navigator initialRouteName="Login">
+    <AuthStack.Navigator
+      initialRouteName={isDeleted ? "RestoreProfile" : "Login"}
+    >
       <AuthStack.Screen
         name="Login"
         component={LoginPage}
@@ -533,10 +535,17 @@ const AppAuthStack = () => {
         }}
       />
       <AuthStack.Screen
+        name="RestoreProfile"
+        component={RestoreAndDeleteProfile}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AuthStack.Screen
         name="Главная"
         component={MainPage}
         options={{
-          header: (props) => <HeaderComponent {...props} />
+          header: (props) => <HeaderComponent {...props} />,
         }}
       />
       <AuthStack.Screen
@@ -681,7 +690,8 @@ const AppTopStack = () => {
 
 // Условный рендер в зависимости от того авторизирован ли пользователь или нет
 const AppInit = () => {
-  const { isAuth, isOnboarded, tokenIsLoaded, setReferralToken } = useAuth();
+  const { isAuth, isOnboarded, tokenIsLoaded, setReferralToken, isDeleted } =
+    useAuth();
   const { isConnected, setOnlineStatus } = usePresenceSocket();
 
   const [loaded] = useFonts({
@@ -691,21 +701,28 @@ const AppInit = () => {
     Inter400: require("./assets/fonts/Inter_18pt-Regular.ttf"),
     Inter500: require("./assets/fonts/Inter_18pt-Medium.ttf"),
     Inter700: require("./assets/fonts/Inter_18pt-Bold.ttf"),
-    Sora400: require('./assets/fonts/Sora-Regular.ttf'),
-    Sora500: require('./assets/fonts/Sora-Medium.ttf'),
-    Sora700: require('./assets/fonts/Sora-Bold.ttf'),
+    Sora400: require("./assets/fonts/Sora-Regular.ttf"),
+    Sora500: require("./assets/fonts/Sora-Medium.ttf"),
+    Sora700: require("./assets/fonts/Sora-Bold.ttf"),
   });
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
-      if (nextAppState === 'active' && isAuth) {
+      if (nextAppState === "active" && isAuth && !isDeleted) {
         setOnlineStatus(true);
-      } else if ((nextAppState === 'background' || nextAppState === 'inactive') && isAuth) {
+      } else if (
+        ((nextAppState === "background" || nextAppState === "inactive") &&
+          isAuth) ||
+        isDeleted
+      ) {
         setOnlineStatus(false);
       }
     };
 
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
 
     return () => {
       subscription.remove();
@@ -713,15 +730,21 @@ const AppInit = () => {
   }, [isAuth, isConnected]);
 
   if (!loaded || !tokenIsLoaded) {
-    return <Loader />
+    return <Loader />;
   }
 
   SplashScreen.hide();
 
-  return <React.Fragment>
-    <DeepLinkHandler setReferralToken={setReferralToken} />
-    {isAuth ? <AppTopStack /> : <AppAuthStack />}
-  </React.Fragment>
+  return (
+    <React.Fragment>
+      <DeepLinkHandler setReferralToken={setReferralToken} />
+      {isAuth && !isDeleted ? (
+        <AppTopStack />
+      ) : (
+        <AppAuthStack isDeleted={isDeleted} />
+      )}
+    </React.Fragment>
+  );
 
   /* // Проверка проведён ли пользователь через "онбординг"
   if (!isOnboarded) {
@@ -731,7 +754,6 @@ const AppInit = () => {
       </OnboardingStack.Navigator>
       )
     } */
-
 };
 ///
 const DeepLinkHandler = ({ setReferralToken }) => {
@@ -754,14 +776,14 @@ const DeepLinkHandler = ({ setReferralToken }) => {
           setInitialUrl(url);
         }
       } catch (err) {
-        console.error('Failed to get initial URL', err);
+        console.error("Failed to get initial URL", err);
       } finally {
         setIsReady(true);
       }
     };
 
     getInitialUrl();
-    const subscription = Linking.addEventListener('url', handleDeepLink);
+    const subscription = Linking.addEventListener("url", handleDeepLink);
 
     return () => subscription.remove();
   }, []);
@@ -777,80 +799,78 @@ const DeepLinkHandler = ({ setReferralToken }) => {
     const parsed = Linking.parse(url);
 
     // Обработка приглашений по ссылке
-    if (parsed.path?.includes('teams/join')) {
-      const parts = parsed.path.split('/');
+    if (parsed.path?.includes("teams/join")) {
+      const parts = parsed.path.split("/");
       const token = parts[parts.length - 1];
       if (token) {
         navigation.navigate("Профиль", {
           screen: "Team",
           params: {
             screen: "TeamJoin",
-            params: { token }
-          }
+            params: { token },
+          },
         });
         return;
       }
-    } else if (parsed.path?.includes('user/join')) {
-      const parts = parsed.path.split('/');
+    } else if (parsed.path?.includes("user/join")) {
+      const parts = parsed.path.split("/");
       const token = parts[parts.length - 1];
       if (token) {
         setReferralToken(token);
         console.log("referral");
       }
-      return
+      return;
     }
 
     // Обработка новых ссылок типа /posts/15, /villages/42, /profile/7
-    const pathSegments = parsed.path?.split('/') || [];
+    const pathSegments = parsed.path?.split("/") || [];
     if (pathSegments.length == 0) {
-      navigation.navigate('Main');
+      navigation.navigate("Main");
       return;
     }
 
     const [type, id] = pathSegments.slice(-2);
     console.info(pathSegments.slice(-2));
     if (!id) {
-      navigation.navigate('Main');
+      navigation.navigate("Main");
       return;
     }
 
     switch (type) {
       case "posts":
-        navigation.navigate('House', {
+        navigation.navigate("House", {
           houseId: id,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         break;
       case "villages":
-        navigation.navigate('Village', {
+        navigation.navigate("Village", {
           villageId: id,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         break;
       case "profile":
-        navigation.navigate('ProfilePageView', {
+        navigation.navigate("ProfilePageView", {
           posterId: id,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         break;
       default:
-        navigation.navigate('Main');
+        navigation.navigate("Main");
     }
-  }
+  };
 };
-
 
 // Корневой (Root) компонент
 export default function App() {
-
   useEffect(() => {
     setBackgroundColorAsync("#F2F2F7").catch(console.error); // Устанавливаем цвет фона
   }, []);
 
-  process.env.NODE_ENV !== "development" &&
+  // process.env.NODE_ENV !== "development" &&
     useEffect(() => {
-      if (YaMap && typeof YaMap.init === 'function') {
-        YaMap.init('d2dd4e6a-fb92-431b-a6db-945e7e96b17c'); // Ваш API-ключ
+      if (YaMap && typeof YaMap.init === "function") {
+        YaMap.init("d2dd4e6a-fb92-431b-a6db-945e7e96b17c"); // Ваш API-ключ
         // YaMap.setLocale('ru_RU'); // Устанавливаем русский язык
       } else {
         console.error("Yamap не инициализирован");
@@ -859,9 +879,10 @@ export default function App() {
 
   const linking = {
     prefixes: [
-      'https://win-e5oqtj6uhak.tailb0dc72.ts.net',
-      'myapp://',
-      Linking.createURL('/')
+      "https://win-e5oqtj6uhak.tailb0dc72.ts.net",
+      "https://ilia-work.tailb0dc72.ts.net/",
+      "myapp://",
+      Linking.createURL("/"),
     ],
     config: {
       screens: {
@@ -870,31 +891,31 @@ export default function App() {
             Home: {
               screens: {
                 House: {
-                  path: 'share/post',
+                  path: "share/post",
                   parse: {
-                    id: (id) => id.toString()
+                    id: (id) => id.toString(),
                   },
                   stringify: {
-                    id: (id) => id.toString()
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                    id: (id) => id.toString(),
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   };
 
   const navigationRef = useNavigationContainerRef();
 
   useEffect(() => {
-    const unsubscribe = navigationRef.addListener('state', () => {
+    const unsubscribe = navigationRef.addListener("state", () => {
       const currentRoute = navigationRef.getCurrentRoute();
       if (currentRoute) {
-        console.warn('Текущий экран:', currentRoute.name);
+        console.warn("Текущий экран:", currentRoute.name);
       } else {
-        console.warn('Текущий экран пока не определён');
+        console.warn("Текущий экран пока не определён");
       }
     });
 
@@ -906,10 +927,12 @@ export default function App() {
       <AuthProvider>
         <ToastProvider>
           <LoggerProvider>
-            <NavigationContainer ref={navigationRef} linking={linking} >
+            <NavigationContainer ref={navigationRef} linking={linking}>
               <FavoritesProvider>
                 <ThemeProvider>
-                  <AppInit />
+                  <NotificationProvider>
+                    <AppInit />
+                  </NotificationProvider>
                 </ThemeProvider>
               </FavoritesProvider>
             </NavigationContainer>

@@ -1,25 +1,38 @@
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, Image, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import CheckCircle from "../assets/svg/CheckCircle.js";
 import CheckHouse from "../assets/svg/CheckHouse.js";
 import Star from "../assets/svg/Star";
 import StarOutline from "../assets/svg/StarOutline";
-import CustomModal from '../components/CustomModal.js';
-import HouseCard from '../components/HouseCard.js';
-import { useApi } from '../context/ApiContext';
-import DynamicHousePostPage from './DynamicHousePostPage.js';
-import { Selectors } from '../components/Selectors.js';
+import CustomModal from "../components/CustomModal.js";
+import HouseCard from "../components/HouseCard.js";
+import { useApi } from "../context/ApiContext";
+import DynamicHousePostPage from "./DynamicHousePostPage.js";
+import { Selectors } from "../components/Selectors.js";
+import { useTheme } from "../context/ThemeContext.js";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const ProfilePageView = ({ route, navigation }) => {
-  const { posterId } = route.params
+  const { theme } = useTheme();
+
+  const { posterId, posterType } = route.params;
   const timestamp = route.params?.timestamp || 0;
   const isCompany = route.params.isCompany || false;
   const { getUserByID } = useApi();
-  const [userr, setUser] = useState([])
+  const [userr, setUser] = useState([]);
   const [selectedList, setSelectedList] = useState("active");
   const { getUserPostsByStatus } = useApi();
   const isFocused = useIsFocused();
@@ -30,24 +43,33 @@ const ProfilePageView = ({ route, navigation }) => {
   const [activePost, setActivePost] = useState([]);
   const [closedPost, setClosedPost] = useState([]);
 
+  const [isDeleted, setIsDeleted] = useState(false);
+
   const getPostData = async (userId, status) => {
     const tempHouses = await getUserPostsByStatus(userId, status);
     const tempHousesJson = JSON.parse(await tempHouses.text());
     return Object.keys(tempHousesJson).length == 0 ? [] : tempHousesJson;
-  }
+  };
 
   useEffect(() => {
     const init = async () => {
       // TODO: сделать универсальной
-      const result = await getUserByID(posterId, isCompany ? "company" : "user")
-      setUser(result)
+      console.log(posterType);
+
+      const result = await getUserByID(
+        posterId,
+        posterType == 2 ? "company" : posterType == 1 ? "user" : "realtor"
+      );
+
+      setIsDeleted(result.status == -1);
+      setUser(result);
       // TODO: сделать вывод что документы проверены или нет
       setActivePost(await getPostData(result.id, 1));
       setClosedPost(await getPostData(result.id, 3));
       setIsLoaded(true);
-    }
-    init()
-  }, [getUserByID, isFocused, timestamp])
+    };
+    init();
+  }, [getUserByID, isFocused, timestamp]);
 
   const handleSelected = (post) => {
     if (!post) return;
@@ -59,136 +81,242 @@ const ProfilePageView = ({ route, navigation }) => {
     { icon: CheckCircle(), title: "Телефон подтвержден", id: 1 },
     { icon: CheckHouse(), title: "Продано 5 объектов недвижимости", id: 2 },
     { icon: CheckCircle(), title: "Документы проверены", id: 3 },
-  ]
+  ];
 
   const renderProperties = () => {
-    return <View style={styles.itemContainer}>
-      {listProperties.map((item) => (
-        <View key={`property-${item.id}`} style={styles.itemBlock}>
-          <View style={styles.listItem}>
-            {item.icon}
-            <Text style={styles.itemText}>{item.title}</Text>
+    return (
+      <View style={styles.itemContainer}>
+        {listProperties.map((item) => (
+          <View key={`property-${item.id}`} style={styles.itemBlock}>
+            <View style={styles.listItem}>
+              {item.icon}
+              <Text style={styles.itemText}>{item.title}</Text>
+            </View>
           </View>
-        </View>))}
-    </View>
-  }
+        ))}
+      </View>
+    );
+  };
 
   const listSelectProperties = [
     { title: "Активные", value: "active", id: 1 },
     { title: "Закрытые", value: "closed", id: 2 },
-  ]
+  ];
 
   // TODO: добавить проверку, что открыл другой пользователь, а не этот же
   const ListHeader = () => {
     return (
       <View>
-        <View style={{
-          width, flexDirection: 'row', alignSelf: 'flex-start', marginVertical: 16,
-          alignItems: 'flex-start', justifyContent: 'space-between', paddingHorizontal: 16
-        }} >
-          {
-            Object.keys(userr).length == 0
-              ?
-              <ActivityIndicator size="large" color="#32322C" />
-              :
-              <View style={{ rowGap: 4 }}>
-                <Text style={styles.name}>{userr.name} {userr.surname}</Text>
-                <View style={{ flexDirection: "row", columnGap: 8 }}>
-                  <Text style={{ fontSize: 14, color: '#000', fontFamily: "Sora700", fontWeight: 600, lineHeight: 17.6, letterSpacing: -0.42 }}>4,0</Text>
-                  <View style={{ flexDirection: "row", columnGap: 4, alignItems: "center" }}>
-                    <Star />
-                    <Star />
-                    <Star />
-                    <Star />
-                    <StarOutline />
-                  </View>
-                </View>
-                <Text style={{ fontSize: 12, color: '#808080', fontFamily: "Sora500", fontWeight: 400, lineHeight: 15, letterSpacing: -0.36 }}>1 подписчик, 1 подписка</Text>
-                <Text style={{ fontSize: 12, color: '#808080', fontFamily: "Sora500", fontWeight: 400, lineHeight: 15, letterSpacing: -0.36 }}>На сайте с мая 2024</Text>
-              </View>
-          }
-          {/* TODO: перекрасить navbar */}
-          {
-            Object.keys(userr).length === 0
-              ?
-              <FontAwesome6 name="face-tired" size={85} color="black" />
-              :
-              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={80} height={80} source={{ uri: userr.photo }} />
-          }
-        </View>
-
-        <Pressable style={{ backgroundColor: "#2C88EC66", padding: 12, borderRadius: 12, alignSelf: "flex-start", marginHorizontal: 16 }}>
-          <Text style={{ color: "#F2F2F7", fontSize: 16, fontFamily: "Sora700", fontWeight: 600, lineHeight: 20, letterSpacing: -0.48, textAlign: "center" }}>
-            Подписаться
-          </Text>
-        </Pressable>
-
-        {renderProperties()}
-
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>
-            Написать
-          </Text>
-        </Pressable>
-        <View style={{ marginLeft: 16 }}>
-          <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={listSelectProperties} />
-        </View>
-      </View>
-    )
-  }
-
-  return (<View style={styles.container}>
-    <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
-    <FlatList
-      ListHeaderComponent={ListHeader}
-      data={selectedList == "active" ? activePost : closedPost}
-      renderItem={({ item }) => (
-        <HouseCard
-          item={item}
-          navigation={navigation}
-          isModal={true}
-          handleSelected={handleSelected}
-          itemWidth={width - 32}
-        />
-      )}
-      ListFooterComponent={isLoaded ?
-        <View height={104}><Text style={{ textAlign: "center", marginVertical: 16 }}>Постов больше нет</Text></View> :
-        <ActivityIndicator size="large" style={{ marginTop: 16 }} color="#32322C" />}
-      keyExtractor={(item) => item.id.toString()}
-      showsVerticalScrollIndicator={false}
-    />
-    {selectedPost && (
-      <CustomModal
-        isVisible={isModalShow}
-        onClose={() => setIsModalShow(false)}
-      >
-        <DynamicHousePostPage
-          navigation={navigation}
-          route={{
-            houseId: selectedPost,
-            isModal: true,
-            setIsModalShow,
+        <View
+          style={{
+            width,
+            flexDirection: "row",
+            alignSelf: "flex-start",
+            marginVertical: 16,
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            paddingHorizontal: 16,
           }}
-        />
-      </CustomModal>
-    )}
-  </View>)
+        >
+          {Object.keys(userr).length == 0 ? (
+            <ActivityIndicator size="large" color="#32322C" />
+          ) : (
+            <View style={{ rowGap: 4 }}>
+              <Text style={styles.name}>
+                {userr.name} {userr.surname}
+              </Text>
+              <View style={{ flexDirection: "row", columnGap: 8 }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: "#000",
+                    fontFamily: "Sora700",
+                    fontWeight: 600,
+                    lineHeight: 17.6,
+                    letterSpacing: -0.42,
+                  }}
+                >
+                  4,0
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    columnGap: 4,
+                    alignItems: "center",
+                  }}
+                >
+                  <Star />
+                  <Star />
+                  <Star />
+                  <Star />
+                  <StarOutline />
+                </View>
+              </View>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: "#808080",
+                  fontFamily: "Sora500",
+                  fontWeight: 400,
+                  lineHeight: 15,
+                  letterSpacing: -0.36,
+                }}
+              >
+                1 подписчик, 1 подписка
+              </Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: "#808080",
+                  fontFamily: "Sora500",
+                  fontWeight: 400,
+                  lineHeight: 15,
+                  letterSpacing: -0.36,
+                }}
+              >
+                На сайте с мая 2024
+              </Text>
+            </View>
+          )}
+          {/* TODO: перекрасить navbar */}
+          {Object.keys(userr).length === 0 ? (
+            <FontAwesome6 name="face-tired" size={85} color="black" />
+          ) : (
+            <Image
+              style={{ overflow: "hidden", borderRadius: 150 / 2 }}
+              width={80}
+              height={80}
+              source={
+                isDeleted
+                  ? require("../assets/deleted_user.jpg")
+                  : { uri: isduserr.photo }
+              }
+            />
+          )}
+        </View>
+        {!isDeleted && (
+          <Pressable
+            style={{
+              backgroundColor: "#2C88EC66",
+              padding: 12,
+              borderRadius: 12,
+              alignSelf: "flex-start",
+              marginHorizontal: 16,
+            }}
+          >
+            <Text
+              style={{
+                color: "#F2F2F7",
+                fontSize: 16,
+                fontFamily: "Sora700",
+                fontWeight: 600,
+                lineHeight: 20,
+                letterSpacing: -0.48,
+                textAlign: "center",
+              }}
+            >
+              Подписаться
+            </Text>
+          </Pressable>
+        )}
+
+        {!isDeleted && renderProperties()}
+
+        {!isDeleted && (
+          <Pressable style={styles.button}>
+            <Text style={styles.buttonText}>Написать</Text>
+          </Pressable>
+        )}
+        {!isDeleted && (
+          <View style={{ marginLeft: 16 }}>
+            <Selectors
+              handleSelected={setSelectedList}
+              selectedList={selectedList}
+              listSelector={listSelectProperties}
+            />
+          </View>
+        )}
+        {isDeleted && (
+          <Text style={theme.typography.title3("placeholder")}>
+            Профиль пользователя удален
+          </Text>
+        )}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
+      {isDeleted ? (
+        <ListHeader />
+      ) : (
+        <View>
+          <FlatList
+            ListHeaderComponent={ListHeader}
+            data={selectedList == "active" ? activePost : closedPost}
+            renderItem={({ item }) => (
+              <HouseCard
+                item={item}
+                navigation={navigation}
+                isModal={true}
+                handleSelected={handleSelected}
+                itemWidth={width - 32}
+              />
+            )}
+            ListFooterComponent={
+              isLoaded ? (
+                <View height={104}>
+                  <Text style={{ textAlign: "center", marginVertical: 16 }}>
+                    Постов больше нет
+                  </Text>
+                </View>
+              ) : (
+                <ActivityIndicator
+                  size="large"
+                  style={{ marginTop: 16 }}
+                  color="#32322C"
+                />
+              )
+            }
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+          />
+          {selectedPost && (
+            <CustomModal
+              isVisible={isModalShow}
+              onClose={() => setIsModalShow(false)}
+            >
+              <DynamicHousePostPage
+                navigation={navigation}
+                route={{
+                  houseId: selectedPost,
+                  isModal: true,
+                  setIsModalShow,
+                }}
+              />
+            </CustomModal>
+          )}
+        </View>
+      )}
+    </View>
+  );
 };
 
 export default ProfilePageView;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    backgroundColor: '#E5E5EA',
-    height: '100%',
+    alignItems: "center",
+    backgroundColor: "#E5E5EA",
+    height: "100%",
   },
   nameBlock: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 32,
     marginBottom: 24,
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   itemContainer: {
     rowGap: 4,
@@ -197,28 +325,28 @@ const styles = StyleSheet.create({
   },
   itemBlock: {
     width: width - 32,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: "#F2F2F7",
     padding: 8,
     borderRadius: 12,
   },
   listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   itemText: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
     marginLeft: 10,
     fontFamily: "Sora400",
     fontWeight: 400,
     lineHeight: 17.6,
-    letterSpacing: -0.42
+    letterSpacing: -0.42,
   },
   name: {
     fontSize: 20,
     letterSpacing: -0.6,
     fontWeight: 600,
-    color: '#3E3E3E',
+    color: "#3E3E3E",
     fontFamily: "Sora700",
     lineHeight: 20,
   },
@@ -255,10 +383,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    flex: 1
+    flex: 1,
   },
   activeButton: {
-    backgroundColor: '#2C88EC',
+    backgroundColor: "#2C88EC",
     borderRadius: 12,
   },
   searchButtonsText: {
@@ -267,7 +395,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 17.6,
     letterSpacing: -0.43,
-    fontFamily: "Sora400"
+    fontFamily: "Sora400",
   },
   activeButtonsText: {
     fontWeight: "600",
@@ -276,5 +404,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-
-

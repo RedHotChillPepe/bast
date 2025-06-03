@@ -1,9 +1,17 @@
-import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
-import { Dimensions, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import * as ImagePicker from "expo-image-picker";
+import React, { useState } from "react";
+import {
+  Dimensions,
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useToast } from "../context/ToastProvider";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -11,24 +19,27 @@ const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
 
   const handlePickImage = async () => {
     // Запрашиваем разрешение на доступ к галерее
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       showToast("Доступ к галерее обязателен!", "warn");
       return;
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images',
+      mediaTypes: "images",
       quality: 0.7,
       allowsMultipleSelection: false,
-      base64: true
+      base64: true,
     });
 
+    
+    
     if (!result.canceled) {
       setSelectedImage(result.assets[0]);
     }
   };
-
+  
   const handleSave = () => {
     if (selectedImage) {
       onSelectAvatar(selectedImage);
@@ -42,10 +53,15 @@ const AvatarModal = ({ visible, onClose, onSelectAvatar }) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalHeader}>Выберите новый аватар</Text>
           {selectedImage ? (
-            <Image source={{ uri: selectedImage.uri }} style={styles.previewImage} />
+            <Image
+              source={{ uri: selectedImage.uri }}
+              style={styles.previewImage}
+            />
           ) : (
             <View style={styles.previewPlaceholder}>
-              <Text>Нет выбранного изображения</Text>
+              <Text style={{ textAlign: "center" }}>
+                Нет выбранного изображения
+              </Text>
             </View>
           )}
           <Pressable style={styles.pickButton} onPress={handlePickImage}>
@@ -76,20 +92,20 @@ export default AvatarModal;
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
     width: width - 40,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalHeader: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   previewImage: {
@@ -102,49 +118,49 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: '#eee',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#eee",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 20,
   },
   pickButton: {
-    backgroundColor: '#9DC0F6',
+    backgroundColor: "#9DC0F6",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
     marginBottom: 20,
   },
   pickButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   saveButton: {
     flex: 1,
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     paddingVertical: 10,
     borderRadius: 10,
     marginRight: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   saveButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: '#F44336',
+    backgroundColor: "#F44336",
     paddingVertical: 10,
     borderRadius: 10,
     marginLeft: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   cancelButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
 });

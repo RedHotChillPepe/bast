@@ -1,0 +1,8 @@
+appId: com.bastithouses.app
+---
+- tapOn: "Войти"
+- tapOn: "+7 (ХХХ) ХХХ-ХХ-ХХ"
+- inputText: "88005553535"
+- tapOn: "Пароль"
+- inputText: 123456
+- tapOn: "Подтвердить"

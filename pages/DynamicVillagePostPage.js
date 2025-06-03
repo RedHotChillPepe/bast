@@ -109,6 +109,7 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
     const sharePost = async () => {
         try {
             const { name, full_address, description, class_name } = villageData;
+            
             const url = `${process.env.EXPO_PUBLIC_API_HOST}share/village/${villageId}`;
             const postName = name ? name : 'Поселение';
             const address = `📍 Адрес: ${full_address}`;

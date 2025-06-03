@@ -1,11 +1,11 @@
-import Feather from '@expo/vector-icons/Feather';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Octicons from '@expo/vector-icons/Octicons';
-import * as Clipboard from 'expo-clipboard';
-import * as Linking from 'expo-linking';
-import * as SecureStore from 'expo-secure-store';
-import React, { useEffect, useRef, useState } from 'react';
+import Feather from "@expo/vector-icons/Feather";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Octicons from "@expo/vector-icons/Octicons";
+import * as Clipboard from "expo-clipboard";
+import * as Linking from "expo-linking";
+import * as SecureStore from "expo-secure-store";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -17,30 +17,37 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { Geocoder, Marker, YaMap } from 'react-native-yamap';
+  View,
+} from "react-native";
+import { Geocoder, Marker, YaMap } from "react-native-yamap";
 import BackIcon from "../assets/svg/ChevronLeft";
 import ShareIcon from "../assets/svg/Share";
 import CustomModal from "../components/CustomModal";
-import ImageCarousel from '../components/ImageCarousel';
-import { useApi } from '../context/ApiContext';
-import { useAuth } from '../context/AuthContext';
+import ImageCarousel from "../components/ImageCarousel";
+import { useApi } from "../context/ApiContext";
+import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastProvider";
-import MortgageCalculator from './MortgageCalculator';
-import ProfilePageView from './ProfilePageView';
-import { useLogger } from '../context/LoggerContext';
-import ChatScreen from './Chats/ChatScreen';
-import { useFavorites } from '../context/FavoritesContext';
-import ServicesPage from './Services/ServicesPage';
+import MortgageCalculator from "./MortgageCalculator";
+import ProfilePageView from "./ProfilePageView";
+import { useLogger } from "../context/LoggerContext";
+import ChatScreen from "./Chats/ChatScreen";
+import { useFavorites } from "../context/FavoritesContext";
+import ServicesPage from "./Services/ServicesPage";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 export default function DynamicHousePostPage({ navigation, route }) {
   const houseId = route.houseId || route.params.houseId;
   const timestamp = route.params?.timestamp || 0;
   const isModal = route.isModal || false;
-  const { getPost, getIsOwner, getUserByID, updateStatus, getCurrentUser, createChat } = useApi();
+  const {
+    getPost,
+    getIsOwner,
+    getUserByID,
+    updateStatus,
+    getCurrentUser,
+    createChat,
+  } = useApi();
   const { getAuth } = useAuth();
   const showToast = useToast();
 
@@ -72,7 +79,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const handleSelected = (item) => {
     setSelectedItem(item);
     setIsShowModal(true);
-  }
+  };
 
   const mapRef = useRef(null);
   // Получение данных объявления и пользователя
@@ -155,12 +162,11 @@ export default function DynamicHousePostPage({ navigation, route }) {
       const chatData = await createChat(postData.id);
       setChatData({
         ...chatData.chat,
-        post: chatData.post
+        post: chatData.post,
       });
 
-      setCurrentUser(chatData.current_user)
+      setCurrentUser(chatData.current_user);
       setIsShowChatModal(true);
-
     } catch (error) {
       console.error("Ошибка при создании чата:", error);
       showToast(error.message || "Не удалось создать чат", "error");
@@ -173,33 +179,45 @@ export default function DynamicHousePostPage({ navigation, route }) {
       const result = await updateStatus({ post_id, post_status });
     } catch (error) {
       showToast(error.message, "error");
-      logError(navigation.getState().routes[0].name, error, { postData, handleName: "changeStatus" });
+      logError(navigation.getState().routes[0].name, error, {
+        postData,
+        handleName: "changeStatus",
+      });
     }
   };
 
   const confirmClose = async () => {
     try {
       await changeStatus({ post_id: houseId, post_status: 3 });
-      setPostData(prev => ({ ...prev, status: 3 }));
+      setPostData((prev) => ({ ...prev, status: 3 }));
       setShowCloseConfirm(false);
       showToast("Ваше объявление закрыто", "success");
-      navigation.navigate("UserPostsPage", { user_id: ownerUser?.id, status: 3 });
+      navigation.navigate("UserPostsPage", {
+        user_id: ownerUser?.id,
+        status: 3,
+      });
     } catch (error) {
-      logError(navigation.getState().routes[0].name, error, { postData, handleName: "confirmClose" });
+      logError(navigation.getState().routes[0].name, error, {
+        postData,
+        handleName: "confirmClose",
+      });
     }
   };
 
   const confirmDelete = async () => {
     await changeStatus({ post_id: houseId, post_status: -1 });
-    setPostData(prev => ({ ...prev, status: -1 }));
+    setPostData((prev) => ({ ...prev, status: -1 }));
     setShowDeleteConfirm(false);
     showToast("Ваше объявление удалено!", "success");
-    navigation.navigate("UserPostsPage", { user_id: ownerUser?.id, status: -1 });
+    navigation.navigate("UserPostsPage", {
+      user_id: ownerUser?.id,
+      status: -1,
+    });
   };
 
   const confirmRestore = async () => {
     await changeStatus({ post_id: houseId, post_status: 0 });
-    setPostData(prev => ({ ...prev, status: 0 }));
+    setPostData((prev) => ({ ...prev, status: 0 }));
     setShowRestoreConfirm(false);
     showToast("Объявление успешно восстановлено", "success");
   };
@@ -214,10 +232,16 @@ export default function DynamicHousePostPage({ navigation, route }) {
     { label: "Материал внутренних стен", value: postData.walls_part },
     { label: "Кровля", value: postData.roof },
     { label: "Фундамент", value: postData.base },
-    { label: "Электричество (льготный тариф)", value: postData.electricity_bill },
+    {
+      label: "Электричество (льготный тариф)",
+      value: postData.electricity_bill,
+    },
     { label: "Водоснабжение", value: postData.water },
     { label: "Водоотведение", value: postData.sewage },
-    { label: "Газ", value: postData.gas === "true" ? "Подключен" : "Не подключен" },
+    {
+      label: "Газ",
+      value: postData.gas === "true" ? "Подключен" : "Не подключен",
+    },
     { label: "Отопление", value: postData.heating },
     { label: "Тип дома", value: postData.house_type },
     { label: "Год постройки", value: postData.year_built },
@@ -232,16 +256,27 @@ export default function DynamicHousePostPage({ navigation, route }) {
     // 1 или 4: активное или незавершённое – показываем "Удалить" и "Закрыть"
     // 3 (закрыто) или -1 (удалено): показываем кнопку "Восстановить"
     if (isOwner) {
-      if (postData.status === 1 || postData.status === 4 || postData.status === 0) {
+      if (
+        postData.status === 1 ||
+        postData.status === 4 ||
+        postData.status === 0
+      ) {
         return (
           <View
             style={{
-              flexDirection: 'row', width, justifyContent: 'space-between',
-              paddingHorizontal: 16, alignItems: "flex-end", marginTop: 32
-            }
-            }>
+              flexDirection: "row",
+              width,
+              justifyContent: "space-between",
+              paddingHorizontal: 16,
+              alignItems: "flex-end",
+              marginTop: 32,
+            }}
+          >
             <Pressable
-              style={[styles.button_1, { backgroundColor: '#FF8680', paddingVertical: 8 }]}
+              style={[
+                styles.button_1,
+                { backgroundColor: "#FF8680", paddingVertical: 8 },
+              ]}
               onPress={() => setShowDeleteConfirm(true)}
             >
               <Text style={styles.buttonText}>Удалить</Text>
@@ -252,13 +287,18 @@ export default function DynamicHousePostPage({ navigation, route }) {
             >
               <Text style={styles.buttonText}>Закрыть</Text>
             </Pressable>
-          </View >
+          </View>
         );
       } else if (postData.status === 3 || postData.status === -1) {
         return (
-          <View style={{ width: width - 32, alignItems: 'center', marginTop: 32 }}>
+          <View
+            style={{ width: width - 32, alignItems: "center", marginTop: 32 }}
+          >
             <Pressable
-              style={[styles.button, { backgroundColor: '#007AFF', paddingVertical: 8 }]}
+              style={[
+                styles.button,
+                { backgroundColor: "#007AFF", paddingVertical: 8 },
+              ]}
               onPress={() => setShowRestoreConfirm(true)}
             >
               <Text style={styles.buttonText}>Восстановить</Text>
@@ -271,16 +311,26 @@ export default function DynamicHousePostPage({ navigation, route }) {
     return (
       <View
         style={{
-          flexDirection: 'row', width, justifyContent: 'space-between',
-          paddingHorizontal: 16, alignItems: "flex-end", marginTop: 32
-        }
-        }>
-        <TouchableOpacity onPress={() => handleChatButton()} style={[styles.button_1, { paddingVertical: 8 }]}>
+          flexDirection: "row",
+          width,
+          justifyContent: "space-between",
+          paddingHorizontal: 16,
+          alignItems: "flex-end",
+          marginTop: 32,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => handleChatButton()}
+          style={[styles.button_1, { paddingVertical: 8 }]}
+        >
           <Text style={styles.buttonText}>Написать</Text>
-        </TouchableOpacity >
-        <TouchableOpacity onPress={() => handleCallButton()} style={[styles.button_2, { paddingVertical: 8 }]}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleCallButton()}
+          style={[styles.button_2, { paddingVertical: 8 }]}
+        >
           <Text style={styles.buttonText2}>Позвонить</Text>
-        </TouchableOpacity >
+        </TouchableOpacity>
       </View>
     );
   };
@@ -301,45 +351,55 @@ export default function DynamicHousePostPage({ navigation, route }) {
 
     if (!text) return;
 
-    return <Text
-      style={{
-        textAlign: "center", fontSize: 16, fontWeight: "600",
-        color: "#2C88EC", fontFamily: "Sora700", paddingLeft: isOwner ? 0 : postData.status == 1 && 24,
-        paddingRight: isOwner ? 0 : postData.status !== 1 && 26
-      }}>
-      {text}
-    </Text>
-  }
+    return (
+      <Text
+        style={{
+          textAlign: "center",
+          fontSize: 16,
+          fontWeight: "600",
+          color: "#2C88EC",
+          fontFamily: "Sora700",
+          paddingLeft: isOwner ? 0 : postData.status == 1 && 24,
+          paddingRight: isOwner ? 0 : postData.status !== 1 && 26,
+        }}
+      >
+        {text}
+      </Text>
+    );
+  };
 
   const renderPriceBlock = () => {
     return (
       <View style={styles.priceBlock}>
-        {Object.keys(postData).length === 0 ?
-          <ActivityIndicator size="large" color="#32322C" /> :
-          <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+        {Object.keys(postData).length === 0 ? (
+          <ActivityIndicator size="large" color="#32322C" />
+        ) : (
+          <View style={{ flexDirection: "row", alignItems: "baseline" }}>
             <Text style={styles.priceText}>
               {postData.price &&
                 postData.price
                   .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}{" "}
+              ₽
             </Text>
             <View style={{ width: 16 }} />
             <Text style={styles.priceMeter}>
               {Math.floor(postData.price / postData.house_area)
                 .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₽/м²
+                .replace(/\B(?=(\d{3})+(?!\d))/g, " ")}{" "}
+              ₽/м²
             </Text>
           </View>
-        }
+        )}
       </View>
     );
   };
 
   const specsList = [
-    { value: postData.num_floors, suffix: '-эт.', caption: 'дом' },
-    { value: postData.bedrooms, suffix: '-комн.', caption: 'планировка' },
-    { value: postData.house_area, suffix: ' м²', caption: 'общая' },
-    { value: postData.plot_area, suffix: ' сот', caption: 'участок' },
+    { value: postData.num_floors, suffix: "-эт.", caption: "дом" },
+    { value: postData.bedrooms, suffix: "-комн.", caption: "планировка" },
+    { value: postData.house_area, suffix: " м²", caption: "общая" },
+    { value: postData.plot_area, suffix: " сот", caption: "участок" },
   ];
 
   const renderHouseSpecs = () => {
@@ -352,11 +412,10 @@ export default function DynamicHousePostPage({ navigation, route }) {
         {specsList.map((spec, index) => (
           <View style={styles.specElement} key={index}>
             <Text style={styles.specText}>
-              {spec.value}{spec.suffix}
+              {spec.value}
+              {spec.suffix}
             </Text>
-            <Text style={styles.caption1}>
-              {spec.caption}
-            </Text>
+            <Text style={styles.caption1}>{spec.caption}</Text>
           </View>
         ))}
       </View>
@@ -364,120 +423,204 @@ export default function DynamicHousePostPage({ navigation, route }) {
   };
 
   const renderMap = () => {
-    return <View style={styles.addressView}>
-      <View style={{ borderRadius: 16, width, alignSelf: 'center' }}>
-        {isGeoLoaded ? (
-          process.env.NODE_ENV === "development" ? <Text style={{ color: "red", fontSize: 24, textAlign: "center" }}>Карта</Text> : (
-            <View onTouchStart={() => setIsInteractingWithMap(true)} onTouchEnd={() => setIsInteractingWithMap(false)}>
-              <YaMap
-                ref={mapRef}
-                style={styles.map}
-                onMapLoaded={() => { mapRef.current.setCenter({ lon: geoState.lon, lat: geoState.lat }, 10) }}
+    return (
+      <View style={styles.addressView}>
+        <View style={{ borderRadius: 16, width, alignSelf: "center" }}>
+          {isGeoLoaded ? (
+            process.env.NODE_ENV === "development" ? (
+              <Text style={{ color: "red", fontSize: 24, textAlign: "center" }}>
+                Карта
+              </Text>
+            ) : (
+              <View
+                onTouchStart={() => setIsInteractingWithMap(true)}
+                onTouchEnd={() => setIsInteractingWithMap(false)}
               >
-                <Marker point={{ lat: geoState.lat, lon: geoState.lon }} scale={0.25} source={require('../assets/marker.png')} />
-              </YaMap>
-            </View>
-          )
-        ) : (
-          <Text style={{ alignSelf: 'center' }}>Загрузка Карты...</Text>
-        )}
+                <YaMap
+                  ref={mapRef}
+                  style={styles.map}
+                  onMapLoaded={() => {
+                    mapRef.current.setCenter(
+                      { lon: geoState.lon, lat: geoState.lat },
+                      10
+                    );
+                  }}
+                >
+                  <Marker
+                    point={{ lat: geoState.lat, lon: geoState.lon }}
+                    scale={0.25}
+                    source={require("../assets/marker.png")}
+                  />
+                </YaMap>
+              </View>
+            )
+          ) : (
+            <Text style={{ alignSelf: "center" }}>Загрузка Карты...</Text>
+          )}
+        </View>
+        <View>
+          <Text style={styles.addressText}>
+            {postData.city}, {postData.full_address}
+          </Text>
+        </View>
       </View>
-      <View>
-        <Text style={styles.addressText}>
-          {postData.city}, {postData.full_address}
-        </Text>
-      </View>
-    </View>
-  }
+    );
+  };
 
   const renderBlockSeller = () => {
-    return <View style={{ marginTop: 32, alignSelf: 'flex-start', marginLeft: 16 }}>
-      <Text style={styles.infoTitle}>Продавец</Text>
-      {Object.keys(ownerUser).length !== 0 && (
-        // <Pressable onPress={() => navigation.navigate("ProfilePageView", { posterId: ownerUser.id })}>
-        <Pressable onPress={() => setShowNodalSeller(true)}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F2F2F7', width: width - 32, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 12 }}>
-            {ownerUser.photo ? (
-              <Image
-                source={{ uri: ownerUser.photo }}
-                style={{ width: 42, height: 42, borderRadius: 54, aspectRatio: 1 }}
-              />
-            ) : (
-              <FontAwesome6 name="face-meh" size={42} color="black" opacity={0.6} />
-            )}
-            <View style={{ width: 12 }} />
-            <View style={{ rowGap: 6 }}>
-              <Text style={[styles.serviciesText, { color: '#3E3E3E', fontWeight: '600' }]}>
-                {ownerUser.name} {ownerUser.surname}
-              </Text>
-              <Text style={{ color: "#808080", fontSize: 14, fontFamily: "Sora400" }}>Риэлтор</Text>
-            </View>
-          </View>
-        </Pressable>
-      )}
-    </View>
-  }
-
-  const renderAboutHouse = () => {
-    return <View style={styles.infoBlock}>
-      <Text style={styles.infoTitle}>Об объекте</Text>
-      {propertyItems
-        .filter(item => item.value !== null && item.value !== '')
-        .map((item, index) => (
-          <Pressable
-            key={`property-${index}`}
-            onPress={() => {
-              if (item.label === "Кадастровый номер") {
-                Clipboard.setStringAsync(item.value);
-                showToast("Кадастровый номер скопирован", "info");
-              }
-            }}
-          >
-            <View style={styles.infoSpecRow}>
-              <Text style={styles.infoSpec}>{item.label}</Text>
-              <View style={{ columnGap: 4, flexDirection: "row", alignItems: "center" }}>
-                <Text style={[styles.infoValue, item.label === "Кадастровый номер" && styles.copyableValue]}>
-                  {item.value}{item.suffix ? item.suffix : ""}
+    return (
+      <View style={{ marginTop: 32, alignSelf: "flex-start", marginLeft: 16 }}>
+        <Text style={styles.infoTitle}>Продавец</Text>
+        {Object.keys(ownerUser).length !== 0 && (
+          // <Pressable onPress={() => navigation.navigate("ProfilePageView", { posterId: ownerUser.id })}>
+          <Pressable onPress={() => setShowNodalSeller(true)}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: "#F2F2F7",
+                width: width - 32,
+                paddingVertical: 12,
+                paddingHorizontal: 12,
+                borderRadius: 12,
+              }}
+            >
+              {ownerUser.photo ? (
+                <Image
+                  source={
+                    ownerUser.status == -1
+                      ? require("../assets/deleted_user.jpg")
+                      : { uri: ownerUser.photo }
+                  }
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 54,
+                    aspectRatio: 1,
+                  }}
+                />
+              ) : (
+                <FontAwesome6
+                  name="face-meh"
+                  size={42}
+                  color="black"
+                  opacity={0.6}
+                />
+              )}
+              <View style={{ width: 12 }} />
+              <View style={{ rowGap: 6 }}>
+                <Text
+                  style={[
+                    styles.serviciesText,
+                    { color: "#3E3E3E", fontWeight: "600" },
+                  ]}
+                >
+                  {ownerUser.name} {ownerUser.surname}
                 </Text>
-                {item.label === "Кадастровый номер" && <Octicons name="copy" size={12} color="#2C88EC" />}
+                <Text
+                  style={{
+                    color: "#808080",
+                    fontSize: 14,
+                    fontFamily: "Sora400",
+                  }}
+                >
+                  Риэлтор
+                </Text>
               </View>
             </View>
           </Pressable>
-        ))}
-    </View>
-  }
+        )}
+      </View>
+    );
+  };
+
+  const renderAboutHouse = () => {
+    return (
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoTitle}>Об объекте</Text>
+        {propertyItems
+          .filter((item) => item.value !== null && item.value !== "")
+          .map((item, index) => (
+            <Pressable
+              key={`property-${index}`}
+              onPress={() => {
+                if (item.label === "Кадастровый номер") {
+                  Clipboard.setStringAsync(item.value);
+                  showToast("Кадастровый номер скопирован", "info");
+                }
+              }}
+            >
+              <View style={styles.infoSpecRow}>
+                <Text style={styles.infoSpec}>{item.label}</Text>
+                <View
+                  style={{
+                    columnGap: 4,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.infoValue,
+                      item.label === "Кадастровый номер" &&
+                        styles.copyableValue,
+                    ]}
+                  >
+                    {item.value}
+                    {item.suffix ? item.suffix : ""}
+                  </Text>
+                  {item.label === "Кадастровый номер" && (
+                    <Octicons name="copy" size={12} color="#2C88EC" />
+                  )}
+                </View>
+              </View>
+            </Pressable>
+          ))}
+      </View>
+    );
+  };
 
   const renderBlockDescription = () => {
     if (!postData.text) return;
-    return <View style={styles.infoBlock}>
-      <Text style={styles.infoTitle}>Описание</Text>
-      <Text style={{ color: "#3E3E3E", fontFamily: "Sora400", fontWeight: "400", fontSize: 14 }}>
-        {postData.text}
-      </Text>
-    </View>
-  }
+    return (
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoTitle}>Описание</Text>
+        <Text
+          style={{
+            color: "#3E3E3E",
+            fontFamily: "Sora400",
+            fontWeight: "400",
+            fontSize: 14,
+          }}
+        >
+          {postData.text}
+        </Text>
+      </View>
+    );
+  };
 
   const servicesList = [
     {
       buttonTitle: "Страхование",
-      title: 'Страхование жилья',
+      title: "Страхование жилья",
       serviceId: 1,
       subTitle: "Страхование жилья",
       subText: `Поможем Вам застраховать ваше недвижимое имущество. Наш менеджер сам свяжется с вами.`,
     },
     {
       buttonTitle: "Сопровождение сделки",
-      title: 'Сопровождение сделки',
+      title: "Сопровождение сделки",
       serviceId: 2,
       subTitle: "Сопровождение ипотеки",
-      subText: 'Поможем Вам получить одобрение ипотеки.',
+      subText: "Поможем Вам получить одобрение ипотеки.",
     },
     {
       buttonTitle: "Оценка",
-      title: 'Оценка недвижимости',
+      title: "Оценка недвижимости",
       serviceId: 3,
       subTitle: "Оценка недвижимости",
-      subText: 'Поможем Вам застраховать ваше недвижимое имущество. Наш менеджер сам свяжется с вами.',
+      subText:
+        "Поможем Вам застраховать ваше недвижимое имущество. Наш менеджер сам свяжется с вами.",
     },
     // { title: 'Дизайн интерьера', route: 'Error', params: { errorCode: 2004 } },
   ];
@@ -491,9 +634,13 @@ export default function DynamicHousePostPage({ navigation, route }) {
             <TouchableOpacity
               key={index}
               style={styles.serviciesPressable}
-              onPress={() => { handleSelected(service) }}
+              onPress={() => {
+                handleSelected(service);
+              }}
             >
-              <Text numberOfLines={2} style={styles.serviciesText}>{service.buttonTitle}</Text>
+              <Text numberOfLines={2} style={styles.serviciesText}>
+                {service.buttonTitle}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -542,8 +689,13 @@ export default function DynamicHousePostPage({ navigation, route }) {
       condition: showModal,
       props: {
         visible: showModal,
-        title: Object.keys(ownerUser).length === 0 ? '' : `${ownerUser.name} ${ownerUser.surname}`,
-        message: isLoggedIn ? phone : "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона",
+        title:
+          Object.keys(ownerUser).length === 0
+            ? ""
+            : `${ownerUser.name} ${ownerUser.surname}`,
+        message: isLoggedIn
+          ? phone
+          : "Пожалуйста зарегистрируйтесь чтобы посмотреть номер телефона",
         onConfirm: () => {
           Linking.openURL(`tel:${phone}`);
           setShowModal(false);
@@ -561,8 +713,8 @@ export default function DynamicHousePostPage({ navigation, route }) {
     message,
     onConfirm,
     onCancel,
-    confirmText = 'Подтвердить',
-    cancelText = 'Отмена',
+    confirmText = "Подтвердить",
+    cancelText = "Отмена",
   }) => {
     return (
       <Modal
@@ -580,7 +732,10 @@ export default function DynamicHousePostPage({ navigation, route }) {
                 <Text style={styles.modalButtonText}>{cancelText}</Text>
               </Pressable>
               {onConfirm && (
-                <Pressable style={styles.modalButtonConfirm} onPress={onConfirm}>
+                <Pressable
+                  style={styles.modalButtonConfirm}
+                  onPress={onConfirm}
+                >
                   <Text style={styles.modalButtonText}>{confirmText}</Text>
                 </Pressable>
               )}
@@ -593,12 +748,14 @@ export default function DynamicHousePostPage({ navigation, route }) {
 
   const renderModal = () => {
     return modalDefinitions.map((modalDef, index) =>
-      modalDef.condition ? <UniversalModal key={index} {...modalDef.props} /> : null
+      modalDef.condition ? (
+        <UniversalModal key={index} {...modalDef.props} />
+      ) : null
     );
-  }
+  };
 
   const sharePost = async (options) => {
-    if (options?.type === 'profile') {
+    if (options?.type === "profile") {
       const user = options.user;
       const url = `${process.env.EXPO_PUBLIC_API_HOST}share/${options.type}/${options.id}`;
       const message = `
@@ -619,18 +776,24 @@ export default function DynamicHousePostPage({ navigation, route }) {
       try {
         await Share.share(shareOptions);
       } catch (error) {
-        logError(navigation.getState().routes[0].name, error, { options, handleName: "sharePost profile" });
+        logError(navigation.getState().routes[0].name, error, {
+          options,
+          handleName: "sharePost profile",
+        });
       }
-      return
+      return;
     }
 
     try {
       const { name, full_address, city, price, text } = postData;
       const url = `${process.env.EXPO_PUBLIC_API_HOST}share/post/${houseId}`;
-      const postName = name ? name : 'Объявление';
-      const address = full_address ? `📍 Адрес: ${full_address}, ${city}` : `🏙 Город: ${city}`;
-      const priceInfo = price ? `💰 Цена: ${price} руб.` : '';
-      const description = text ? text : 'Описание отсутствует';
+
+      const postName = name ? name : "Объявление";
+      const address = full_address
+        ? `📍 Адрес: ${full_address}, ${city}`
+        : `🏙 Город: ${city}`;
+      const priceInfo = price ? `💰 Цена: ${price} руб.` : "";
+      const description = text ? text : "Описание отсутствует";
 
       const message = `
 🏡 ${postName}
@@ -645,25 +808,28 @@ ${priceInfo}
       };
       await Share.share(shareOptions);
     } catch (error) {
-      showToast('Ошибка при попытке поделиться объявлением', "error")
-      logError(navigation.getState().routes[0].name, error, { postData, handleName: "sharePost post" });
+      showToast("Ошибка при попытке поделиться объявлением", "error");
+      logError(navigation.getState().routes[0].name, error, {
+        postData,
+        handleName: "sharePost post",
+      });
     }
   };
 
   const handleBack = () => {
     if (isModal) {
       route.setIsModalShow(false);
-      return
+      return;
     }
 
     const canGoBack = navigation.canGoBack();
     if (canGoBack) {
       navigation.goBack();
-      return
-    };
+      return;
+    }
 
     navigation.navigate("Main");
-  }
+  };
 
   const renderBackButton = () => (
     <Pressable onPress={handleBack}>
@@ -673,24 +839,33 @@ ${priceInfo}
 
   const renderEditAndFavoriteButtons = () => (
     <View style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}>
-      <Pressable onPress={() => navigation.navigate("EditHousePostPage", postData)}>
+      <Pressable
+        onPress={() => navigation.navigate("EditHousePostPage", postData)}
+      >
         <Feather name="edit" size={24} color="#007AFF" />
       </Pressable>
-      {postData.status == 1 &&
+      {postData.status == 1 && (
         <Pressable Pressable onPress={sharePost}>
           <MaterialIcons name="share" size={24} color="#007Aff" />
         </Pressable>
-      }
-    </View >
+      )}
+    </View>
   );
 
   const renderFavoriteAndShareButtons = () => (
-    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-end", columnGap: 4 }}>
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        columnGap: 4,
+      }}
+    >
       <Pressable onPress={() => toggleFavorite(houseId)}>
         <MaterialIcons
-          name={isFavorite(houseId) ? 'favorite' : 'favorite-border'}
+          name={isFavorite(houseId) ? "favorite" : "favorite-border"}
           size={24}
-          color={isFavorite(houseId) ? 'red' : '#007AFF'}
+          color={isFavorite(houseId) ? "red" : "#007AFF"}
         />
       </Pressable>
       <Pressable onPress={sharePost}>
@@ -701,23 +876,36 @@ ${priceInfo}
 
   const renderHeader = () => {
     return (
-      <View style={{
-        flexDirection: "row", justifyContent: "space-between", width, alignItems: "center",
-        paddingBottom: 8, backgroundColor: "#F2F2F7", paddingHorizontal: 17, paddingTop: isModal ? 0 : 42
-      }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          width,
+          alignItems: "center",
+          paddingBottom: 8,
+          backgroundColor: "#F2F2F7",
+          paddingHorizontal: 17,
+          paddingTop: isModal ? 0 : 42,
+        }}
+      >
         {renderBackButton()}
         {renderPostStatus()}
-        {isOwner ? renderEditAndFavoriteButtons() : (postData.status == 1 ? renderFavoriteAndShareButtons() : <View />)}
+        {isOwner ? (
+          renderEditAndFavoriteButtons()
+        ) : postData.status == 1 ? (
+          renderFavoriteAndShareButtons()
+        ) : (
+          <View />
+        )}
       </View>
     );
   };
 
   const shareProfile = () => {
-
     if (!ownerUser) return null;
 
     const options = {
-      type: 'profile',
+      type: "profile",
       id: ownerUser.id,
       user: ownerUser,
     };
@@ -735,7 +923,8 @@ ${priceInfo}
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled={true}
-        scrollEnabled={!isInteractingWithMap}>
+        scrollEnabled={!isInteractingWithMap}
+      >
         {/* <Button
           title="Test Link"
           onPress={() => {
@@ -758,15 +947,33 @@ ${priceInfo}
         <View style={{ height: 134 }} />
       </ScrollView>
 
-      <CustomModal isVisible={showModalSeller} onClose={() => setShowNodalSeller(false)} buttonLeft={<BackIcon />} buttonRight={shareProfile()}>
-        <ProfilePageView route={{ params: { posterId: ownerUser?.id } }} />
+      <CustomModal
+        isVisible={showModalSeller}
+        onClose={() => setShowNodalSeller(false)}
+        buttonLeft={<BackIcon />}
+        buttonRight={shareProfile()}
+      >
+        <ProfilePageView
+          route={{
+            params: { posterId: ownerUser?.id, posterType: ownerUser.usertype },
+          }}
+        />
       </CustomModal>
 
       {renderModal()}
       <Modal visible={isShowChatModal}>
-        <ChatScreen handleClose={() => setIsShowChatModal(false)} selectedChat={chatData} currentUser={currentUser} />
+        <ChatScreen
+          handleClose={() => setIsShowChatModal(false)}
+          selectedChat={chatData}
+          currentUser={currentUser}
+        />
       </Modal>
-      <Modal visible={isShowModal} animationType='slide'><ServicesPage handleClose={() => setIsShowModal(false)} selectedItem={selectedItem} /></Modal>
+      <Modal visible={isShowModal} animationType="slide">
+        <ServicesPage
+          handleClose={() => setIsShowModal(false)}
+          selectedItem={selectedItem}
+        />
+      </Modal>
     </View>
   );
 }
@@ -774,18 +981,18 @@ ${priceInfo}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E5E5EA',
-    height: height - 120
+    backgroundColor: "#E5E5EA",
+    height: height - 120,
   },
   scrollContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   priceBlock: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: width - 32,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginTop: 16,
-    alignSelf: 'center'
+    alignSelf: "center",
   },
   imageMap: {
     width: width - 32,
@@ -793,7 +1000,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginVertical: 8,
     marginLeft: 12,
-    alignSelf: 'center'
+    alignSelf: "center",
   },
   priceText: {
     fontSize: 24,
@@ -810,17 +1017,17 @@ const styles = StyleSheet.create({
     letterSpacing: -0.43,
     fontStyle: "normal",
     fontFamily: "Sora400",
-    color: "#808080"
+    color: "#808080",
   },
   specView: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: width - 32,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginTop: 16,
-    alignSelf: 'center'
+    alignSelf: "center",
   },
   specElement: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   specText: {
     fontSize: 17,
@@ -841,18 +1048,18 @@ const styles = StyleSheet.create({
   addressView: {
     width: width - 32,
     marginTop: 24,
-    alignSelf: 'center'
+    alignSelf: "center",
   },
   addressText: {
     marginTop: 8,
     fontSize: 17,
     lineHeight: 20,
     color: "#808080",
-    fontFamily: "Sora400"
+    fontFamily: "Sora400",
   },
   infoBlock: {
     width: width - 32,
-    marginTop: 32
+    marginTop: 32,
   },
   infoTitle: {
     fontSize: 20,
@@ -860,13 +1067,13 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     color: "#3E3E3E",
     fontWeight: "600",
-    marginBottom: 16
+    marginBottom: 16,
   },
   infoSpecRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: width - 32,
-    justifyContent: 'space-between',
-    marginBottom: 16
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
   infoSpec: {
     width: width * 0.4,
@@ -874,10 +1081,10 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     letterSpacing: -0.43,
     color: "#808080",
-    fontFamily: "Sora400"
+    fontFamily: "Sora400",
   },
   infoValue: {
-    textAlign: 'right',
+    textAlign: "right",
     width: width * 0.4,
     fontSize: 14,
     color: "#3E3E3E",
@@ -885,12 +1092,12 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     letterSpacing: -0.43,
     fontStyle: "normal",
-    fontFamily: "Sora400"
+    fontFamily: "Sora400",
   },
   copyableValue: {
     letterSpacing: -0.42,
     lineHeight: 18,
-    color: '#2C88EC',
+    color: "#2C88EC",
     fontSize: 14,
     fontWeight: "400",
     fontStyle: "normal",
@@ -898,12 +1105,12 @@ const styles = StyleSheet.create({
   serviciesBlock: {
     width: width - 32,
     marginTop: 16,
-    alignItems: 'flex-start'
+    alignItems: "flex-start",
   },
   serviciesView: {
     width: width - 32,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
     flex: 1,
     // justifyContent: 'space-between',
@@ -913,7 +1120,7 @@ const styles = StyleSheet.create({
     width: (width - 32 - 16) / 3,
     // height: width * 0.2,
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: "#F2F2F7",
     borderRadius: 12,
     padding: 12,
     // marginBottom: 16,
@@ -926,29 +1133,29 @@ const styles = StyleSheet.create({
     color: "#3E3E3E",
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     paddingVertical: 12,
     width: width - 32,
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: "center",
   },
   button_1: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     paddingVertical: 12,
     width: (width - 48) / 2,
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: "center",
   },
   button_2: {
     paddingVertical: 12,
     width: (width - 48) / 2,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     borderColor: "#2C88EC",
     borderWidth: 1,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.43,
@@ -956,7 +1163,7 @@ const styles = StyleSheet.create({
     fontFamily: "Sora700",
   },
   buttonText2: {
-    color: '#2C88EC',
+    color: "#2C88EC",
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.43,
@@ -965,32 +1172,32 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 16,
-    backgroundColor: 'grey',
+    backgroundColor: "grey",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   closeButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     width: width - 32,
     borderRadius: 16,
     padding: 16,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 16,
   },
   modalMessage: {
@@ -998,26 +1205,26 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   modalButtonContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
   },
   modalButtonCancel: {
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
   },
   modalButtonConfirm: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
   },
   modalButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   map: {
     width,

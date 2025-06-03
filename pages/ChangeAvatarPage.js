@@ -1,29 +1,38 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import AvatarModal from '../components/AvatarModal';
-import { useApi } from '../context/ApiContext';
-import { useToast } from '../context/ToastProvider';
-import { useLogger } from '../context/LoggerContext';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import AvatarModal from "../components/AvatarModal";
+import { useApi } from "../context/ApiContext";
+import { useToast } from "../context/ToastProvider";
+import { useLogger } from "../context/LoggerContext";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const ChangeAvatarPage = ({ route, navigation }) => {
-  const { updateUser } = useApi()
-  const { userObject, usertype } = route?.params
+  const { updateUser } = useApi();
+  const { userObject, usertype } = route?.params;
   const [user, setUser] = useState({});
   const [avatar, setAvatar] = useState(null);
-  const imageObject = useRef()
+  const imageObject = useRef();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [phone, setPhone] = useState("")
+  const [phone, setPhone] = useState("");
   const [prevPhone, setPrevPhone] = useState("");
   const [isPhoneLabelShown, setIsPhoneLabelShown] = useState(false);
 
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
   const [isEmailLabelShown, setIsEmailLabelShown] = useState(false);
 
-  const [surname, setSurname] = useState("")
-  const [name, setName] = useState("")
+  const [surname, setSurname] = useState("");
+  const [name, setName] = useState("");
 
   const [isCorrect, setIsCorrect] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
@@ -33,15 +42,13 @@ const ChangeAvatarPage = ({ route, navigation }) => {
 
   useEffect(() => {
     const init = async () => {
-
       if (Object.keys(userObject).length == 0) return;
-      setUser(userObject)
-      setName(userObject.name)
-      setSurname(userObject.surname)
-      setEmail(userObject.email)
-      setPhone(formatPhoneNumber(userObject.phone))
-      setAvatar(userObject.photo)
-
+      setUser(userObject);
+      setName(userObject.name);
+      setSurname(userObject.surname);
+      setEmail(userObject.email);
+      setPhone(formatPhoneNumber(userObject.phone));
+      setAvatar(userObject.photo);
     };
     init();
   }, []);
@@ -49,9 +56,18 @@ const ChangeAvatarPage = ({ route, navigation }) => {
   useEffect(() => {
     setIsCorrect(!isEmailLabelShown && !isPhoneLabelShown);
     checkIfDataChanged(); // ✅ Проверка изменений
-  }, [isEmailLabelShown, isPhoneLabelShown, name, surname, phone, email, avatar]); // ✅ Добавлено
+  }, [
+    isEmailLabelShown,
+    isPhoneLabelShown,
+    name,
+    surname,
+    phone,
+    email,
+    avatar,
+  ]); // ✅ Добавлено
 
-  const checkIfDataChanged = () => { // ✅ Добавлено
+  const checkIfDataChanged = () => {
+    // ✅ Добавлено
     const hasChanged =
       name !== userObject.name ||
       surname !== userObject.surname ||
@@ -68,7 +84,10 @@ const ChangeAvatarPage = ({ route, navigation }) => {
     setIsPhoneLabelShown(text.length !== 18 && previousText);
     if (previousText && previousText.length > text.length) return text;
     let cleaned = text.replace(/\D/g, "");
-    cleaned = cleaned.startsWith("7") || cleaned.startsWith("8") ? `7${cleaned.slice(1)}` : `7${cleaned}`;
+    cleaned =
+      cleaned.startsWith("7") || cleaned.startsWith("8")
+        ? `7${cleaned.slice(1)}`
+        : `7${cleaned}`;
     cleaned = cleaned.slice(0, 11);
     if (cleaned.length <= 1) {
       return "+7";
@@ -98,7 +117,7 @@ const ChangeAvatarPage = ({ route, navigation }) => {
     const formatted = emailFormatting(text);
     setIsEmailLabelShown(!isEmailCorrect(formatted));
     setEmail(formatted);
-  }
+  };
 
   const isEmailCorrect = (email) => {
     if (!email) return false;
@@ -122,15 +141,17 @@ const ChangeAvatarPage = ({ route, navigation }) => {
 
     const firstAtIndex = formatted.indexOf("@");
     if (firstAtIndex !== -1)
-      return formatted.slice(0, firstAtIndex + 1) +
-        formatted.slice(firstAtIndex + 1).replace(/@/g, "");
+      return (
+        formatted.slice(0, firstAtIndex + 1) +
+        formatted.slice(firstAtIndex + 1).replace(/@/g, "")
+      );
 
     return formatted;
   };
 
   const handleAvatarSelect = (newAvatarObject) => {
     setAvatar(newAvatarObject.uri);
-    imageObject.current = newAvatarObject
+    imageObject.current = newAvatarObject;
     setModalVisible(false);
   };
 
@@ -147,13 +168,14 @@ const ChangeAvatarPage = ({ route, navigation }) => {
     if (!isCorrect || !isChanged) return;
 
     const photo = imageObject.current
-      ? { filename: imageObject.current.filename, base64: imageObject.current.base64 }
+      ? {
+          filename: imageObject.current.filename,
+          base64: imageObject.current.base64,
+        }
       : null;
 
     // Изначально формируем объект с данными пользователя
     let newUserData = {
-      id: userObject.id,
-      // usertype,
       phone: phone === "" ? userObject.phone : normalizePhoneNumber(phone),
       name: name === "" ? userObject.name : name,
       surname: surname === "" ? userObject.surname : surname,
@@ -172,10 +194,16 @@ const ChangeAvatarPage = ({ route, navigation }) => {
         showToast("Изменения прошли успешно");
         navigation.navigate("Profile", { updatedUser: newUserData });
       } else {
-        showToast(`Код ошибки: ${result.status}`, "error");
+        showToast(resultData.message, "error");
+        // showToast(`Код ошибки: ${result.status}`, "error");
+        console.log(resultData);
       }
     } catch (error) {
-      logError(navigation.getState().routes[0].name, error, { newUserData, handleName: "handleSubmit" });
+      logError(navigation.getState().routes[0].name, error, {
+        newUserData,
+        handleName: "handleSubmit",
+      });
+
       showToast("Не удалось сохранить изменения.", "error");
     }
   };
@@ -191,7 +219,10 @@ const ChangeAvatarPage = ({ route, navigation }) => {
           )}
         </View>
         <View style={{ paddingBottom: 32 }}>
-          <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
+          <Pressable
+            style={styles.button}
+            onPress={() => setModalVisible(true)}
+          >
             <Text style={styles.buttonText}>Сменить аватар</Text>
           </Pressable>
         </View>
@@ -201,8 +232,8 @@ const ChangeAvatarPage = ({ route, navigation }) => {
           onSelectAvatar={handleAvatarSelect}
         />
       </View>
-    )
-  }
+    );
+  };
 
   const listInputProperty = [
     {
@@ -212,17 +243,21 @@ const ChangeAvatarPage = ({ route, navigation }) => {
       onChangeText: setName,
       errorLabel: "",
       isShowError: false,
-      id: 1
+      id: 1,
     },
-    {
-      title: "Фамилия",
-      placeholder: user.surname,
-      value: surname,
-      onChangeText: setSurname,
-      errorLabel: "",
-      isShowError: false,
-      id: 2
-    },
+    ...(userObject.usertype !== 2
+      ? [
+          {
+            title: "Фамилия",
+            placeholder: user.surname,
+            value: surname,
+            onChangeText: setSurname,
+            errorLabel: "",
+            isShowError: false,
+            id: 2,
+          },
+        ]
+      : []),
     {
       title: "Почта",
       placeholder: user.email,
@@ -230,7 +265,7 @@ const ChangeAvatarPage = ({ route, navigation }) => {
       onChangeText: handleChangeEmail,
       errorLabel: "Введите корректный адрес электронной почты",
       isShowError: isEmailLabelShown,
-      id: 3
+      id: 3,
     },
     {
       title: "Телефон",
@@ -239,9 +274,9 @@ const ChangeAvatarPage = ({ route, navigation }) => {
       onChangeText: handleChangePhone,
       errorLabel: "Неверный номер телефона",
       isShowError: isPhoneLabelShown,
-      id: 4
+      id: 4,
     },
-  ]
+  ];
 
   const renderInputProperty = () => {
     return listInputProperty.map((input) => (
@@ -255,94 +290,100 @@ const ChangeAvatarPage = ({ route, navigation }) => {
           value={input.value}
           onChangeText={input.onChangeText}
           maxLength={50}
-          placeholderTextColor='rgba(60,60,67, 0.6'
+          placeholderTextColor="rgba(60,60,67, 0.6"
           fontSize={17}
         />
-        {
-          input.isShowError && (
-            <Text style={styles.inputLabel}>{input.errorLabel}</Text>
-          )
-        }
+        {input.isShowError && (
+          <Text style={styles.inputLabel}>{input.errorLabel}</Text>
+        )}
       </View>
-    ))
-  }
+    ));
+  };
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={[{ flexGrow: 1 }, styles.container]}>
+      <ScrollView contentContainerStyle={[{ flexGrow: 1 }, styles.container]}>
         {renderAvatar()}
         {renderInputProperty()}
         <View style={{ paddingBottom: 124 }}>
           <Pressable
             disabled={!isCorrect || !isChanged}
             onPress={handleSubmit}
-            style={isCorrect && isChanged ? styles.button : styles.disabledButton}>
-            <Text style={isCorrect && isChanged ? styles.buttonText : styles.disabledButtonText}>
+            style={
+              isCorrect && isChanged ? styles.button : styles.disabledButton
+            }
+          >
+            <Text
+              style={
+                isCorrect && isChanged
+                  ? styles.buttonText
+                  : styles.disabledButtonText
+              }
+            >
               Сохранить изменения
             </Text>
           </Pressable>
         </View>
-      </ScrollView >
-    </View >
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 16,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: "#f7f7f7",
   },
   avatarContainer: {
     width: 150,
     height: 150,
     borderRadius: 75,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 20,
-    backgroundColor: '#ddd',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#ddd",
+    justifyContent: "center",
+    alignItems: "center",
   },
   avatarImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   button: {
-    backgroundColor: '#2C88EC',
+    backgroundColor: "#2C88EC",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   disabledButton: {
-    backgroundColor: '#9DC0F6',
+    backgroundColor: "#9DC0F6",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
   disabledButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   block: {
     width: width - 72,
-    marginBottom: 12
+    marginBottom: 12,
   },
   title: {
-    marginBottom: 8
+    marginBottom: 8,
   },
   titleText: {
     fontSize: 20,
     lineHeight: 25,
     letterSpacing: -0.45,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   input: {
-    backgroundColor: 'rgba(120,120,128, 0.12)',
+    backgroundColor: "rgba(120,120,128, 0.12)",
     height: 40,
     marginBottom: 12,
     borderRadius: 12,

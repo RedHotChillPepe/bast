@@ -5,6 +5,7 @@ import {
     Modal,
     PanResponder,
     Pressable,
+    SafeAreaView,
     StyleSheet,
     Text,
     View
@@ -80,7 +81,7 @@ export default function CustomModal({ isVisible, onClose, buttonLeft, buttonRigh
 
     return (
         <Modal transparent={true}>
-            <View style={styles.overlay}>
+            <SafeAreaView style={styles.overlay}>
                 <Pressable style={styles.backdrop} onPress={closeModal} />
                 <Animated.View
                     style={[
@@ -106,7 +107,7 @@ export default function CustomModal({ isVisible, onClose, buttonLeft, buttonRigh
                     </View>
                     {children}
                 </Animated.View>
-            </View>
+            </SafeAreaView>
         </Modal>
     );
 }

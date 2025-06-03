@@ -11,7 +11,7 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_HOST": "https://win-e5oqtj6uhak.tailb0dc72.ts.net/",
+        "EXPO_PUBLIC_API_HOST": "https://ilia-work.tailb0dc72.ts.net/",
         "YAMAP_API_KEY": "d2dd4e6a-fb92-431b-a6db-945e7e96b17c",
         "GEOCODER_API_KEY": "d4e0fa5b-61fc-468d-886c-31740a78b323"
       },
@@ -22,9 +22,12 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_HOST": "https://win-e5oqtj6uhak.tailb0dc72.ts.net/",
+        "EXPO_PUBLIC_API_HOST": "https://ilia-work.tailb0dc72.ts.net/",
         "YAMAP_API_KEY": "d2dd4e6a-fb92-431b-a6db-945e7e96b17c",
         "GEOCODER_API_KEY": "d4e0fa5b-61fc-468d-886c-31740a78b323"
+      },
+      "android": {
+        "buildType": "apk"
       }
     }
   },
