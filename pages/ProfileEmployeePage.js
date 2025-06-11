@@ -246,23 +246,6 @@ const ProfileRealtorPage = ({ user }) => {
           <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
           <Ionicons name="exit-outline" size={24} color="#3E3E3E" />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => changePassword(navigation, user.phone)}
-          style={styles.logoutButton}
-        >
-          <Text style={[styles.itemText, styles.logoutText]}>
-            Сменить пароль
-          </Text>
-          <UserCardIcon />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handlePress()}
-          style={styles.logoutButton}
-        >
-          <Text style={[styles.itemText, styles.logoutText]}>
-            Тест уведомлений
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
       <Modal visible={showModalRequest} animationType="slide">
         <UserRequestPage
@@ -292,7 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E5EA",
     paddingBottom: 64,
     // flex: 1,
-    height: "120%"
+    height: "100%",
   },
   nameBlock: {
     flexDirection: "row",

@@ -64,6 +64,7 @@ import { HouseIcon } from "./assets/svg/Tabbar/HouseIcon";
 import { ThemeProvider } from "./context/ThemeContext";
 import { NotificationProvider } from "./context/NotificationsContext.js";
 import RestoreAndDeleteProfile from "./pages/RestoreAndDeleteProfile.js";
+import { ShareProvider } from "./context/ShareContext.js";
 
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -178,7 +179,7 @@ const StackProfile = () => {
         component={SettingsPage}
         options={{
           //header:(props) => <HeaderComponent{...props}/>
-          headerShown: true,
+          headerShown: false,
           headerTitle: "Настройки",
         }}
       />
@@ -931,7 +932,9 @@ export default function App() {
               <FavoritesProvider>
                 <ThemeProvider>
                   <NotificationProvider>
-                    <AppInit />
+                    <ShareProvider>
+                      <AppInit />
+                    </ShareProvider>
                   </NotificationProvider>
                 </ThemeProvider>
               </FavoritesProvider>

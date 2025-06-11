@@ -3,10 +3,10 @@
     "name": "БАСТ Недвижимость",
     "scheme": "myapp",
     "slug": "bast",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "newArchEnabled": true,
     "orientation": "portrait",
-    "icon": "./assets/BastLogo.png",
+    "icon": "./assets/bast_icon_ios.png",
     "notification": {
       "icon": "./assets/notification-icon.png",
       "color": "#311b92",
@@ -28,12 +28,13 @@
         "applinksilia-work.tailb0dc72.ts.net"
       ],
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Мы используем доступ к вашей фотогалерее, чтобы вы могли выбрать изображение профиля или прикрепить фото к объявлению."
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/BastLogo.png",
+        "foregroundImage": "./assets/bast_icon_android.png",
         "backgroundColor": "#ffffff",
         "intentFilters": [
           {

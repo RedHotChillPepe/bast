@@ -189,7 +189,7 @@ const ProfilePageView = ({ route, navigation }) => {
               source={
                 isDeleted
                   ? require("../assets/deleted_user.jpg")
-                  : { uri: isduserr.photo }
+                  : { uri: userr.photo }
               }
             />
           )}

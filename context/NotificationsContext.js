@@ -1,17 +1,12 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import * as Notifications from "expo-notifications";
+import { useNavigation } from "@react-navigation/native";
 import * as Device from "expo-device";
-import { Platform } from "react-native";
-import { useApi } from "./ApiContext";
+import * as Notifications from "expo-notifications";
 import * as SecureStore from "expo-secure-store";
-import { useAuth } from "./AuthContext";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { Modal, Platform } from "react-native";
 import { removePushToken } from "../utils/notificationUtils";
+import { useApi } from "./ApiContext";
+import { useAuth } from "./AuthContext";
 
 const NotificationContext = createContext();
 
@@ -21,9 +16,13 @@ export const NotificationProvider = ({ children }) => {
   const [expoPushToken, setExpoPushToken] = useState(null);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const navigation = useNavigation();
 
   const { registerPushToken, deletePushToken } = useApi();
   const { isAuth, tokenIsLoaded } = useAuth();
+
+  const [isShowModal, setIsShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState();
 
   useEffect(() => {
     if (!tokenIsLoaded) return; // ждём, пока загрузится токен авторизации
@@ -70,6 +69,26 @@ export const NotificationProvider = ({ children }) => {
       responseListener.current =
         Notifications.addNotificationResponseReceivedListener((response) => {
           console.log("📲 Открыто уведомление:", response);
+          const data = response.notification.request.content.data;
+          console.log("data:", data);
+
+          if (!data.screen) {
+            navigation.navigate("Main");
+            return;
+          }
+
+          if (data.isModal) {
+            return;
+          }
+
+          try {
+            navigation.navigate(data.screen, data.params || {});
+          } catch (error) {
+            console.error(
+              "❌ Ошибка навигации при открытии уведомления:",
+              error
+            );
+          }
         });
     };
 
@@ -168,6 +187,9 @@ export const NotificationProvider = ({ children }) => {
       }}
     >
       {children}
+      <Modal visible={isShowModal} onRequestClose={() => setIsShowModal(false)}>
+        {modalContent}
+      </Modal>
     </NotificationContext.Provider>
   );
 };

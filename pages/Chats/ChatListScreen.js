@@ -98,7 +98,8 @@ const ChatListScreen = ({ navigation }) => {
         setIsLoading(false);
       }
     };
-
+    console.log(1);
+    
     fetchChats();
   }, [isFocused]);
 

@@ -227,15 +227,6 @@ const ProfileCompanyPage = ({ user }) => {
           <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
           <Ionicons name="exit-outline" size={24} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => changePassword(navigation, user.phone)}
-          style={styles.logoutButton}
-        >
-          <Text style={[styles.itemText, styles.logoutText]}>
-            Сменить пароль
-          </Text>
-          <UserCardIcon color="#fff" />
-        </TouchableOpacity>
         {/*       <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
@@ -270,7 +261,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     backgroundColor: "#9DC0F6",
-    paddingBottom: 64,
+    paddingBottom: 32,
   },
   nameBlock: {
     alignSelf: "center",

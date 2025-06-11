@@ -5,7 +5,7 @@ import Octicons from "@expo/vector-icons/Octicons";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -26,17 +26,21 @@ import CustomModal from "../components/CustomModal";
 import ImageCarousel from "../components/ImageCarousel";
 import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
+import { useFavorites } from "../context/FavoritesContext";
+import { useLogger } from "../context/LoggerContext";
 import { useToast } from "../context/ToastProvider";
+import ChatScreen from "./Chats/ChatScreen";
+import EditHousePostPage from "./EditHousePostPage";
 import MortgageCalculator from "./MortgageCalculator";
 import ProfilePageView from "./ProfilePageView";
-import { useLogger } from "../context/LoggerContext";
-import ChatScreen from "./Chats/ChatScreen";
-import { useFavorites } from "../context/FavoritesContext";
 import ServicesPage from "./Services/ServicesPage";
+import { useShare } from "../context/ShareContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function DynamicHousePostPage({ navigation, route }) {
+  const { sharePost, shareProfile } = useShare();
+
   const houseId = route.houseId || route.params.houseId;
   const timestamp = route.params?.timestamp || 0;
   const isModal = route.isModal || false;
@@ -67,9 +71,10 @@ export default function DynamicHousePostPage({ navigation, route }) {
   const [isInteractingWithMap, setIsInteractingWithMap] = useState(false);
   const [showModalSeller, setShowNodalSeller] = useState(false);
   const [isShowChatModal, setIsShowChatModal] = useState(false);
-
+  const [isShowEditModal, setIsShowEditModal] = useState(false);
   const [chatData, setChatData] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
+  const [isMapFullScreen, setIsMapFullScreen] = useState(false); // State for full-screen map
 
   const { logError } = useLogger();
 
@@ -82,6 +87,8 @@ export default function DynamicHousePostPage({ navigation, route }) {
   };
 
   const mapRef = useRef(null);
+  const fullScreenMapRef = useRef(null); // Ref for full-screen map
+
   // Получение данных объявления и пользователя
   useEffect(() => {
     const fetchData = async () => {
@@ -160,9 +167,12 @@ export default function DynamicHousePostPage({ navigation, route }) {
     try {
       // Создаем чат
       const chatData = await createChat(postData.id);
+      console.info(chatData);
+
       setChatData({
         ...chatData.chat,
         post: chatData.post,
+        opponent_user: chatData.opponent_user,
       });
 
       setCurrentUser(chatData.current_user);
@@ -188,7 +198,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
 
   const confirmClose = async () => {
     try {
-      await changeStatus({ post_id: houseId, post_status: 3 });
+      await changeStatus({ post_id, post_status: 3 });
       setPostData((prev) => ({ ...prev, status: 3 }));
       setShowCloseConfirm(false);
       showToast("Ваше объявление закрыто", "success");
@@ -396,11 +406,33 @@ export default function DynamicHousePostPage({ navigation, route }) {
   };
 
   const specsList = [
-    { value: postData.num_floors, suffix: "-эт.", caption: "дом" },
-    { value: postData.bedrooms, suffix: "-комн.", caption: "планировка" },
-    { value: postData.house_area, suffix: " м²", caption: "общая" },
-    { value: postData.plot_area, suffix: " сот", caption: "участок" },
-  ];
+    // Этажи - всегда отображаем если значение есть
+    postData.num_floors != null && {
+      value: postData.num_floors,
+      suffix: "-эт.",
+      caption: "дом",
+    },
+    // Комнаты - отображаем только если значение указано и не равно 0
+    postData.bedrooms != null &&
+      postData.bedrooms !== 0 && {
+        value: postData.bedrooms,
+        suffix: "-комн.",
+        caption: "планировка",
+      },
+    // Метраж - всегда отображаем если значение есть
+    postData.house_area != null && {
+      value: postData.house_area,
+      suffix: " м²",
+      caption: "общая",
+    },
+    // Участок - отображаем только если значение есть и больше 0
+    postData.plot_area != null &&
+      postData.plot_area > 0 && {
+        value: postData.plot_area,
+        suffix: " сот",
+        caption: "участок",
+      },
+  ].filter(Boolean); // Убираем все ложные значения из массива
 
   const renderHouseSpecs = () => {
     if (Object.keys(postData).length === 0) {
@@ -435,6 +467,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
               <View
                 onTouchStart={() => setIsInteractingWithMap(true)}
                 onTouchEnd={() => setIsInteractingWithMap(false)}
+                style={{ position: "relative" }}
               >
                 <YaMap
                   ref={mapRef}
@@ -448,10 +481,16 @@ export default function DynamicHousePostPage({ navigation, route }) {
                 >
                   <Marker
                     point={{ lat: geoState.lat, lon: geoState.lon }}
-                    scale={0.25}
+                    scale={0.75}
                     source={require("../assets/marker.png")}
                   />
                 </YaMap>
+                <TouchableOpacity
+                  style={styles.fullScreenButton}
+                  onPress={() => setIsMapFullScreen(true)}
+                >
+                  <MaterialIcons name="fullscreen" size={24} color="#fff" />
+                </TouchableOpacity>
               </View>
             )
           ) : (
@@ -472,7 +511,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
       <View style={{ marginTop: 32, alignSelf: "flex-start", marginLeft: 16 }}>
         <Text style={styles.infoTitle}>Продавец</Text>
         {Object.keys(ownerUser).length !== 0 && (
-          // <Pressable onPress={() => navigation.navigate("ProfilePageView", { posterId: ownerUser.id })}>
           <Pressable onPress={() => setShowNodalSeller(true)}>
             <View
               style={{
@@ -622,7 +660,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
       subText:
         "Поможем Вам застраховать ваше недвижимое имущество. Наш менеджер сам свяжется с вами.",
     },
-    // { title: 'Дизайн интерьера', route: 'Error', params: { errorCode: 2004 } },
   ];
 
   const renderServicesBlock = () => {
@@ -705,6 +742,16 @@ export default function DynamicHousePostPage({ navigation, route }) {
         cancelText: "Закрыть",
       },
     },
+    {
+      // Модальное окно для полноэкранной карты
+      condition: isMapFullScreen,
+      props: {
+        visible: isMapFullScreen,
+        title: "Карта",
+        onCancel: () => setIsMapFullScreen(false),
+        cancelText: "Закрыть",
+      },
+    },
   ];
 
   const UniversalModal = ({
@@ -719,28 +766,67 @@ export default function DynamicHousePostPage({ navigation, route }) {
     return (
       <Modal
         visible={visible}
-        transparent
+        transparent={title !== "Карта"} // Полноэкранная карта не должна быть прозрачной
         animationType="slide"
         onRequestClose={onCancel}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            {title && <Text style={styles.modalTitle}>{title}</Text>}
-            {message && <Text style={styles.modalMessage}>{message}</Text>}
-            <View style={styles.modalButtonContainer}>
-              <Pressable style={styles.modalButtonCancel} onPress={onCancel}>
-                <Text style={styles.modalButtonText}>{cancelText}</Text>
-              </Pressable>
-              {onConfirm && (
-                <Pressable
-                  style={styles.modalButtonConfirm}
-                  onPress={onConfirm}
+        <View
+          style={
+            title === "Карта"
+              ? styles.fullScreenModalOverlay
+              : styles.modalOverlay
+          }
+        >
+          {title === "Карта" ? (
+            <View style={styles.fullScreenModalContent}>
+              <View style={styles.fullScreenMapContainer}>
+                <YaMap
+                  ref={fullScreenMapRef}
+                  style={styles.fullScreenMap}
+                  onMapLoaded={() => {
+                    fullScreenMapRef.current.setCenter(
+                      { lon: geoState.lon, lat: geoState.lat },
+                      10
+                    );
+                  }}
                 >
-                  <Text style={styles.modalButtonText}>{confirmText}</Text>
-                </Pressable>
-              )}
+                  <Marker
+                    point={{ lat: geoState.lat, lon: geoState.lon }}
+                    scale={0.75}
+                    source={require("../assets/marker.png")}
+                  />
+                </YaMap>
+                <TouchableOpacity
+                  style={styles.fullScreenButton}
+                  onPress={onCancel}
+                >
+                  <MaterialIcons
+                    name="fullscreen-exit"
+                    size={24}
+                    color="#fff"
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          ) : (
+            <View style={styles.modalContent}>
+              {title && <Text style={styles.modalTitle}>{title}</Text>}
+              {message && <Text style={styles.modalMessage}>{message}</Text>}
+              <View style={styles.modalButtonContainer}>
+                <Pressable style={styles.modalButtonCancel} onPress={onCancel}>
+                  <Text style={styles.modalButtonText}>{cancelText}</Text>
+                </Pressable>
+                {onConfirm && (
+                  <Pressable
+                    style={styles.modalButtonConfirm}
+                    onPress={onConfirm}
+                  >
+                    <Text style={styles.modalButtonText}>{confirmText}</Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          )}
         </View>
       </Modal>
     );
@@ -752,68 +838,6 @@ export default function DynamicHousePostPage({ navigation, route }) {
         <UniversalModal key={index} {...modalDef.props} />
       ) : null
     );
-  };
-
-  const sharePost = async (options) => {
-    if (options?.type === "profile") {
-      const user = options.user;
-      const url = `${process.env.EXPO_PUBLIC_API_HOST}share/${options.type}/${options.id}`;
-      const message = `
-🔹 Профиль пользователя 🔹
-        
-👤 Имя: ${user.name} ${user.surname}
-📞 Телефон: ${user.phone}
-📧 Email: ${user.email}
-📝 Постов: ${user.posts?.length ?? 0}
-                
-Загляни и узнай больше: ${url}
-      `.trim();
-
-      const shareOptions = {
-        message,
-      };
-
-      try {
-        await Share.share(shareOptions);
-      } catch (error) {
-        logError(navigation.getState().routes[0].name, error, {
-          options,
-          handleName: "sharePost profile",
-        });
-      }
-      return;
-    }
-
-    try {
-      const { name, full_address, city, price, text } = postData;
-      const url = `${process.env.EXPO_PUBLIC_API_HOST}share/post/${houseId}`;
-
-      const postName = name ? name : "Объявление";
-      const address = full_address
-        ? `📍 Адрес: ${full_address}, ${city}`
-        : `🏙 Город: ${city}`;
-      const priceInfo = price ? `💰 Цена: ${price} руб.` : "";
-      const description = text ? text : "Описание отсутствует";
-
-      const message = `
-🏡 ${postName}
-${address}
-${priceInfo}
-📄 Описание: ${description}
-🔗 Посмотри это объявление: ${url}
-      `;
-
-      const shareOptions = {
-        message,
-      };
-      await Share.share(shareOptions);
-    } catch (error) {
-      showToast("Ошибка при попытке поделиться объявлением", "error");
-      logError(navigation.getState().routes[0].name, error, {
-        postData,
-        handleName: "sharePost post",
-      });
-    }
   };
 
   const handleBack = () => {
@@ -839,13 +863,11 @@ ${priceInfo}
 
   const renderEditAndFavoriteButtons = () => (
     <View style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}>
-      <Pressable
-        onPress={() => navigation.navigate("EditHousePostPage", postData)}
-      >
+      <Pressable onPress={() => setIsShowEditModal(true)}>
         <Feather name="edit" size={24} color="#007AFF" />
       </Pressable>
       {postData.status == 1 && (
-        <Pressable Pressable onPress={sharePost}>
+        <Pressable Pressable onPress={() => sharePost(postData)}>
           <MaterialIcons name="share" size={24} color="#007Aff" />
         </Pressable>
       )}
@@ -868,7 +890,7 @@ ${priceInfo}
           color={isFavorite(houseId) ? "red" : "#007AFF"}
         />
       </Pressable>
-      <Pressable onPress={sharePost}>
+      <Pressable onPress={() => sharePost(postData)}>
         <MaterialIcons name="share" size={24} color="#007Aff" />
       </Pressable>
     </View>
@@ -901,7 +923,7 @@ ${priceInfo}
     );
   };
 
-  const shareProfile = () => {
+  const shareProfileButton = () => {
     if (!ownerUser) return null;
 
     const options = {
@@ -911,7 +933,7 @@ ${priceInfo}
     };
 
     return (
-      <Pressable onPress={() => sharePost(options)}>
+      <Pressable onPress={() => shareProfile(options)}>
         <ShareIcon />
       </Pressable>
     );
@@ -925,14 +947,6 @@ ${priceInfo}
         nestedScrollEnabled={true}
         scrollEnabled={!isInteractingWithMap}
       >
-        {/* <Button
-          title="Test Link"
-          onPress={() => {
-            const url = `$${process.env.EXPO_PUBLIC_API_HOST}/share/post?id=${houseId}`;
-            console.log('Test URL:', url);
-            Linking.openURL(url);
-          }}
-        /> */}
         {renderHeader()}
         <ImageCarousel postData={postData} />
         {renderPriceBlock()}
@@ -951,7 +965,7 @@ ${priceInfo}
         isVisible={showModalSeller}
         onClose={() => setShowNodalSeller(false)}
         buttonLeft={<BackIcon />}
-        buttonRight={shareProfile()}
+        buttonRight={shareProfileButton()}
       >
         <ProfilePageView
           route={{
@@ -972,6 +986,16 @@ ${priceInfo}
         <ServicesPage
           handleClose={() => setIsShowModal(false)}
           selectedItem={selectedItem}
+        />
+      </Modal>
+      <Modal
+        visible={isShowEditModal}
+        onRequestClose={() => setIsShowEditModal(false)}
+      >
+        <EditHousePostPage
+          postData={postData}
+          setPostData={setPostData}
+          handleClose={() => setIsShowEditModal(false)}
         />
       </Modal>
     </View>
@@ -1113,17 +1137,14 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 12,
     flex: 1,
-    // justifyContent: 'space-between',
   },
   serviciesPressable: {
     alignSelf: "stretch",
     width: (width - 32 - 16) / 3,
-    // height: width * 0.2,
     flex: 1,
     backgroundColor: "#F2F2F7",
     borderRadius: 12,
     padding: 12,
-    // marginBottom: 16,
   },
   serviciesText: {
     fontSize: 14,
@@ -1189,11 +1210,40 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  fullScreenModalOverlay: {
+    flex: 1,
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   modalContent: {
     backgroundColor: "white",
     width: width - 32,
     borderRadius: 16,
     padding: 16,
+  },
+  fullScreenModalContent: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullScreenMapContainer: {
+    flex: 1,
+    width: "100%",
+  },
+  fullScreenMap: {
+    width: "100%",
+    height: "100%",
+  },
+  fullScreenCloseButton: {
+    position: "absolute",
+    bottom: 20,
+    backgroundColor: "#007AFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
   },
   modalTitle: {
     fontSize: 20,
@@ -1229,5 +1279,14 @@ const styles = StyleSheet.create({
   map: {
     width,
     height: width * 0.6,
+  },
+  fullScreenButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#007AFF90",
+    borderRadius: 6,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

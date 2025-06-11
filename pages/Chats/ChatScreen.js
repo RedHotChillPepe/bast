@@ -429,7 +429,7 @@ const ChatScreen = (props) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: "#E5E5EA" }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -442,7 +442,8 @@ const ChatScreen = (props) => {
           online={opponentStatus}
           isOwner={
             selectedChat?.post?.poster_id == currentUser.id &&
-            selectedChat?.post?.poster_type == currentUser.usertype
+            selectedChat?.post?.poster_type == currentUser.usertype &&
+            (currentUser.usertype == 2 || currentUser.usertype == 3)
           }
         />
         {!isDeleted && renderPost()}

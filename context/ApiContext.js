@@ -61,7 +61,8 @@ export default function ApiProvider({ children }) {
       });
 
       if (!response.ok) {
-        throw new Error(`Ошибка: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Ошибка: ${response.status} ${errorText}`);
       }
 
       // Возвращаем результат
@@ -236,34 +237,6 @@ export default function ApiProvider({ children }) {
   const updatePost = async (data, id) => {
     const url = `${host}api/posts/updatepost`;
     const accessToken = await getAuth();
-    // [ ] TODO: доделать обновление поста
-    const formData = JSON.stringify({
-      id: data.id,
-      name: data.title == "" ? null : data.title,
-      house_type: data.houseType == "" ? null : data.houseType,
-      walls_lb: data.wallMaterial == "" ? null : data.wallMaterial,
-      walls_part: data.partitionMaterial == "" ? null : data.partitionMaterial,
-      price: data.price == "" ? null : data.price,
-      house_area: data.area == "" ? null : data.area,
-      num_floors: data.floors == "" ? null : data.floors,
-      bedrooms: data.rooms == "" ? null : data.rooms,
-      full_address: data.location == "" ? null : data.location,
-      city: data.settlement == "" ? null : data.settlement,
-      plot_area: data.plotSize == "" ? null : data.plotSize,
-      text: data.description == "" ? null : data.description,
-      roof: data.roof == "" ? null : data.roof,
-      base: data.basement == "" ? null : data.basement,
-      /* landArea: '', */
-      kad_number: data.kadastr == "" ? null : data.kadastr,
-      house_status: data.houseCondition == "" ? null : data.houseCondition,
-      year_built: data.constructionYear == "" ? null : data.constructionYear,
-      gas: data.gas == "" ? null : data.gas,
-      water: data.water == "" ? null : data.water,
-      sewage: data.sewerege == "" ? null : data.sewerege,
-      electricity_bill: data.electricity == "" ? null : data.electricity,
-      heating: data.heating == "" ? null : data.heating,
-      photos: data.photos,
-    });
 
     try {
       return fetch(url, {
@@ -273,7 +246,7 @@ export default function ApiProvider({ children }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: formData,
+        body: JSON.stringify(data),
       })
         .then(async (response) => {
           return await response.json();
@@ -1595,6 +1568,126 @@ export default function ApiProvider({ children }) {
     }
   };
 
+  const getFavorites = async () => {
+    const accessToken = await getAuth();
+    const url = `${host}api/users/favorites`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || "Не удалось получить избранные посты",
+        };
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Ошибка при получении избрранных:", error);
+      throw error;
+    }
+  };
+
+  const addFavorites = async (postId) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/users/favorites`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ postId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || "Не удалось добавить в избранное",
+        };
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Ошибка при добавление в избрранное:", error);
+      throw error;
+    }
+  };
+
+  const removeFavorites = async (postId) => {
+    const accessToken = await getAuth();
+
+    const url = `${host}api/users/favorites/${postId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || "Не удалось удалить из избранных",
+        };
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Ошибка при удалении из избрранных:", error);
+      throw error;
+    }
+  };
+
+  const confirmReferral = async (referralCode) => {
+    const accessToken = await getAuth();
+    const url = `${host}api/referrals/register`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ referralCode }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message:
+            result.message || "Не удалось принять реферальное приглашение",
+        };
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Ошибка при принятии рефералки:", error);
+      throw error;
+    }
+  };
+
   return (
     <ApiContext.Provider
       value={{
@@ -1656,6 +1749,10 @@ export default function ApiProvider({ children }) {
         registerPushToken,
         deletePushToken,
         restoreProfile,
+        getFavorites,
+        addFavorites,
+        removeFavorites,
+        confirmReferral
       }}
     >
       {children}

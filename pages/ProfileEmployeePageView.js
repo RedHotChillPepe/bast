@@ -1,27 +1,36 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Button, Dimensions, Image, TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
-import HouseCard from '../components/HouseCard.js';
-import { useApi } from '../context/ApiContext';
-import { useAuth } from '../context/AuthContext';
-import { UserCardIcon } from '../assets/svg/UserCard.js';
+import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import HouseCard from "../components/HouseCard.js";
+import { useApi } from "../context/ApiContext";
+import { useAuth } from "../context/AuthContext";
+import { UserCardIcon } from "../assets/svg/UserCard.js";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const ProfileEmployeePageView = () => {
   const { logout, changePassword } = useAuth();
   const navigation = useNavigation();
 
-  const { getUser, getCurrentUser } = useApi()
+  const { getUser, getCurrentUser } = useApi();
 
   const { getAllPosts, getAllVillages } = useApi();
   const [houses, setHouses] = useState([]);
-  const [selectedList, setSelectedList] = useState('houses');
+  const [selectedList, setSelectedList] = useState("houses");
 
-  const [userr, setUser] = useState([])
+  const [userr, setUser] = useState([]);
 
   useEffect(() => {
     const housesFetch = async () => {
@@ -57,64 +66,110 @@ const ProfileEmployeePageView = () => {
       const currentUser = await getCurrentUser();
 
       if (currentUser) {
-        setUser(currentUser)
+        setUser(currentUser);
       }
+    };
+    init();
 
-
-    }
-    init()
-
-    return () => {
-
-    }
-  }, [])
+    return () => {};
+  }, []);
 
   // Массив данных для списков
   const sections = [
     {
-      title: 'Основные',
+      title: "Основные",
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Текущие проекты' },
+        {
+          icon: <Ionicons name="document-outline" size={20} color="black" />,
+          label: "Текущие проекты",
+        },
       ],
     },
     {
-      title: 'Основные',
+      title: "Основные",
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Документы' },
+        {
+          icon: <Ionicons name="document-outline" size={20} color="black" />,
+          label: "Документы",
+        },
       ],
     },
     {
-      title: 'Основные',
+      title: "Основные",
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Компания' },
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Команда' },
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Контрагенты' },
+        {
+          icon: <Ionicons name="document-outline" size={20} color="black" />,
+          label: "Компания",
+        },
+        {
+          icon: <Ionicons name="document-outline" size={20} color="black" />,
+          label: "Команда",
+        },
+        {
+          icon: <Ionicons name="document-outline" size={20} color="black" />,
+          label: "Контрагенты",
+        },
       ],
     },
     {
-      title: 'Основные',
+      title: "Основные",
       data: [
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Клиенты' },
-        { icon: <Ionicons name="document-outline" size={20} color="black" />, label: 'Сделки' },
+        {
+          icon: <Ionicons name="document-outline" size={20} color="black" />,
+          label: "Клиенты",
+        },
+        {
+          icon: <Ionicons name="document-outline" size={20} color="black" />,
+          label: "Сделки",
+        },
       ],
     },
     {
-      title: 'Мои действия',
+      title: "Мои действия",
       data: [
-        { icon: <FontAwesome6 name="list-alt" size={20} color="black" />, label: 'Мои объявления' },
-        { icon: <AntDesign name="hearto" size={20} color="black" />, label: 'Избранное' },
-        { icon: <Ionicons name="search" size={20} color="black" />, label: 'Поиски' },
-        { icon: <Ionicons name="man-outline" size={20} color="black" />, label: 'Риэлторы' },
+        {
+          icon: <FontAwesome6 name="list-alt" size={20} color="black" />,
+          label: "Мои объявления",
+        },
+        {
+          icon: <AntDesign name="hearto" size={20} color="black" />,
+          label: "Избранное",
+        },
+        {
+          icon: <Ionicons name="search" size={20} color="black" />,
+          label: "Поиски",
+        },
+        {
+          icon: <Ionicons name="man-outline" size={20} color="black" />,
+          label: "Риэлторы",
+        },
       ],
     },
     {
-      title: 'Дополнительные',
+      title: "Дополнительные",
       data: [
-        { icon: <Ionicons name="notifications-outline" size={20} color="black" />, label: 'Уведомления' },
-        { icon: <Ionicons name="chatbox-outline" size={20} color="black" />, label: 'Чат с поддержкой' },
-        { icon: <Ionicons name="calculator-outline" size={20} color="black" />, label: 'Ипотечный калькулятор' },
-        { icon: <Ionicons name="help-buoy-outline" size={20} color="black" />, label: 'Справочный центр' },
-        { icon: <Ionicons name="help-circle-outline" size={20} color="black" />, label: 'О приложении' },
+        {
+          icon: (
+            <Ionicons name="notifications-outline" size={20} color="black" />
+          ),
+          label: "Уведомления",
+        },
+        {
+          icon: <Ionicons name="chatbox-outline" size={20} color="black" />,
+          label: "Чат с поддержкой",
+        },
+        {
+          icon: <Ionicons name="calculator-outline" size={20} color="black" />,
+          label: "Ипотечный калькулятор",
+        },
+        {
+          icon: <Ionicons name="help-buoy-outline" size={20} color="black" />,
+          label: "Справочный центр",
+        },
+        {
+          icon: <Ionicons name="help-circle-outline" size={20} color="black" />,
+          label: "О приложении",
+        },
       ],
     },
   ];
@@ -132,53 +187,74 @@ const ProfileEmployeePageView = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.nameBlock}>
-        <View style={{ flexDirection: 'row' }}>
-          {
-            Object.keys(userr).length != 0 && userr.photo != undefined
-              ?
-              <Image style={{ overflow: 'hidden', borderRadius: 150 / 2 }} width={56} height={56} source={{ uri: userr.photo }} />
-              :
-              <FontAwesome6 name="face-tired" size={56} color="black" />
-          }
-          <View style={{ marginLeft: 16, width: '60%' }}>
-            <Text style={styles.name}>{userr.name != undefined && userr.surname != undefined ? userr.name + " " + userr.surname : "Name Surname"}</Text>
-            <Text style={styles.email}>{userr.email != undefined ? userr.email : "mail@example.com"}</Text>
+        <View style={{ flexDirection: "row" }}>
+          {Object.keys(userr).length != 0 && userr.photo != undefined ? (
+            <Image
+              style={{ overflow: "hidden", borderRadius: 150 / 2 }}
+              width={56}
+              height={56}
+              source={{ uri: userr.photo }}
+            />
+          ) : (
+            <FontAwesome6 name="face-tired" size={56} color="black" />
+          )}
+          <View style={{ marginLeft: 16, width: "60%" }}>
+            <Text style={styles.name}>
+              {userr.name != undefined && userr.surname != undefined
+                ? userr.name + " " + userr.surname
+                : "Name Surname"}
+            </Text>
+            <Text style={styles.email}>
+              {userr.email != undefined ? userr.email : "mail@example.com"}
+            </Text>
           </View>
         </View>
         <Ionicons name="settings-outline" size={32} color="black" />
       </View>
 
-      <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: 'flex-start', marginLeft: 16, marginTop: 40, marginBottom: 16 }}>Объявления</Text>
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          alignSelf: "flex-start",
+          marginLeft: 16,
+          marginTop: 40,
+          marginBottom: 16,
+        }}
+      >
+        Объявления
+      </Text>
       <HouseCard data={houses} navigation={navigation} itemWidth={width - 32} />
-
-
-
-
 
       <TouchableOpacity onPress={logout} style={styles.logoutButton}>
         <Text style={[styles.itemText, styles.logoutText]}>Выйти</Text>
         <Ionicons name="exit-outline" size={24} color="grey" />
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => changePassword(navigation, userr.phone)}
-        style={styles.logoutButton}
-      >
-        <Text style={[styles.itemText, styles.logoutText]}>Сменить пароль</Text>
-        <UserCardIcon />
-      </TouchableOpacity>
+
       {/* <View style={styles.buttonsRow}>
         <Button title="Физик" onPress={() => navigation.navigate('Профиль')} />
         <Button title="Риэлтор" onPress={() => navigation.navigate('ProfileRealtorPage')} />
         <Button title="Застройщик" onPress={() => navigation.navigate('ProfileBuilderPage')} />
       </View> */}
 
-
       <View style={styles.buttonsRow}>
         <Button title="Logout" onPress={logout} />
-        <Button title="404" onPress={() => navigation.navigate('Error', { errorCode: 404 })} />
-        <Button title="403" onPress={() => navigation.navigate('Error', { errorCode: 403 })} />
-        <Button title="500" onPress={() => navigation.navigate('Error', { errorCode: 500 })} />
-        <Button title="503" onPress={() => navigation.navigate('Error', { errorCode: 2004 })} />
+        <Button
+          title="404"
+          onPress={() => navigation.navigate("Error", { errorCode: 404 })}
+        />
+        <Button
+          title="403"
+          onPress={() => navigation.navigate("Error", { errorCode: 403 })}
+        />
+        <Button
+          title="500"
+          onPress={() => navigation.navigate("Error", { errorCode: 500 })}
+        />
+        <Button
+          title="503"
+          onPress={() => navigation.navigate("Error", { errorCode: 2004 })}
+        />
       </View>
     </ScrollView>
   );
@@ -188,20 +264,20 @@ export default ProfileEmployeePageView;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    backgroundColor: '#efefef',
+    alignItems: "center",
+    backgroundColor: "#efefef",
   },
   nameBlock: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: width - 32,
     marginTop: 32,
     marginBottom: 24,
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   itemBlock: {
     width: width - 32,
-    backgroundColor: '#d6d6d6',
+    backgroundColor: "#d6d6d6",
     paddingTop: 11,
     paddingBottom: 11,
     paddingHorizontal: 16,
@@ -209,44 +285,44 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginVertical: 11,
   },
   listItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   itemText: {
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.43,
-    color: '#14080E',
+    color: "#14080E",
     marginLeft: 11,
   },
   logoutButton: {
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
+    flexDirection: "row",
+    alignSelf: "flex-start",
     marginLeft: 16,
     marginTop: 32,
   },
   logoutText: {
-    color: 'grey',
+    color: "grey",
     marginRight: 8,
   },
   buttonsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginVertical: 8,
   },
   name: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#14080E',
+    fontWeight: "bold",
+    color: "#14080E",
   },
   email: {
     fontSize: 18,
-    color: '#858585',
-    marginTop: 8
+    color: "#858585",
+    marginTop: 8,
   },
 });

@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   Modal,
+  Platform,
   Pressable,
   RefreshControl,
   SafeAreaView,
@@ -156,7 +157,9 @@ const ReferralListPage = (props) => {
         <Image
           style={styles.image}
           source={
-            item?.photo
+            item.status == -1
+              ? require("../../assets/deleted_user.jpg")
+              : item?.photo
               ? { uri: item?.photo }
               : require("../../assets/placeholder.png")
           }
@@ -190,7 +193,7 @@ const ReferralListPage = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
         {renderHeader()}
         {renderCreditBLock()}
         {renderPeopleBlock()}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import React from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 const TextInputComponent = (props) => {
   return (
@@ -9,15 +9,15 @@ const TextInputComponent = (props) => {
         keyboardType={props.keyboardType || "default"}
         style={props.inputStyle}
         placeholder={props.placeholder}
-        value={props.value}
+        value={props.value ? String(props.value) : ''}
         onChangeText={(value) => {
           props.handleInputChange(props.valueName, value);
         }}
       />
     </View>
-  )
-}
+  );
+};
 
-export default TextInputComponent
+export default TextInputComponent;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#F2F2F7',
     flex: 1,
-    borderRadius: 12,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     padding: 16,
     paddingBottom: 32,
     maxHeight: height * 0.9,

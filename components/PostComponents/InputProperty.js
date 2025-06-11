@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -6,11 +6,12 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import ShowIcon from "../../assets/svg/Show";
 import HideIcon from "../../assets/svg/Hide";
+import ShowIcon from "../../assets/svg/Show";
 
 const InputProperty = (props) => {
   const {
@@ -31,11 +32,14 @@ const InputProperty = (props) => {
     type === "password" || type === "confirmPassword"
   );
 
+  const inputRef = useRef(null);
+
   const renderInput = () => {
     switch (type) {
       case "select":
         return (
           <Dropdown
+            ref={inputRef}
             style={styles.dropdown}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
@@ -50,6 +54,7 @@ const InputProperty = (props) => {
       case "textarea":
         return (
           <TextInput
+            ref={inputRef}
             style={[styles.input, styles.textarea]}
             placeholder={placeholder}
             placeholderTextColor="#A1A1A1"
@@ -73,6 +78,7 @@ const InputProperty = (props) => {
         return (
           <View style={styles.inputWrapper}>
             <TextInput
+              ref={inputRef}
               style={styles.input}
               placeholder={placeholder}
               placeholderTextColor="#A1A1A1"
@@ -88,7 +94,10 @@ const InputProperty = (props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <Pressable
+      style={styles.container}
+      onPress={() => inputRef.current?.focus()}
+    >
       <KeyboardAvoidingView
         style={{
           flexDirection: "row",
@@ -101,11 +110,11 @@ const InputProperty = (props) => {
           <Text style={styles.title}>{title}</Text>
           {renderInput()}
         </View>
-        <Pressable onPress={() => setSecureText(!secureText)}>
+        <TouchableOpacity onPress={() => setSecureText(!secureText)}>
           {showToggleIcon && (secureText ? <ShowIcon /> : <HideIcon />)}
-        </Pressable>
+        </TouchableOpacity>
       </KeyboardAvoidingView>
-    </View>
+    </Pressable>
   );
 };
 

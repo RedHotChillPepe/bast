@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import ChevronLeft from "../../assets/svg/ChevronLeft";
@@ -17,7 +18,14 @@ import { useApi } from "../../context/ApiContext";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function TeamInvationPage(props) {
-  const { handleClose, teamData, user, isReferral = false } = props;
+  const {
+    handleClose,
+    teamData,
+    user,
+    isReferral = false,
+    shareCallback,
+    shareUrl,
+  } = props;
   const [inviteLink, setInviteLink] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -31,12 +39,17 @@ export default function TeamInvationPage(props) {
   const styles = makeStyleByTheme(theme);
 
   useEffect(() => {
+    if (shareCallback && shareUrl) {
+      generateQrLink(shareUrl);
+      return;
+    }
+
     if (isReferral) {
       fetchReferralLinkAndGenerateLink();
       return;
     }
     fetchInvitationAndGenerateLink();
-  }, [teamData]);
+  }, [teamData, shareUrl]);
 
   const generateQrLink = async (link) => {
     let finalLink = link;
@@ -57,12 +70,15 @@ export default function TeamInvationPage(props) {
       );
     } finally {
       setInviteLink(finalLink);
+      setLoading(false);
     }
   };
 
   const fetchReferralLinkAndGenerateLink = async () => {
     try {
       const result = await getReferralLink();
+      console.log(result);
+
       await generateQrLink(result.link);
     } catch (error) {
       console.log(error);
@@ -93,7 +109,7 @@ export default function TeamInvationPage(props) {
   };
 
   useEffect(() => {
-    if (!loading && !inviteLink) {
+    if (!loading && !inviteLink && !shareUrl) {
       handleClose();
       navigation.navigate("Error", {
         messageProp: "Не удалось сгенерировать ссылку",
@@ -135,11 +151,13 @@ export default function TeamInvationPage(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
         {renderHeader()}
         <View style={styles.containerItem}>
           <Text style={styles.title}>
-            {isReferral
+            {shareCallback && shareUrl
+              ? "Поделитесь ссылкой или QR-кодом"
+              : isReferral
               ? "При регистрации по этой ссылкепользователь станет вашим рефералом, и вы получите вознаграждение с первой его сделки."
               : "С помощью этой ссылки можно подать заявку на вступление в команду"}
           </Text>
@@ -165,19 +183,42 @@ export default function TeamInvationPage(props) {
                 <LinkIcon />
                 <Text style={styles.link__text}>{inviteLink}</Text>
               </View>
-              <TouchableOpacity style={styles.qr__button} onPress={handleCopy}>
-                <Text style={styles.qr__button_text}>
-                  {copied ? "Скопировано" : "Копировать"}
-                </Text>
-              </TouchableOpacity>
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 12,
+                }}
+              >
+                {shareCallback && shareUrl && (
+                  <TouchableOpacity
+                    style={[styles.qr__button, { flex: 1 }]}
+                    onPress={shareCallback}
+                  >
+                    <Text style={styles.qr__button_text}>Поделиться</Text>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity
+                  style={[styles.qr__button, { flex: 1 }]}
+                  onPress={handleCopy}
+                >
+                  <Text style={styles.qr__button_text}>
+                    {copied ? "Скопировано" : "Копировать"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
-        <Pressable style={styles.button} onPress={() => handleClose(true)}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleClose(true)}
+        >
           <Text style={styles.button__text}>
-            Перейти к {isReferral ? "рефералам" : "команде"}
+            {shareCallback && shareUrl
+              ? "Закрыть"
+              : `Перейти к ${isReferral ? "рефералам" : "команде"}`}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

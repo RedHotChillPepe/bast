@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import ChevronLeft from "../../assets/svg/ChevronLeft";
 import EditPencil from "../../assets/svg/EditPencil";
@@ -72,38 +73,40 @@ const TeamPage = (props) => {
     fetchMembers();
   }, []);
 
+  
   const fetchMembers = async () => {
     setIsLoading(true);
     const result = await getTeamById(selectedTeam.team_id);
-
+      console.log(result);
+      
     if (result.statusCode !== undefined) {
-      handleClose();
-      navigation.navigate("Error");
+      // handleClose();
+      // navigation.navigate("Error");
     }
-
+    
     setTeamMembers(result.members);
     console.log(currentUser);
     const checkOwner =
-      (currentUser &&
-        selectedTeam &&
-        currentUser.id === selectedTeam.owner_id &&
-        currentUser.usertype === selectedTeam.usertype) ||
+    (currentUser &&
+      selectedTeam &&
+      currentUser.id === selectedTeam.owner_id &&
+      currentUser.usertype === selectedTeam.usertype) ||
       isChangeAssign;
-    setIsOwner(checkOwner);
-
-    setHasPendingRequest(result.activeExitRequestCurrentUser !== null);
-    setActiveExitRequestCurrentUser(result.activeExitRequestCurrentUser);
-
-    if (checkOwner) {
-      const request = await getTeamRequest(selectedTeam.team_id);
-      if (!request.error) {
-        setRequestTeam(request);
+      setIsOwner(checkOwner);
+      
+      setHasPendingRequest(result.activeExitRequestCurrentUser !== null);
+      setActiveExitRequestCurrentUser(result.activeExitRequestCurrentUser);
+      
+      if (checkOwner) {
+        const request = await getTeamRequest(selectedTeam.team_id);
+        if (!request.error) {
+          setRequestTeam(request);
+        }
       }
-    }
-
-    setIsLoading(false);
-  };
-
+      
+      setIsLoading(false);
+    };
+    
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchMembers();
@@ -522,7 +525,7 @@ const TeamPage = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
         {renderHeader()}
         <ScrollView
           style={styles.containerScroll}

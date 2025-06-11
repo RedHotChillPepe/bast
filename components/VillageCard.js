@@ -18,7 +18,7 @@ const VillageCard = ({ village, navigation, isModal = false, handleSelected }) =
           <View style={styles.houseImageView}>
             <Image
               style={styles.houseImage}
-              width={100}
+              // width={100}
               height={100}
               source={{ uri: village.photos[0] }}
             />

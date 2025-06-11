@@ -14,7 +14,7 @@ export default function AuthProvider({ children }) {
   const [referralToken, setReferralToken] = useState();
   const [isDeleted, setIsDeleted] = useState(false);
 
-  const { deletePushToken } = useApi();
+  const { deletePushToken, confirmReferral } = useApi();
 
   async function setAuth(json) {
     await SecureStore.setItemAsync(
@@ -73,10 +73,20 @@ export default function AuthProvider({ children }) {
   }, [checkAuthB]);
 
   useEffect(() => {
-    if (!referralToken) return;
-    console.log(1);
-    // [ ] Логика для авторизованного чела
-  }, [referralToken]);
+    if (!referralToken || !isAuth) return;
+    const fetchConfirm = async () => {
+      try {
+        const result = await confirmReferral(referralToken);
+        console.log(result);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setReferralToken();
+      }
+    };
+
+    fetchConfirm();
+  }, [referralToken, isAuth]);
 
   return (
     <AuthContext.Provider

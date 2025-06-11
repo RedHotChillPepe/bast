@@ -7,6 +7,7 @@ import {
   Text,
   SafeAreaView,
   View,
+  Platform,
 } from "react-native";
 import ChevronLeft from "../../assets/svg/ChevronLeft";
 import TeamMembers from "../../assets/svg/TeamMembers";
@@ -99,7 +100,7 @@ const UserTeamsPage = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
         {renderHeader()}
         <ScrollView style={styles.containerScroll}>{renderTeams()}</ScrollView>
         <Pressable

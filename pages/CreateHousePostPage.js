@@ -501,7 +501,7 @@ export default function CreateHousePostPage({ navigation }) {
     >
       <StatusBar backgroundColor={"#fff"} barStyle={'dark-content'} />
       <View style={{ justifyContent: "space-between", alignItems: "center", flex: 1 }}>
-        <Text style={styles.header}>Создание объявление</Text>
+        <Text style={styles.header}>Создание объявления</Text>
         <Animated.View style={{ transform: [{ translateX }] }}>
           {getPage()}
         </Animated.View>

@@ -27,6 +27,55 @@ const HouseCard = ({
 
   const { toggleFavorite, isFavorite } = useFavorites();
 
+  const specList = [
+    {
+      valueName: "bedrooms",
+      suffix: "-комн",
+    },
+    {
+      valueName: "house_area",
+      suffix: " м²",
+    },
+    {
+      valueName: "num_floors",
+      suffix: " эт",
+    },
+  ];
+
+  const renderScpecList = (item) => {
+    return (
+      <View>
+        <View style={styles.detailsRow}>
+          {specList.map((spec, index) => {
+            if (item[spec.valueName] == null || item[spec.valueName] === 0)
+              return;
+            return (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  columnGap: 6,
+                }}
+                key={index}
+              >
+                <Text style={styles.detailsText}>
+                  {item[spec.valueName]}
+                  {spec.suffix}
+                </Text>
+                {index < specList.length - 1 && (
+                  <Octicons name="dot-fill" size={12} color="black" />
+                )}
+              </View>
+            );
+          })}
+        </View>
+        <Text style={styles.addressText}>
+          {item.city}, {item.full_address}
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <Pressable
       style={{ width: itemWidth + 32 }}
@@ -61,18 +110,7 @@ const HouseCard = ({
             </Text>
           </View>
           <View style={styles.addressContainer}>
-            <View>
-              <View style={styles.detailsRow}>
-                <Text style={styles.detailsText}>{item.bedrooms}-комн </Text>
-                <Octicons name="dot-fill" size={12} color="black" />
-                <Text style={styles.detailsText}> {item.house_area} м² </Text>
-                <Octicons name="dot-fill" size={12} color="black" />
-                <Text style={styles.detailsText}> {item.num_floors} эт</Text>
-              </View>
-              <Text style={styles.addressText}>
-                {item.city}, {item.full_address}
-              </Text>
-            </View>
+            {renderScpecList(item)}
             <Pressable
               onPress={() => toggleFavorite(item.id)}
               style={styles.likeButton}
@@ -133,7 +171,7 @@ const styles = StyleSheet.create({
   detailsRow: {
     flexDirection: "row",
     marginTop: 4,
-    columnGap: 2,
+    columnGap: 6,
     alignItems: "center",
   },
   detailsText: {

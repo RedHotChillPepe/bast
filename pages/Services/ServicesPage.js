@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import UniversalHeader from "../../components/UniversalHeaderComponent";
 import { useApi } from "../../context/ApiContext";
@@ -331,7 +332,7 @@ const ServicesPage = ({ handleClose, selectedItem }) => {
 
   return (
     <SafeAreaView style={theme.container}>
-      <View style={theme.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
         <UniversalHeader
           title={isShowInputs ? "Создание заявки" : selectedItem.title}
           handleClose={customHandleClose}

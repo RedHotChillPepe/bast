@@ -16,6 +16,7 @@ import { CommonActions, useNavigation } from "@react-navigation/native";
 import ChevronLeft from "../assets/svg/ChevronLeft";
 import InputProperty from "../components/PostComponents/InputProperty";
 import { useToast } from "../context/ToastProvider";
+import UniversalHeader from "../components/UniversalHeaderComponent";
 
 const { width } = Dimensions.get("window");
 
@@ -218,24 +219,6 @@ const UserLoginPage = () => {
     return result;
   };
 
-  const renderHeader = () => {
-    return (
-      <View style={styles.header}>
-        <Pressable
-          onPress={() =>
-            isResetPassword ? setIsResetPassword(false) : navigation.goBack()
-          }
-        >
-          <ChevronLeft />
-        </Pressable>
-        <Text style={styles.header__title}>
-          {isResetPassword ? "Восстановление пароля" : "Авторизация"}
-        </Text>
-        <View />
-      </View>
-    );
-  };
-
   const listInput = [
     {
       label: "Телефон",
@@ -272,7 +255,6 @@ const UserLoginPage = () => {
           justifyContent: "center",
           alignItems: "center",
           alignSelf: "stretch",
-          marginHorizontal: 16,
         }}
       >
         <Text style={styles.titleText}>Данные пользователя</Text>
@@ -332,7 +314,7 @@ const UserLoginPage = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#E5E5EA" barStyle="dark-content" />
-      {renderHeader()}
+      <UniversalHeader title="Авторизация" typography={"title2"} />
       {renderInput()}
       {renderSubmitButton()}
     </SafeAreaView>
@@ -345,24 +327,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E5E5EA",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    justifyContent: "space-between",
-    flexDirection: "row",
-    paddingVertical: 16,
-    alignItems: "center",
-    alignSelf: "stretch",
-    marginHorizontal: 16,
-  },
-  header__title: {
-    color: "#3E3E3E",
-    fontSize: 20,
-    fontFamily: "Sora700",
-    fontWeight: 600,
-    lineHeight: 25.2,
-    letterSpacing: -0.6,
+    padding: 16,
   },
   button: {
     backgroundColor: "#007AFF",
@@ -370,7 +335,6 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 16,
     borderRadius: 12,
     marginBottom: 44,
   },

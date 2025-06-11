@@ -9,7 +9,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  View
+  View,
 } from "react-native";
 import CustomModal from "../components/CustomModal";
 import HouseCard from "../components/HouseCard";
@@ -20,7 +20,7 @@ import VillageCard from "../components/VillageCard";
 import { useApi } from "../context/ApiContext";
 import AdvertisementModalPage from "../pages/AdvertisementModalPage";
 import DynamicHousePostPage from "./DynamicHousePostPage";
-import { DynamicVillagePostPage } from './DynamicVillagePostPage';
+import { DynamicVillagePostPage } from "./DynamicVillagePostPage";
 import { Selectors } from "../components/Selectors";
 
 const { width, height } = Dimensions.get("window");
@@ -55,65 +55,69 @@ const MainPage = ({ navigation }) => {
   // Объявление 3: проверка decay rate
 
   /**
- * Рекламное объявление: структура данных
- * 
- * @typedef {Object} Advertisement
- * @property {number} id - Уникальный идентификатор объявления (обязательно)
- * @property {string} title - Заголовок объявления (макс. 60 символов)
- * @property {string} description - Текст объявления (макс. 160 символов)
- * @property {string} imageSrc - URL изображения (формат: WebP, размер: 600x400)
- * 
- * // Таймстампы и временные параметры
- * @property {number} durationDate - Дата окончания показа (timestamp)
- * @property {number} publishTime - Дата публикации (timestamp)
- * @property {number} cooldown - Задержка между показами (мс) 
- * 
- * // Параметры ранжирования
- * @property {number} baseWeight - Базовый вес (1-10):
- *   1 - низкий приоритет, 10 - максимальный
- * @property {number} budget - Бюджет кампании (в руб.):
- *   Влияет на приоритет: бюджет 5000 = +50 к весу
- * @property {number} rating - Рейтинг (1-5):
- *   Рассчитывается из лайков/просмотров (4.2 = 84% положительных)
- * @property {number} decayRate - Коэф. затухания (0.01-0.05):
- *   Формула: weight -= decayRate * часы_с_публикации
- * 
- * // Статистика
- * @property {number} impressions - Количество показов
- * 
- * // Тип кампании (влияет на дизайн)
- * @property {'standard'|'premium'|'vip'} campaignType - 
- *   premium: выделенный фон, vip: анимация
- * 
- * @example
- * {
- *   id: 1,
- *   title: "Построим дом...",
- *   //...  
- *   decayRate: 0.01 // Вес уменьшится на 0.24 через 24 часа
- * }
- */
+   * Рекламное объявление: структура данных
+   *
+   * @typedef {Object} Advertisement
+   * @property {number} id - Уникальный идентификатор объявления (обязательно)
+   * @property {string} title - Заголовок объявления (макс. 60 символов)
+   * @property {string} description - Текст объявления (макс. 160 символов)
+   * @property {string} imageSrc - URL изображения (формат: WebP, размер: 600x400)
+   *
+   * // Таймстампы и временные параметры
+   * @property {number} durationDate - Дата окончания показа (timestamp)
+   * @property {number} publishTime - Дата публикации (timestamp)
+   * @property {number} cooldown - Задержка между показами (мс)
+   *
+   * // Параметры ранжирования
+   * @property {number} baseWeight - Базовый вес (1-10):
+   *   1 - низкий приоритет, 10 - максимальный
+   * @property {number} budget - Бюджет кампании (в руб.):
+   *   Влияет на приоритет: бюджет 5000 = +50 к весу
+   * @property {number} rating - Рейтинг (1-5):
+   *   Рассчитывается из лайков/просмотров (4.2 = 84% положительных)
+   * @property {number} decayRate - Коэф. затухания (0.01-0.05):
+   *   Формула: weight -= decayRate * часы_с_публикации
+   *
+   * // Статистика
+   * @property {number} impressions - Количество показов
+   *
+   * // Тип кампании (влияет на дизайн)
+   * @property {'standard'|'premium'|'vip'} campaignType -
+   *   premium: выделенный фон, vip: анимация
+   *
+   * @example
+   * {
+   *   id: 1,
+   *   title: "Построим дом...",
+   *   //...
+   *   decayRate: 0.01 // Вес уменьшится на 0.24 через 24 часа
+   * }
+   */
   const [adPool, setAdPool] = useState([
     {
       id: 1,
       title: "Построим вам дом, а деньги потом!",
-      description: "Мы предлагаем не откладывать мечты и готовы начать строить Ваш дом уже сейчас!",
-      imageSrc: "https://s3-alpha-sig.figma.com/img/33ce/bca7/45ebfe6fd1a1a99301b2f402cebc21c6?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Zs7zu~BgPU7A1FA508~1f0Dy2~bph1fJDQdUJuhb2iOsYMLhgO~G6EaRzpvrljMgxgQLLBz8lXL9tbiGDLm9xjsd7vzOoEshsdUlVSjjjSi5HS34-JGIdUtCzH8u4eM8Luf3-mnQpLTQfyiF8ss5LilrBDHPzo2bbLudChna3zKhwLTOHyq5E7~UlrayNRa5RroK~Q62ZI5FVy7BTs5vQe9rMrEXwxUeV2UWjWtkYSC~w7x9rATkD0F9yBpkX4ao0SIvrduwbc-mYKEfGppZE~rFXlAZ0Wa6Cqm~wolOb1KnXI1cni5LXYWEhHAR-aLaibHI2RFeGQ6OsjgvA6yOIg__",
+      description:
+        "Мы предлагаем не откладывать мечты и готовы начать строить Ваш дом уже сейчас!",
+      imageSrc:
+        "https://i6.imageban.ru/out/2025/06/09/cf542dbf0c343de78f253851d8888de7.png",
       durationDate: new Date(Date.now() + 30 * 24 * 3600 * 1000).getTime(), // +30 дней
       baseWeight: 3,
-      budget: 5000,  // Увеличено для тестирования влияния бюджета
+      budget: 5000, // Увеличено для тестирования влияния бюджета
       rating: 4.2,
       publishTime: new Date(Date.now() - 3 * 24 * 3600 * 1000).getTime(), // 3 дня назад
       impressions: 0,
-      decayRate: 0.01,  // Уменьшено для реалистичного затухания
+      decayRate: 0.01, // Уменьшено для реалистичного затухания
       cooldown: 300_000, // 5 минут для частого тестирования
-      campaignType: 'premium'
+      campaignType: "premium",
     },
     {
       id: 2,
       title: "Уникальное предложение по Пазелы Village!",
-      description: "Не упустите шанс стать владельцем земли на выгодных условиях!",
-      imageSrc: "https://s3-alpha-sig.figma.com/img/0f0c/f69e/74d1f38d30cbc4995662ef3ccd25d296?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=ZSvZ~fZm~z~9YZbNMH2tAqWBCx2FM7g4197YmS7RIOj3ymRUPeOx0d6Neb5OBfwG8D6UlAju7NPaLo4vW-tYhjpUArF7t7CPyxisY6ch00H90Vg0SAIewWvmDo935ug4PLHAK4VfBKcAdXDhXlybPbkAeuI8GjZtcbetifAw2I8ybwQviRLMtpcjH3n1uvt5RHQvKCgUztPQw~qkjmIebxgzFk4G38NK5mVGFt8de6snohCpnIeJzA17ojzqWNb9bqT7nbZBadEEesrAMcSicKd05zELDS30109Ab7RGlGPN0dDPH7BL9z8VoIi3SNr4fp3d6dfep08DWwUNXIfCNg__",
+      description:
+        "Не упустите шанс стать владельцем земли на выгодных условиях!",
+      imageSrc:
+        "https://i4.imageban.ru/out/2025/06/09/4d5ad03143fd3c08f23a4be55b9f695c.png",
       durationDate: new Date(Date.now() + 14 * 24 * 3600 * 1000).getTime(), // +14 дней
       baseWeight: 4,
       budget: 3000,
@@ -122,13 +126,15 @@ const MainPage = ({ navigation }) => {
       impressions: 0,
       decayRate: 0.005,
       cooldown: 600_000, // 10 минут
-      campaignType: 'vip'
+      campaignType: "vip",
     },
     {
       id: 3,
       title: "Выкупим дом обратно!",
-      description: "Мы предлагаем не откладывать мечты и готовы начать строить Ваш дом уже сейчас!",
-      imageSrc: "https://s3-alpha-sig.figma.com/img/60e2/34eb/dd8103f677ad9fc1d6757e2ccd7e45ac?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=pUKw-SW8Tfi-1t~KVYao~G4HtBezdf8MuECkekdqb0FlsmJnNSFYadZ6yGoook9k1IhBgPtH9X4vGF4f~MyXSNCxwp7mvJNugJckmEO6hhcmjS2AepUqIuHUTPdl8zQGp6N-~GME-jlkKLCn37wfyq2TZyqqrUpMnUh5jnk~vP38WalfR-ZzAIi4xUhCWOsHOQoyrgF-oRKQ0QXdA08Qhez-FYdbIQjxk-5MPakiTBLjcA7LGtpb1P287ZmEjgFR8YKc3xZtyuYdMMIUwimTISa~r2N581L-QfFTIXkykdXzSClee7S83JWPzEP~G0hQ7DzIi78EAZQkB17oPsLgSQ__",
+      description:
+        "Мы предлагаем не откладывать мечты и готовы начать строить Ваш дом уже сейчас!",
+      imageSrc:
+        "https://i3.imageban.ru/out/2025/06/09/a77512793728ed5d570add24b0d8d422.png",
       durationDate: new Date(Date.now() + 7 * 24 * 3600 * 1000).getTime(), // +7 дней
       baseWeight: 2,
       budget: 2000,
@@ -137,13 +143,15 @@ const MainPage = ({ navigation }) => {
       impressions: 0,
       decayRate: 0.02,
       cooldown: 180_000, // 3 минуты
-      campaignType: 'standard'
+      campaignType: "standard",
     },
     {
       id: 4,
       title: "Чистовая отделка в подарок!",
-      description: "При покупке или заказе дома Вы получаете чистовую отделку в ПОДАРОК!",
-      imageSrc: "https://s3-alpha-sig.figma.com/img/1112/21cc/82cbd0109784aca47dd2339eadd49496?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=oxoBMZFIS3BKSAj-ITQq~IGVFEiyfb17EkrP-zx3i-MWXJ8VDSl5B~Qc2bYVZXU5~iKYrfY5zwmsV~tW9KBK9bqiXqEB5i6Tcq8GC5x2zMXfP9yNT31TuCstrmdSTQZnVKgEzlTwN998G34Ti4U~aLjyEpRe-6smtX7Tz82sr8IKik1yShc8YMhkDqYaC0JwAtVWeQTx-ABAu4c4-JQ5KUINdT~8i2-DVByPp2Jerqzvon7z8d8bedHhhpdGGwsVBSYJi3wOp57-Ge2VxcMORlwx3Bul83Ty1Iuvu4uyzYDVTb1znpHjbr-Z~-dyg1qbcd1SsFD45slvV4YuJbvSOg__",
+      description:
+        "При покупке или заказе дома Вы получаете чистовую отделку в ПОДАРОК!",
+      imageSrc:
+        "https://i2.imageban.ru/out/2025/06/09/ece108e6d8f01b5d607768141040b4b6.png",
       durationDate: new Date(Date.now() + 60 * 24 * 3600 * 1000).getTime(), // +60 дней
       baseWeight: 1,
       budget: 1000,
@@ -152,23 +160,25 @@ const MainPage = ({ navigation }) => {
       impressions: 0,
       decayRate: 0.015,
       cooldown: 240_000, // 4 минуты
-      campaignType: 'standard'
+      campaignType: "standard",
     },
     {
       id: 5,
       title: "Ипотека для IT от 6%",
-      description: "Теперь у сотрудников it-компаний есть возможность купить наш готовый дом или заказать строительство по льготной ипотечной ставке от 6%!",
-      imageSrc: "https://s3-alpha-sig.figma.com/img/67ce/ef51/db0c6d6b4f8ff147e0badd5e7ecd890c?Expires=1743984000&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=dTdG0Ax2JJfuHEwffE8eFJ~FDLujEzyi2Thy1dsQD~1stKzEsorFHBbGa-Ml30o5MFTe9z2zM72mk-17Lu0yAqGyYPcvuOfdcP3ARqzmMJoWwefH1lfvpi4dlgGpRe24g6C9UdTgn5ho6IoTLvZDNArUTdGTuQacGe9yjvFVM3TVWjAkMZPxxlfe6awZph4bMod1VlGY1I9IudaNTV7QZQxpCm5u1rybxBHlsNVzyCPwODGoctXOiONhBq~4ktQnMl2Mr07Pl2Av22O1TtOQRqlndR84YVfJgaFjE1bz01tcwizkOL1WcsRO1jxcL055hT3dZ1wEIYMIlzqjazSE6A__",
+      description:
+        "Теперь у сотрудников it-компаний есть возможность купить наш готовый дом или заказать строительство по льготной ипотечной ставке от 6%!",
+      imageSrc:
+        "https://i4.imageban.ru/out/2025/06/09/0c192869f10160e472e3faae6009d331.png",
       durationDate: new Date(Date.now() + 45 * 24 * 3600 * 1000).getTime(), // +45 дней
       baseWeight: 5,
-      budget: 7000,  // Самый высокий бюджет
-      rating: 4.9,   // Самый высокий рейтинг
+      budget: 7000, // Самый высокий бюджет
+      rating: 4.9, // Самый высокий рейтинг
       publishTime: new Date(Date.now() - 12 * 3600 * 1000).getTime(), // 12 часов назад
       impressions: 0,
       decayRate: 0.008,
       cooldown: 900_000, // 3 часа
-      campaignType: 'vip'
-    }
+      campaignType: "vip",
+    },
   ]);
 
   // Вычисляем количество рекламных блоков
@@ -179,31 +189,33 @@ const MainPage = ({ navigation }) => {
     const now = Date.now();
     const timeSincePublish = (now - ad.publishTime) / (1000 * 60 * 60); // в часах
 
-    logAdEvent('Calculating weight for ad', {
+    logAdEvent("Calculating weight for ad", {
       adId: ad.id,
       baseWeight: ad.baseWeight,
       budget: ad.budget,
       publishTime: new Date(ad.publishTime).toISOString(),
       rating: ad.rating,
       impressions: ad.impressions,
-      decayRate: ad.decayRate
+      decayRate: ad.decayRate,
     });
 
     const budgetFactor = ad.budget / 100;
     const timeDecay = Math.exp(-ad.decayRate * timeSincePublish);
     const ratingFactor = ad.rating * 2;
-    const impressionsFactor = Math.max(1 + (0.1 * ad.impressions), 1);
+    const impressionsFactor = Math.max(1 + 0.1 * ad.impressions, 1);
 
-    const weight = (ad.baseWeight * budgetFactor * timeDecay + ratingFactor) / impressionsFactor;
+    const weight =
+      (ad.baseWeight * budgetFactor * timeDecay + ratingFactor) /
+      impressionsFactor;
 
-    logAdEvent('Weight calculation details', {
+    logAdEvent("Weight calculation details", {
       adId: ad.id,
       timeSincePublishHours: timeSincePublish.toFixed(2),
       budgetFactor: budgetFactor.toFixed(2),
       timeDecay: timeDecay.toFixed(4),
       ratingFactor: ratingFactor.toFixed(2),
       impressionsFactor: impressionsFactor.toFixed(2),
-      finalWeight: weight.toFixed(2)
+      finalWeight: weight.toFixed(2),
     });
 
     return weight;
@@ -211,50 +223,52 @@ const MainPage = ({ navigation }) => {
 
   const groupAndShuffle = (ads) => {
     const groups = new Map();
-    ads.forEach(ad => {
+    ads.forEach((ad) => {
       const key = ad.weight.toFixed(2);
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(ad);
     });
 
     return Array.from(groups.values())
-      .map(group => group.sort(() => Math.random() - 0.5))
+      .map((group) => group.sort(() => Math.random() - 0.5))
       .flat();
   };
 
   // Формируем очередь рекламы
   const computeAdsQueue = (numAds, pool) => {
     const now = Date.now();
-    logAdEvent('Starting ads selection', { requestedAds: numAds });
+    logAdEvent("Starting ads selection", { requestedAds: numAds });
 
     const eligibleAds = pool
-      .filter(ad => {
+      .filter((ad) => {
         const isExpired = new Date(ad.durationDate).getTime() < now;
-        const isInCooldown = ad.lastShown ? (now - ad.lastShown) < ad.cooldown : false;
+        const isInCooldown = ad.lastShown
+          ? now - ad.lastShown < ad.cooldown
+          : false;
 
-        logAdEvent('Filtering ad', {
+        logAdEvent("Filtering ad", {
           adId: ad.id,
           isExpired,
           isInCooldown,
           cooldownRemaining: isInCooldown
             ? `${((ad.cooldown - (now - ad.lastShown)) / 1000).toFixed(0)}s`
-            : 'none'
+            : "none",
         });
 
         return !isExpired && !isInCooldown;
       })
-      .map(ad => ({
+      .map((ad) => ({
         ...ad,
         weight: calculateAdWeight(ad),
       }))
       .sort((a, b) => b.weight - a.weight);
 
-    logAdEvent('Eligible ads after filtering', {
-      ads: eligibleAds.map(ad => ({
+    logAdEvent("Eligible ads after filtering", {
+      ads: eligibleAds.map((ad) => ({
         id: ad.id,
         weight: ad.weight.toFixed(2),
-        campaignType: ad.campaignType
-      }))
+        campaignType: ad.campaignType,
+      })),
     });
 
     const shuffledAds = groupAndShuffle(eligibleAds);
@@ -262,42 +276,46 @@ const MainPage = ({ navigation }) => {
     let lastAdId = null;
 
     for (let i = 0; i < numAds && i < shuffledAds.length; i++) {
-      const available = shuffledAds.filter(ad => ad.id !== lastAdId);
+      const available = shuffledAds.filter((ad) => ad.id !== lastAdId);
       if (available.length === 0) break;
 
       const selected = available[0];
       selectedAds.push(selected);
       lastAdId = selected.id;
 
-      logAdEvent('Ad selected for display', {
+      logAdEvent("Ad selected for display", {
         position: i + 1,
         adId: selected.id,
         weight: selected.weight.toFixed(2),
-        campaignType: selected.campaignType
+        campaignType: selected.campaignType,
       });
     }
 
-    logAdEvent('Final selected ads', {
-      selectedIds: selectedAds.map(ad => ad.id),
-      totalSelected: selectedAds.length
+    logAdEvent("Final selected ads", {
+      selectedIds: selectedAds.map((ad) => ad.id),
+      totalSelected: selectedAds.length,
     });
 
     // Обновляем статистику показов
-    setAdPool(prev => prev.map(ad => {
-      const wasSelected = selectedAds.some(s => s.id === ad.id);
-      if (wasSelected) {
-        logAdEvent('Updating ad impressions', {
-          adId: ad.id,
-          newImpressions: ad.impressions + 1,
-          lastShown: new Date(now).toISOString()
-        });
-      }
-      return wasSelected ? {
-        ...ad,
-        impressions: ad.impressions + 1,
-        lastShown: now,
-      } : ad;
-    }));
+    setAdPool((prev) =>
+      prev.map((ad) => {
+        const wasSelected = selectedAds.some((s) => s.id === ad.id);
+        if (wasSelected) {
+          logAdEvent("Updating ad impressions", {
+            adId: ad.id,
+            newImpressions: ad.impressions + 1,
+            lastShown: new Date(now).toISOString(),
+          });
+        }
+        return wasSelected
+          ? {
+              ...ad,
+              impressions: ad.impressions + 1,
+              lastShown: now,
+            }
+          : ad;
+      })
+    );
 
     return selectedAds;
   };
@@ -316,7 +334,7 @@ const MainPage = ({ navigation }) => {
     const needed = numAdsNeeded - prevNumAdsNeeded;
     const newAds = computeAdsQueue(needed, adPoolRef.current);
 
-    setAdsQueue(prev => [...prev, ...newAds]);
+    setAdsQueue((prev) => [...prev, ...newAds]);
     setPrevNumAdsNeeded(numAdsNeeded);
   }, [numAdsNeeded, prevNumAdsNeeded]);
 
@@ -338,7 +356,7 @@ const MainPage = ({ navigation }) => {
 
     const buildersFetch = async () => {
       // TODO: реализовать получение застройщиков
-    }
+    };
 
     housesFetch();
     villagesFetch();
@@ -346,7 +364,9 @@ const MainPage = ({ navigation }) => {
   }, [getPaginatedPosts, getAllVillages, isFocused]);
 
   const fetchMoreData = useCallback(async () => {
-    if (!(selectedList !== "villages" && selectedList !== "builders" && hasMore)) {
+    if (
+      !(selectedList !== "villages" && selectedList !== "builders" && hasMore)
+    ) {
       return;
     }
     const nextPage = page + 1;
@@ -394,15 +414,27 @@ const MainPage = ({ navigation }) => {
               alignItems: "center",
               alignSelf: "center",
               columnGap: 8,
-              justifyContent: "space-between"
+              justifyContent: "space-between",
             }}
           >
-            <HeaderButton icon={<AntDesign name="home" size={20} color="#2C88EC" />} title="Добавить объявление" handleButton={() => navigation.navigate("CreateHousePostPage")} />
-            <HeaderButton icon={<Octicons name="search" size={20} color="#2C88EC" />} title="Поиск дома" handleButton={() => navigation.navigate("Поиск")} />
+            <HeaderButton
+              icon={<AntDesign name="home" size={20} color="#2C88EC" />}
+              title="Добавить объявление"
+              handleButton={() => navigation.navigate("CreateHousePostPage")}
+            />
+            <HeaderButton
+              icon={<Octicons name="search" size={20} color="#2C88EC" />}
+              title="Поиск дома"
+              handleButton={() => navigation.navigate("Поиск")}
+            />
           </View>
           <View style={{ height: 24 }} />
           <View style={{ marginLeft: 16 }}>
-            <Selectors handleSelected={setSelectedList} selectedList={selectedList} listSelector={SearchButtonsContent} />
+            <Selectors
+              handleSelected={setSelectedList}
+              selectedList={selectedList}
+              listSelector={SearchButtonsContent}
+            />
           </View>
         </View>
       </View>
@@ -419,27 +451,33 @@ const MainPage = ({ navigation }) => {
     setIsVisibleModalBanner(false);
   };
 
-  const MemoizedHouseCard = memo(HouseCard, (prevProps, nextProps) => prevProps.item.id === nextProps.item.id);
-  const MemoizedVillageCard = memo(VillageCard, (prevProps, nextProps) => prevProps.village.id === nextProps.village.id);
+  const MemoizedHouseCard = memo(
+    HouseCard,
+    (prevProps, nextProps) => prevProps.item.id === nextProps.item.id
+  );
+  const MemoizedVillageCard = memo(
+    VillageCard,
+    (prevProps, nextProps) => prevProps.village.id === nextProps.village.id
+  );
   const MemoizedBanner = memo(
     (props) => {
       const { bannerData, openModal } = props;
       // Логирование показа баннера
       useEffect(() => {
-        console.log('[AD-LOG] Banner displayed', {
+        console.log("[AD-LOG] Banner displayed", {
           adId: bannerData.id,
           timestamp: Date.now(),
           campaignType: bannerData.campaignType,
-          weight: bannerData.weight?.toFixed(2)
+          weight: bannerData.weight?.toFixed(2),
         });
       }, [bannerData.id]);
 
       // Логирование клика
       const handlePress = useCallback(() => {
-        console.log('[AD-LOG] Banner clicked', {
+        console.log("[AD-LOG] Banner clicked", {
           adId: bannerData.id,
           timestamp: Date.now(),
-          position: 'main_feed'
+          position: "main_feed",
         });
         openModal();
       }, [bannerData.id, openModal]);
@@ -464,15 +502,15 @@ const MainPage = ({ navigation }) => {
   const renderItem = useCallback(
     ({ item, index }) => (
       <View>
-        {selectedList === "villages" &&
+        {selectedList === "villages" && (
           <MemoizedVillageCard
             isModal={true}
             navigation={navigation}
             village={item}
             handleSelected={handleSelected}
           />
-        }
-        {(selectedList === "houses" || selectedList === "newHouses") &&
+        )}
+        {(selectedList === "houses" || selectedList === "newHouses") && (
           <View onLayout={onHouseLayout}>
             <MemoizedHouseCard
               item={item}
@@ -482,7 +520,7 @@ const MainPage = ({ navigation }) => {
               itemWidth={width - 32}
             />
           </View>
-        }
+        )}
         {(index + 1) % AD_FREQUENCY === 0 &&
           adsQueue[Math.floor(index / AD_FREQUENCY)] && (
             <View onLayout={onAdLayout}>
@@ -500,8 +538,15 @@ const MainPage = ({ navigation }) => {
   );
 
   const ListFooter = () => {
-    if (!hasMore) return <Text style={styles.noMoreText}>Больше нет постов для загрузки</Text>;
-    return <View style={{ marginVertical: 16, height: 176 }}><ActivityIndicator size="large" color="#32322C" /></View>;
+    if (!hasMore)
+      return (
+        <Text style={styles.noMoreText}>Больше нет постов для загрузки</Text>
+      );
+    return (
+      <View style={{ marginVertical: 16, height: 176 }}>
+        <ActivityIndicator size="large" color="#32322C" />
+      </View>
+    );
   };
 
   // Функция, которая вызывается при измерении HouseCard
@@ -524,7 +569,8 @@ const MainPage = ({ navigation }) => {
     // Число рекламных блоков, которые были до этого элемента
     const numAdsBefore = Math.floor(index / AD_FREQUENCY);
     // Смещение рассчитываем так: базовая высота всех элементов плюс дополнительная высота для рекламных блоков
-    const offset = index * houseHeight + numAdsBefore * (adHeight - houseHeight);
+    const offset =
+      index * houseHeight + numAdsBefore * (adHeight - houseHeight);
     return { length: itemHeight, offset, index };
   };
 
@@ -546,7 +592,8 @@ const MainPage = ({ navigation }) => {
                 villageId: selectedPost,
                 isModal: true,
                 setIsModalShow,
-              }} />
+              }}
+            />
           ) : (
             <DynamicHousePostPage
               navigation={navigation}
@@ -562,7 +609,13 @@ const MainPage = ({ navigation }) => {
       {isLoaded ? (
         <FlatList
           ListHeaderComponent={() => FlatListHeaderComponent()}
-          data={selectedList === "villages" ? villages : (selectedList === "houses" || selectedList === "newHouses") ? houses : builders}
+          data={
+            selectedList === "villages"
+              ? villages
+              : selectedList === "houses" || selectedList === "newHouses"
+              ? houses
+              : builders
+          }
           extraData={selectedList}
           style={styles.scrollView}
           keyExtractor={(item, index) => `item-${index}`}
@@ -570,7 +623,11 @@ const MainPage = ({ navigation }) => {
           initialNumToRender={3}
           getItemLayout={getItemLayout}
           onEndReached={() => {
-            if (selectedList !== "villages" && selectedList !== "builders" && hasMore)
+            if (
+              selectedList !== "villages" &&
+              selectedList !== "builders" &&
+              hasMore
+            )
               fetchMoreData();
           }}
           onEndReachedThreshold={0.8}
@@ -618,7 +675,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   activeButton: {
-    backgroundColor: '#2C88EC',
+    backgroundColor: "#2C88EC",
     borderRadius: 12,
   },
   searchButtonsText: {
@@ -647,7 +704,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     fontSize: 16,
     color: "#32322C",
-    height: 160
+    height: 160,
   },
 });
 

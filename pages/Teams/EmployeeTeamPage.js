@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import ChevronLeft from "../../assets/svg/ChevronLeft";
 import UserRemove from "../../assets/svg/UserRemove";
@@ -424,7 +425,7 @@ const EmployeeTeamPage = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
         {renderHeader()}
         <ScrollView style={styles.containerScroll}>
           <View style={styles.containerItem}>

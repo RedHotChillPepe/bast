@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   FlatList,
   Modal,
+  Platform,
   Pressable,
   RefreshControl,
   SafeAreaView,
@@ -251,7 +252,7 @@ const UserRequestPage = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
         {renderHeader()}
         <View style={styles.containerScroll}>
           <Selectors

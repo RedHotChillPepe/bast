@@ -738,7 +738,7 @@ const RequestPage = (props) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={styles.container}>
         {renderHeader()}
         <ScrollView style={styles.containerScroll}>
