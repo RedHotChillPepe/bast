@@ -5,14 +5,25 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  View
+  View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-const VillageCard = ({ village, navigation, isModal = false, handleSelected }) => {
+const VillageCard = ({
+  village,
+  navigation,
+  isModal = false,
+  handleSelected,
+}) => {
   return (
-    <Pressable onPress={() => isModal ? handleSelected(village.id) : navigation.navigate("Village", { villageId: village.id })}>
+    <Pressable
+      onPress={() =>
+        isModal
+          ? handleSelected(village.id)
+          : navigation.navigate("Village", { villageId: village.id })
+      }
+    >
       <View style={styles.housesView}>
         <View style={styles.houseItem}>
           <View style={styles.houseImageView}>
@@ -26,7 +37,9 @@ const VillageCard = ({ village, navigation, isModal = false, handleSelected }) =
           <View>
             <Text style={styles.houseName}>{village.name}</Text>
             <Text style={styles.housePrice}>от 1 200 000 ₽</Text>
-            <Text style={styles.houseLocation}>г. Ижевск, Октябрьский район</Text>
+            <Text style={styles.houseLocation}>
+              г. Ижевск, Октябрьский район
+            </Text>
           </View>
         </View>
       </View>

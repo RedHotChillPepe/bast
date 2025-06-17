@@ -268,7 +268,9 @@ const ProfilePageView = ({ route, navigation }) => {
               isLoaded ? (
                 <View height={104}>
                   <Text style={{ textAlign: "center", marginVertical: 16 }}>
-                    Постов больше нет
+                    {selectedList == "closed"
+                      ? "Нет закрытых объявлений"
+                      : "Нет активных объявлений"}
                   </Text>
                 </View>
               ) : (

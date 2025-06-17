@@ -2,11 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Modal,
+  Platform,
   Pressable,
   ScrollView,
   Share,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { Geocoder, Marker, YaMap } from "react-native-yamap";
@@ -20,6 +23,7 @@ import ShareIcon from "./../assets/svg/Share";
 import { useToast } from "../context/ToastProvider";
 import { useLogger } from "../context/LoggerContext";
 import { Selectors } from "../components/Selectors";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get("window");
 
@@ -34,7 +38,7 @@ export const DynamicVillagePostPage = ({ navigation, route }) => {
   const [activePost, setActivePost] = useState([]);
   const [closedPost, setClosedPost] = useState([]);
   const showToast = useToast();
-
+  const [isMapFullScreen, setIsMapFullScreen] = useState(false);
   const isModal = route.isModal || false;
   const mapRef = useRef(null);
 
@@ -156,6 +160,7 @@ ${priceInfo}
               <View
                 onTouchStart={() => setIsInteractingWithMap(true)}
                 onTouchEnd={() => setIsInteractingWithMap(false)}
+                style={{ position: "relative" }}
               >
                 <YaMap
                   ref={mapRef}
@@ -169,10 +174,16 @@ ${priceInfo}
                 >
                   <Marker
                     point={{ lat: geoState.lat, lon: geoState.lon }}
-                    scale={0.25}
+                    scale={Platform.OS === "ios" ? 0.75 : 0.25}
                     source={require("../assets/marker.png")}
                   />
                 </YaMap>
+                <TouchableOpacity
+                  style={styles.fullScreenButton}
+                  onPress={() => setIsMapFullScreen(true)}
+                >
+                  <MaterialIcons name="fullscreen" size={24} color="#fff" />
+                </TouchableOpacity>
               </View>
             ) : (
               <Text style={{ color: "red", fontSize: 24, textAlign: "center" }}>
@@ -232,7 +243,9 @@ ${priceInfo}
       return (
         <View height={104}>
           <Text style={{ textAlign: "center", marginVertical: 16 }}>
-            {selectedList == "closed" ? "Нет закрытых объявлений" : "Нет активных объявлений"}
+            {selectedList == "closed"
+              ? "Нет закрытых объявлений"
+              : "Нет активных объявлений"}
           </Text>
         </View>
       );
@@ -316,6 +329,41 @@ ${priceInfo}
           <Text style={styles.buttonText}>Показать все</Text>
         </Pressable>
       </ScrollView>
+
+      <Modal
+        visible={isMapFullScreen}
+        transparent={false}
+        animationType="slide"
+        onRequestClose={() => setIsMapFullScreen(false)}
+      >
+        <View style={styles.fullScreenModalContent}>
+          <View style={styles.fullScreenMapContainer}>
+            <YaMap
+              ref={mapRef}
+              style={styles.fullScreenMap}
+              onMapLoaded={() => {
+                mapRef.current.setCenter(
+                  { lon: geoState.lon, lat: geoState.lat },
+                  10
+                );
+              }}
+            >
+              <Marker
+                point={{ lat: geoState.lat, lon: geoState.lon }}
+                scale={Platform.OS === "ios" ? 0.75 : 0.25}
+                source={require("../assets/marker.png")}
+              />
+            </YaMap>
+            <TouchableOpacity
+              style={styles.fullScreenButton}
+              onPress={() => setIsMapFullScreen(false)}
+            >
+              <MaterialIcons name="fullscreen-exit" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {selectedPost && (
         <CustomModal
           isVisible={isModalShow}
@@ -487,5 +535,30 @@ const styles = StyleSheet.create({
   map: {
     width,
     height: width * 0.6,
+  },
+  fullScreenModalContent: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullScreenMapContainer: {
+    flex: 1,
+    width: "100%",
+  },
+  fullScreenMap: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  fullScreenButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#007AFF90",
+    borderRadius: 6,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

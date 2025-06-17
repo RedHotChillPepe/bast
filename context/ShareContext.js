@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { Modal, Share } from "react-native";
+import { Modal, Platform, Share } from "react-native";
 import TeamInvationPage from "../pages/Teams/TeamInvationPage";
 
 const ShareContext = createContext();
@@ -9,8 +9,9 @@ export const ShareProvider = ({ children }) => {
   const [isShowModal, setIsShowModal] = useState(false);
   const [shareCallback, setShareCallback] = useState(() => () => {});
   const [shareUrl, setShareUrl] = useState("");
+  const [isCustomShare, setIsCustomShare] = useState(false);
 
-  const shareProfile = async (options) => {
+  const shareProfile = async (options, customShare = Platform.OS == "ios") => {
     try {
       const user = options.user;
       const url = `${process.env.EXPO_PUBLIC_API_HOST}share/${options.type}/${options.id}`;
@@ -32,13 +33,14 @@ export const ShareProvider = ({ children }) => {
       setShareUrl(url);
       setShareCallback(() => async () => await Share.share(shareOptions));
       setIsShowModal(true);
+      setIsCustomShare(customShare);
     } catch (error) {
       console.error("shareProfile:", error);
     }
     return;
   };
 
-  const sharePost = async (options) => {
+  const sharePost = async (options, customShare = Platform.OS == "ios") => {
     try {
       const { id, name, full_address, city, price, text } = options;
       const url = `${process.env.EXPO_PUBLIC_API_HOST}share/post/${id}`;
@@ -65,15 +67,29 @@ export const ShareProvider = ({ children }) => {
       setShareUrl(url);
       setShareCallback(() => async () => await Share.share(shareOptions));
       setIsShowModal(true);
+      setIsCustomShare(customShare);
     } catch (error) {
       console.error("sharePost:", error);
     }
   };
 
   return (
-    <ShareContext.Provider value={{ sharePost, shareProfile }}>
+    <ShareContext.Provider
+      value={{
+        sharePost,
+        shareProfile,
+        isShowModal,
+        setIsShowModal,
+        shareUrl,
+        shareCallback,
+        isCustomShare,
+      }}
+    >
       {children}
-      <Modal visible={isShowModal} onRequestClose={() => setIsShowModal(false)}>
+      <Modal
+        visible={!isCustomShare && isShowModal}
+        onRequestClose={() => setIsShowModal(false)}
+      >
         <TeamInvationPage
           shareUrl={shareUrl}
           shareCallback={shareCallback}

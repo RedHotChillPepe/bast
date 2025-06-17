@@ -33,13 +33,22 @@ const InputProperty = (props) => {
   );
 
   const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  const handlePress = () => {
+    if (type === "select") {
+      dropdownRef.current?.open(); // Для Dropdown используем метод open()
+    } else {
+      inputRef.current?.focus(); // Для TextInput используем focus()
+    }
+  };
 
   const renderInput = () => {
     switch (type) {
       case "select":
         return (
           <Dropdown
-            ref={inputRef}
+            ref={dropdownRef}
             style={styles.dropdown}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
@@ -48,7 +57,7 @@ const InputProperty = (props) => {
             valueField="value"
             placeholder={placeholder}
             value={value}
-            onChange={(value) => handleInputChange(valueName, value)}
+            onChange={(item) => handleInputChange(valueName, item.value)}
           />
         );
       case "textarea":
@@ -69,11 +78,11 @@ const InputProperty = (props) => {
           />
         );
       default:
-        let keyboardType = "default";
+        let inputKeyboardType = "default";
 
-        if (type === "tel") keyboardType = "phone-pad";
-        if (type === "email") keyboardType = "email-address";
-        if (type === "number") keyboardType = "numeric";
+        if (type === "tel") inputKeyboardType = "phone-pad";
+        if (type === "email") inputKeyboardType = "email-address";
+        if (type === "number") inputKeyboardType = "numeric";
 
         return (
           <View style={styles.inputWrapper}>
@@ -82,7 +91,7 @@ const InputProperty = (props) => {
               style={styles.input}
               placeholder={placeholder}
               placeholderTextColor="#A1A1A1"
-              keyboardType={keyboardType}
+              keyboardType={inputKeyboardType}
               testId={testId}
               secureTextEntry={secureText}
               value={value}
@@ -94,10 +103,7 @@ const InputProperty = (props) => {
   };
 
   return (
-    <Pressable
-      style={styles.container}
-      onPress={() => inputRef.current?.focus()}
-    >
+    <Pressable style={styles.container} onPress={handlePress}>
       <KeyboardAvoidingView
         style={{
           flexDirection: "row",
@@ -110,9 +116,11 @@ const InputProperty = (props) => {
           <Text style={styles.title}>{title}</Text>
           {renderInput()}
         </View>
-        <TouchableOpacity onPress={() => setSecureText(!secureText)}>
-          {showToggleIcon && (secureText ? <ShowIcon /> : <HideIcon />)}
-        </TouchableOpacity>
+        {showToggleIcon && (
+          <TouchableOpacity onPress={() => setSecureText(!secureText)}>
+            {secureText ? <ShowIcon /> : <HideIcon />}
+          </TouchableOpacity>
+        )}
       </KeyboardAvoidingView>
     </Pressable>
   );

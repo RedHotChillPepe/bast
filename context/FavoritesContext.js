@@ -39,7 +39,7 @@ export const FavoritesProvider = ({ children }) => {
         setFavorites((prev) => [...prev, postId]);
       }
     } catch (error) {
-      console.error("Ошибка при переключении избранного:", error);
+      console.error("Ошибка при переключении избранного:", error.message);
     }
   };
 

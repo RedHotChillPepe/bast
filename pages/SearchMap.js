@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Dimensions, ScrollView, Text, ActivityIndicator } from "react-native";
+import {
+  Dimensions,
+  ScrollView,
+  Text,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Geocoder, Marker, YaMap } from "react-native-yamap";
 import CustomModal from "../components/CustomModal";
@@ -136,7 +142,7 @@ export default function SearchMap({ navigation, route }) {
               onPress={() => handleSelected(post.id)}
               point={post.point}
               source={require("../assets/marker.png")}
-              scale={0.4}
+              scale={Platform.OS === "ios" ? 0.4 : 0.25}
             />
           ))}
         </YaMap>

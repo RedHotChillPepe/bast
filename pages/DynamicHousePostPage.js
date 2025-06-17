@@ -11,9 +11,9 @@ import {
   Dimensions,
   Image,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
-  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -28,18 +28,27 @@ import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
 import { useFavorites } from "../context/FavoritesContext";
 import { useLogger } from "../context/LoggerContext";
+import { useShare } from "../context/ShareContext";
 import { useToast } from "../context/ToastProvider";
 import ChatScreen from "./Chats/ChatScreen";
 import EditHousePostPage from "./EditHousePostPage";
 import MortgageCalculator from "./MortgageCalculator";
 import ProfilePageView from "./ProfilePageView";
 import ServicesPage from "./Services/ServicesPage";
-import { useShare } from "../context/ShareContext";
+import TeamInvationPage from "./Teams/TeamInvationPage";
 
 const { width, height } = Dimensions.get("window");
 
 export default function DynamicHousePostPage({ navigation, route }) {
-  const { sharePost, shareProfile } = useShare();
+  const {
+    sharePost,
+    shareProfile,
+    isShowModal: isShowShareModal,
+    setIsShowModal: setIsShowShareModal,
+    isCustomShare,
+    shareUrl,
+    shareCallback,
+  } = useShare();
 
   const houseId = route.houseId || route.params.houseId;
   const timestamp = route.params?.timestamp || 0;
@@ -115,10 +124,16 @@ export default function DynamicHousePostPage({ navigation, route }) {
       const tempUser = await getUserByID(post.poster_id, ownerTypeStr);
       setOwnerUser(tempUser);
       // Геокодирование, если координаты не заданы
+      console.log("postData.city:", post.city);
+      console.log("postData.full_address:", post.full_address);
       const addressString = `${post.city} ${post.full_address}`;
+      console.log("addressString:", addressString);
+      console.log(post?.latitude, post?.longitude);
+      
       if (!post.latitude || !post.longitude) {
         Geocoder.addressToGeo(addressString)
           .then(({ lat, lon }) => {
+            console.log("Geocoder result:", { lat, lon });
             setGeoState({ lat, lon });
           })
           .finally(() => setIsGeoLoaded(true));
@@ -481,7 +496,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
                 >
                   <Marker
                     point={{ lat: geoState.lat, lon: geoState.lon }}
-                    scale={0.75}
+                    scale={Platform.OS === "ios" ? 0.75 : 0.25}
                     source={require("../assets/marker.png")}
                   />
                 </YaMap>
@@ -792,7 +807,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
                 >
                   <Marker
                     point={{ lat: geoState.lat, lon: geoState.lon }}
-                    scale={0.75}
+                    scale={Platform.OS === "ios" ? 0.75 : 0.25}
                     source={require("../assets/marker.png")}
                   />
                 </YaMap>
@@ -856,20 +871,20 @@ export default function DynamicHousePostPage({ navigation, route }) {
   };
 
   const renderBackButton = () => (
-    <Pressable onPress={handleBack}>
+    <TouchableOpacity onPress={handleBack}>
       <MaterialIcons name="arrow-back-ios" size={22} color="#007AFF" />
-    </Pressable>
+    </TouchableOpacity>
   );
 
   const renderEditAndFavoriteButtons = () => (
     <View style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}>
-      <Pressable onPress={() => setIsShowEditModal(true)}>
+      <TouchableOpacity onPress={() => setIsShowEditModal(true)}>
         <Feather name="edit" size={24} color="#007AFF" />
-      </Pressable>
+      </TouchableOpacity>
       {postData.status == 1 && (
-        <Pressable Pressable onPress={() => sharePost(postData)}>
+        <TouchableOpacity onPress={() => sharePost(postData)}>
           <MaterialIcons name="share" size={24} color="#007Aff" />
-        </Pressable>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -883,16 +898,16 @@ export default function DynamicHousePostPage({ navigation, route }) {
         columnGap: 4,
       }}
     >
-      <Pressable onPress={() => toggleFavorite(houseId)}>
+      <TouchableOpacity onPress={() => toggleFavorite(houseId)}>
         <MaterialIcons
           name={isFavorite(houseId) ? "favorite" : "favorite-border"}
           size={24}
           color={isFavorite(houseId) ? "red" : "#007AFF"}
         />
-      </Pressable>
-      <Pressable onPress={() => sharePost(postData)}>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => sharePost(postData)}>
         <MaterialIcons name="share" size={24} color="#007Aff" />
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 
@@ -933,9 +948,16 @@ export default function DynamicHousePostPage({ navigation, route }) {
     };
 
     return (
-      <Pressable onPress={() => shareProfile(options)}>
+      <TouchableOpacity
+        onPress={() => {
+          if (Platform.OS === "ios") setShowNodalSeller(false);
+          setTimeout(() => {
+            shareProfile(options);
+          }, 300);
+        }}
+      >
         <ShareIcon />
-      </Pressable>
+      </TouchableOpacity>
     );
   };
 
@@ -996,6 +1018,16 @@ export default function DynamicHousePostPage({ navigation, route }) {
           postData={postData}
           setPostData={setPostData}
           handleClose={() => setIsShowEditModal(false)}
+        />
+      </Modal>
+      <Modal
+        visible={isCustomShare && isShowShareModal}
+        onRequestClose={() => setIsShowShareModal(false)}
+      >
+        <TeamInvationPage
+          shareUrl={shareUrl}
+          shareCallback={shareCallback}
+          handleClose={() => setIsShowShareModal(false)}
         />
       </Modal>
     </View>
@@ -1234,16 +1266,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   fullScreenMap: {
+    flex: 1,
     width: "100%",
     height: "100%",
-  },
-  fullScreenCloseButton: {
-    position: "absolute",
-    bottom: 20,
-    backgroundColor: "#007AFF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
   },
   modalTitle: {
     fontSize: 20,

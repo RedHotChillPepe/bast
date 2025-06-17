@@ -10,8 +10,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  SafeAreaView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import ModalPickerComponent from "../components/ModalPickerComponent";
 import TextInputComponent from "../components/TextInputComponent";
 import { useApi } from "../context/ApiContext";

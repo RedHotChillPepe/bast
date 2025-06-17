@@ -3,7 +3,7 @@
     "name": "БАСТ Недвижимость",
     "scheme": "myapp",
     "slug": "bast",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/bast_icon_ios.png",
