@@ -332,7 +332,7 @@ const ServicesPage = ({ handleClose, selectedItem }) => {
 
   return (
     <SafeAreaView style={theme.container}>
-      <View style={Platform.OS !== "ios" ? { flex: 1 } : styles.container}>
+      <View style={Platform.OS !== "ios" ? { flex: 1 } : theme.container}>
         <UniversalHeader
           title={isShowInputs ? "Создание заявки" : selectedItem.title}
           handleClose={customHandleClose}

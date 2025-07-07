@@ -4,7 +4,7 @@ import SortAscIcon from "../../assets/svg/SortAsc";
 import SortDescIcon from "../../assets/svg/SortDesc";
 import FilterIcon from "../../assets/svg/Filter";
 import { useApi } from '../../context/ApiContext';
-import ChatInput from '../../pages/Chats/ChatInput';
+import ChatInput from './ChatInput';
 
 export default function SearchHeaderChat(props) {
     const {

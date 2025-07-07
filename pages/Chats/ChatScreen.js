@@ -21,11 +21,11 @@ import Loader from "../../components/Loader";
 import { useApi } from "../../context/ApiContext";
 import { useChatSocket } from "../../hooks/useChatSocket";
 import useSocket from "../../hooks/usePresenceSocket";
-import ChatInput from "./ChatInput";
 import CustomModal from "../../components/CustomModal";
 import DynamicHousePostPage from "../DynamicHousePostPage";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../context/ThemeContext";
+import ChatInput from "../../components/Chats/ChatInput";
 
 const ChatScreen = (props) => {
   const { handleClose, selectedChat, currentUser } = props;

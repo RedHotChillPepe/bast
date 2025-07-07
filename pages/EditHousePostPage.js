@@ -226,11 +226,11 @@ export default function EditHousePostPage({
     {
       visible: electricityModalVisible,
       onRequestClose: setElectricityModalVisible,
-      headerText: "Льготный тариф на электричество?",
+      headerText: "Наличие электричества?",
       valueName: "electricity",
       pickerData: [
-        { label: "Да", value: "Да" },
-        { label: "Нет", value: "Нет" },
+        { label: "Подключено", value: "Подключено" },
+        { label: "Не подключено", value: "Не подключено" },
       ],
     },
     // Модальное окно для Водопровода
@@ -256,6 +256,7 @@ export default function EditHousePostPage({
       pickerData: [
         { label: "Центральная канализация", value: "Центральная канализация" },
         { label: "Септик", value: "Септик" },
+        { label: "Ж/Б кольцо", value: "Ж/Б кольцо" },
         { label: "Нет", value: "Нет" },
       ],
     },

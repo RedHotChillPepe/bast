@@ -174,7 +174,7 @@ ${priceInfo}
                 >
                   <Marker
                     point={{ lat: geoState.lat, lon: geoState.lon }}
-                    scale={Platform.OS === "ios" ? 0.75 : 0.25}
+                    scale={Platform.OS === "ios" ? 1 : 1.5}
                     source={require("../assets/marker.png")}
                   />
                 </YaMap>
@@ -350,7 +350,7 @@ ${priceInfo}
             >
               <Marker
                 point={{ lat: geoState.lat, lon: geoState.lon }}
-                scale={Platform.OS === "ios" ? 0.75 : 0.25}
+                scale={Platform.OS === "ios" ? 1 : 1.5}
                 source={require("../assets/marker.png")}
               />
             </YaMap>

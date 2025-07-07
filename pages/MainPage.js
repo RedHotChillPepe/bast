@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  Modal,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -22,6 +23,7 @@ import AdvertisementModalPage from "../pages/AdvertisementModalPage";
 import DynamicHousePostPage from "./DynamicHousePostPage";
 import { DynamicVillagePostPage } from "./DynamicVillagePostPage";
 import { Selectors } from "../components/Selectors";
+import CreateHousePostPage from "./CreateHousePostPage";
 
 const { width, height } = Dimensions.get("window");
 
@@ -420,7 +422,7 @@ const MainPage = ({ navigation }) => {
             <HeaderButton
               icon={<AntDesign name="home" size={20} color="#2C88EC" />}
               title="Добавить объявление"
-              handleButton={() => navigation.navigate("CreateHousePostPage")}
+              handleButton={() => setIsShowModalCreate(true)}
             />
             <HeaderButton
               icon={<Octicons name="search" size={20} color="#2C88EC" />}
@@ -492,6 +494,7 @@ const MainPage = ({ navigation }) => {
 
   const [isModalShow, setIsModalShow] = useState(false);
   const [selectedPost, setSelectedPost] = useState();
+  const [isModalShowCreate, setIsShowModalCreate] = useState(false);
 
   const handleSelected = (post) => {
     if (!post) return;
@@ -641,6 +644,16 @@ const MainPage = ({ navigation }) => {
         closeModal={closeModal}
         selectedBannerData={selectedBanner}
       />
+      <Modal
+        visible={isModalShowCreate}
+        animationType="slide"
+        onRequestClose={() => setIsShowModalCreate(false)}
+      >
+        <CreateHousePostPage
+          navigation={navigation}
+          handleClose={() => setIsShowModalCreate(false)}
+        />
+      </Modal>
     </View>
   );
 };

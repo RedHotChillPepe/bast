@@ -1,7 +1,13 @@
 import { useNavigation } from "@react-navigation/native";
-import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
-import { useTheme } from "../context/ThemeContext";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import ChevronLeft from "../assets/svg/ChevronLeft";
+import { useTheme } from "../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
 
@@ -11,6 +17,7 @@ const UniversalHeader = ({
   handleClose = () => {
     console.log("back");
   },
+  isModal = false,
   rightButton = <View style={{ width: 24 }} />,
 }) => {
   const navigation = useNavigation();
@@ -20,7 +27,7 @@ const UniversalHeader = ({
 
   const handleBack = () => {
     const canGoBack = navigation.canGoBack();
-    if (canGoBack) {
+    if (canGoBack && !isModal) {
       navigation.goBack();
       return;
     }
@@ -33,9 +40,9 @@ const UniversalHeader = ({
   return (
     <View style={styles.header}>
       <View style={styles.side}>
-        <Pressable onPress={handleBack}>
+        <TouchableOpacity onPress={handleBack}>
           <ChevronLeft />
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.center}>

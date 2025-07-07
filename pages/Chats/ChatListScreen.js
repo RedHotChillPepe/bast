@@ -1,11 +1,9 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Modal,
-  Platform,
   SafeAreaView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,8 +11,10 @@ import {
   View,
 } from "react-native";
 import ChatCard from "../../components/Chats/ChatCard";
+import SupportBadges from "../../components/Support/SupportBadges";
 import { useApi } from "../../context/ApiContext";
 import { useToast } from "../../context/ToastProvider";
+import SupportPage from "../Support/SupportPage";
 import SearchHeaderChat from "./../../components/Chats/SearchHeaderChat";
 import CustomModal from "./../../components/CustomModal";
 import Loader from "./../../components/Loader";
@@ -36,6 +36,8 @@ const ChatListScreen = ({ navigation }) => {
 
   const [isShowSortModal, setIsShowSortModal] = useState(false);
   const [selectedSort, setSelectedSort] = useState(1);
+
+  const [isShowSupportModal, setIsShowSupportModal] = useState(false);
 
   const showToast = useToast();
 
@@ -99,7 +101,7 @@ const ChatListScreen = ({ navigation }) => {
       }
     };
     console.log(1);
-    
+
     fetchChats();
   }, [isFocused]);
 
@@ -296,6 +298,7 @@ const ChatListScreen = ({ navigation }) => {
           setSearchValue={setSearchValue}
           handleSort={() => setIsShowSortModal(true)}
         />
+        <SupportBadges openSupportModal={() => setIsShowSupportModal(true)} />
         <FlatList
           data={
             searchValue.length > 0
@@ -346,6 +349,13 @@ const ChatListScreen = ({ navigation }) => {
         >
           <View style={{ gap: 16, padding: 16 }}>{radioButtons()}</View>
         </CustomModal>
+        <Modal
+          visible={isShowSupportModal}
+          onRequestClose={() => setIsShowSupportModal(false)}
+          animationType="slide"
+        >
+          <SupportPage handleClose={() => setIsShowSupportModal(false)} />
+        </Modal>
       </View>
     </SafeAreaView>
   );

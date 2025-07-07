@@ -182,10 +182,10 @@ export default function HeaderComponent() {
           >
             <View style={styles.modalContent}>
               <UniversalHeader
-                title="Поиск"
+                title="Поиск по застройщикам"
                 handleClose={() => setModalVisible(false)}
                 typography={"title2"}
-                rightButton={filterButton()}
+                // rightButton={filterButton()}
               />
               <TextInput
                 placeholder="Введите название организации..."

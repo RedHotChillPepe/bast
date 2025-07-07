@@ -5,15 +5,35 @@ import {
   Text,
   ActivityIndicator,
   Platform,
+  StyleSheet,
+  View,
+  SafeAreaView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Geocoder, Marker, YaMap } from "react-native-yamap";
 import CustomModal from "../components/CustomModal";
 import HouseCard from "../components/HouseCard";
 import { useApi } from "../context/ApiContext";
 import DynamicHousePostPage from "./DynamicHousePostPage";
+import { useTheme } from "../context/ThemeContext";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+
+const styles = StyleSheet.create({
+  priceText: {
+    fontSize: 10,
+    color: "#fff",
+    fontFamily: "Sora400",
+    lineHeight: 12,
+    letterSpacing: -0.36,
+    textAlign: "center",
+    backgroundColor: "#2C88EC",
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+    alignSelf: "center",
+    flexShrink: 1,
+  },
+});
 
 export default function SearchMap({ navigation, route }) {
   const { getAllPosts, getPaginatedPosts } = useApi();
@@ -56,7 +76,7 @@ export default function SearchMap({ navigation, route }) {
                 lat: parseFloat(house.latitude),
               },
               id: house.id,
-              ...house, // сохраняем все данные дома для отладки
+              ...house,
             });
             continue;
           }
@@ -102,6 +122,12 @@ export default function SearchMap({ navigation, route }) {
     };
   }, [query, getAllPosts, getPaginatedPosts]);
 
+  const formatPrice = (price) => {
+    if (!price) return "N/A";
+
+    return new Intl.NumberFormat("ru-RU").format(price);
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView
@@ -113,8 +139,8 @@ export default function SearchMap({ navigation, route }) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {process.env.NODE_ENV === "development" ? (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#E5E5EA" }}>
+      {process.env.NODE_ENV !== "development" ? (
         <ScrollView>
           <Text style={{ fontSize: 24, textAlign: "center", color: "red" }}>
             Режим разработчика: карта
@@ -132,19 +158,41 @@ export default function SearchMap({ navigation, route }) {
         </ScrollView>
       ) : (
         <YaMap
-          style={{ width: "100%", height: "100%", alignSelf: "center" }}
+          style={{ height, width, alignSelf: "center" }}
           initialRegion={{ lat: 56.84976, lon: 53.20448, zoom: 10 }}
           onMapReady={() => console.log("Карта готова!")}
         >
-          {posts.map((post) => (
-            <Marker
-              key={post.id}
-              onPress={() => handleSelected(post.id)}
-              point={post.point}
-              source={require("../assets/marker.png")}
-              scale={Platform.OS === "ios" ? 0.4 : 0.25}
-            />
-          ))}
+          {posts.map((post) => {
+            // Отладка: проверяем наличие иконки
+            try {
+              const icon = require("../assets/marker.png");
+              console.log("Иконка загружена для маркера:", post.id);
+            } catch (e) {
+              console.warn("Ошибка загрузки иконки для маркера:", post.id, e);
+            }
+
+            return (
+              <View key={post.id}>
+                <Marker
+                  onPress={() => handleSelected(post.id)}
+                  point={post.point}
+                  source={require("../assets/marker.png")}
+                  scale={Platform.OS === "ios" ? 1 : 1.5}
+                  anchor={{ x: 0.5, y: 1.4 }}
+                  zIndex={10}
+                />
+                <Marker
+                  onPress={() => handleSelected(post.id)}
+                  point={{ lat: post.point.lat, lon: post.point.lon }}
+                  zIndex={5}
+                >
+                  <Text style={styles.priceText}>
+                    {formatPrice(post.price)}
+                  </Text>
+                </Marker>
+              </View>
+            );
+          })}
         </YaMap>
       )}
 

@@ -22,10 +22,11 @@ import InputProperty from "../components/PostComponents/InputProperty";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useLogger } from "../context/LoggerContext";
 import { useToast } from "../context/ToastProvider";
+import UniversalHeader from "../components/UniversalHeaderComponent";
 
 const { width, height } = Dimensions.get("window");
 
-export default function CreateHousePostPage({ navigation }) {
+export default function CreateHousePostPage({ navigation, handleClose }) {
   const { getAuth } = useAuth();
 
   const showToast = useToast();
@@ -77,8 +78,106 @@ export default function CreateHousePostPage({ navigation }) {
     return () => {};
   }, [userId.current]);
 
+  const formatKadastr = (value) => {
+    // Оставляем только цифры и двоеточия
+    const cleaned = value.replace(/[^\d:]/g, "");
+
+    // Инициализация частей
+    const parts = ["", "", "", ""];
+    let currentPart = 0;
+    let maxPartIndex = 0;
+    let i = 0;
+
+    while (i < cleaned.length && currentPart < 4) {
+      if (cleaned[i] === ":") {
+        // Обработка двоеточия
+        if (currentPart === 2) {
+          // В третьей части двоеточие разрешено ТОЛЬКО после 6 символов
+          if (parts[2].length === 6) {
+            currentPart++;
+            maxPartIndex = Math.max(maxPartIndex, currentPart);
+          }
+          // Иначе игнорируем двоеточие
+        } else if (currentPart == 2) {
+          // В первых двух частях двоеточие всегда разрешено
+          currentPart++;
+          maxPartIndex = Math.max(maxPartIndex, currentPart);
+        }
+        i++;
+      } else {
+        // Обработка цифр
+        if (currentPart === 0 || currentPart === 1) {
+          // Первые две части — максимум 2 символа
+          if (parts[currentPart].length < 2) {
+            parts[currentPart] += cleaned[i];
+            i++;
+          } else {
+            // Переход к следующей части
+            if (currentPart < 3) {
+              currentPart++;
+              maxPartIndex = Math.max(maxPartIndex, currentPart);
+            } else {
+              i++;
+            }
+          }
+        } else if (currentPart === 2) {
+          // Третья часть — максимум 7 символов
+          if (parts[2].length < 7) {
+            parts[2] += cleaned[i];
+            i++;
+          } else {
+            // Автоматический переход к 4-й части
+            currentPart = 3;
+            maxPartIndex = Math.max(maxPartIndex, 3);
+          }
+        } else if (currentPart === 3) {
+          // Четвертая часть — максимум 4 символа
+          if (parts[3].length < 4) {
+            parts[3] += cleaned[i];
+          }
+          i++;
+        }
+      }
+    }
+
+    // Автоматически добавляем двоеточие после 7 символов в 3-й части, если не было вручную
+    if (parts[2].length === 8 && maxPartIndex < 3) {
+      parts[3] = parts[2].slice(6);
+      parts[2] = parts[2].slice(0, 6);
+      maxPartIndex = 3;
+    }
+
+    // Собираем результат
+    let result = parts[0];
+    for (let j = 1; j <= maxPartIndex; j++) {
+      result += ":" + parts[j];
+    }
+
+    return result;
+  };
+
   const handleInputChange = (field, value) => {
-    setFormData((prevData) => ({ ...prevData, [field]: value.value || value }));
+    let processedValue = value.value || value;
+
+    // Применяем маски в зависимости от поля
+    if (field === "kadastr") {
+      processedValue = formatKadastr(processedValue);
+    }
+    // Для числовых полей оставляем только цифры
+    else if (
+      [
+        "price",
+        "area",
+        "plotSize",
+        "floors",
+        "rooms",
+        "constructionYear",
+      ].includes(field)
+    ) {
+      processedValue = processedValue.replace(/[^0-9]/g, "");
+    }
+
+    setFormData((prevData) => ({ ...prevData, [field]: processedValue }));
   };
 
   const handleSubmit = async () => {
@@ -142,6 +241,7 @@ export default function CreateHousePostPage({ navigation }) {
 
   const [page, setPage] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
   const inputListLocation = [
     {
       text: "Населённый пункт*",
@@ -151,8 +251,9 @@ export default function CreateHousePostPage({ navigation }) {
     { text: "Адрес*", placeholder: "Улица, Дом", valueName: "location" },
     {
       text: "Кадастровые номер",
-      placeholder: "Кадастровый Номер",
+      placeholder: "XX:XX:XXXXXX(X):XX(XX)",
       valueName: "kadastr",
+      maxLength: 19,
     },
   ];
 
@@ -169,6 +270,10 @@ export default function CreateHousePostPage({ navigation }) {
                 value={formData[item.valueName]}
                 valueName={item.valueName}
                 handleInputChange={handleInputChange}
+                maxLength={item.maxLength}
+                keyboardType={
+                  item.valueName === "kadastr" ? "default" : "numeric"
+                }
               />
             </View>
           ))}
@@ -188,47 +293,44 @@ export default function CreateHousePostPage({ navigation }) {
 
   const inputListHouseinfo = [
     {
-      keyboardType: "numeric",
       text: "Тип дома",
       placeholder: "Выберите тип дома",
       valueName: "houseType",
       type: "select",
     },
     {
-      keyboardType: "numeric",
       text: "Год постройки",
       placeholder: "2000",
       valueName: "constructionYear",
-      type: "select",
+      keyboardType: "numeric", // Только цифры
     },
     {
-      keyboardType: "numeric",
       text: "Этажи",
       placeholder: "Количество этажей",
       valueName: "floors",
+      keyboardType: "numeric", // Только цифры
       type: "select",
     },
     {
-      keyboardType: "numeric",
       text: "Комнаты",
       placeholder: "Количество комнат",
       valueName: "rooms",
+      keyboardType: "numeric", // Только цифры
       type: "select",
     },
     {
-      keyboardType: "numeric",
       text: "Площадь",
       placeholder: "Жилплощадь (м²)",
       valueName: "area",
+      keyboardType: "numeric", // Только цифры
     },
     {
-      keyboardType: "numeric",
       text: "Площадь Участка",
       placeholder: "Площадь участка (сот.)",
       valueName: "plotSize",
+      keyboardType: "numeric", // Только цифры
     },
   ];
-
   const aboutHomePickerList = {
     houseType: [
       { label: "ИЖС", value: "ИЖС" },
@@ -395,8 +497,8 @@ export default function CreateHousePostPage({ navigation }) {
 
   const inputListCommunications = [
     {
-      text: "Тариф на электроэнергию",
-      placeholder: "Выбрать тариф",
+      text: "Наличие электричества",
+      placeholder: "Подключено",
       valueName: "electricity",
     },
     {
@@ -419,10 +521,8 @@ export default function CreateHousePostPage({ navigation }) {
 
   const communicationsPickerDataList = {
     electricity: [
-      { label: "Льготный тариф", value: "Льготный" },
-      { label: "Социальный тариф", value: "Социальный" },
-      { label: "Обычный тариф", value: "Обычный" },
-      { label: "Повышенный тариф", value: "Повышенный" },
+      { label: "Подключено", value: "Подключено" },
+      { label: "Не подключено", value: "Не подключено" },
     ],
     water: [
       {
@@ -444,6 +544,7 @@ export default function CreateHousePostPage({ navigation }) {
     sewerege: [
       { label: "Центральная канализация", value: "Центральная канализация" },
       { label: "Септик", value: "Септик" },
+      { label: "Ж/Б кольцо", value: "Ж/Б кольцо" },
       { label: "Нет", value: "Нет" },
     ],
   };
@@ -495,6 +596,7 @@ export default function CreateHousePostPage({ navigation }) {
                 value={formData.price}
                 valueName={"price"}
                 placeholder="2 000 000"
+                keyboardType="numeric"
               />
             </View>
           </View>
@@ -589,6 +691,27 @@ export default function CreateHousePostPage({ navigation }) {
     }
   };
 
+  const handleBack = () => {
+    if (page > 0) {
+      // Анимируем влево (вправо на экране)
+      Animated.timing(translateX, {
+        toValue: width,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setPage((prev) => prev - 1);
+        translateX.setValue(-width);
+        Animated.timing(translateX, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      });
+    } else {
+      handleClose();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
@@ -606,7 +729,14 @@ export default function CreateHousePostPage({ navigation }) {
             flex: 1,
           }}
         >
-          <Text style={styles.header}>Создание объявления</Text>
+          <View style={styles.header}>
+            <UniversalHeader
+              isModal={true}
+              typography={"title2"}
+              title="Создание объявления"
+              handleClose={handleBack}
+            />
+          </View>
           <Animated.View style={{ transform: [{ translateX }] }}>
             {getPage()}
           </Animated.View>
@@ -660,6 +790,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 20,
     textAlign: "center",
+    width: width - 16,
   },
   header2: {
     fontSize: 20,

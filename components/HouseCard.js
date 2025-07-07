@@ -1,18 +1,19 @@
-import { MaterialIcons } from "@expo/vector-icons";
 import Octicons from "@expo/vector-icons/Octicons";
-import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
   Pressable,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useFavorites } from "../context/FavoritesContext";
 
 import FastImage from "react-native-fast-image";
+import { HeartIcon } from "../assets/svg/HeartIcon";
+import { ShareIcon } from "../assets/svg/ShareIcon";
+import { useShare } from "../context/ShareContext";
 
 const { width } = Dimensions.get("window");
 
@@ -26,6 +27,8 @@ const HouseCard = ({
   if (!item) return null;
 
   const { toggleFavorite, isFavorite } = useFavorites();
+
+  const { sharePost } = useShare();
 
   const specList = [
     {
@@ -87,12 +90,17 @@ const HouseCard = ({
     >
       <View style={[styles.houseItem, { width: itemWidth }]}>
         <View style={styles.houseImageView}>
-          {process.env.NODE_ENV == "development" ? (
+          {process.env.NODE_ENV === "development" ? (
             <Image style={styles.houseImage} source={{ uri: item.photos[0] }} />
           ) : (
             <FastImage
               style={[styles.houseImage]}
-              source={{ uri: item.photos[0] }}
+              source={{
+                uri: item.photos[0],
+                priority: FastImage.priority.high,
+                cache: FastImage.cacheControl.immutable,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
             />
           )}
         </View>
@@ -111,16 +119,17 @@ const HouseCard = ({
           </View>
           <View style={styles.addressContainer}>
             {renderScpecList(item)}
-            <Pressable
-              onPress={() => toggleFavorite(item.id)}
-              style={styles.likeButton}
-            >
-              <MaterialIcons
-                name={isFavorite(item.id) ? "favorite" : "favorite-border"}
-                size={28}
-                color={isFavorite(item.id) ? "red" : "#007AFF"}
-              />
-            </Pressable>
+            <View style={{ flexDirection: "row", columnGap: 16 }}>
+              <TouchableOpacity onPress={() => sharePost(item)}>
+                <ShareIcon />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => toggleFavorite(item.id)}
+                style={styles.likeButton}
+              >
+                <HeartIcon color={isFavorite(item.id) ? "red" : "gray"} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>

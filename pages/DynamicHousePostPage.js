@@ -129,7 +129,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
       const addressString = `${post.city} ${post.full_address}`;
       console.log("addressString:", addressString);
       console.log(post?.latitude, post?.longitude);
-      
+
       if (!post.latitude || !post.longitude) {
         Geocoder.addressToGeo(addressString)
           .then(({ lat, lon }) => {
@@ -173,9 +173,14 @@ export default function DynamicHousePostPage({ navigation, route }) {
   }, [houseId, timestamp]);
 
   const handleCallButton = async () => {
-    setShowModal(true);
-    const result = await getUserByID(postData.poster_id);
-    setPhone(result.phone);
+    try {
+      const result = await getUserByID(postData.poster_id);
+      setPhone(result.phone);
+      setShowModal(true); // Устанавливаем модальное окно только после получения данных
+    } catch (error) {
+      console.error("Ошибка при получении данных пользователя:", error);
+      showToast("Не удалось загрузить номер телефона", "error");
+    }
   };
 
   const handleChatButton = async () => {
@@ -258,7 +263,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
     { label: "Кровля", value: postData.roof },
     { label: "Фундамент", value: postData.base },
     {
-      label: "Электричество (льготный тариф)",
+      label: "Наличие электричества",
       value: postData.electricity_bill,
     },
     { label: "Водоснабжение", value: postData.water },
@@ -496,7 +501,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
                 >
                   <Marker
                     point={{ lat: geoState.lat, lon: geoState.lon }}
-                    scale={Platform.OS === "ios" ? 0.75 : 0.25}
+                    scale={Platform.OS === "ios" ? 1 : 1.5}
                     source={require("../assets/marker.png")}
                   />
                 </YaMap>
@@ -577,7 +582,11 @@ export default function DynamicHousePostPage({ navigation, route }) {
                     fontFamily: "Sora400",
                   }}
                 >
-                  Риэлтор
+                  {ownerUser.usertype == 1
+                    ? "Физическое лицо"
+                    : ownerUser.usertype == 2
+                    ? "Компания"
+                    : "Риелтор"}
                 </Text>
               </View>
             </View>
@@ -782,7 +791,8 @@ export default function DynamicHousePostPage({ navigation, route }) {
       <Modal
         visible={visible}
         transparent={title !== "Карта"} // Полноэкранная карта не должна быть прозрачной
-        animationType="slide"
+        animationType={showModal ? "fade" : "slide"}
+        onDismiss={onCancel}
         onRequestClose={onCancel}
       >
         <View
@@ -807,7 +817,7 @@ export default function DynamicHousePostPage({ navigation, route }) {
                 >
                   <Marker
                     point={{ lat: geoState.lat, lon: geoState.lon }}
-                    scale={Platform.OS === "ios" ? 0.75 : 0.25}
+                    scale={Platform.OS === "ios" ? 1 : 1.5}
                     source={require("../assets/marker.png")}
                   />
                 </YaMap>

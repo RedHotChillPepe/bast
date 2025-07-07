@@ -51,6 +51,7 @@ export default function ApiProvider({ children }) {
       ...params, // Передаем все параметры
       page, // Добавляем параметр страницы
     }).toString();
+    console.log(params);
 
     // Формируем URL с query параметрами
     const url = `${host}api/posts?${query}`;
@@ -1688,6 +1689,41 @@ export default function ApiProvider({ children }) {
     }
   };
 
+  const createRequestChangeUserType = async () => {
+    const accessToken = await getAuth();
+
+    const url = `${host}api/users/change-type`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message:
+            result.message ||
+            "Не удалось создать заявку на смену типа пользователя",
+        };
+      }
+
+      return result;
+    } catch (error) {
+      console.error(
+        "Ошибка при создании заявки на смену типа пользователя:",
+        error
+      );
+      throw error;
+    }
+  };
+
   return (
     <ApiContext.Provider
       value={{
@@ -1752,7 +1788,8 @@ export default function ApiProvider({ children }) {
         getFavorites,
         addFavorites,
         removeFavorites,
-        confirmReferral
+        confirmReferral,
+        createRequestChangeUserType,
       }}
     >
       {children}

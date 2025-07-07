@@ -3,9 +3,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
@@ -15,12 +14,11 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Loader from "../components/Loader";
 import { useApi } from "../context/ApiContext";
 import { useAuth } from "../context/AuthContext";
 import ProfileCompanyPage from "./ProfileCompanyPage.js";
 import ProfileRealtorPage from "./ProfileEmployeePage.js";
-import Loader from "../components/Loader";
-import { UserCardIcon } from "../assets/svg/UserCard";
 
 const { width } = Dimensions.get("window");
 
@@ -153,7 +151,7 @@ const ProfilePage = ({ route }) => {
         {
           icon: <Ionicons name="settings-outline" size={20} color="black" />,
           label: "Настройки",
-          navigation: ["SettingsPage", { userObject: user, usertype }],
+          navigation: ["SettingsPage", { userObject: user, usertype, setUser }],
         },
       ],
     },

@@ -1,41 +1,45 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Modal,
-  Pressable,
+  Platform,
+  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  SafeAreaView,
 } from "react-native";
-import { useTheme } from "../context/ThemeContext";
 import ChevronRight from "../assets/svg/ChevronRight";
+import { DeleteCloseIcon } from "../assets/svg/DeleteCloseIcon";
 import { LocationIcon } from "../assets/svg/LocationIcon";
 import { NotificationIcon } from "../assets/svg/NotificationIcon";
-import { DeleteCloseIcon } from "../assets/svg/DeleteCloseIcon";
-import UniversalHeader from "../components/UniversalHeaderComponent";
-import { UserCardIcon } from "../assets/svg/UserCard";
-import { useAuth } from "../context/AuthContext";
 import { ShieldIcon } from "../assets/svg/ShieldIcon";
+import { SuitCaseIcon } from "../assets/svg/SuitCaseIcon";
+import UniversalHeader from "../components/UniversalHeaderComponent";
+import { useApi } from "../context/ApiContext";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
 
 const SettingsPage = ({ navigation, route }) => {
+  const { createRequestChangeUserType } = useApi();
   const { changePassword } = useAuth();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { theme } = useTheme();
   const styles = makeStyles(theme);
 
-  const { userObject, usertype } = route.params;
-
-  const userObjectt = {
-    id: userObject.id,
-    usertype: usertype,
-    phoneNumber: userObject.phone,
-  };
+  const [userObject, setUser] = useState(route.params.userObject);
+  const setUserOriginal = route.params.setUser;
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalData, setModalData] = useState({
+    title: "",
+    content: "",
+    onConfirm: createRequestChangeUserType,
+    errorMessage: "2323",
+  });
 
   const UniversalModal = ({
     visible,
@@ -45,6 +49,8 @@ const SettingsPage = ({ navigation, route }) => {
     onCancel,
     confirmText = "Подтвердить",
     cancelText = "Отмена",
+    isLoading = false,
+    errorMessage = "",
   }) => {
     return (
       <Modal
@@ -55,23 +61,52 @@ const SettingsPage = ({ navigation, route }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            {title && <Text style={styles.modalTitle}>{title}</Text>}
-            {message && <Text style={styles.modalMessage}>{message}</Text>}
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                style={styles.modalButtonCancel}
-                onPress={onCancel}
-              >
-                <Text style={styles.modalButtonText}>{cancelText}</Text>
-              </TouchableOpacity>
-              {onConfirm && (
-                <TouchableOpacity
-                  style={styles.modalButtonConfirm}
-                  onPress={onConfirm}
-                >
-                  <Text style={styles.modalButtonText}>{confirmText}</Text>
-                </TouchableOpacity>
+            <View>
+              {title && <Text style={styles.modalTitle}>{title}</Text>}
+              {isLoading ? (
+                <ActivityIndicator style={styles.modalMessage} />
+              ) : (
+                <View>
+                  {message && (
+                    <Text style={styles.modalMessage}>{message}</Text>
+                  )}
+                  {errorMessage.length > 0 && (
+                    <Text
+                      style={[
+                        styles.modalMessage,
+                        theme.typography.errorText,
+                        { textAlign: "center" },
+                      ]}
+                    >
+                      {errorMessage}
+                    </Text>
+                  )}
+                </View>
               )}
+              <View style={styles.modalButtonContainer}>
+                <TouchableOpacity
+                  disabled={isLoading}
+                  style={[
+                    styles.modalButtonCancel,
+                    { opacity: isLoading ? 0.6 : 1 },
+                  ]}
+                  onPress={onCancel}
+                >
+                  <Text style={styles.modalButtonText}>{cancelText}</Text>
+                </TouchableOpacity>
+                {onConfirm && (
+                  <TouchableOpacity
+                    disabled={isLoading}
+                    style={[
+                      styles.modalButtonConfirm,
+                      { opacity: isLoading ? 0.6 : 1 },
+                    ]}
+                    onPress={onConfirm}
+                  >
+                    <Text style={styles.modalButtonText}>{confirmText}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </View>
         </View>
@@ -90,17 +125,38 @@ const SettingsPage = ({ navigation, route }) => {
     setIsModalVisible(false);
   };
 
+  const handleChangeType = async () => {
+    try {
+      setIsLoading(true);
+      setModalData((prev) => ({ ...prev, errorMessage: "" }));
+      const result = await createRequestChangeUserType();
+      if (!result.success) throw result;
+      console.log(result);
+      setUser((prev) => ({ ...prev, hasActiveRealtorRequest: true }));
+      setUserOriginal((prev) => ({ ...prev, hasActiveRealtorRequest: true }));
+      setIsModalVisible(false);
+    } catch (error) {
+      console.log(error);
+      setModalData((prev) => ({
+        ...prev,
+        errorMessage: error.message ?? "Произошла ошибка при создании заявки",
+      }));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const listButton = [
     {
       id: 1,
-      title: "Регоин поиска",
-      onPress: () => {},
+      title: "Регион поиска",
+      onPress: () => navigation.navigate("Error", { errorCode: 2004 }),
       icon: { left: <LocationIcon />, right: <ChevronRight /> },
     },
     {
       id: 2,
       title: "Уведомления",
-      onPress: () => {},
+      onPress: () => navigation.navigate("Error", { errorCode: 2004 }),
       icon: { left: <NotificationIcon />, right: <ChevronRight /> },
     },
     {
@@ -114,10 +170,33 @@ const SettingsPage = ({ navigation, route }) => {
         right: <ChevronRight />,
       },
     },
+    ...((!userObject?.hasActiveRealtorRequest ?? false) &&
+    userObject.usertype == 1
+      ? [
+          {
+            id: 4,
+            title: "Стать риелтором",
+            onPress: () => {
+              setModalData({
+                title: "Стать риелтором",
+                content: "Будет создана заявка на смену типа профиля",
+                onConfirm: handleChangeType,
+              });
+              setIsModalVisible(true);
+            },
+            icon: { left: <SuitCaseIcon />, right: <ChevronRight /> },
+          },
+        ]
+      : []),
     {
-      id: 4,
+      id: 5,
       title: "Удалить профиль",
       onPress: () => {
+        setModalData({
+          title: "Удалить профиль?",
+          content: `При удалении профиля будут безвозвратно удалены все ваши личные данные, объявления и переписки. Несохранённые данные восстановить будет невозможно.\n\nПолное удаление аккаунта произойдёт через 7 дней, вы уверены, что хотите удалить свой профиль?`,
+          onConfirm: handleDelete,
+        });
         setIsModalVisible(true);
       },
       icon: { left: <DeleteCloseIcon />, right: <ChevronRight /> },
@@ -159,16 +238,18 @@ const SettingsPage = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={{flex:1, backgroundColor: theme.colors.background}}>
-      <View style={theme.container}>
+    <SafeAreaView style={Platform.OS == "ios" ? {} : theme.container}>
+      <View style={{ paddingTop: Platform.OS == "ios" ? 0 : 32 }}>
         <UniversalHeader title="Настройки" typography="title2" />
         {renderButtons()}
         <UniversalModal
           visible={isModalVisible}
-          title={"Удалить профиль?"}
-          message={"Полное удаление произойдет через 7 дней"}
+          title={modalData.title}
+          message={modalData.content}
           onCancel={() => setIsModalVisible(false)}
-          onConfirm={handleDelete}
+          onConfirm={modalData.onConfirm}
+          isLoading={isLoading}
+          errorMessage={modalData.errorMessage}
         ></UniversalModal>
       </View>
     </SafeAreaView>
