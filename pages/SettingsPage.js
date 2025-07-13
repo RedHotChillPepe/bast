@@ -32,7 +32,6 @@ const SettingsPage = ({ navigation, route }) => {
   const styles = makeStyles(theme);
 
   const [userObject, setUser] = useState(route.params.userObject);
-  const setUserOriginal = route.params.setUser;
   const [isLoading, setIsLoading] = useState(false);
   const [modalData, setModalData] = useState({
     title: "",
@@ -125,27 +124,6 @@ const SettingsPage = ({ navigation, route }) => {
     setIsModalVisible(false);
   };
 
-  const handleChangeType = async () => {
-    try {
-      setIsLoading(true);
-      setModalData((prev) => ({ ...prev, errorMessage: "" }));
-      const result = await createRequestChangeUserType();
-      if (!result.success) throw result;
-      console.log(result);
-      setUser((prev) => ({ ...prev, hasActiveRealtorRequest: true }));
-      setUserOriginal((prev) => ({ ...prev, hasActiveRealtorRequest: true }));
-      setIsModalVisible(false);
-    } catch (error) {
-      console.log(error);
-      setModalData((prev) => ({
-        ...prev,
-        errorMessage: error.message ?? "Произошла ошибка при создании заявки",
-      }));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const listButton = [
     {
       id: 1,
@@ -170,24 +148,24 @@ const SettingsPage = ({ navigation, route }) => {
         right: <ChevronRight />,
       },
     },
-    ...((!userObject?.hasActiveRealtorRequest ?? false) &&
-    userObject.usertype == 1
-      ? [
-          {
-            id: 4,
-            title: "Стать риелтором",
-            onPress: () => {
-              setModalData({
-                title: "Стать риелтором",
-                content: "Будет создана заявка на смену типа профиля",
-                onConfirm: handleChangeType,
-              });
-              setIsModalVisible(true);
-            },
-            icon: { left: <SuitCaseIcon />, right: <ChevronRight /> },
-          },
-        ]
-      : []),
+    // ...((!userObject?.hasActiveRealtorRequest ?? false) &&
+    // userObject.usertype == 1
+    //   ? [
+    //       {
+    //         id: 4,
+    //         title: "Стать риелтором",
+    //         onPress: () => {
+    //           setModalData({
+    //             title: "Стать риелтором",
+    //             content: "Будет создана заявка на смену типа профиля",
+    //             onConfirm: handleChangeType,
+    //           });
+    //           setIsModalVisible(true);
+    //         },
+    //         icon: { left: <SuitCaseIcon />, right: <ChevronRight /> },
+    //       },
+    //     ]
+    //   : []),
     {
       id: 5,
       title: "Удалить профиль",

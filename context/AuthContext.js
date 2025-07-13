@@ -58,10 +58,12 @@ export default function AuthProvider({ children }) {
   }, [isDeleted]);
 
   useEffect(() => {
+    
     async function checkAuth() {
       const access_token = await getAuth();
       const status = access_token !== null;
       setIsAuth(status);
+      
       setIsOnboarded(status);
       setTokenIsLoaded(true);
     }
