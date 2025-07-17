@@ -10,6 +10,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import CheckCircle from "../assets/svg/CheckCircle.js";
@@ -79,8 +80,8 @@ const ProfilePageView = ({ route, navigation }) => {
 
   const listProperties = [
     { icon: CheckCircle(), title: "Телефон подтвержден", id: 1 },
-    { icon: CheckHouse(), title: "Продано 5 объектов недвижимости", id: 2 },
     { icon: CheckCircle(), title: "Документы проверены", id: 3 },
+    { icon: CheckHouse(), title: "Продано 5 объектов недвижимости", id: 2 },
   ];
 
   const renderProperties = () => {
@@ -107,6 +108,27 @@ const ProfilePageView = ({ route, navigation }) => {
   const ListHeader = () => {
     return (
       <View>
+        <View style={{ rowGap: 24, marginTop: 8, marginBottom: 32п }}>
+          {renderUserBlock()}
+          {renderRewardAndCertificates()}
+          {renderCounterparties()}
+        </View>
+        !isDeleted && (
+        <View style={{ marginLeft: 16 }}>
+          <Selectors
+            handleSelected={setSelectedList}
+            selectedList={selectedList}
+            listSelector={listSelectProperties}
+          />
+        </View>
+        )
+      </View>
+    );
+  };
+
+  const renderUserBlock = () => {
+    return (
+      <View>
         <View
           style={{
             width,
@@ -121,7 +143,7 @@ const ProfilePageView = ({ route, navigation }) => {
           {Object.keys(userr).length == 0 ? (
             <ActivityIndicator size="large" color="#32322C" />
           ) : (
-            <View style={{ rowGap: 4 }}>
+            <View style={{ rowGap: 8 }}>
               <Text style={styles.name}>
                 {userr.name} {userr.surname}
               </Text>
@@ -151,31 +173,60 @@ const ProfilePageView = ({ route, navigation }) => {
                   <Star />
                   <StarOutline />
                 </View>
+                <TouchableOpacity>
+                  <Text
+                    style={[
+                      theme.typography.caption,
+                      { color: theme.colors.accent },
+                    ]}
+                  >
+                    4 отзыва
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#808080",
-                  fontFamily: "Sora500",
-                  fontWeight: 400,
-                  lineHeight: 15,
-                  letterSpacing: -0.36,
-                }}
-              >
-                1 подписчик, 1 подписка
-              </Text>
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#808080",
-                  fontFamily: "Sora500",
-                  fontWeight: 400,
-                  lineHeight: 15,
-                  letterSpacing: -0.36,
-                }}
-              >
-                На сайте с мая 2024
-              </Text>
+              <View style={{ rowGap: 4 }}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "#808080",
+                    fontFamily: "Sora500",
+                    fontWeight: 400,
+                    lineHeight: 15,
+                    letterSpacing: -0.36,
+                  }}
+                >
+                  1 подписчик, 1 подписка
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "#808080",
+                    fontFamily: "Sora500",
+                    fontWeight: 400,
+                    lineHeight: 15,
+                    letterSpacing: -0.36,
+                  }}
+                >
+                  На сайте с мая 2024
+                </Text>
+              </View>
+              {!isDeleted && (
+                <TouchableOpacity
+                  style={[
+                    theme.buttons.classisButton,
+                    {
+                      backgroundColor: "transperent",
+                      borderWidth: 1,
+                      borderColor: theme.colors.accent,
+                      alignSelf: "stretch",
+                    },
+                  ]}
+                >
+                  <Text style={theme.typography.regular("accent")}>
+                    Подписаться
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           )}
           {/* TODO: перекрасить navbar */}
@@ -183,9 +234,9 @@ const ProfilePageView = ({ route, navigation }) => {
             <FontAwesome6 name="face-tired" size={85} color="black" />
           ) : (
             <Image
-              style={{ overflow: "hidden", borderRadius: 150 / 2 }}
-              width={80}
-              height={80}
+              style={{ overflow: "hidden", borderRadius: 100 }}
+              width={138}
+              height={138}
               source={
                 isDeleted
                   ? require("../assets/deleted_user.jpg")
@@ -194,31 +245,6 @@ const ProfilePageView = ({ route, navigation }) => {
             />
           )}
         </View>
-        {!isDeleted && (
-          <Pressable
-            style={{
-              backgroundColor: "#2C88EC66",
-              padding: 12,
-              borderRadius: 12,
-              alignSelf: "flex-start",
-              marginHorizontal: 16,
-            }}
-          >
-            <Text
-              style={{
-                color: "#F2F2F7",
-                fontSize: 16,
-                fontFamily: "Sora700",
-                fontWeight: 600,
-                lineHeight: 20,
-                letterSpacing: -0.48,
-                textAlign: "center",
-              }}
-            >
-              Подписаться
-            </Text>
-          </Pressable>
-        )}
 
         {!isDeleted && renderProperties()}
 
@@ -227,20 +253,117 @@ const ProfilePageView = ({ route, navigation }) => {
             <Text style={styles.buttonText}>Написать</Text>
           </Pressable>
         )}
-        {!isDeleted && (
-          <View style={{ marginLeft: 16 }}>
-            <Selectors
-              handleSelected={setSelectedList}
-              selectedList={selectedList}
-              listSelector={listSelectProperties}
-            />
-          </View>
-        )}
         {isDeleted && (
           <Text style={theme.typography.title3("placeholder")}>
             Профиль пользователя удален
           </Text>
         )}
+      </View>
+    );
+  };
+
+  const renderRewardAndCertificates = () => {
+    return (
+      <View style={{ rowGap: 16, paddingHorizontal: 16 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={theme.typography.title3("black")}>
+            Сертификаты и награды
+          </Text>
+          <TouchableOpacity>
+            <Text
+              style={[theme.typography.caption, { color: theme.colors.accent }]}
+            >
+              Управление
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: "row", columnGap: 10 }}>
+          <View
+            style={{
+              height: 119,
+              width: 108,
+              borderRadius: 4,
+              backgroundColor: "#B6D3FA",
+            }}
+          ></View>
+          <View
+            style={{
+              height: 119,
+              width: 108,
+              borderRadius: 4,
+              backgroundColor: "#B6D3FA",
+            }}
+          ></View>
+          <View
+            style={{
+              height: 119,
+              width: 108,
+              borderRadius: 4,
+              backgroundColor: "#B6D3FA",
+            }}
+          ></View>
+        </View>
+      </View>
+    );
+  };
+
+  const renderCounterparties = () => {
+    return (
+      <View style={{ rowGap: 16, paddingHorizontal: 16 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={theme.typography.title3("black")}>
+            Действующие контрагенты
+          </Text>
+          <TouchableOpacity>
+            <Text
+              style={[theme.typography.caption, { color: theme.colors.accent }]}
+            >
+              Управление
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: "row", columnGap: 10 }}>
+          <View
+            style={{
+              borderRadius: 61,
+              backgroundColor: "#B6D3FA",
+              height: 60,
+              width: 60,
+            }}
+          ></View>
+          <View
+            style={{
+              borderRadius: 61,
+              backgroundColor: "#B6D3FA",
+              height: 60,
+              width: 60,
+            }}
+          ></View>
+          <View
+            style={{
+              borderRadius: 61,
+              backgroundColor: "#B6D3FA",
+              height: 60,
+              width: 60,
+            }}
+          ></View>
+          <View
+            style={{
+              borderRadius: 61,
+              backgroundColor: "#B6D3FA",
+              height: 60,
+              width: 60,
+            }}
+          ></View>
+          <View
+            style={{
+              borderRadius: 61,
+              backgroundColor: "#B6D3FA",
+              height: 60,
+              width: 60,
+            }}
+          ></View>
+        </View>
       </View>
     );
   };
@@ -321,7 +444,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   itemContainer: {
-    rowGap: 4,
+    rowGap: 8,
     marginTop: 16,
     marginHorizontal: 16,
   },
@@ -354,8 +477,7 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 12,
-    marginTop: 16,
-    marginBottom: 32,
+    marginTop: 24,
     marginHorizontal: 16,
     alignSelf: "stretch",
     alignItems: "center",
